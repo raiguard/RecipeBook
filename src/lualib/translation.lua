@@ -99,7 +99,7 @@ local function sort_translated_string(e)
           t.lookup[result] = {value}
         end
         -- searchable
-        t.searchable[#t.searchable+1] = result
+        t.sorted_results[#t.sorted_results+1] = result
         -- translation
         local translation = t.translations[value]
         if translation then
@@ -120,21 +120,11 @@ local function sort_translated_string(e)
             event.deregister(defines.events.on_string_translated, sort_translated_string, 'translation_sort_result')
           end
         end
-        -- sort searchable array and optimise it
-        local searchable = t.searchable
-        local lookup = t.lookup
-        local indexes = {}
-        table_sort(searchable)
-        for i=1,#searchable do
-          local translated = searchable[i]
-          local lookup = lookup[translated]
-          local index = (indexes[translated] or 0) + 1
-          searchable[i] = {internal=lookup[index], translated=translated}
-          indexes[translated] = index
-        end
+        -- sort results array
+        table_sort(t.sorted_results)
         -- raise events to finish up
         event.raise(translation.update_dictionary_count_event, {delta=-1})
-        event.raise(translation.finish_event, {player_index=e.player_index, dictionary_name=name, lookup=lookup, searchable=searchable,
+        event.raise(translation.finish_event, {player_index=e.player_index, dictionary_name=name, lookup=t.lookup, sorted_results=t.sorted_results,
           translations=t.translations})
       end
       return
@@ -176,7 +166,7 @@ function translation.start(player, dictionary_name, data, options)
     convert_to_lowercase = options.convert_to_lowercase,
     -- output
     lookup = {},
-    searchable = {},
+    sorted_results = {},
     translations = {}
   }
   event.raise(translation.update_dictionary_count_event, {delta=1})
