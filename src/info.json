@@ -1,0 +1,10 @@
+{
+  "name": "RecipeBook",
+  "version": "1.0.0",
+  "title": "Recipe Book",
+  "author": "raiguard",
+  "homepage": "https://github.com/raiguard/Factorio-RecipeBook",
+  "factorio_version": "0.18",
+  "dependencies": ["base >= 0.18.0"],
+  "description": "A recipe book. Contains information about recipes, item usages in recipes, and more."
+}
