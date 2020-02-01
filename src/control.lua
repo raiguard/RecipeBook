@@ -14,6 +14,9 @@ local event = require('lualib/event')
 local mod_gui = require('mod-gui')
 local translation = require('lualib/translation')
 
+-- modules
+local gui = require('gui')
+
 -- -----------------------------------------------------------------------------
 -- RECIPE DATA
 
@@ -86,14 +89,15 @@ event.on_init(function()
   translate_for_all_players()
 end)
 
+-- player insertion and removal
 event.on_player_created(function(e)
   setup_player(game.get_player(e.player_index), e.player_index)
 end)
-
 event.on_player_removed(function(e)
   global.players[e.player_index] = nil
 end)
 
+-- retranslate all dictionaries for a player when they re-join
 event.on_player_joined_game(function(e)
   global.players[e.player_index].flags.can_open_gui = false
   -- TODO: close open GUIs
@@ -137,13 +141,19 @@ event.register(translation.finish_event, function(e)
   end
 end)
 
+-- toggle the search GUI when the button or the hotkey are used
+event.register('rb-toggle-search', function(e)
+  gui.toggle_search(game.get_player(e.player_index), global.players[e.player_index])
+end)
+event.on_gui_click(function(e)
+  gui.toggle_search(game.get_player(e.player_index), global.players[e.player_index])
+end, {gui_filters='recipe_book_button'})
+
 -- -----------------------------------------------------------------------------
 -- MIGRATIONS
 
 -- table of migration functions
-local migrations = {
-
-}
+local migrations = {}
 
 -- returns true if v2 is newer than v1, false if otherwise
 local function compare_versions(v1, v2)
