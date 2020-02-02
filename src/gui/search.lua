@@ -173,7 +173,7 @@ function self.open(player, player_table)
   -- add to global
   player_table.gui.search = gui_data
 
-  -- populate results
+  -- populate initial results
   handlers.search_textfield.on_gui_text_changed{player_index=player.index, text=''}
 end
 

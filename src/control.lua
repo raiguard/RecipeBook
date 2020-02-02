@@ -15,21 +15,17 @@ local mod_gui = require('mod-gui')
 local translation = require('lualib/translation')
 -- local util = require('util')
 
+-- internal mod event globals
+open_gui_event = event.generate_id('open_gui')
+
+local info_guis = {crafter=true, ingredient=true, recipe=true}
+
 -- modules
 local search_gui = require('gui/search')
+local info_gui = require('gui/info-base')
 
 -- -----------------------------------------------------------------------------
 -- RECIPE DATA
-
---[[
-  RECIPE DATA STRUCTURE
-    crafters
-      {prototype, recipes}
-    ingredients
-      {prototype, as_ingredient, as_product},
-    recipes
-      {prototype, ingredients, products, crafters, technologies}
-]]
 
 -- builds recipe data table
 local function build_recipe_data()
@@ -240,6 +236,28 @@ end)
 event.on_gui_click(function(e)
   search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index])
 end, {gui_filters='recipe_book_button'})
+
+-- open the specified GUI
+event.register(open_gui_event, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local gui_type = e.gui_type
+  -- protected open
+  if player_table.flags.can_open_gui then
+    -- check for existing GUI
+    if gui_type == 'search' then
+
+    elseif info_guis[gui_type] then
+      info_gui.open_or_update(player, player_table, gui_type, e.object_name)
+    elseif gui_type == 'recipe_quick_reference' then
+
+    end
+  else
+    -- set flag and tell the player that they cannot open it
+    player_table.flags.tried_to_open_gui = true
+    player.print{'rb-message.translation-not-finished'}
+  end
+end)
 
 -- -----------------------------------------------------------------------------
 -- MIGRATIONS
