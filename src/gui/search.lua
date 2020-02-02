@@ -22,14 +22,14 @@ local string_lower = string.lower
 local string_match = string.match
 
 -- utilities
-local search_category_by_index = {'crafters', 'ingredients', 'recipes'}
+local category_by_index = {'crafters', 'ingredients', 'recipes'}
 
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
 -- we must define it like this so members can access other members
-local search_handlers = {}
-search_handlers = {
+local handlers = {}
+handlers = {
   close_button = {
     on_gui_click = function(e)
       self.close(game.get_player(e.player_index), global.players[e.player_index])
@@ -80,7 +80,7 @@ search_handlers = {
         local t = search_table[i1]
         local translated = t.translated
         if string_match(string_lower(translated), query) and (show_hidden or not t.hidden) then
-          local caption = '[img='..t.sprite_category..'/'..t.internal..']  '..translated
+          local caption = '[img='..t.sprite_class..'/'..t.internal..']  '..translated
           i = i + 1
           if i <= items_length then
             set_item(i, caption)
@@ -96,7 +96,7 @@ search_handlers = {
   },
   results_listbox = {
     on_gui_closed = function(e)
-      search_handlers.search_textfield.on_gui_click(e)
+      handlers.search_textfield.on_gui_click(e)
     end,
     on_gui_selection_state_changed = function(e)
       -- TODO: open info GUI
@@ -108,20 +108,26 @@ search_handlers = {
   },
   category_dropdown = {
     on_gui_selection_state_changed = function(e)
-      game.print(serpent.block(e))
+      local player_table = global.players[e.player_index]
+      local gui_data = player_table.gui.search
+      -- update GUI state
+      gui_data.category = category_by_index[e.element.selected_index]
+      gui_data.search_textfield.text = ''
+      gui_data.search_textfield.focus()
+      handlers.search_textfield.on_gui_text_changed{player_index=e.player_index, text=''}
     end
   },
   results_nav = {
     ['rb-results-nav-confirm'] = function(e)
       e.element = global.players[e.player_index].gui.search.results_listbox
       e.keyboard_confirm = true
-      search_handlers.results_listbox.on_gui_selection_state_changed(e)
+      handlers.results_listbox.on_gui_selection_state_changed(e)
     end
   }
 }
 
 -- add to GUI module
-gui.add_handlers('search', search_handlers)
+gui.add_handlers('search', handlers)
 
 -- -----------------------------------------------------------------------------
 -- GUI MANAGEMENT
@@ -167,7 +173,7 @@ function self.open(player, player_table)
   player_table.gui.search = gui_data
 
   -- populate results
-  search_handlers.search_textfield.on_gui_text_changed{player_index=player.index, text=''}
+  handlers.search_textfield.on_gui_text_changed{player_index=player.index, text=''}
 end
 
 function self.close(player, player_table)

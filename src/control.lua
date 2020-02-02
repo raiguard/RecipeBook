@@ -13,6 +13,7 @@ end
 local event = require('lualib/event')
 local mod_gui = require('mod-gui')
 local translation = require('lualib/translation')
+-- local util = require('util')
 
 -- modules
 local search_gui = require('gui/search')
@@ -32,20 +33,102 @@ local search_gui = require('gui/search')
 
 -- builds recipe data table
 local function build_recipe_data()
-  local recipe_book = {}
-  local translation_data = {}
-  -- RECIPES
-  do
-    local data = {}
-    local translations = {}
-    -- build data
-    for n,p in pairs(game.recipe_prototypes) do
-      data[n] = {prototype=p, ingredients=p.ingredients, products=p.products}
-      translations[#translations+1] = {internal=n, localised=p.localised_name}
+  -- table skeletons
+  local recipe_book = {
+    crafters = {},
+    ingredients = {},
+    recipes = {}
+  }
+  local translation_data = {
+    crafters = {},
+    ingredients = {},
+    recipes = {}
+  }
+  
+  -- iterate crafters
+  local crafters = game.get_filtered_entity_prototypes{
+    {filter='type', type='assembling-machine'},
+    {filter='type', type='furnace'}
+  }
+  for name,prototype in pairs(crafters) do
+    recipe_book.crafters[name] = {
+      prototype = prototype,
+      hidden = prototype.has_flag('hidden'),
+      categories = prototype.crafting_categories,
+      recipes = {},
+      sprite_class = 'entity'
+    }
+    translation_data.crafters[#translation_data.crafters+1] = {internal=name, localised=prototype.localised_name}
+  end
+
+  -- iterate ingredients
+  local ingredients = util.merge{game.fluid_prototypes, game.item_prototypes}
+  for name,prototype in pairs(ingredients) do
+    local is_fluid = prototype.object_name == 'LuaFluidPrototype' and true or false
+    local hidden
+    if is_fluid then
+      hidden = prototype.hidden
+    else
+      hidden = prototype.has_flag('hidden')
     end
-    -- add to tables
-    recipe_book.recipes = data
-    translation_data.recipes = translations
+    recipe_book.ingredients[name] = {
+      prototype = prototype,
+      hidden = hidden,
+      as_ingredient = {},
+      as_product = {},
+      sprite_class = is_fluid and 'fluid' or 'item'
+    }
+    translation_data.ingredients[#translation_data.ingredients+1] = {internal=name, localised=prototype.localised_name}
+  end
+
+  -- iterate recipes
+  for name,prototype in pairs(game.recipe_prototypes) do
+    local data = {
+      prototype = prototype,
+      hidden = prototype.hidden,
+      made_in = {},
+      unlocked_by = {},
+      sprite_class = 'recipe'
+    }
+    -- made-in
+    local category = prototype.category
+    for crafter_name,crafter_data in pairs(recipe_book.crafters) do
+      if crafter_data.categories[category] then
+        data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_data.prototype.crafting_speed}
+      end
+    end
+    -- as ingredient
+    local ingredients = prototype.ingredients
+    for i=1,#ingredients do
+      local ingredient = ingredients[i]
+      local ingredient_data = recipe_book.ingredients[ingredient]
+      if ingredient_data then
+        ingredient_data.as_ingredient[#ingredient_data.as_ingredient+1] = name
+      end
+    end
+    -- as product
+    local products = prototype.products
+    for i=1,#products do
+      local product = products[i]
+      local product_data = recipe_book.ingredients[product]
+      if product_data then
+        product_data.as_product[#product_data.as_product+1] = name
+      end
+    end
+    -- insert into recipe book
+    recipe_book.recipes[name] = data
+    -- translation data
+    translation_data.recipes[#translation_data.recipes+1] = {internal=name, localised=prototype.localised_name}
+  end
+
+  -- iterate technologies (to populate the recipes unlocked_by tables)
+  for name,prototype in pairs(game.technology_prototypes) do
+    for _,modifier in ipairs(prototype.effects) do
+      if modifier.type == 'unlock-recipe' then
+        local recipe = recipe_book.recipes[modifier.recipe]
+        recipe.unlocked_by[#recipe.unlocked_by+1] = name
+      end
+    end
   end
 
   -- APPLY TO GLOBAL
@@ -126,9 +209,10 @@ event.register(translation.finish_event, function(e)
     local internals = lookup[translated]
     for ii=1,#internals do
       local internal = internals[ii]
+      local object_data = data[internal]
       si = si + 1
       -- get whether or not it's hidden so we can include or not include it depending on the user's settings
-      search[si] = {internal=internal, translated=translated, hidden=data[internal].prototype.hidden, sprite_category='recipe'}
+      search[si] = {internal=internal, translated=translated, hidden=object_data.hidden, sprite_class=object_data.sprite_class}
     end
   end
 
