@@ -102,6 +102,7 @@ handlers = {
       -- TODO: open info GUI
       local player_table = global.players[e.player_index]
       if e.keyboard_confirm or player_table.gui.search.state ~= 'select_result' then
+        game.get_player(e.player_index).print('Open '..player_table.gui.search.category..' GUI')
         self.close(game.get_player(e.player_index), global.players[e.player_index])
       end
     end

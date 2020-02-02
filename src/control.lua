@@ -226,6 +226,10 @@ event.register(translation.finish_event, function(e)
   -- set flag if we're done
   if not global.__lualib.translation.players[e.player_index] then
     player_table.flags.can_open_gui = true
+    if player_table.flags.tried_to_open_gui then
+      player_table.flags.tried_to_open_gui = nil
+      game.get_player(e.player_index).print{'rb-message.translation-finished'}
+    end
   end
 end)
 
