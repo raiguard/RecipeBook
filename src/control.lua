@@ -15,7 +15,7 @@ local mod_gui = require('mod-gui')
 local translation = require('lualib/translation')
 
 -- modules
-local search_gui = require('gui')
+local search_gui = require('gui/search')
 
 -- -----------------------------------------------------------------------------
 -- RECIPE DATA
