@@ -108,7 +108,7 @@ end
 function self.close(player, player_table)
   local gui_data = player_table.gui
   -- destroy content / deregister handlers
-  -- pages[gui_data.info.category].destroy(player, gui_data.info.base.content_scrollpane)
+  pages[gui_data.info.category].destroy(player, gui_data.info.base.content_container)
   -- destroy base
   gui.destroy(gui_data.info.base.window, 'info_base', player.index)
   -- remove data from global
