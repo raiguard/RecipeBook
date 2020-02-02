@@ -25,7 +25,24 @@ data:extend{
     name = 'rb-results-nav-confirm',
     key_sequence = 'ENTER',
     order = 'bd'
-  }
+  },
+  -- SPRITES
+  {
+    type = 'sprite',
+    name = 'rb_nav_backward',
+    filename = '__RecipeBook__/graphics/gui/nav-backward.png',
+    size = 32,
+    mipmap_count = 2,
+    flags = {'icon'}
+  },
+  {
+    type = 'sprite',
+    name = 'rb_nav_backward_dark',
+    filename = '__RecipeBook__/graphics/gui/nav-backward-dark.png',
+    size = 32,
+    mipmap_count = 2,
+    flags = {'icon'}
+  },
 }
 
 local styles = data.raw['gui-style'].default
@@ -92,6 +109,16 @@ styles.rb_titlebar_flow = {
   horizontally_stretchable = 'on',
   vertical_align = 'center',
   top_margin = -3
+}
+
+-- -----------------------------------------------------------------------------
+-- IMAGE STYLES
+
+styles.rb_object_icon = {
+  type = 'image_style',
+  stretch_image_to_widget_size = true,
+  size = 28,
+  padding = 2
 }
 
 -- -----------------------------------------------------------------------------

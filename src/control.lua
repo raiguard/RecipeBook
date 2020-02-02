@@ -14,10 +14,10 @@ local event = require('lualib/event')
 local mod_gui = require('mod-gui')
 local translation = require('lualib/translation')
 
--- internal mod event globals
+-- globals
 open_gui_event = event.generate_id('open_gui')
-
-local info_guis = {crafter=true, ingredient=true, recipe=true}
+reopen_source_event = event.generate_id('reopen_source')
+info_guis = {crafter=true, ingredient=true, recipe=true}
 
 -- modules
 local search_gui = require('gui/search')
@@ -116,7 +116,7 @@ local function build_recipe_data()
     translation_data.recipe[#translation_data.recipe+1] = {internal=name, localised=prototype.localised_name}
   end
 
-  -- iterate technologies (to populate the recipes unlocked_by tables)
+  -- iterate technologies (to populate the recipe unlocked_by tables)
   for name,prototype in pairs(game.technology_prototypes) do
     for _,modifier in ipairs(prototype.effects) do
       if modifier.type == 'unlock-recipe' then
@@ -126,7 +126,7 @@ local function build_recipe_data()
     end
   end
 
-  -- APPLY TO GLOBAL
+  -- apply to global
   global.recipe_book = recipe_book
   global.__lualib.translation.translation_data = translation_data
 end
@@ -150,6 +150,10 @@ local function setup_player(player, index)
   global.players[index] = {
     flags = {
       can_open_gui = false
+    },
+    history = {
+      session = {},
+      overall = {}
     },
     gui = {},
     settings = {
@@ -236,6 +240,13 @@ event.on_gui_click(function(e)
   search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index])
 end, {gui_filters='recipe_book_button'})
 
+-- reopen the search GUI when the back button is pressed
+event.register(reopen_source_event, function(e)
+  if e.source == 'rb_search' then
+    search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index])
+  end
+end)
+
 -- open the specified GUI
 event.register(open_gui_event, function(e)
   local player = game.get_player(e.player_index)
@@ -247,8 +258,7 @@ event.register(open_gui_event, function(e)
     if gui_type == 'search' then
       
     elseif info_guis[gui_type] then
-      game.print('Open '..gui_type..': '..e.object_name)
-      info_gui.open_or_update(player, player_table, gui_type, e.object_name)
+      info_gui.open_or_update(player, player_table, gui_type, e.object_name, e.source)
     elseif gui_type == 'recipe_quick_reference' then
 
     end

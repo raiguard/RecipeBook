@@ -106,8 +106,7 @@ handlers = {
       if e.keyboard_confirm or gui_data.state ~= 'select_result' then
         local player = game.get_player(e.player_index)
         local _,_,object_name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
-        event.raise(open_gui_event, {player_index=e.player_index, gui_type=gui_data.category, object_name=object_name})
-        -- self.close(player, player_table)
+        event.raise(open_gui_event, {player_index=e.player_index, gui_type=gui_data.category, object_name=object_name, source='rb_search'})
       end
     end
   },
