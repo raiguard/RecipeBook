@@ -18,6 +18,12 @@ gui.add_templates{
   }
 }
 
+-- info pages
+local pages = {}
+for n,_ in pairs(info_guis) do
+  pages[n] = require('gui/info-pages/'..n)
+end
+
 -- locals
 local string_lower = string.lower
 local table_insert = table.insert
@@ -80,8 +86,8 @@ function self.open(player, player_table, category, name, source)
           {type='label', style={name='subheader_caption_label', left_padding=0}, save_as='object_name'},
           {template='pushers.horizontal'}
         }},
-        -- content flow
-        {type='flow', style={padding=8}, direction='horizontal', save_as='content_flow'}
+        -- content container
+        {type='flow', style={padding=8}, save_as='content_container'}
       }}
     }}
   )
@@ -148,6 +154,15 @@ function self.update_contents(player, player_table, category, name, source, nav_
   -- update object name
   base_elems.object_icon.sprite = object_data.sprite_class..'/'..name
   base_elems.object_name.caption = object_data.prototype.localised_name
+
+  -- update main content
+  local content_container = base_elems.content_container
+  if #content_container.children > 0 then
+    -- destroy previous content
+    pages[gui_data.category].destroy(player, content_container)
+  end
+  -- build new content
+  gui_data.page = pages[category].create(player, player_table, content_container, name)
 
   -- center window
   base_elems.window.force_auto_center()
