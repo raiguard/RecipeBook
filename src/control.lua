@@ -22,12 +22,12 @@ local gui = require('gui')
 
 --[[
   RECIPE DATA STRUCTURE
-    recipes
-      {prototype, ingredients, products, crafters, technologies}
-    ingredients
-      {prototype, as_ingredient, as_product},
     crafters
       {prototype, recipes}
+    ingredients
+      {prototype, as_ingredient, as_product},
+    recipes
+      {prototype, ingredients, products, crafters, technologies}
 ]]
 
 -- builds recipe data table
@@ -73,7 +73,11 @@ local function setup_player(player, index)
     flags = {
       can_open_gui = false
     },
-    gui = {}
+    gui = {},
+    settings = {
+      default_category = 'recipes',
+      show_hidden = false
+    }
   }
   if player.mod_settings['rb-show-mod-gui-button'].value then
     mod_gui.get_button_flow(player).add{type='button', name='recipe_book_button', style=mod_gui.button_style, caption='RB', tooltip={'mod-name.RecipeBook'}}
@@ -118,13 +122,13 @@ event.register(translation.finish_event, function(e)
   local si = 0
   -- create an entry in the search table for every prototype that each result matches with
   for ri=1,#sorted_results do
-    local localised = sorted_results[ri]
-    local internals = lookup[localised]
+    local translated = sorted_results[ri]
+    local internals = lookup[translated]
     for ii=1,#internals do
       local internal = internals[ii]
       si = si + 1
       -- get whether or not it's hidden so we can include or not include it depending on the user's settings
-      search[si] = {internal=internal, localised=localised, hidden=data[internal].prototype.hidden}
+      search[si] = {internal=internal, translated=translated, hidden=data[internal].prototype.hidden, sprite_category='recipe'}
     end
   end
 

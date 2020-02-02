@@ -11,25 +11,128 @@ local self = {}
 -- GUI templates
 gui.add_templates{
   close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
-  clicked_sprite='utility/close_black'},
+    clicked_sprite='utility/close_black', handlers='close_button', mouse_button_filter={'left'}},
   pushers = {
     horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
     vertical = {type='empty-widget', style={vertically_stretchable=true}}
   }
 }
 
+-- locals
+local string_lower = string.lower
+local string_match = string.match
+
+-- utilities
+local search_category_by_index = {'crafters', 'ingredients', 'recipes'}
+
 -- -----------------------------------------------------------------------------
 -- SEARCH GUI
+
+local search_gui = {}
 
 -- -------------------------------------
 -- HANDLERS
 
+-- we must define it like this so members can access other members
+local search_handlers = {}
+search_handlers = {
+  close_button = {
+    on_gui_click = function(e)
+      search_gui.close(game.get_player(e.player_index), global.players[e.player_index])
+    end
+  },
+  search_textfield = {
+    on_gui_click = function(e)
+      local player_table = global.players[e.player_index]
+      local gui_data = player_table.gui.search
+      -- reset GUI state
+      gui_data.results_listbox.selected_index = 0
+      gui_data.state = 'search'
+      gui_data.search_textfield.focus()
+      game.get_player(e.player_index).opened = gui_data.search_textfield
+    end,
+    on_gui_closed = function(e)
+      local player_table = global.players[e.player_index]
+      if player_table.gui.search.state ~= 'select_result' then
+        search_gui.close(game.get_player(e.player_index), player_table)
+      end
+    end,
+    on_gui_confirmed = function(e)
+      local player_table = global.players[e.player_index]
+      local gui_data = player_table.gui.search
+      -- set initial selected index
+      gui_data.results_listbox.selected_index = 1
+      -- set GUI state
+      gui_data.state = 'select_result'
+      game.get_player(e.player_index).opened = gui_data.results_listbox
+      gui_data.results_listbox.focus()
+      -- register navigation confirmation handler
+      gui.register_handlers('search', 'results_nav', {player_index=e.player_index})
+    end,
+    on_gui_text_changed = function(e)
+      local player_table = global.players[e.player_index]
+      local gui_data = player_table.gui.search
+      local show_hidden = player_table.settings.show_hidden
+      local query = string_lower(e.text)
+      local category = gui_data.category
+      local search_table = player_table.dictionary[category].search
+      local results_listbox = gui_data.results_listbox
+      local add_item = results_listbox.add_item
+      local set_item = results_listbox.set_item
+      local remove_item = results_listbox.remove_item
+      local items_length = #results_listbox.items
+      local i = 0
+      for i1=1,#search_table do
+        local t = search_table[i1]
+        local translated = t.translated
+        if string_match(string_lower(translated), query) and (show_hidden or not t.hidden) then
+          local caption = '[img='..t.sprite_category..'/'..t.internal..']  '..translated
+          i = i + 1
+          if i <= items_length then
+            set_item(i, caption)
+          else
+            add_item(caption)
+          end
+        end
+      end
+      for i=#results_listbox.items,i+1,-1 do
+        remove_item(i)
+      end
+    end
+  },
+  results_listbox = {
+    on_gui_closed = function(e)
+      search_handlers.search_textfield.on_gui_click(e)
+    end,
+    on_gui_selection_state_changed = function(e)
+      -- TODO: open info GUI
+      local player_table = global.players[e.player_index]
+      if e.keyboard_confirm or player_table.gui.search.state ~= 'select_result' then
+        search_gui.close(game.get_player(e.player_index), global.players[e.player_index])
+      end
+    end
+  },
+  category_dropdown = {
+    on_gui_selection_state_changed = function(e)
+      game.print(serpent.block(e))
+    end
+  },
+  results_nav = {
+    ['rb-results-nav-confirm'] = function(e)
+      e.element = global.players[e.player_index].gui.search.results_listbox
+      e.keyboard_confirm = true
+      search_handlers.results_listbox.on_gui_selection_state_changed(e)
+    end
+  }
+}
 
+gui.add_handlers('search', search_handlers)
 
 -- -------------------------------------
 -- MANAGEMENT
 
-local function open_search(player, player_table)
+function search_gui.open(player, player_table)
+  -- create GUI structure
   local gui_data = gui.create(player.gui.screen, 'search', player.index,
     {type='frame', name='rb_search_window', style='dialog_frame', direction='vertical', save_as='window', children={
       -- titlebar
@@ -38,20 +141,43 @@ local function open_search(player, player_table)
         {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
         {template='close_button'}
       }},
-      {type='frame', style='window_content_frame_packed', children={
+      {type='frame', style='window_content_frame_packed', direction='vertical', children={
         -- toolbar
         {type='frame', style='subheader_frame', children={
-          {type='empty-widget', style={height=24, horizontally_stretchable=true}}
+          {type='label', style='subheader_caption_label', caption={'rb-gui.search-by'}},
+          {template='pushers.horizontal'},
+          {type='drop-down', items={{'rb-gui.crafters'}, {'rb-gui.ingredients'}, {'rb-gui.recipes'}}, selected_index=3, handlers='category_dropdown',
+            save_as=true}
+        }},
+        -- search bar
+        {type='textfield', style={width=225, margin=8, bottom_margin=0}, clear_and_focus_on_right_click=true, handlers='search_textfield', save_as=true},
+        -- results listbox
+        {type='frame', style={name='rb_search_results_listbox_frame', margin=8}, children={
+          {type='list-box', style='rb_listbox_for_keyboard_nav', handlers='results_listbox', save_as=true}
         }}
       }}
     }}
   )
+  -- screen data
   gui_data.drag_handle.drag_target = gui_data.window
   gui_data.window.force_auto_center()
+
+  -- gui state
+  gui_data.state = 'search'
+  gui_data.category = 'recipes'
+  player.opened = gui_data.search_textfield
+  gui_data.search_textfield.focus()
+
+  -- add to global
+  player_table.gui.search = gui_data
+
+  -- populate results
+  search_handlers.search_textfield.on_gui_text_changed{player_index=player.index, text=''}
 end
 
-local function close_search(player, player_table)
-
+function search_gui.close(player, player_table)
+  gui.destroy(player_table.gui.search.window, 'search', player.index)
+  player_table.gui.search = nil
 end
 
 -- -----------------------------------------------------------------------------
@@ -77,11 +203,11 @@ end
 function self.toggle_search(player, player_table)
   local search_window = player.gui.screen.rb_search_window
   if search_window then
-    
+    search_gui.close(player, player_table)
   else
     -- check if we actually CAN open the GUI
     if player_table.flags.can_open_gui then
-      open_search(player, player_table)
+      search_gui.open(player, player_table)
     else
       -- set flag and tell the player that they cannot open it
       player_table.flags.tried_to_open_gui = true
