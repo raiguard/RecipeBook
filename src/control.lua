@@ -13,7 +13,6 @@ end
 local event = require('lualib/event')
 local mod_gui = require('mod-gui')
 local translation = require('lualib/translation')
--- local util = require('util')
 
 -- internal mod event globals
 open_gui_event = event.generate_id('open_gui')
@@ -31,14 +30,14 @@ local info_gui = require('gui/info-base')
 local function build_recipe_data()
   -- table skeletons
   local recipe_book = {
-    crafters = {},
-    ingredients = {},
-    recipes = {}
+    crafter = {},
+    ingredient = {},
+    recipe = {}
   }
   local translation_data = {
-    crafters = {},
-    ingredients = {},
-    recipes = {}
+    crafter = {},
+    ingredient = {},
+    recipe = {}
   }
   
   -- iterate crafters
@@ -47,14 +46,14 @@ local function build_recipe_data()
     {filter='type', type='furnace'}
   }
   for name,prototype in pairs(crafters) do
-    recipe_book.crafters[name] = {
+    recipe_book.crafter[name] = {
       prototype = prototype,
       hidden = prototype.has_flag('hidden'),
       categories = prototype.crafting_categories,
       recipes = {},
       sprite_class = 'entity'
     }
-    translation_data.crafters[#translation_data.crafters+1] = {internal=name, localised=prototype.localised_name}
+    translation_data.crafter[#translation_data.crafter+1] = {internal=name, localised=prototype.localised_name}
   end
 
   -- iterate ingredients
@@ -67,14 +66,14 @@ local function build_recipe_data()
     else
       hidden = prototype.has_flag('hidden')
     end
-    recipe_book.ingredients[name] = {
+    recipe_book.ingredient[name] = {
       prototype = prototype,
       hidden = hidden,
       as_ingredient = {},
       as_product = {},
       sprite_class = is_fluid and 'fluid' or 'item'
     }
-    translation_data.ingredients[#translation_data.ingredients+1] = {internal=name, localised=prototype.localised_name}
+    translation_data.ingredient[#translation_data.ingredient+1] = {internal=name, localised=prototype.localised_name}
   end
 
   -- iterate recipes
@@ -88,7 +87,7 @@ local function build_recipe_data()
     }
     -- made-in
     local category = prototype.category
-    for crafter_name,crafter_data in pairs(recipe_book.crafters) do
+    for crafter_name,crafter_data in pairs(recipe_book.crafter) do
       if crafter_data.categories[category] then
         data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_data.prototype.crafting_speed}
       end
@@ -97,7 +96,7 @@ local function build_recipe_data()
     local ingredients = prototype.ingredients
     for i=1,#ingredients do
       local ingredient = ingredients[i]
-      local ingredient_data = recipe_book.ingredients[ingredient]
+      local ingredient_data = recipe_book.ingredient[ingredient]
       if ingredient_data then
         ingredient_data.as_ingredient[#ingredient_data.as_ingredient+1] = name
       end
@@ -106,22 +105,22 @@ local function build_recipe_data()
     local products = prototype.products
     for i=1,#products do
       local product = products[i]
-      local product_data = recipe_book.ingredients[product]
+      local product_data = recipe_book.ingredient[product]
       if product_data then
         product_data.as_product[#product_data.as_product+1] = name
       end
     end
     -- insert into recipe book
-    recipe_book.recipes[name] = data
+    recipe_book.recipe[name] = data
     -- translation data
-    translation_data.recipes[#translation_data.recipes+1] = {internal=name, localised=prototype.localised_name}
+    translation_data.recipe[#translation_data.recipe+1] = {internal=name, localised=prototype.localised_name}
   end
 
   -- iterate technologies (to populate the recipes unlocked_by tables)
   for name,prototype in pairs(game.technology_prototypes) do
     for _,modifier in ipairs(prototype.effects) do
       if modifier.type == 'unlock-recipe' then
-        local recipe = recipe_book.recipes[modifier.recipe]
+        local recipe = recipe_book.recipe[modifier.recipe]
         recipe.unlocked_by[#recipe.unlocked_by+1] = name
       end
     end
@@ -246,8 +245,9 @@ event.register(open_gui_event, function(e)
   if player_table.flags.can_open_gui then
     -- check for existing GUI
     if gui_type == 'search' then
-
+      
     elseif info_guis[gui_type] then
+      game.print('Open '..gui_type..': '..e.object_name)
       info_gui.open_or_update(player, player_table, gui_type, e.object_name)
     elseif gui_type == 'recipe_quick_reference' then
 

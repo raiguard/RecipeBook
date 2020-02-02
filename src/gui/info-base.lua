@@ -29,7 +29,7 @@ gui.add_templates{
 -- GUI MANAGEMENT
 
 function self.open(player, player_table)
-
+  
 end
 
 function self.close(player, player_table)
@@ -45,7 +45,7 @@ function self.open_or_update(player, player_table, category, name)
   if player_table.gui.info then
     self.open(player, player_table, category, name)
   else
-    self.update(player, player_table, category, name)
+    self.update_contents(player, player_table, category, name)
   end
 end
 

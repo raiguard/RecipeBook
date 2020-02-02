@@ -2,6 +2,7 @@
 -- SEARCH GUI
 
 -- dependencies
+local event = require('lualib/event')
 local gui = require('lualib/gui')
 
 -- self object
@@ -22,7 +23,7 @@ local string_lower = string.lower
 local string_match = string.match
 
 -- utilities
-local category_by_index = {'crafters', 'ingredients', 'recipes'}
+local category_by_index = {'crafter', 'ingredient', 'recipe'}
 
 -- -----------------------------------------------------------------------------
 -- HANDLERS
@@ -101,9 +102,12 @@ handlers = {
     on_gui_selection_state_changed = function(e)
       -- TODO: open info GUI
       local player_table = global.players[e.player_index]
-      if e.keyboard_confirm or player_table.gui.search.state ~= 'select_result' then
-        game.get_player(e.player_index).print('Open '..player_table.gui.search.category..' GUI')
-        self.close(game.get_player(e.player_index), global.players[e.player_index])
+      local gui_data = player_table.gui.search
+      if e.keyboard_confirm or gui_data.state ~= 'select_result' then
+        local player = game.get_player(e.player_index)
+        local _,_,object_name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
+        event.raise(open_gui_event, {player_index=e.player_index, gui_type=gui_data.category, object_name=object_name})
+        -- self.close(player, player_table)
       end
     end
   },
@@ -113,9 +117,13 @@ handlers = {
       local gui_data = player_table.gui.search
       -- update GUI state
       gui_data.category = category_by_index[e.element.selected_index]
-      gui_data.search_textfield.text = ''
-      gui_data.search_textfield.focus()
-      handlers.search_textfield.on_gui_text_changed{player_index=e.player_index, text=''}
+      if gui_data.state == 'search' then
+        gui_data.search_textfield.focus()
+        gui_data.search_textfield.text = ''
+        handlers.search_textfield.on_gui_text_changed{player_index=e.player_index, text=''}
+      else
+        game.get_player(e.player_index).opened = gui_data.search_textfield
+      end
     end
   },
   results_nav = {
@@ -148,7 +156,7 @@ function self.open(player, player_table)
         {type='frame', style='subheader_frame', children={
           {type='label', style='subheader_caption_label', caption={'rb-gui.search-by'}},
           {template='pushers.horizontal'},
-          {type='drop-down', items={{'rb-gui.crafters'}, {'rb-gui.ingredients'}, {'rb-gui.recipes'}}, selected_index=3, handlers='category_dropdown',
+          {type='drop-down', items={{'rb-gui.crafter'}, {'rb-gui.ingredient'}, {'rb-gui.recipe'}}, selected_index=3, handlers='category_dropdown',
             save_as=true}
         }},
         -- search bar
@@ -166,7 +174,7 @@ function self.open(player, player_table)
 
   -- gui state
   gui_data.state = 'search'
-  gui_data.category = 'recipes'
+  gui_data.category = 'recipe'
   player.opened = gui_data.search_textfield
   gui_data.search_textfield.focus()
 
