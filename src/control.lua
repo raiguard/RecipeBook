@@ -15,7 +15,7 @@ local mod_gui = require('mod-gui')
 local translation = require('lualib/translation')
 
 -- modules
-local gui = require('gui')
+local search_gui = require('gui')
 
 -- -----------------------------------------------------------------------------
 -- RECIPE DATA
@@ -147,10 +147,10 @@ end)
 
 -- toggle the search GUI when the button or the hotkey are used
 event.register('rb-toggle-search', function(e)
-  gui.toggle_search(game.get_player(e.player_index), global.players[e.player_index])
+  search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index])
 end)
 event.on_gui_click(function(e)
-  gui.toggle_search(game.get_player(e.player_index), global.players[e.player_index])
+  search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index])
 end, {gui_filters='recipe_book_button'})
 
 -- -----------------------------------------------------------------------------
