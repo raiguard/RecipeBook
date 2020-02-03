@@ -93,10 +93,10 @@ local function build_recipe_data()
       end
     end
     -- as ingredient
-    local ingredients = prototype.ingredients
-    for i=1,#ingredients do
-      local ingredient = ingredients[i]
-      local ingredient_data = recipe_book.ingredient[ingredient]
+    local ingredient_list = prototype.ingredients
+    for i=1,#ingredient_list do
+      local ingredient = ingredient_list[i]
+      local ingredient_data = recipe_book.ingredient[ingredient.name]
       if ingredient_data then
         ingredient_data.as_ingredient[#ingredient_data.as_ingredient+1] = name
       end
@@ -105,7 +105,7 @@ local function build_recipe_data()
     local products = prototype.products
     for i=1,#products do
       local product = products[i]
-      local product_data = recipe_book.ingredient[product]
+      local product_data = recipe_book.ingredient[product.name]
       if product_data then
         product_data.as_product[#product_data.as_product+1] = name
       end
