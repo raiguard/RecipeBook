@@ -112,6 +112,15 @@ styles.rb_titlebar_flow = {
 }
 
 -- -----------------------------------------------------------------------------
+-- LABEL STYLES
+
+styles.rb_listbox_label = {
+  type = 'label_style',
+  font = 'default-semibold',
+  left_padding = 2
+}
+
+-- -----------------------------------------------------------------------------
 -- IMAGE STYLES
 
 styles.rb_object_icon = {

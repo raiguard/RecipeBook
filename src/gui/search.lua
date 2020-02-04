@@ -155,7 +155,7 @@ function self.open(player, player_table)
         {type='frame', style='subheader_frame', children={
           {type='label', style='subheader_caption_label', caption={'rb-gui.search-by'}},
           {template='pushers.horizontal'},
-          {type='drop-down', items={{'rb-gui.crafter'}, {'rb-gui.ingredient'}, {'rb-gui.recipe'}}, selected_index=3, handlers='category_dropdown',
+          {type='drop-down', items={{'rb-gui.crafter'}, {'rb-gui.ingredient'}, {'rb-gui.recipe'}}, selected_index=2, handlers='category_dropdown',
             save_as=true}
         }},
         -- search bar
@@ -173,7 +173,7 @@ function self.open(player, player_table)
 
   -- gui state
   gui_data.state = 'search'
-  gui_data.category = 'recipe'
+  gui_data.category = 'ingredient'
   player.opened = gui_data.search_textfield
   gui_data.search_textfield.focus()
 

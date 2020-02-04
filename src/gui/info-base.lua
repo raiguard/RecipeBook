@@ -51,7 +51,7 @@ handlers = {
       else
         session_history.position = session_history.position + 1
         -- update content
-        self.update_content(game.get_player(e.player_index), player_table, back_obj.category, back_obj.name, nil, true)
+        self.update_contents(game.get_player(e.player_index), player_table, back_obj.category, back_obj.name, nil, true)
       end
     end
   },
