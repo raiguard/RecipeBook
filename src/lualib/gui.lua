@@ -201,6 +201,16 @@ function self.call_template(path, ...)
   return get_subtable(path, templates)(...)
 end
 
+-- retrieves and returns a GUI template
+function self.get_template(path)
+  return get_subtable(path, templates)
+end
+
+-- retrieves and retuurns a handler
+function self.get_handler(path)
+  return get_subtable(path, handlers)
+end
+
 self.register_handlers = register_handlers
 self.deregister_handlers = deregister_handlers
 
