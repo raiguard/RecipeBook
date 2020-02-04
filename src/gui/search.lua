@@ -8,22 +8,12 @@ local gui = require('lualib/gui')
 -- self object
 local self = {}
 
--- GUI templates
-gui.add_templates{
-  close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
-    clicked_sprite='utility/close_black', handlers='close_button', mouse_button_filter={'left'}},
-  pushers = {
-    horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
-    vertical = {type='empty-widget', style={vertically_stretchable=true}}
-  }
-}
-
 -- locals
 local string_lower = string.lower
 local string_match = string.match
 
 -- utilities
-local category_by_index = {'crafter', 'ingredient', 'recipe'}
+local category_by_index = {'crafter', 'material', 'recipe'}
 
 -- -----------------------------------------------------------------------------
 -- HANDLERS
@@ -155,7 +145,7 @@ function self.open(player, player_table)
         {type='frame', style='subheader_frame', children={
           {type='label', style='subheader_caption_label', caption={'rb-gui.search-by'}},
           {template='pushers.horizontal'},
-          {type='drop-down', items={{'rb-gui.crafter'}, {'rb-gui.ingredient'}, {'rb-gui.recipe'}}, selected_index=2, handlers='category_dropdown',
+          {type='drop-down', items={{'rb-gui.crafter'}, {'rb-gui.material'}, {'rb-gui.recipe'}}, selected_index=2, handlers='category_dropdown',
             save_as=true}
         }},
         -- search bar
@@ -173,7 +163,7 @@ function self.open(player, player_table)
 
   -- gui state
   gui_data.state = 'search'
-  gui_data.category = 'ingredient'
+  gui_data.category = 'material'
   player.opened = gui_data.search_textfield
   gui_data.search_textfield.focus()
 

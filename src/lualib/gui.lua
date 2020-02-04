@@ -196,6 +196,11 @@ function self.add_handlers(...)
   return self
 end
 
+-- calls a GUI template as a function
+function self.call_template(path, ...)
+  return get_subtable(path, templates)(...)
+end
+
 self.register_handlers = register_handlers
 self.deregister_handlers = deregister_handlers
 

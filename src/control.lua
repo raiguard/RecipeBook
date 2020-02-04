@@ -11,17 +11,37 @@ end
 
 -- dependencies
 local event = require('lualib/event')
+local gui = require('lualib/gui')
 local mod_gui = require('mod-gui')
 local translation = require('lualib/translation')
 
 -- globals
 open_gui_event = event.generate_id('open_gui')
 reopen_source_event = event.generate_id('reopen_source')
-info_guis = {crafter=true, ingredient=true, recipe=true}
+info_guis = {crafter=true, material=true, recipe=true}
 
 -- modules
 local search_gui = require('gui/search')
 local info_gui = require('gui/info-base')
+
+-- GUI templates
+gui.add_templates{
+  close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
+    clicked_sprite='utility/close_black', handlers='close_button', mouse_button_filter={'left'}},
+  pushers = {
+    horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
+    vertical = {type='empty-widget', style={vertically_stretchable=true}}
+  },
+  listbox_with_label = function(name)
+    return
+    {type='flow', direction='vertical', children={
+      {type='label', style='rb_listbox_label', save_as=name..'_label'},
+      {type='frame', style='rb_listbox_frame', save_as=name..'_frame', children={
+        {type='list-box', style='rb_listbox', save_as=name..'_listbox'}
+      }}
+    }}
+  end
+}
 
 -- -----------------------------------------------------------------------------
 -- RECIPE DATA
@@ -31,12 +51,12 @@ local function build_recipe_data()
   -- table skeletons
   local recipe_book = {
     crafter = {},
-    ingredient = {},
+    material = {},
     recipe = {}
   }
   local translation_data = {
     crafter = {},
-    ingredient = {},
+    material = {},
     recipe = {}
   }
   
@@ -56,9 +76,9 @@ local function build_recipe_data()
     translation_data.crafter[#translation_data.crafter+1] = {internal=name, localised=prototype.localised_name}
   end
 
-  -- iterate ingredients
-  local ingredients = util.merge{game.fluid_prototypes, game.item_prototypes}
-  for name,prototype in pairs(ingredients) do
+  -- iterate materials
+  local materials = util.merge{game.fluid_prototypes, game.item_prototypes}
+  for name,prototype in pairs(materials) do
     local is_fluid = prototype.object_name == 'LuaFluidPrototype' and true or false
     local hidden
     if is_fluid then
@@ -66,14 +86,14 @@ local function build_recipe_data()
     else
       hidden = prototype.has_flag('hidden')
     end
-    recipe_book.ingredient[name] = {
+    recipe_book.material[name] = {
       prototype = prototype,
       hidden = hidden,
       as_ingredient = {},
       as_product = {},
       sprite_class = is_fluid and 'fluid' or 'item'
     }
-    translation_data.ingredient[#translation_data.ingredient+1] = {internal=name, localised=prototype.localised_name}
+    translation_data.material[#translation_data.material+1] = {internal=name, localised=prototype.localised_name}
   end
 
   -- iterate recipes
@@ -93,10 +113,10 @@ local function build_recipe_data()
       end
     end
     -- as ingredient
-    local ingredient_list = prototype.ingredients
-    for i=1,#ingredient_list do
-      local ingredient = ingredient_list[i]
-      local ingredient_data = recipe_book.ingredient[ingredient.name]
+    local ingredients = prototype.ingredients
+    for i=1,#ingredients do
+      local ingredient = ingredients[i]
+      local ingredient_data = recipe_book.material[ingredient.name]
       if ingredient_data then
         ingredient_data.as_ingredient[#ingredient_data.as_ingredient+1] = name
       end
@@ -105,7 +125,7 @@ local function build_recipe_data()
     local products = prototype.products
     for i=1,#products do
       local product = products[i]
-      local product_data = recipe_book.ingredient[product.name]
+      local product_data = recipe_book.material[product.name]
       if product_data then
         product_data.as_product[#product_data.as_product+1] = name
       end
