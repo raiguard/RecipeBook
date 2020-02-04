@@ -2,13 +2,11 @@
 -- INGREDIENT GUI
 
 -- dependencies
-local event = require('lualib/event')
 local gui = require('lualib/gui')
 
 -- locals
 local math_max = math.max
 local math_min = math.min
-local table_sort = table.sort
 
 -- self object
 local self = {}
