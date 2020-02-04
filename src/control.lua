@@ -117,13 +117,6 @@ local function build_recipe_data()
       unlocked_by = {},
       sprite_class = 'recipe'
     }
-    -- made-in
-    local category = prototype.category
-    for crafter_name,crafter_data in pairs(recipe_book.crafter) do
-      if crafter_data.categories[category] then
-        data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_data.prototype.crafting_speed}
-      end
-    end
     -- as ingredient
     local ingredients = prototype.ingredients
     for i=1,#ingredients do
@@ -140,6 +133,14 @@ local function build_recipe_data()
       local product_data = recipe_book.material[product.name]
       if product_data then
         product_data.as_product[#product_data.as_product+1] = name
+      end
+    end
+    -- made-in
+    local category = prototype.category
+    for crafter_name,crafter_data in pairs(recipe_book.crafter) do
+      if crafter_data.categories[category] then
+        data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_data.prototype.crafting_speed}
+        crafter_data.recipes[#crafter_data.recipes+1] = name
       end
     end
     -- insert into recipe book
