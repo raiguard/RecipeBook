@@ -20,10 +20,6 @@ open_gui_event = event.generate_id('open_gui')
 reopen_source_event = event.generate_id('reopen_source')
 info_guis = {crafter=true, material=true, recipe=true}
 
--- modules
-local search_gui = require('gui/search')
-local info_gui = require('gui/info-base')
-
 -- GUI templates
 gui.add_templates{
   close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
@@ -42,6 +38,22 @@ gui.add_templates{
     }}
   end
 }
+
+-- common GUI handlers
+gui.add_handlers('common', {
+  generic_open_from_listbox = function(e)
+    local _,_,category,object_name = e.element.get_item(e.element.selected_index):find('^%[img=(.*)/(.*)%].*$')
+    event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object_name=object_name})
+  end,
+  open_material_from_listbox = function(e)
+    local _,_,object_name = e.element.get_item(e.element.selected_index):find('^%.*/(.*)%].*$')
+    event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_name})
+  end
+})
+
+-- modules
+local search_gui = require('gui/search')
+local info_gui = require('gui/info-base')
 
 -- -----------------------------------------------------------------------------
 -- RECIPE DATA

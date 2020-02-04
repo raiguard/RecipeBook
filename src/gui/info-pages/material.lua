@@ -18,10 +18,7 @@ local self = {}
 
 gui.add_handlers('material', {
   generic_listbox = {
-    on_gui_selection_state_changed = function(e)
-      local _,_,category,object_name = e.element.get_item(e.element.selected_index):find('^%[img=(.*)/(.*)%].*$')
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object_name=object_name})
-    end
+    on_gui_selection_state_changed = gui.get_handler('common.generic_open_from_listbox')
   }
 })
 
