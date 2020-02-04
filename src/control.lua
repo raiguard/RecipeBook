@@ -46,7 +46,7 @@ gui.add_handlers('common', {
     event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object_name=object_name})
   end,
   open_material_from_listbox = function(e)
-    local _,_,object_name = e.element.get_item(e.element.selected_index):find('^%.*/(.*)%].*$')
+    local _,_,object_name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
     event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_name})
   end
 })
