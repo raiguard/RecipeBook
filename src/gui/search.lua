@@ -90,13 +90,14 @@ handlers = {
       handlers.search_textfield.on_gui_click(e)
     end,
     on_gui_selection_state_changed = function(e)
-      -- TODO: open info GUI
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.search
       if e.keyboard_confirm or gui_data.state ~= 'select_result' then
-        local player = game.get_player(e.player_index)
         local _,_,object_name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
         event.raise(open_gui_event, {player_index=e.player_index, gui_type=gui_data.category, object_name=object_name, source='rb_search'})
+        if e.keyboard_confirm then
+          self.close(game.get_player(e.player_index), player_table)
+        end
       end
     end
   },
