@@ -48,6 +48,10 @@ gui.add_handlers('common', {
   open_material_from_listbox = function(e)
     local _,_,object_name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
     event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_name})
+  end,
+  open_crafter_from_listbox = function(e)
+    local _,_,object_name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
+    event.raise(open_gui_event, {player_index=e.player_index, gui_type='crafter', object_name=object_name})
   end
 })
 
@@ -69,7 +73,8 @@ local function build_recipe_data()
   local translation_data = {
     crafter = {},
     material = {},
-    recipe = {}
+    recipe = {},
+    technology = {}
   }
   
   -- iterate crafters
@@ -139,7 +144,8 @@ local function build_recipe_data()
     local category = prototype.category
     for crafter_name,crafter_data in pairs(recipe_book.crafter) do
       if crafter_data.categories[category] then
-        data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_data.prototype.crafting_speed}
+        local crafter_prototype = crafter_data.prototype
+        data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_prototype.crafting_speed, hidden=crafter_prototype.has_flag('hidden')}
         crafter_data.recipes[#crafter_data.recipes+1] = name
       end
     end
@@ -157,6 +163,7 @@ local function build_recipe_data()
         recipe.unlocked_by[#recipe.unlocked_by+1] = name
       end
     end
+    translation_data.technology[#translation_data.technology+1] = {internal=prototype.name, localised=prototype.localised_name}
   end
 
   -- apply to global
@@ -233,18 +240,20 @@ event.register(translation.finish_event, function(e)
   local lookup = e.lookup
   local search = {}
   local sorted_results = e.sorted_results
-  -- si: search index; ri: results index; ii: internals index
-  local si = 0
-  -- create an entry in the search table for every prototype that each result matches with
-  for ri=1,#sorted_results do
-    local translated = sorted_results[ri]
-    local internals = lookup[translated]
-    for ii=1,#internals do
-      local internal = internals[ii]
-      local object_data = data[internal]
-      si = si + 1
-      -- get whether or not it's hidden so we can include or not include it depending on the user's settings
-      search[si] = {internal=internal, translated=translated, hidden=object_data.hidden, sprite_class=object_data.sprite_class}
+  if e.dictionary_name ~= 'technology' then
+    -- si: search index; ri: results index; ii: internals index
+    local si = 0
+    -- create an entry in the search table for every prototype that each result matches with
+    for ri=1,#sorted_results do
+      local translated = sorted_results[ri]
+      local internals = lookup[translated]
+      for ii=1,#internals do
+        local internal = internals[ii]
+        local object_data = data[internal]
+        si = si + 1
+        -- get whether or not it's hidden so we can include or not include it depending on the user's settings
+        search[si] = {internal=internal, translated=translated, hidden=object_data.hidden, sprite_class=object_data.sprite_class}
+      end
     end
   end
 
