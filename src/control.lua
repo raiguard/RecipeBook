@@ -146,7 +146,7 @@ local function build_recipe_data()
       if crafter_data.categories[category] then
         local crafter_prototype = crafter_data.prototype
         data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_prototype.crafting_speed, hidden=crafter_prototype.has_flag('hidden')}
-        crafter_data.recipes[#crafter_data.recipes+1] = name
+        crafter_data.recipes[#crafter_data.recipes+1] = {name=name, hidden=prototype.hidden}
       end
     end
     -- insert into recipe book

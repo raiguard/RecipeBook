@@ -31,6 +31,7 @@ function self.create(player, player_table, content_container, name)
   -- get data
   local crafter_data = global.recipe_book.crafter[name]
   local recipe_translations = player_table.dictionary.recipe.translations
+  local show_hidden = player_table.settings.show_hidden
 
   -- populate recipes table
   local label = gui_data.recipes_label
@@ -38,12 +39,17 @@ function self.create(player, player_table, content_container, name)
   local recipes = crafter_data.recipes
   local recipes_len = #recipes
   local items = {}
+  local items_index = 0
   for i=1,recipes_len do
     local recipe = recipes[i]
-    items[i] = '[img=recipe/'..recipe..']  '..(recipe_translations[recipe] or recipe)
+    if show_hidden or not recipe.hidden then
+      local recipe_name = recipe.name
+      items_index = items_index + 1
+      items[items_index] = '[img=recipe/'..recipe_name..']  '..(recipe_translations[recipe_name] or recipe_name)
+    end
   end
   listbox.items = items
-  label.caption = {'rb-gui.craftable-recipes', recipes_len}
+  label.caption = {'rb-gui.craftable-recipes', items_index}
 
   -- register handler
   gui.register_handlers('crafter', 'generic_listbox', {player_index=player.index, gui_filters=listbox})
