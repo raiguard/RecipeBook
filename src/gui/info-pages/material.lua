@@ -48,7 +48,7 @@ function self.create(player, player_table, content_container, name)
     local items = {}
     for ri=1,recipes_len do
       local recipe = recipe_list[ri]
-      items[ri] = '[img=recipe/'..recipe..']  '..(recipe_translations[recipe] or recipe)
+      items[ri] = '[img=recipe/'..recipe..']  '..(recipe_translations[recipe])
     end
     listbox.items = items
     label.caption = {'rb-gui.as-'..mode, recipes_len}

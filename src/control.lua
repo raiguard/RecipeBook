@@ -173,7 +173,7 @@ end
 
 local function translate_whole(player)
   for name,data in pairs(global.__lualib.translation.translation_data) do
-    translation.start(player, name, data)
+    translation.start(player, name, data, {include_failed_translations=true})
   end
 end
 
@@ -198,7 +198,7 @@ local function setup_player(player, index)
     gui = {},
     settings = {
       default_category = 'recipes',
-      show_hidden = false
+      show_hidden = true
     }
   }
   if player.mod_settings['rb-show-mod-gui-button'].value then
@@ -265,7 +265,7 @@ event.register(translation.finish_event, function(e)
   }
 
   -- set flag if we're done
-  if not global.__lualib.translation.players[e.player_index] then
+  if global.__lualib.translation.players[e.player_index].active_translations_count == 0 then
     player_table.flags.can_open_gui = true
     if player_table.flags.tried_to_open_gui then
       player_table.flags.tried_to_open_gui = nil

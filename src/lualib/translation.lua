@@ -1,8 +1,15 @@
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- RAILUALIB TRANSLATION LIBRARY
+-- RAILUALIB TRANSLATION MODULE
 -- Requests and organizes translations for localised strings
 
--- DOCUMENTATION: https://github.com/raiguard/Factorio-SmallMods/wiki/Translation-Library-Documentation
+-- Copyright (c) 2020 raiguard - https://github.com/raiguard
+-- Permission is hereby granted, free of charge, to those obtaining this software or a portion thereof, to copy the contents of this software into their own
+-- Factorio mod, and modify it to suit their needs. This is permissed under the condition that this notice and copyright information, as well as the link to
+-- the documentation, are not omitted, and that any changes from the original are documented.
+
+-- DOCUMENTATION: https://github.com/raiguard/Factorio-SmallMods/wiki/Translation-Module-Documentation
+
+-- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- dependencies
 local event = require('lualib/event')
@@ -37,98 +44,116 @@ local function serialise_localised_string(t)
   return output
 end
 
--- translate 80 entries per tick
-local function translate_batch(e)
+-- translate 50 entries per tick
+local function translate_batch()
   local __translation = global.__lualib.translation
-  local iterations = math_floor(80 / __translation.dictionary_count)
+  local iterations = math_floor(50 / __translation.active_translations_count)
   if iterations < 1 then iterations = 1 end
-  for pi,pt in pairs(__translation.players) do -- for each player that is doing a translation
-    local player = game.get_player(pi)
-    if not player or not player.connected then -- the player was destroyed or disconnected
-      translation.cancel_all_for_player(player)
-      return
-    end
-    local request_translation = player.request_translation
-    for _,t in pairs(pt) do -- for each dictionary that they're translating
-      local next_index = t.next_index
-      local strings = t.strings
-      local strings_len = t.strings_len
-      for i=next_index,next_index+iterations do
-        if i > strings_len then
-          t.next_index = i
-          if not t.iterated_twice then
-            if t.reiterate_tick then
-              if e.tick >= t.reiterate_tick then
-                -- reset iteration to go over it again...
-                t.iterated_twice = true
-                t.next_index = 1
-              end
-            else
-              -- set to reiterate after one second if not all of the translations have finished by then
-              t.reiterate_tick = e.tick + 60
-            end
-          end
-          goto continue
-        end
-        request_translation(strings[i])
+  -- for each player that is doing a translation
+  for pi,pt in pairs(__translation.players) do
+    local request_translation = game.get_player(pi).request_translation
+    local next_index = pt.next_index
+    local finish_index = next_index + iterations
+    local strings = pt.strings
+    local strings_len = pt.strings_len
+    -- request translations for the next n strings
+    for i=next_index,finish_index do
+      if i > strings_len then
+        -- deregister this event for this player
+        event.deregister(defines.events.on_tick, translate_batch, 'translation_translate_batch', pi)
+        break
       end
-      t.next_index = next_index + iterations
-      ::continue::
+      request_translation(strings[i])
     end
+    -- update next index
+    pt.next_index = finish_index + 1
   end
 end
 
--- sorts a translated string into its appropriate dictionary
+-- sorts a translated string into its appropriate dictionaries
 local function sort_translated_string(e)
   local __translation = global.__lualib.translation
-  local player_translation = __translation.players[e.player_index]
-  local serialised = serialise_localised_string(e.localised_string)
-  for name,t in pairs(player_translation) do
-    local value = t.data[serialised]
-    if value then
-      if e.translated and e.result ~= '' then
+  local player_data = __translation.players[e.player_index]
+  local active_translations = player_data.active_translations
+  local localised = e.localised_string
+  local serialised = serialise_localised_string(localised)
+  -- check if the string actually exists in the registry. if it does not, then another mod requested this translation as well and it was already sorted.
+  local string_registry = player_data.string_registry[serialised]
+  if string_registry then
+    -- for each dictionary that requested this string
+    for dictionary_name, internal_names in pairs(string_registry) do
+      local data = active_translations[dictionary_name]
+      -- extra sanity check
+      if data then
+        -- remove from registry index
+        data.registry_index[serialised] = nil
+        data.registry_index_size = data.registry_index_size - 1
+
+        -- check if the string was successfully translated
+        local success = e.translated
         local result = e.result
-        if t.convert_to_lowercase then
-          result = string_lower(result)
-        end
-        -- lookup
-        local lookup = t.lookup[result]
-        if lookup then
-          lookup[#lookup+1] = value
+        local include_failed_translations = data.include_failed_translations
+        if not include_failed_translations and (not success or result == '') then
+          log(dictionary_name..':  key \''..serialised..'\' was not successfully translated, and will not be included in the output.')
         else
-          t.lookup[result] = {value}
-        end
-        -- searchable
-        t.sorted_results[#t.sorted_results+1] = result
-        -- translation
-        local translation = t.translations[value]
-        if translation then
-          error('Duplicate key \''..value..'\' in dictionary: '..t.name)
-        else
-          t.translations[value] = result
-        end
-      else
-        log(name..':  key \''..serialised..'\' was not successfully translated, and will not be included in the output.')
-      end
-      t.data[serialised] = nil
-      if table_size(t.data) == 0 then -- this set has completed translation
-        player_translation[name] = nil
-        if table_size(player_translation) == 0 then -- remove player from translating table if they're done
-          __translation.players[e.player_index] = nil
-          if table_size(__translation.players) == 0 then -- deregister events if we're all done
-            event.deregister(defines.events.on_tick, translate_batch, 'translation_translate_batch')
-            event.deregister(defines.events.on_string_translated, sort_translated_string, 'translation_sort_result')
+          -- for every internal name that this string applies do
+          for i=1,#internal_names do
+            local internal = internal_names[i]
+            -- set result to internal name if the translation failed and the option is active
+            if not success and include_failed_translations then
+              result = internal
+            -- convert to lowercase if the option is active and the translation succeeded
+            elseif data.convert_to_lowercase then
+              result = string_lower(result)
+            end
+            -- add to lookup table
+            local lookup = data.lookup[result]
+            if lookup then
+              lookup[#lookup+1] = internal
+            else
+              data.lookup[result] = {internal}
+            end
+            -- add to sorted results table
+            data.sorted_results[#data.sorted_results+1] = result
+            -- add to translations table
+            if data.translations[internal] then
+              error('Duplicate key \''..internal..'\' in dictionary: '..dictionary_name)
+            else
+              data.translations[internal] = result
+            end
           end
         end
-        -- sort results array
-        table_sort(t.sorted_results)
-        -- raise events to finish up
-        event.raise(translation.update_dictionary_count_event, {delta=-1})
-        event.raise(translation.finish_event, {player_index=e.player_index, dictionary_name=name, lookup=t.lookup, sorted_results=t.sorted_results,
-          translations=t.translations})
+
+        -- check if this dictionary has finished translation
+        if data.registry_index_size == 0 then
+          -- sort sorted results table
+          table_sort(data.sorted_results)
+          -- decrement active translation counters
+          __translation.active_translations_count = __translation.active_translations_count - 1
+          player_data.active_translations_count = player_data.active_translations_count - 1
+          -- raise finished event with the output tables
+          event.raise(translation.finish_event, {player_index=e.player_index, dictionary_name=dictionary_name, lookup=data.lookup,
+            sorted_results=data.sorted_results, translations=data.translations})
+          -- remove from active translations table
+          player_data.active_translations[dictionary_name] = nil
+
+          -- check if the player is done translating
+          if player_data.active_translations_count == 0 then
+            -- deregister this event for this player
+            event.deregister(defines.events.on_string_translated, sort_translated_string, 'translation_sort_result', e.player_index)
+            -- reset for the next time stuff is translated
+            player_data.next_index = 0
+            player_data.strings = {}
+            player_data.strings_len = 0
+          end
+        end
+      else
+        error('Data for dictionary: '..dictionary_name..' for player: '..e.player_index..' does not exist!')
       end
-      return
     end
+
+    -- remove from string registry
+    player_data.string_registry[serialised] = nil
   end
 end
 
@@ -138,68 +163,117 @@ translation.serialise_localised_string = serialise_localised_string
 function translation.start(player, dictionary_name, data, options)
   options = options or {}
   local __translation = global.__lualib.translation
-  if not __translation.players[player.index] then __translation.players[player.index] = {} end
-  local player_translation = __translation.players[player.index]
-  if player_translation[dictionary_name] then
+  local player_data = __translation.players[player.index]
+
+  -- reset if the translation is already running
+  if player_data.active_translations[dictionary_name] then
     log('Cancelling and restarting translation of '..dictionary_name..' for '..player.name)
     translation.cancel(player, dictionary_name)
   end
-  -- parse data table to create iteration tables
-  local translation_data = {}
-  local strings = {}
+
+  -- create local references
+  local string_registry = player_data.string_registry
+  local strings = player_data.strings
+
+  local registry_index = {} -- contains a table of keys that represent all the places in the string index that this dictionary has a place in
+
+  -- add data to translation tables
   for i=1,#data do
     local t = data[i]
     local localised = t.localised
-    translation_data[serialise_localised_string(localised)] = t.internal
-    strings[i] = localised
+    local serialised = serialise_localised_string(localised)
+    -- check for this string in the global string registry
+    local registry_entry = string_registry[serialised]
+    if registry_entry then
+      -- check if this dictionary has been added to this registry yet
+      if registry_index[serialised] then
+        local our_registry = registry_entry[dictionary_name]
+        our_registry[#our_registry+1] = t.internal
+      else
+        registry_index[serialised] = true
+        registry_entry[dictionary_name] = {t.internal}
+      end
+    else
+      -- this is a new string, so add it to the strings table and create the registry
+      strings[#strings+1] = localised
+      string_registry[serialised] = {[dictionary_name]={t.internal}}
+      registry_index[serialised] = true
+    end
   end
-  player_translation[dictionary_name] = {
-    -- tables
-    data = translation_data, -- this table gets destroyed as it is translated, so deepcopy it
-    strings = strings,
-    -- iteration
-    next_index = 1,
-    player = player,
-    -- request_translation = player.request_translation,
-    strings_len = #strings,
-    -- settings
+
+  -- set new strings table length
+  player_data.strings_len = #strings
+
+  -- add this dictionary's data to the player's table
+  player_data.active_translations[dictionary_name] = {
+    -- string registry index
+    registry_index = registry_index,
+    registry_index_size = table_size(registry_index), -- used to determine when the translation has finished
+    -- options
     convert_to_lowercase = options.convert_to_lowercase,
+    include_failed_translations = options.include_failed_translations,
     -- output
     lookup = {},
     sorted_results = {},
     translations = {}
   }
-  event.raise(translation.update_dictionary_count_event, {delta=1})
+
+  -- increment active translations counters, register on_tick and sort result handlers
+  __translation.active_translations_count = __translation.active_translations_count + 1
+  player_data.active_translations_count = player_data.active_translations_count + 1
+  -- raise translation start event
   event.raise(translation.start_event, {player_index=player.index, dictionary_name=dictionary_name})
-  if not event.is_registered('translation_translate_batch') then -- register events if needed
-    event.on_tick(translate_batch, {name='translation_translate_batch'})
-    event.on_string_translated(sort_translated_string, {name='translation_sort_result'})
+  -- register events, if needed
+  if not event.is_registered('translation_translate_batch', player.index) then
+    event.on_tick(translate_batch, {name='translation_translate_batch', player_index=player.index, skip_validation=true})
+    event.on_string_translated(sort_translated_string, {name='translation_sort_result', player_index=player.index, skip_validation=true})
   end
 end
 
 -- cancel a translation
 function translation.cancel(player, dictionary_name)
   local __translation = global.__lualib.translation
-  local player_translation = __translation.players[player.index]
-  if not player_translation[dictionary_name] then
+  local player_data = __translation.players[player.index]
+  local translation_data = player_data.active_translations[dictionary_name]
+  if not translation_data then
     error('Tried to cancel a translation that isn\'t running!')
   end
-  player_translation[dictionary_name] = nil
-  event.raise(translation.update_dictionary_count_event, {delta=1})
-  if table_size(player_translation) == 0 then -- remove player from translating table if they're done
-    __translation.players[player.index] = nil
-    if table_size(__translation.players) == 0 then -- deregister events if we're all done
-      event.deregister(defines.events.on_tick, translate_batch, 'translation_translate_batch')
-      event.deregister(defines.events.on_string_translated, sort_translated_string, 'translation_sort_result')
+  
+  -- remove this dictionary from the string registry
+  local string_registry = player_data.string_registry
+  for key,_ in pairs(translation_data.registry_index) do
+    local key_registry = string_registry[key]
+    key_registry[dictionary_name] = nil
+    if table_size(key_registry) == 0 then
+      string_registry[key] = nil
     end
+  end
+
+  -- decrement active translation counters
+  __translation.active_translations_count = __translation.active_translations_count - 1
+  player_data.active_translations_count = player_data.active_translations_count - 1
+  -- raise canceled event with the output tables
+  event.raise(translation.canceled_event, {player_index=player.index, dictionary_name=dictionary_name})
+  -- remove from active translations table
+  player_data.active_translations[dictionary_name] = nil
+
+  -- check if the player is done translating
+  if player_data.active_translations_count == 0 then
+    -- deregister events for this player
+    event.deregister(defines.events.on_string_translated, sort_translated_string, 'translation_sort_result', player.index)
+    event.deregister(defines.events.on_tick, translate_batch, 'translation_translate_batch', player.index)
+    -- reset for the next time stuff is translated
+    player_data.next_index = 0
+    player_data.strings = {}
+    player_data.strings_len = 0
   end
 end
 
 -- cancels all translations for a player
 function translation.cancel_all_for_player(player)
   local __translation = global.__lualib.translation
-  local player_translation = __translation.players[player.index]
-  for name,_ in pairs(player_translation) do
+  local player_translations = __translation.players[player.index].active_translations
+  for name,_ in pairs(player_translations) do
     translation.cancel(player, name)
   end
 end
@@ -208,53 +282,45 @@ end
 function translation.cancel_all()
   for i,t in pairs(global.__lualib.translation.players) do
     local player = game.get_player(i)
-    for name,_ in pairs(t) do
+    for name,_ in pairs(t.active_translations) do
       translation.cancel(player, name)
     end
   end
 end
 
--- REMOTE INTERFACE: CROSS-MOD SYNCRONISATION
-
-local function setup_remote()
-  if not remote.interfaces['railualib_translation'] then -- create the interface
-    local functions = {
-      retranslate_all_event = function() return event.generate_id('retranslate_all_event') end,
-      update_dictionary_count_event = function() return event.generate_id('update_dictionary_count_event') end
-    }
-    remote.add_interface('railualib_translation', functions)
-    commands.add_command(
-      'retranslate-all-dictionaries',
-      {'qis-command-help.retranslate-all-dictionaries'},
-      function(e)
-        event.raise(translation.retranslate_all_event, {})
-      end
-    )
-  end
-  translation.retranslate_all_event = remote.call('railualib_translation', 'retranslate_all_event')
-  translation.update_dictionary_count_event = remote.call('railualib_translation', 'update_dictionary_count_event')
-  event.register(translation.update_dictionary_count_event, function(e)
-    local __translation = global.__lualib.translation
-    __translation.dictionary_count = __translation.dictionary_count + e.delta
-  end)
-end
-
+-- set up global
 event.on_init(function()
   if not global.__lualib then global.__lualib = {} end
   global.__lualib.translation = {
-    dictionary_count = 0,
+    active_translations_count = 0,
     players = {}
   }
-  setup_remote()
 end)
 
+-- re-register events if necessary
 event.on_load(function()
-  setup_remote()
-  -- re-register events
   event.load_conditional_handlers{
     translation_translate_batch = translate_batch,
     translation_sort_result = sort_translated_string
   }
+end)
+
+-- set up player table
+-- the player's table will be completely destroyed when they exit, so we create it in on_player_joined_game
+event.on_player_joined_game(function(e)
+  global.__lualib.translation.players[e.player_index] = {
+    active_translations = {}, -- contains data for each dictionary that is being translated
+    active_translations_count = 0, -- count of translations that this player is performing
+    next_index = 1, -- index of the next string to be translated
+    string_registry = {}, -- contains data on where a translation should be placed
+    strings = {}, -- contains the actual localised string objects to be translated
+    strings_len = 0 -- length of the strings table, for use in on_tick to avoid extraneous logic
+  }
+end, {insert_at_front=true}) -- guarantee that this will be run first to avoid crashes later on
+
+-- cancel all translations for the player and destroy their global data
+event.on_player_left_game(function(e)
+  global.__lualib.translation.players[e.player_index] = nil
 end)
 
 return translation

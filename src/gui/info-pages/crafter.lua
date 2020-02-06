@@ -45,7 +45,7 @@ function self.create(player, player_table, content_container, name)
     if show_hidden or not recipe.hidden then
       local recipe_name = recipe.name
       items_index = items_index + 1
-      items[items_index] = '[img=recipe/'..recipe_name..']  '..(recipe_translations[recipe_name] or recipe_name)
+      items[items_index] = '[img=recipe/'..recipe_name..']  '..(recipe_translations[recipe_name])
     end
   end
   listbox.items = items
