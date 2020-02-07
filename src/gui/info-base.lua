@@ -45,12 +45,13 @@ handlers = {
       local player_table = global.players[e.player_index]
       local session_history = player_table.history.session
       local back_obj = session_history[session_history.position+1]
-      if back_obj.source then
+      if back_obj.mod_name and back_obj.gui_name then
+        -- this is a source
         self.close(game.get_player(e.player_index), player_table)
-        event.raise(reopen_source_event, {player_index=e.player_index, source=back_obj.source})
+        event.raise(reopen_source_event, {player_index=e.player_index, source_data=back_obj})
       else
+        -- this is an info page
         session_history.position = session_history.position + 1
-        -- update content
         self.update_contents(game.get_player(e.player_index), player_table, back_obj.category, back_obj.name, nil, true)
       end
     end
@@ -61,8 +62,8 @@ handlers = {
       local session_history = player_table.history.session
       local forward_obj = session_history[session_history.position-1]
       session_history.position = session_history.position - 1
-        -- update content
-        self.update_contents(game.get_player(e.player_index), player_table, forward_obj.category, forward_obj.name, nil, true)
+      -- update content
+      self.update_contents(game.get_player(e.player_index), player_table, forward_obj.category, forward_obj.name, nil, true)
     end
   },
   window = {
@@ -77,7 +78,7 @@ gui.add_handlers('info_base', handlers)
 -- -----------------------------------------------------------------------------
 -- GUI MANAGEMENT
 
-function self.open(player, player_table, category, name, source)
+function self.open(player, player_table, category, name, source_data)
   -- gui structure
   local gui_data = gui.create(player.gui.screen, 'info_base', player.index,
     {type='frame', name='rb_info_window', style='dialog_frame', direction='vertical', handlers='window', save_as=true, children={
@@ -114,7 +115,7 @@ function self.open(player, player_table, category, name, source)
   player_table.gui.info = {base=gui_data}
 
   -- set initial content
-  self.update_contents(player, player_table, category, name, source)
+  self.update_contents(player, player_table, category, name, source_data)
 end
 
 function self.close(player, player_table)
@@ -129,7 +130,7 @@ function self.close(player, player_table)
   player_table.history.session = {position=0}
 end
 
-function self.update_contents(player, player_table, category, name, source, nav_button)
+function self.update_contents(player, player_table, category, name, source_data, nav_button)
   local gui_data = player_table.gui.info
   local base_elems = gui_data.base
   local dictionary = player_table.dictionary
@@ -140,9 +141,9 @@ function self.update_contents(player, player_table, category, name, source, nav_
     table_insert(player_table.history.overall, 1, {category=category, name=name})
   end
   local session_history = player_table.history.session
-  if source then
+  if source_data then
     -- reset session history
-    player_table.history.session = {position=1, [1]={category=category, name=name}, [2]={source=source}}
+    player_table.history.session = {position=1, [1]={category=category, name=name}, [2]=source_data}
     session_history = player_table.history.session
   elseif not nav_button then
     -- modify session history
@@ -162,8 +163,8 @@ function self.update_contents(player, player_table, category, name, source, nav_
   back_button.enabled = true
   local back_obj = session_history[session_history.position+1]
   if back_obj then
-    if back_obj.source then
-      back_button.tooltip = {'rb-gui.back-to', {'rb-remote.source-'..back_obj.source}}
+    if back_obj.mod_name and back_obj.gui_name then
+      back_button.tooltip = {'rb-gui.back-to', {'rb-remote.source-'..back_obj.mod_name..'-'..back_obj.gui_name}}
     else
       back_button.tooltip = {'rb-gui.back-to', string_lower(dictionary[back_obj.category].translations[back_obj.name])}
     end
@@ -203,12 +204,12 @@ function self.update_contents(player, player_table, category, name, source, nav_
   gui_data.name = name
 end
 
-function self.open_or_update(player, player_table, category, name, source)
+function self.open_or_update(player, player_table, category, name, source_data)
   -- check for pre-existing window
   if player_table.gui.info then
-    self.update_contents(player, player_table, category, name, source)
+    self.update_contents(player, player_table, category, name, source_data)
   else
-    self.open(player, player_table, category, name, source)
+    self.open(player, player_table, category, name, source_data)
   end
 end
 
