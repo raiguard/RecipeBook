@@ -129,7 +129,7 @@ local function build_recipe_data()
   for name,prototype in pairs(game.recipe_prototypes) do
     local data = {
       energy = prototype.energy,
-      hand_craftable = not prototype.hidden_from_player_crafting,
+      hand_craftable = prototype.category == 'crafting',
       hidden = prototype.hidden,
       made_in = {},
       unlocked_by = {},
