@@ -153,7 +153,7 @@ function self.update_contents(player, player_table, category, name, source, nav_
 
   -- update object name
   base_elems.object_icon.sprite = object_data.sprite_class..'/'..name
-  base_elems.object_name.caption = object_data.prototype.localised_name
+  base_elems.object_name.caption = dictionary[category].translations[name]
 
   -- update main content
   local content_container = base_elems.content_container
