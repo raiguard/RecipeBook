@@ -95,6 +95,10 @@ function self.create(player, player_table, content_container, name)
     local crafters_list = recipe_data.made_in
     local items = {}
     local items_index = 0
+    if recipe_data.hand_craftable then
+      items[1] = '[img=entity/character]  (1x) '..dictionary.other.translations.character
+      items_index = 1
+    end
     for ri=1,#crafters_list do
       local crafter = crafters_list[ri]
       if show_hidden or not crafter.hidden then

@@ -21,7 +21,9 @@ reopen_source_event = event.generate_id('reopen_source')
 info_guis = {crafter=true, material=true, recipe=true}
 
 -- locals
+local string_find = string.find
 local string_lower = string.lower
+local string_sub = string.sub
 
 -- GUI templates
 gui.add_templates{
@@ -45,16 +47,25 @@ gui.add_templates{
 -- common GUI handlers
 gui.add_handlers('common', {
   generic_open_from_listbox = function(e)
-    local _,_,category,object_name = e.element.get_item(e.element.selected_index):find('^%[img=(.*)/(.*)%].*$')
+    local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), '^%[img=(.*)/(.*)%].*$')
     event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object_name=object_name})
   end,
   open_material_from_listbox = function(e)
-    local _,_,object_name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
-    event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_name})
+    local selected_item = e.element.get_item(e.element.selected_index)
+    if string_sub(selected_item, 1, 1) == ' ' then
+      e.element.selected_index = 0
+    else
+      local _,_,object_name = string_find(selected_item, '^.*/(.*)%].*$')
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_name})
+    end
   end,
   open_crafter_from_listbox = function(e)
-    local _,_,object_name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
-    event.raise(open_gui_event, {player_index=e.player_index, gui_type='crafter', object_name=object_name})
+    local _,_,object_name = string_find(e.element.get_item(e.element.selected_index), '^.*/(.*)%].*$')
+    if object_name == 'character' then
+      e.element.selected_index = 0
+    else
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='crafter', object_name=object_name})
+    end
   end
 })
 
@@ -118,6 +129,7 @@ local function build_recipe_data()
   for name,prototype in pairs(game.recipe_prototypes) do
     local data = {
       energy = prototype.energy,
+      hand_craftable = not prototype.hidden_from_player_crafting,
       hidden = prototype.hidden,
       made_in = {},
       unlocked_by = {},
@@ -177,6 +189,11 @@ local function build_recipe_data()
     end
     translation_data.technology[#translation_data.technology+1] = {internal=prototype.name, localised=prototype.localised_name}
   end
+
+  -- misc translation data
+  translation_data.other = {
+    {internal='character', localised={'entity-name.character'}}
+  }
 
   -- apply to global
   global.recipe_book = recipe_book
@@ -252,7 +269,7 @@ event.register(translation.finish_event, function(e)
   local lookup = e.lookup
   local search = {}
   local sorted_results = e.sorted_results
-  if e.dictionary_name ~= 'technology' then
+  if e.dictionary_name ~= 'technology' and e.dictionary_name ~= 'other' then
     -- si: search index; ri: results index; ii: internals index
     local si = 0
     -- create an entry in the search table for every prototype that each result matches with
