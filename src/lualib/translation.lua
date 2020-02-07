@@ -96,25 +96,36 @@ local function sort_translated_string(e)
         if not include_failed_translations and (not success or result == '') then
           log(dictionary_name..':  key \''..serialised..'\' was not successfully translated, and will not be included in the output.')
         else
+          -- do this only if the result will be the same for all internal names
+          if success then
+            -- convert to lowercase first if wanted
+            if data.convert_to_lowercase then
+              result = string_lower(result)
+            end
+            -- add to lookup table
+            data.lookup[result] = internal_names
+            -- add to sorted results table
+            data.sorted_results[#data.sorted_results+1] = result
+          end
+
           -- for every internal name that this string applies do
           for i=1,#internal_names do
             local internal = internal_names[i]
             -- set result to internal name if the translation failed and the option is active
             if not success and include_failed_translations then
               result = internal
+              -- add to lookup and sorted_results tables here, as each iteration will have a different name
+              local lookup = data.lookup[result]
+              if lookup then
+                lookup[#lookup+1] = internal
+              else
+                data.lookup[result] = {internal}
+              end
+              data.sorted_results[#data.sorted_results+1] = result
             -- convert to lowercase if the option is active and the translation succeeded
             elseif data.convert_to_lowercase then
               result = string_lower(result)
             end
-            -- add to lookup table
-            local lookup = data.lookup[result]
-            if lookup then
-              lookup[#lookup+1] = internal
-            else
-              data.lookup[result] = {internal}
-            end
-            -- add to sorted results table
-            data.sorted_results[#data.sorted_results+1] = result
             -- add to translations table
             if data.translations[internal] then
               error('Duplicate key \''..internal..'\' in dictionary: '..dictionary_name)
