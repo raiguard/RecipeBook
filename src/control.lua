@@ -221,7 +221,7 @@ local function setup_player(player, index)
       can_open_gui = false
     },
     history = {
-      session = {},
+      session = {position=0},
       overall = {}
     },
     gui = {},
@@ -309,7 +309,16 @@ event.register('rb-toggle-search', function(e)
   search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index])
 end)
 event.on_gui_click(function(e)
-  search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index])
+  -- read player's cursor stack to see if we should open the material GUI
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local cursor_stack = player.cursor_stack
+  if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read then
+    -- the player is holding something, so open to its material GUI
+    info_gui.open_or_update(player, player_table, 'material', cursor_stack.name)
+  else
+    search_gui.toggle(player, player_table)
+  end
 end, {gui_filters='recipe_book_button'})
 
 -- reopen the search GUI when the back button is pressed

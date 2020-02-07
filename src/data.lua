@@ -29,20 +29,40 @@ data:extend{
   -- SPRITES
   {
     type = 'sprite',
-    name = 'rb_nav_backward',
-    filename = '__RecipeBook__/graphics/gui/nav-backward.png',
+    name = 'rb_nav_backward_dark',
+    filename = '__RecipeBook__/graphics/gui/nav-arrows.png',
     size = 32,
     mipmap_count = 2,
+    position = {0,0},
     flags = {'icon'}
   },
   {
     type = 'sprite',
-    name = 'rb_nav_backward_dark',
-    filename = '__RecipeBook__/graphics/gui/nav-backward-dark.png',
+    name = 'rb_nav_backward',
+    filename = '__RecipeBook__/graphics/gui/nav-arrows.png',
     size = 32,
     mipmap_count = 2,
+    position = {0,32},
     flags = {'icon'}
   },
+  {
+    type = 'sprite',
+    name = 'rb_nav_forward_dark',
+    filename = '__RecipeBook__/graphics/gui/nav-arrows.png',
+    size = 32,
+    mipmap_count = 2,
+    position = {48,0},
+    flags = {'icon'}
+  },
+  {
+    type = 'sprite',
+    name = 'rb_nav_forward',
+    filename = '__RecipeBook__/graphics/gui/nav-arrows.png',
+    size = 32,
+    mipmap_count = 2,
+    position = {48,32},
+    flags = {'icon'}
+  }
 }
 
 local styles = data.raw['gui-style'].default

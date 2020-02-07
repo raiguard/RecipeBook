@@ -55,6 +55,16 @@ handlers = {
       end
     end
   },
+  nav_forward_button = {
+    on_gui_click = function(e)
+      local player_table = global.players[e.player_index]
+      local session_history = player_table.history.session
+      local forward_obj = session_history[session_history.position-1]
+      session_history.position = session_history.position - 1
+        -- update content
+        self.update_contents(game.get_player(e.player_index), player_table, forward_obj.category, forward_obj.name, nil, true)
+    end
+  },
   window = {
     on_gui_closed = function(e)
       self.close(game.get_player(e.player_index), global.players[e.player_index])
@@ -75,6 +85,8 @@ function self.open(player, player_table, category, name, source)
       {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
         {type='sprite-button', style='close_button', sprite='rb_nav_backward', hovered_sprite='rb_nav_backward_dark', clicked_sprite='rb_nav_backward_dark',
           mouse_button_filters={'left'}, handlers='nav_backward_button', save_as=true},
+        {type='sprite-button', style='close_button', sprite='rb_nav_forward', hovered_sprite='rb_nav_forward_dark', clicked_sprite='rb_nav_forward_dark',
+          mouse_button_filters={'left'}, handlers='nav_forward_button', save_as=true},
         {type='label', style={name='frame_title', left_padding=6}, save_as='window_title'},
         {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
         {template='close_button'}
@@ -113,6 +125,8 @@ function self.close(player, player_table)
   gui.destroy(gui_data.info.base.window, 'info_base', player.index)
   -- remove data from global
   gui_data.info = nil
+  -- reset session history
+  player_table.history.session = {position=0}
 end
 
 function self.update_contents(player, player_table, category, name, source, nav_button)
@@ -137,17 +151,34 @@ function self.update_contents(player, player_table, category, name, source, nav_
         table_remove(session_history, 1)
       end
       session_history.position = 1
+    elseif session_history.position == 0 then
+      session_history.position = 1
     end
     table_insert(session_history, 1, {category=category, name=name})
   end
 
   -- update titlebar
   local back_button = base_elems.nav_backward_button
+  back_button.enabled = true
   local back_obj = session_history[session_history.position+1]
-  if back_obj.source then
-    back_button.tooltip = {'rb-gui.back-to', {'rb-remote.source-'..back_obj.source}}
+  if back_obj then
+    if back_obj.source then
+      back_button.tooltip = {'rb-gui.back-to', {'rb-remote.source-'..back_obj.source}}
+    else
+      back_button.tooltip = {'rb-gui.back-to', string_lower(dictionary[back_obj.category].translations[back_obj.name])}
+    end
   else
-    back_button.tooltip = {'rb-gui.back-to', string_lower(dictionary[back_obj.category].translations[back_obj.name] or back_obj.name)}
+    back_button.enabled = false
+    back_button.tooltip = ''
+  end
+  local forward_button = base_elems.nav_forward_button
+  if session_history.position > 1 then
+    forward_button.enabled = true
+    local forward_obj = session_history[session_history.position-1]
+    forward_button.tooltip = {'rb-gui.forward-to', string_lower(dictionary[forward_obj.category].translations[forward_obj.name])}
+  else
+    forward_button.enabled = false
+    forward_button.tooltip = ''
   end
   base_elems.window_title.caption = {'rb-gui.'..category..'-upper'}
 
