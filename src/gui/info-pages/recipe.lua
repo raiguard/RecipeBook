@@ -10,6 +10,13 @@ local math_max = math.max
 local math_min = math.min
 local table_sort = table.sort
 
+-- because LUA doesn't have a math.round...
+-- from http://lua-users.org/wiki/SimpleRound
+local function math_round(num, numDecimalPlaces)
+local mult = 10^(numDecimalPlaces or 0)
+return math.floor(num * mult + 0.5) / mult
+end
+
 -- self object
 local self = {}
 
@@ -96,14 +103,15 @@ function self.create(player, player_table, content_container, name)
     local items = {}
     local items_index = 0
     if recipe_data.hand_craftable then
-      items[1] = '[img=entity/character]  (1x) '..dictionary.other.translations.character
+      items[1] = '[img=entity/character]  ('..recipe_data.energy..'s) '..dictionary.other.translations.character
       items_index = 1
     end
     for ri=1,#crafters_list do
       local crafter = crafters_list[ri]
       if show_hidden or not crafter.hidden then
         items_index = items_index + 1
-        items[items_index] = '[img=entity/'..crafter.name..']  ('..crafter.crafting_speed..'x) '..crafter_translations[crafter.name]
+        items[items_index] = '[img=entity/'..crafter.name..']  ('..math_round(recipe_data.energy*crafter.crafting_speed,2)..'s) '
+          ..crafter_translations[crafter.name]
       end
     end
     listbox.items = items
