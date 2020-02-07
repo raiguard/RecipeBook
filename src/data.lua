@@ -17,7 +17,7 @@ data:extend{
   {
     type = 'custom-input',
     name = 'rb-toggle-search',
-    key_sequence = 'CONTROL + R',
+    key_sequence = 'CONTROL + B',
     order = 'a'
   },
   {
