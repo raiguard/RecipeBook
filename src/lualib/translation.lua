@@ -299,6 +299,18 @@ function translation.cancel_all()
   end
 end
 
+-- sets up the player's data table
+local function setup_player(index)
+  global.__lualib.translation.players[index] = {
+    active_translations = {}, -- contains data for each dictionary that is being translated
+    active_translations_count = 0, -- count of translations that this player is performing
+    next_index = 1, -- index of the next string to be translated
+    string_registry = {}, -- contains data on where a translation should be placed
+    strings = {}, -- contains the actual localised string objects to be translated
+    strings_len = 0 -- length of the strings table, for use in on_tick to avoid extraneous logic
+  }
+end
+
 -- set up global
 event.on_init(function()
   if not global.__lualib then global.__lualib = {} end
@@ -306,6 +318,9 @@ event.on_init(function()
     active_translations_count = 0,
     players = {}
   }
+  for i,_ in pairs(game.players) do
+    setup_player(i)
+  end
 end)
 
 -- re-register events if necessary
@@ -319,14 +334,7 @@ end)
 -- set up player table
 -- the player's table will be completely destroyed when they exit, so we create it in on_player_joined_game
 event.on_player_joined_game(function(e)
-  global.__lualib.translation.players[e.player_index] = {
-    active_translations = {}, -- contains data for each dictionary that is being translated
-    active_translations_count = 0, -- count of translations that this player is performing
-    next_index = 1, -- index of the next string to be translated
-    string_registry = {}, -- contains data on where a translation should be placed
-    strings = {}, -- contains the actual localised string objects to be translated
-    strings_len = 0 -- length of the strings table, for use in on_tick to avoid extraneous logic
-  }
+  setup_player(e.player_index)
 end, {insert_at_front=true}) -- guarantee that this will be run first to avoid crashes later on
 
 -- cancel all translations for the player and destroy their global data
