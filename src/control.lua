@@ -81,13 +81,13 @@ local function build_recipe_data()
   }
   
   -- iterate crafters
-  local crafters = game.get_filtered_entity_prototypes{
+  for name,prototype in pairs(game.get_filtered_entity_prototypes{
     {filter='type', type='assembling-machine'},
     {filter='type', type='furnace'}
-  }
-  for name,prototype in pairs(crafters) do
+  })
+  do
     recipe_book.crafter[name] = {
-      prototype = prototype,
+      crafting_speed = prototype.crafting_speed,
       hidden = prototype.has_flag('hidden'),
       categories = prototype.crafting_categories,
       recipes = {},
@@ -97,8 +97,7 @@ local function build_recipe_data()
   end
 
   -- iterate materials
-  local materials = util.merge{game.fluid_prototypes, game.item_prototypes}
-  for name,prototype in pairs(materials) do
+  for name,prototype in pairs(util.merge{game.fluid_prototypes, game.item_prototypes}) do
     local is_fluid = prototype.object_name == 'LuaFluidPrototype' and true or false
     local hidden
     if is_fluid then
@@ -107,7 +106,6 @@ local function build_recipe_data()
       hidden = prototype.has_flag('hidden')
     end
     recipe_book.material[name] = {
-      prototype = prototype,
       hidden = hidden,
       ingredient_in = {},
       product_of = {},
@@ -119,13 +117,33 @@ local function build_recipe_data()
   -- iterate recipes
   for name,prototype in pairs(game.recipe_prototypes) do
     local data = {
-      prototype = prototype,
+      energy = prototype.energy,
       hidden = prototype.hidden,
       made_in = {},
       unlocked_by = {},
       sprite_class = 'recipe'
     }
-    -- ingredient in
+    -- ingredients / products
+    local material_book = recipe_book.material
+    for _,mode in ipairs{'ingredients', 'products'} do
+      local materials = prototype[mode]
+      for i=1,#materials do
+        local material = materials[i]
+        -- add hidden flag to table
+        material.hidden = material_book[material.name].hidden
+      end
+      -- add to data
+      data[mode] = materials
+    end
+    -- made in
+    local category = prototype.category
+    for crafter_name,crafter_data in pairs(recipe_book.crafter) do
+      if crafter_data.categories[category] then
+        data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_data.crafting_speed, hidden=crafter_data.hidden}
+        crafter_data.recipes[#crafter_data.recipes+1] = {name=name, hidden=prototype.hidden}
+      end
+    end
+    -- material: ingredient in
     local ingredients = prototype.ingredients
     for i=1,#ingredients do
       local ingredient = ingredients[i]
@@ -134,22 +152,13 @@ local function build_recipe_data()
         ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = {name=name, hidden=prototype.hidden}
       end
     end
-    -- product of
+    -- material: product of
     local products = prototype.products
     for i=1,#products do
       local product = products[i]
       local product_data = recipe_book.material[product.name]
       if product_data then
         product_data.product_of[#product_data.product_of+1] = {name=name, hidden=prototype.hidden}
-      end
-    end
-    -- made-in
-    local category = prototype.category
-    for crafter_name,crafter_data in pairs(recipe_book.crafter) do
-      if crafter_data.categories[category] then
-        local crafter_prototype = crafter_data.prototype
-        data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_prototype.crafting_speed, hidden=crafter_prototype.has_flag('hidden')}
-        crafter_data.recipes[#crafter_data.recipes+1] = {name=name, hidden=prototype.hidden}
       end
     end
     -- insert into recipe book
@@ -163,7 +172,7 @@ local function build_recipe_data()
     for _,modifier in ipairs(prototype.effects) do
       if modifier.type == 'unlock-recipe' then
         local recipe = recipe_book.recipe[modifier.recipe]
-        recipe.unlocked_by[#recipe.unlocked_by+1] = name
+        recipe.unlocked_by[#recipe.unlocked_by+1] = {name=name, hidden=prototype.hidden}
       end
     end
     translation_data.technology[#translation_data.technology+1] = {internal=prototype.name, localised=prototype.localised_name}

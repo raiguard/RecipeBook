@@ -43,10 +43,9 @@ function self.create(player, player_table, content_container, name)
     local label = gui_data[mode..'_label']
     local listbox = gui_data[mode..'_listbox']
     local recipe_list = material_data[mode]
-    local recipes_len = #recipe_list
     local items = {}
     local items_index = 0
-    for ri=1,recipes_len do
+    for ri=1,#recipe_list do
       local recipe = recipe_list[ri]
       if show_hidden or not recipe.hidden then
         items_index = items_index + 1

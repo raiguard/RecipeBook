@@ -37,10 +37,9 @@ function self.create(player, player_table, content_container, name)
   local label = gui_data.recipes_label
   local listbox = gui_data.recipes_listbox
   local recipes = crafter_data.recipes
-  local recipes_len = #recipes
   local items = {}
   local items_index = 0
-  for i=1,recipes_len do
+  for i=1,#recipes do
     local recipe = recipes[i]
     if show_hidden or not recipe.hidden then
       local recipe_name = recipe.name

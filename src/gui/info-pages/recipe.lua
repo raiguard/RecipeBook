@@ -50,7 +50,8 @@ function self.create(player, player_table, content_container, name)
   )
 
   -- get data
-  local recipe_data = global.recipe_book.recipe[name]
+  local recipe_book = global.recipe_book
+  local recipe_data = recipe_book.recipe[name]
   local dictionary = player_table.dictionary
   local crafter_translations = dictionary.crafter.translations
   local material_translations = dictionary.material.translations
@@ -62,21 +63,23 @@ function self.create(player, player_table, content_container, name)
   for _,mode in ipairs{'ingredients', 'products'} do
     local label = gui_data[mode..'_label']
     local listbox = gui_data[mode..'_listbox']
-    local materials_list = recipe_data.prototype[mode]
-    local materials_len = #materials_list
+    local materials_list = recipe_data[mode]
     local items = {}
-    local delta = 0
+    local items_index = 0
     if mode == 'ingredients' then
-      items[1] = '[img=quantity-time]  '..recipe_data.prototype.energy..' seconds'
-      delta = 1
+      items[1] = ' [img=quantity-time]  '..recipe_data.energy..' seconds'
+      items_index = 1
     end
-    for ri=1,materials_len do
+    for ri=1,#materials_list do
       local material = materials_list[ri]
-      items[ri+delta] = '[img='..material.type..'/'..material.name..']  '..material.amount..'x '..material_translations[material.name]
+      if show_hidden or not material.hidden then
+        items_index = items_index + 1
+        items[items_index] = '[img='..material.type..'/'..material.name..']  '..material.amount..'x '..material_translations[material.name]
+      end
     end
     listbox.items = items
-    label.caption = {'rb-gui.'..mode, materials_len}
-    rows = math_max(rows, math_min(6, materials_len+delta))
+    label.caption = {'rb-gui.'..mode, items_index}
+    rows = math_max(rows, math_min(6, items_index))
   end
 
   -- set material listbox heights
@@ -90,15 +93,18 @@ function self.create(player, player_table, content_container, name)
     local label = gui_data['crafters_label']
     local listbox = gui_data['crafters_listbox']
     local crafters_list = recipe_data.made_in
-    local crafters_len = #crafters_list
     local items = {}
-    for ri=1,crafters_len do
+    local items_index = 0
+    for ri=1,#crafters_list do
       local crafter = crafters_list[ri]
-      items[ri] = '[img=entity/'..crafter.name..']  ('..crafter.crafting_speed..'x) '..crafter_translations[crafter.name]
+      if show_hidden or not crafter.hidden then
+        items_index = items_index + 1
+        items[items_index] = '[img=entity/'..crafter.name..']  ('..crafter.crafting_speed..'x) '..crafter_translations[crafter.name]
+      end
     end
     listbox.items = items
-    label.caption = {'rb-gui.made-in', crafters_len}
-    rows = math_max(rows, math_min(6, crafters_len))
+    label.caption = {'rb-gui.made-in', items_index}
+    rows = math_max(rows, math_min(6, items_index))
   end
 
   -- populate technologies
@@ -106,15 +112,18 @@ function self.create(player, player_table, content_container, name)
     local label = gui_data['technologies_label']
     local listbox = gui_data['technologies_listbox']
     local technologies_list = recipe_data.unlocked_by
-    local technologies_len = #technologies_list
     local items = {}
-    for ri=1,technologies_len do
+    local items_index = 0
+    for ri=1,#technologies_list do
       local technology = technologies_list[ri]
-      items[ri] = '[img=technology/'..technology..']  '..technology_translations[technology]
+      if show_hidden or not technology.hidden then
+        items_index = items_index + 1
+        items[items_index] = '[img=technology/'..technology.name..']  '..technology_translations[technology.name]
+      end
     end
     listbox.items = items
-    label.caption = {'rb-gui.unlocked-by', technologies_len}
-    rows = math_max(rows, math_min(6, technologies_len))
+    label.caption = {'rb-gui.unlocked-by', items_index}
+    rows = math_max(rows, math_min(6, items_index))
   end
 
   -- set listbox heights
