@@ -9,6 +9,7 @@ local gui = require('lualib/gui')
 local self = {}
 
 -- locals
+local string_len = string.len
 local string_lower = string.lower
 local string_match = string.match
 
@@ -62,27 +63,22 @@ handlers = {
       local category = gui_data.category
       local search_table = player_table.dictionary[category].search
       local results_listbox = gui_data.results_listbox
-      local add_item = results_listbox.add_item
-      local set_item = results_listbox.set_item
-      local remove_item = results_listbox.remove_item
-      local items_length = #results_listbox.items
+      local items = {}
       local i = 0
+      -- if string_len(query) < 2 then
+      --   results_listbox.clear_items()
+      --   return
+      -- end
       for i1=1,#search_table do
         local t = search_table[i1]
-        local translated = t.translated
-        if string_match(string_lower(translated), query) and (show_hidden or not t.hidden) then
-          local caption = '[img='..t.sprite_class..'/'..t.internal..']  '..translated
+        local translated_lower = t.translated_lower
+        if string_match(translated_lower, query) and (show_hidden or not t.hidden) then
+          local caption = '[img='..t.sprite_class..'/'..t.internal..']  '..t.translated
           i = i + 1
-          if i <= items_length then
-            set_item(i, caption)
-          else
-            add_item(caption)
-          end
+          items[i] = caption
         end
       end
-      for i=#results_listbox.items,i+1,-1 do
-        remove_item(i)
-      end
+      results_listbox.items = items
     end
   },
   results_listbox = {

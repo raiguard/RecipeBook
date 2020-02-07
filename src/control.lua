@@ -20,6 +20,9 @@ open_gui_event = event.generate_id('open_gui')
 reopen_source_event = event.generate_id('reopen_source')
 info_guis = {crafter=true, material=true, recipe=true}
 
+-- locals
+local string_lower = string.lower
+
 -- GUI templates
 gui.add_templates{
   close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
@@ -198,7 +201,7 @@ local function setup_player(player, index)
     gui = {},
     settings = {
       default_category = 'recipes',
-      show_hidden = true
+      show_hidden = false
     }
   }
   if player.mod_settings['rb-show-mod-gui-button'].value then
@@ -252,7 +255,8 @@ event.register(translation.finish_event, function(e)
         local object_data = data[internal]
         si = si + 1
         -- get whether or not it's hidden so we can include or not include it depending on the user's settings
-        search[si] = {internal=internal, translated=translated, hidden=object_data.hidden, sprite_class=object_data.sprite_class}
+        search[si] = {internal=internal, translated=translated, translated_lower=string_lower(translated), hidden=object_data.hidden,
+          sprite_class=object_data.sprite_class}
       end
     end
   end
