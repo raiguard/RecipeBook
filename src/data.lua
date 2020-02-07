@@ -113,34 +113,6 @@ styles.rb_search_results_listbox_frame = {
   height = 196
 }
 
-styles.rb_icon_slot_table_pane = {
-  type = 'scroll_pane_style',
-  padding = 0,
-  extra_padding_when_activated = 0,
-  extra_right_padding_when_activated = -12,
-  graphical_set = {
-    base = {
-      position = {85,0},
-      corner_size = 8,
-      draw_type = 'outer',
-      center = {position={42,8}, size=1}
-    },
-    shadow = default_inner_shadow
-  },
-  background_graphical_set = {
-    base = {
-      position = {282, 17},
-      corner_size = 8,
-      overall_tiling_horizontal_padding = 4,
-      overall_tiling_horizontal_size = 32,
-      overall_tiling_horizontal_spacing = 8,
-      overall_tiling_vertical_padding = 4,
-      overall_tiling_vertical_size = 32,
-      overall_tiling_vertical_spacing = 8
-    }
-  }
-}
-
 -- -----------------------------------------------------------------------------
 -- FLOW STYLES
 
@@ -214,6 +186,37 @@ styles.rb_listbox_for_keyboard_nav = {
     selected_graphical_set = {
       base = {position = {34,17}, corner_size=8},
       shadow = default_dirt
+    }
+  }
+}
+
+-- -----------------------------------------------------------------------------
+-- SCROLL PANE STYLES
+
+styles.rb_icon_slot_table_pane = {
+  type = 'scroll_pane_style',
+  padding = 0,
+  extra_padding_when_activated = 0,
+  extra_right_padding_when_activated = -12,
+  graphical_set = {
+    base = {
+      position = {85,0},
+      corner_size = 8,
+      draw_type = 'outer',
+      center = {position={42,8}, size=1}
+    },
+    shadow = default_inner_shadow
+  },
+  background_graphical_set = {
+    base = {
+      position = {282, 17},
+      corner_size = 8,
+      overall_tiling_horizontal_padding = 4,
+      overall_tiling_horizontal_size = 32,
+      overall_tiling_horizontal_spacing = 8,
+      overall_tiling_vertical_padding = 4,
+      overall_tiling_vertical_size = 32,
+      overall_tiling_vertical_spacing = 8
     }
   }
 }

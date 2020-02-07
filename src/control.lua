@@ -71,6 +71,7 @@ gui.add_handlers('common', {
 
 -- modules
 local search_gui = require('gui/search')
+local recipe_quick_reference_gui = require('gui/recipe-quick-reference')
 local info_gui = require('gui/info-base')
 
 -- -----------------------------------------------------------------------------
@@ -233,7 +234,14 @@ local function setup_player(player, index)
   if player.mod_settings['rb-show-mod-gui-button'].value then
     mod_gui.get_button_flow(player).add{type='button', name='recipe_book_button', style=mod_gui.button_style, caption='RB', tooltip={'mod-name.RecipeBook'}}
   end
+  -- TEMPORARY DEBUGGING
+  mod_gui.get_button_flow(player).add{type='button', name='recipe_book_test', style=mod_gui.button_style, caption='Quick reference test'}
 end
+
+-- TEMPORARY DEBUGGING
+event.on_gui_click(function(e)
+  event.raise(open_gui_event, {player_index=e.player_index, gui_type='recipe_quick_reference', object_name='advanced-circuit'})
+end, {gui_filters='recipe_book_test'})
 
 event.on_init(function()
   global.players = {}
@@ -323,8 +331,9 @@ end, {gui_filters='recipe_book_button'})
 
 -- reopen the search GUI when the back button is pressed
 event.register(reopen_source_event, function(e)
-  if e.source == 'rb_search' then
-    search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index])
+  local source_data = e.source_data
+  if source_data.mod_name == 'RecipeBook' and source_data.gui_name == 'search' then
+    search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index], source_data)
   end
 end)
 
@@ -339,9 +348,9 @@ event.register(open_gui_event, function(e)
     if gui_type == 'search' then
       
     elseif info_guis[gui_type] then
-      info_gui.open_or_update(player, player_table, gui_type, e.object_name, e.source)
+      info_gui.open_or_update(player, player_table, gui_type, e.object_name, e.source_data)
     elseif gui_type == 'recipe_quick_reference' then
-
+      recipe_quick_reference_gui.open(player, player_table, e.object_name)
     end
   else
     -- set flag and tell the player that they cannot open it
@@ -349,6 +358,23 @@ event.register(open_gui_event, function(e)
     player.print{'rb-message.translation-not-finished'}
   end
 end)
+
+-- -----------------------------------------------------------------------------
+-- REMOTE
+
+remote.add_interface('RecipeBook', {
+  open_info_gui = function(player_index, category, object_name, source_data)
+    -- error checking
+    if not info_guis[category] then error('Invalid Recipe Book category: '..category) end
+    if not object_name then error('Must provide an object name!') end
+    if source_data and (not source_data.mod_name or not source_data.gui_name) then
+      error('Incomplete source_data table!')
+    end
+    -- raise internal mod event
+    event.raise(open_gui_event, {player_index=player_index, gui_type=category, object_name=object_name, source_data=source_data})
+  end,
+  reopen_source_event = function() return reopen_source_event end
+})
 
 -- -----------------------------------------------------------------------------
 -- MIGRATIONS
