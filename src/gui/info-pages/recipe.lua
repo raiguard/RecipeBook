@@ -110,7 +110,7 @@ function self.create(player, player_table, content_container, name)
       local crafter = crafters_list[ri]
       if show_hidden or not crafter.hidden then
         items_index = items_index + 1
-        items[items_index] = '[img=entity/'..crafter.name..']  ('..math_round(recipe_data.energy*crafter.crafting_speed,2)..'s) '
+        items[items_index] = '[img=entity/'..crafter.name..']  ('..math_round(recipe_data.energy/crafter.crafting_speed,2)..'s) '
           ..crafter_translations[crafter.name]
       end
     end
