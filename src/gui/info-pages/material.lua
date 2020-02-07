@@ -7,6 +7,7 @@ local gui = require('lualib/gui')
 -- locals
 local math_max = math.max
 local math_min = math.min
+local string_gsub = string.gsub
 
 -- self object
 local self = {}
@@ -25,43 +26,45 @@ gui.add_handlers('material', {
 
 function self.create(player, player_table, content_container, name)
   local gui_data = gui.create(content_container, 'material', player.index,
-    {type='flow', direction='vertical', children={
-      {type='label', style='caption_label', caption={'rb-gui.usage-in-recipes'}},
-      {type='flow', style={horizontal_spacing=8}, direction='horizontal', children={
-        gui.call_template('listbox_with_label', 'as_ingredient'),
-        gui.call_template('listbox_with_label', 'as_product')
-      }}
+    {type='flow', style={horizontal_spacing=8}, direction='horizontal', children={
+      gui.call_template('listbox_with_label', 'ingredient_in'),
+      gui.call_template('listbox_with_label', 'product_of')
     }}
   )
 
   -- set up data
   local material_data = global.recipe_book.material[name]
   local recipe_translations = player_table.dictionary.recipe.translations
+  local show_hidden = player_table.settings.show_hidden
   local rows = 0
 
   -- populate tables
-  for _,mode in ipairs{'ingredient', 'product'} do
-    local label = gui_data['as_'..mode..'_label']
-    local listbox = gui_data['as_'..mode..'_listbox']
-    local recipe_list = material_data['as_'..mode]
+  for _,mode in ipairs{'ingredient_in', 'product_of'} do
+    local label = gui_data[mode..'_label']
+    local listbox = gui_data[mode..'_listbox']
+    local recipe_list = material_data[mode]
     local recipes_len = #recipe_list
     local items = {}
+    local items_index = 0
     for ri=1,recipes_len do
       local recipe = recipe_list[ri]
-      items[ri] = '[img=recipe/'..recipe..']  '..(recipe_translations[recipe])
+      if show_hidden or not recipe.hidden then
+        items_index = items_index + 1
+        items[items_index] = '[img=recipe/'..recipe.name..']  '..(recipe_translations[recipe.name])
+      end
     end
     listbox.items = items
-    label.caption = {'rb-gui.as-'..mode, recipes_len}
-    rows = math_max(rows, math_min(6, recipes_len))
+    label.caption = {'rb-gui.'..string_gsub(mode, '_', '-'), items_index}
+    rows = math_max(rows, math_min(6, items_index))
   end
 
   -- set table heights
   local height = rows * 28
-  gui_data.as_ingredient_frame.style.height = height
-  gui_data.as_product_frame.style.height = height
+  gui_data.ingredient_in_frame.style.height = height
+  gui_data.product_of_frame.style.height = height
 
   gui.register_handlers('material', 'generic_listbox', {player_index=player.index,
-    gui_filters={gui_data.as_ingredient_listbox, gui_data.as_product_listbox}})
+    gui_filters={gui_data.ingredient_in_listbox, gui_data.product_of_listbox}})
 
   return gui_data
 end

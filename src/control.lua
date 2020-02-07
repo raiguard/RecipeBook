@@ -109,8 +109,8 @@ local function build_recipe_data()
     recipe_book.material[name] = {
       prototype = prototype,
       hidden = hidden,
-      as_ingredient = {},
-      as_product = {},
+      ingredient_in = {},
+      product_of = {},
       sprite_class = is_fluid and 'fluid' or 'item'
     }
     translation_data.material[#translation_data.material+1] = {internal=name, localised=prototype.localised_name}
@@ -125,22 +125,22 @@ local function build_recipe_data()
       unlocked_by = {},
       sprite_class = 'recipe'
     }
-    -- as ingredient
+    -- ingredient in
     local ingredients = prototype.ingredients
     for i=1,#ingredients do
       local ingredient = ingredients[i]
       local ingredient_data = recipe_book.material[ingredient.name]
       if ingredient_data then
-        ingredient_data.as_ingredient[#ingredient_data.as_ingredient+1] = name
+        ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = {name=name, hidden=prototype.hidden}
       end
     end
-    -- as product
+    -- product of
     local products = prototype.products
     for i=1,#products do
       local product = products[i]
       local product_data = recipe_book.material[product.name]
       if product_data then
-        product_data.as_product[#product_data.as_product+1] = name
+        product_data.product_of[#product_data.product_of+1] = {name=name, hidden=prototype.hidden}
       end
     end
     -- made-in
@@ -200,7 +200,7 @@ local function setup_player(player, index)
     },
     gui = {},
     settings = {
-      default_category = 'recipes',
+      default_category = 'material',
       show_hidden = false
     }
   }

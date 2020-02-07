@@ -55,6 +55,7 @@ function self.create(player, player_table, content_container, name)
   local crafter_translations = dictionary.crafter.translations
   local material_translations = dictionary.material.translations
   local technology_translations = dictionary.technology.translations
+  local show_hidden = player_table.settings.show_hidden
   local rows = 0
 
   -- populate ingredients and products
