@@ -350,7 +350,7 @@ event.register(open_gui_event, function(e)
   if player_table.flags.can_open_gui then
     -- check for existing GUI
     if gui_type == 'search' then
-      
+      search_gui.open(player, player_table)
     elseif info_guis[gui_type] then
       info_gui.open_or_update(player, player_table, gui_type, e.object_name, e.source_data)
     elseif gui_type == 'recipe_quick_reference' then

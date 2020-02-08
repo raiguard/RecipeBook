@@ -66,6 +66,11 @@ handlers = {
       self.update_contents(game.get_player(e.player_index), player_table, forward_obj.category, forward_obj.name, nil, true)
     end
   },
+  search_button = {
+    on_gui_click = function(e)
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='search'})
+    end
+  },
   window = {
     on_gui_closed = function(e)
       self.close(game.get_player(e.player_index), global.players[e.player_index])
@@ -85,11 +90,13 @@ function self.open(player, player_table, category, name, source_data)
       -- titlebar
       {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
         {type='sprite-button', style='close_button', sprite='rb_nav_backward', hovered_sprite='rb_nav_backward_dark', clicked_sprite='rb_nav_backward_dark',
-          mouse_button_filters={'left'}, handlers='nav_backward_button', save_as=true},
+          mouse_button_filter={'left'}, handlers='nav_backward_button', save_as=true},
         {type='sprite-button', style='close_button', sprite='rb_nav_forward', hovered_sprite='rb_nav_forward_dark', clicked_sprite='rb_nav_forward_dark',
-          mouse_button_filters={'left'}, handlers='nav_forward_button', save_as=true},
+          mouse_button_filter={'left'}, handlers='nav_forward_button', save_as=true},
         {type='label', style={name='frame_title', left_padding=6}, save_as='window_title'},
         {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
+        {type='sprite-button', style='close_button', sprite='rb_nav_search', hovered_sprite='rb_nav_search_dark', clicked_sprite='rb_nav_search_dark',
+          mouse_button_filter={'left'}, handlers='search_button'},
         {template='close_button'}
       }},
       {type='frame', style='window_content_frame_packed', direction='vertical', children={

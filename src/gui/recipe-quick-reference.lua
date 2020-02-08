@@ -47,7 +47,7 @@ function self.open(player, player_table, recipe_name)
         {type='label', style='frame_title', caption={'rb-gui.recipe-upper'}},
         {template='pushers.horizontal'},
         {type='sprite-button', style='close_button', sprite='rb_nav_open_info', hovered_sprite='rb_nav_open_info_dark', clicked_sprite='rb_nav_open_info_dark',
-        handlers='open_info_button', tooltip={'rb-gui.view-recipe-details'}},
+        handlers='open_info_button', tooltip={'rb-gui.view-recipe-details'}, mouse_button_filter={'left'}},
         {template='close_button'}
       }},
       {type='frame', style={name='window_content_frame_packed'}, direction='vertical', children={
@@ -85,7 +85,7 @@ function self.open(player, player_table, recipe_name)
       local material = materials_list[ri]
       if show_hidden or not material.hidden then
         material_button_ids[#material_button_ids+1] = table_add{type='sprite-button', style='quick_bar_slot_button', sprite=material.type..'/'..material.name,
-          number=material.amount, tooltip=material_translations[material.name]}.index
+          number=material.amount, tooltip=material_translations[material.name], mouse_button_filter={'left'}}.index
       end
     end
     label.caption = {'rb-gui.'..mode, #table.children-delta}

@@ -58,7 +58,8 @@ function self.create(player, player_table, content_container, name)
         gui.call_template('listbox_with_label', 'crafters'),
         gui.call_template('listbox_with_label', 'technologies')
       }},
-      {type='button', style={horizontally_stretchable=true}, caption={'rb-gui.open-quick-reference'}, handlers='quick_reference_button'}
+      {type='button', style={horizontally_stretchable=true}, caption={'rb-gui.open-quick-reference'}, mouse_button_filter={'left'},
+        handlers='quick_reference_button'}
     }}
   )
 
