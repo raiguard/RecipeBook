@@ -227,8 +227,17 @@ end
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
+local function import_player_settings(player)
+  local mod_settings = player.mod_settings
+  return {
+    default_category = mod_settings['rb-default-search-category'].value,
+    show_hidden = mod_settings['rb-show-hidden-objects'].value,
+    show_mod_gui_button = mod_settings['rb-show-mod-gui-button'].value
+  }
+end
+
 local function setup_player(player, index)
-  global.players[index] = {
+  local data = {
     flags = {
       can_open_gui = false
     },
@@ -237,14 +246,12 @@ local function setup_player(player, index)
       overall = {}
     },
     gui = {},
-    settings = {
-      default_category = 'material',
-      show_hidden = false
-    }
+    settings = import_player_settings(player)
   }
-  if player.mod_settings['rb-show-mod-gui-button'].value then
-    mod_gui.get_button_flow(player).add{type='button', name='recipe_book_button', style=mod_gui.button_style, caption='RB', tooltip={'mod-name.RecipeBook'}}
-  end
+  data.gui.mod_gui_button = mod_gui.get_button_flow(player).add{type='button', name='recipe_book_button', style=mod_gui.button_style, caption='RB',
+    tooltip={'mod-name.RecipeBook'}}
+  data.gui.mod_gui_button.visible = data.settings.show_mod_gui_button
+  global.players[index] = data
 end
 
 -- closes all of a player's open GUIs
@@ -262,6 +269,7 @@ local function close_player_guis(player, player_table)
   end
 end
 
+
 event.on_init(function()
   global.players = {}
   for i,p in pairs(game.players) do
@@ -277,6 +285,17 @@ event.on_player_created(function(e)
 end)
 event.on_player_removed(function(e)
   global.players[e.player_index] = nil
+end)
+
+-- update player settings
+event.on_runtime_mod_setting_changed(function(e)
+  if string_sub(e.setting, 1, 3) == 'rb-' then
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    player_table.settings = import_player_settings(player)
+    -- show or hide mod GUI button
+    player_table.gui.mod_gui_button.visible = player_table.settings.show_mod_gui_button
+  end
 end)
 
 -- retranslate all dictionaries for a player when they re-join
