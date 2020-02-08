@@ -12,6 +12,18 @@ if mods['debugadapter'] then
   }
 end
 
+local function mipped_nav_icon(name, position)
+  return {
+    type = 'sprite',
+    name = name,
+    filename = '__RecipeBook__/graphics/gui-nav-icons.png',
+    size = 32,
+    mipmap_count = 2,
+    position = position,
+    flags = {'icon'}
+  }
+end
+
 data:extend{
   -- CUSTOM INPUTS
   {
@@ -27,42 +39,14 @@ data:extend{
     order = 'bd'
   },
   -- SPRITES
-  {
-    type = 'sprite',
-    name = 'rb_nav_backward_dark',
-    filename = '__RecipeBook__/graphics/gui/nav-arrows.png',
-    size = 32,
-    mipmap_count = 2,
-    position = {0,0},
-    flags = {'icon'}
-  },
-  {
-    type = 'sprite',
-    name = 'rb_nav_backward',
-    filename = '__RecipeBook__/graphics/gui/nav-arrows.png',
-    size = 32,
-    mipmap_count = 2,
-    position = {0,32},
-    flags = {'icon'}
-  },
-  {
-    type = 'sprite',
-    name = 'rb_nav_forward_dark',
-    filename = '__RecipeBook__/graphics/gui/nav-arrows.png',
-    size = 32,
-    mipmap_count = 2,
-    position = {48,0},
-    flags = {'icon'}
-  },
-  {
-    type = 'sprite',
-    name = 'rb_nav_forward',
-    filename = '__RecipeBook__/graphics/gui/nav-arrows.png',
-    size = 32,
-    mipmap_count = 2,
-    position = {48,32},
-    flags = {'icon'}
-  }
+  mipped_nav_icon('rb_nav_backward', {0,0}),
+  mipped_nav_icon('rb_nav_backward_dark', {48,0}),
+  mipped_nav_icon('rb_nav_forward', {0,32}),
+  mipped_nav_icon('rb_nav_forward_dark', {48,32}),
+  mipped_nav_icon('rb_nav_open_info', {0,64}),
+  mipped_nav_icon('rb_nav_open_info_dark', {48,64}),
+  mipped_nav_icon('rb_nav_search', {0,96}),
+  mipped_nav_icon('rb_nav_search_dark', {48,96})
 }
 
 local styles = data.raw['gui-style'].default
@@ -111,6 +95,32 @@ styles.rb_search_results_listbox_frame = {
   type = 'frame_style',
   parent = 'rb_listbox_frame',
   height = 196
+}
+
+styles.rb_icon_slot_table_frame = {
+  type = 'frame_style',
+  padding = 0,
+  graphical_set = {
+    base = {
+      position = {85,0},
+      corner_size = 8,
+      draw_type = 'outer',
+      center = {position={42,8}, size=1}
+    },
+    shadow = default_inner_shadow
+  },
+  background_graphical_set = {
+    base = {
+      position = {282, 17},
+      corner_size = 8,
+      overall_tiling_horizontal_padding = 4,
+      overall_tiling_horizontal_size = 32,
+      overall_tiling_horizontal_spacing = 8,
+      overall_tiling_vertical_padding = 4,
+      overall_tiling_vertical_size = 32,
+      overall_tiling_vertical_spacing = 8
+    }
+  }
 }
 
 -- -----------------------------------------------------------------------------
@@ -193,32 +203,12 @@ styles.rb_listbox_for_keyboard_nav = {
 -- -----------------------------------------------------------------------------
 -- SCROLL PANE STYLES
 
-styles.rb_icon_slot_table_pane = {
+styles.rb_icon_slot_table_scrollpane = {
   type = 'scroll_pane_style',
+  parent = 'scroll_pane',
   padding = 0,
-  extra_padding_when_activated = 0,
-  extra_right_padding_when_activated = -12,
-  graphical_set = {
-    base = {
-      position = {85,0},
-      corner_size = 8,
-      draw_type = 'outer',
-      center = {position={42,8}, size=1}
-    },
-    shadow = default_inner_shadow
-  },
-  background_graphical_set = {
-    base = {
-      position = {282, 17},
-      corner_size = 8,
-      overall_tiling_horizontal_padding = 4,
-      overall_tiling_horizontal_size = 32,
-      overall_tiling_horizontal_spacing = 8,
-      overall_tiling_vertical_padding = 4,
-      overall_tiling_vertical_size = 32,
-      overall_tiling_vertical_spacing = 8
-    }
-  }
+  margin = 0,
+  extra_padding_when_activated = 0
 }
 
 -- -----------------------------------------------------------------------------

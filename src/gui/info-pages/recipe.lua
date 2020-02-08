@@ -30,6 +30,11 @@ gui.add_handlers('recipe', {
   crafters_listbox = {
     on_gui_selection_state_changed = gui.get_handler('common.open_crafter_from_listbox')
   },
+  quick_reference_button = {
+    on_gui_click = function(e)
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='recipe_quick_reference', object_name=global.players[e.player_index].gui.info.name})
+    end
+  },
   technologies_listbox = {
     on_gui_selection_state_changed = function(e)
       local _,_,name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
@@ -52,7 +57,8 @@ function self.create(player, player_table, content_container, name)
       {type='flow', style={horizontal_spacing=8}, direction='horizontal', children={
         gui.call_template('listbox_with_label', 'crafters'),
         gui.call_template('listbox_with_label', 'technologies')
-      }}
+      }},
+      {type='button', style={horizontally_stretchable=true}, caption={'rb-gui.open-quick-reference'}, handlers='quick_reference_button'}
     }}
   )
 

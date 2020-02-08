@@ -6,6 +6,9 @@ local event = require('lualib/event')
 local gui = require('lualib/gui')
 local mod_gui = require('mod-gui')
 
+-- locals
+local string_find = string.find
+
 -- self object
 local self = {}
 
@@ -13,8 +16,23 @@ local self = {}
 -- HANDLERS
 
 gui.add_handlers('recipe_quick_reference', {
-  close_button = {},
-  window = {}
+  close_button = {
+    on_gui_click = function(e)
+      self.close(game.get_player(e.player_index), global.players[e.player_index])
+    end
+  },
+  material_button = {
+    on_gui_click = function(e)
+      local _,_,object_name = string_find(e.element.sprite, '^.*/(.*)$')
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_name})
+    end
+  },
+  open_info_button = {
+    on_gui_click = function(e)
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='recipe',
+        object_name=global.players[e.player_index].gui.recipe_quick_reference.recipe_name})
+    end
+  }
 })
 
 -- -----------------------------------------------------------------------------
@@ -23,31 +41,75 @@ gui.add_handlers('recipe_quick_reference', {
 function self.open(player, player_table, recipe_name)
   -- build GUI structure
   local gui_data = gui.create(mod_gui.get_frame_flow(player), 'recipe_quick_reference', player.index,
-    {type='frame', style='dialog_frame', direction='vertical', handlers='window', save_as=true, children={
+    {type='frame', style='dialog_frame', direction='vertical', save_as='window', children={
       -- titlebar
       {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
-        {type='label', style='frame_title', caption={'rb-gui.recipe-quick-reference'}},
+        {type='label', style='frame_title', caption={'rb-gui.recipe-upper'}},
         {template='pushers.horizontal'},
+        {type='sprite-button', style='close_button', sprite='rb_nav_open_info', hovered_sprite='rb_nav_open_info_dark', clicked_sprite='rb_nav_open_info_dark',
+        handlers='open_info_button', tooltip={'rb-gui.view-recipe-details'}},
         {template='close_button'}
       }},
-      {type='frame', style='window_content_frame', direction='vertical', children={
-        -- ingredients
-        {type='label', style='rb_listbox_label', caption={'rb-gui.ingredients'}},
-        {type='scroll-pane', style='rb_icon_slot_table_pane', children={
-          {type='table', style='rb_icon_slot_table', column_count=4, save_as='ingredients_table'}
+      {type='frame', style={name='window_content_frame_packed'}, direction='vertical', children={
+        {type='frame', style='subheader_frame', direction='horizontal', children={
+          {type='label', style={name='subheader_caption_label', width=207}, caption=player_table.dictionary.recipe.translations[recipe_name]}
         }},
-        -- products
-        {type='label', style='rb_listbox_label', caption={'rb-gui.products'}},
-        {type='scroll-pane', style='rb_icon_slot_table_pane', children={
-          {type='table', style='rb_icon_slot_table', column_count=4, save_as='products_table'}
+        -- materials
+        {type='flow', style={padding=8}, direction='vertical', children={
+          gui.call_template('quick_reference_scrollpane', 'ingredients'),
+          gui.call_template('quick_reference_scrollpane', 'products')
         }}
       }}
     }}
   )
+
+  -- get data
+  local recipe_data = global.recipe_book.recipe[recipe_name]
+  local material_translations = player_table.dictionary.material.translations
+  local show_hidden = player_table.settings.show_hidden
+
+  local material_button_ids = {}
+
+  -- populate ingredients and products
+  for _,mode in ipairs{'ingredients', 'products'} do
+    local label = gui_data[mode..'_label']
+    local table = gui_data[mode..'_table']
+    local table_add = table.add
+    local materials_list = recipe_data[mode]
+    local delta = 0
+    if mode == 'ingredients' then
+      table_add{type='sprite-button', style='quick_bar_slot_button', sprite='quantity-time', number=recipe_data.energy}
+      delta = 1
+    end
+    for ri=1,#materials_list do
+      local material = materials_list[ri]
+      if show_hidden or not material.hidden then
+        material_button_ids[#material_button_ids+1] = table_add{type='sprite-button', style='quick_bar_slot_button', sprite=material.type..'/'..material.name,
+          number=material.amount, tooltip=material_translations[material.name]}.index
+      end
+    end
+    label.caption = {'rb-gui.'..mode, #table.children-delta}
+  end
+
+  -- register handler for material buttons
+  gui.register_handlers('recipe_quick_reference', 'material_button', {player_index=player.index, gui_filters=material_button_ids})
+
+  -- save to global
+  gui_data.recipe_name = recipe_name
+  player_table.gui.recipe_quick_reference = gui_data
 end
 
-function self.close()
+function self.close(player, player_table)
+  gui.destroy(player_table.gui.recipe_quick_reference.window, 'recipe_quick_reference', player.index)
+  player_table.gui.recipe_quick_reference = nil
+end
 
+function self.open_or_update(player, player_table, recipe_name)
+  -- check for pre-existing window
+  if player_table.gui.recipe_quick_reference then
+    self.close(player, player_table)
+  end
+  self.open(player, player_table, recipe_name)
 end
 
 -- -----------------------------------------------------------------------------

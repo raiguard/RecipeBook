@@ -41,6 +41,17 @@ gui.add_templates{
         {type='list-box', style='rb_listbox', save_as=name..'_listbox'}
       }}
     }}
+  end,
+  quick_reference_scrollpane = function(name)
+    return
+    {type='flow', direction='vertical', children={
+      {type='label', style='rb_listbox_label', save_as=name..'_label'},
+      {type='frame', style={name='rb_icon_slot_table_frame', maximal_height=160}, children={
+        {type='scroll-pane', style='rb_icon_slot_table_scrollpane', children={
+          {type='table', style={name='rb_icon_slot_table', width=200}, column_count=5, save_as=name..'_table'}
+        }}
+      }}
+    }}
   end
 }
 
@@ -234,14 +245,7 @@ local function setup_player(player, index)
   if player.mod_settings['rb-show-mod-gui-button'].value then
     mod_gui.get_button_flow(player).add{type='button', name='recipe_book_button', style=mod_gui.button_style, caption='RB', tooltip={'mod-name.RecipeBook'}}
   end
-  -- TEMPORARY DEBUGGING
-  mod_gui.get_button_flow(player).add{type='button', name='recipe_book_test', style=mod_gui.button_style, caption='Quick reference test'}
 end
-
--- TEMPORARY DEBUGGING
-event.on_gui_click(function(e)
-  event.raise(open_gui_event, {player_index=e.player_index, gui_type='recipe_quick_reference', object_name='advanced-circuit'})
-end, {gui_filters='recipe_book_test'})
 
 event.on_init(function()
   global.players = {}
@@ -350,7 +354,7 @@ event.register(open_gui_event, function(e)
     elseif info_guis[gui_type] then
       info_gui.open_or_update(player, player_table, gui_type, e.object_name, e.source_data)
     elseif gui_type == 'recipe_quick_reference' then
-      recipe_quick_reference_gui.open(player, player_table, e.object_name)
+      recipe_quick_reference_gui.open_or_update(player, player_table, e.object_name)
     end
   else
     -- set flag and tell the player that they cannot open it
