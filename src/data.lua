@@ -1,17 +1,6 @@
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- PROTOTYPES
 
--- DEBUGGING TOOL
-if mods['debugadapter'] then
-  data:extend{
-    {
-    type = 'custom-input',
-    name = 'DEBUG-INSPECT-GLOBAL',
-    key_sequence = 'CONTROL + SHIFT + ENTER'
-    }
-  }
-end
-
 local function mipped_nav_icon(name, position)
   return {
     type = 'sprite',
