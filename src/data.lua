@@ -39,6 +39,14 @@ data:extend{
     order = 'bd'
   },
   -- SPRITES
+  {
+    type = 'sprite',
+    name = 'rb_mod_gui_icon',
+    filename = '__RecipeBook__/graphics/recipe-book.png',
+    size = 32,
+    mipmap_count = 2,
+    flags = {'icon'}
+  },
   mipped_nav_icon('rb_nav_backward', {0,0}),
   mipped_nav_icon('rb_nav_backward_dark', {48,0}),
   mipped_nav_icon('rb_nav_forward', {0,32}),

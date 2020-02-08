@@ -248,8 +248,8 @@ local function setup_player(player, index)
     gui = {},
     settings = import_player_settings(player)
   }
-  data.gui.mod_gui_button = mod_gui.get_button_flow(player).add{type='button', name='recipe_book_button', style=mod_gui.button_style, caption='RB',
-    tooltip={'mod-name.RecipeBook'}}
+  data.gui.mod_gui_button = mod_gui.get_button_flow(player).add{type='sprite-button', name='recipe_book_button', style=mod_gui.button_style,
+    sprite='rb_mod_gui_icon', tooltip={'mod-name.RecipeBook'}}
   data.gui.mod_gui_button.visible = data.settings.show_mod_gui_button
   global.players[index] = data
 end

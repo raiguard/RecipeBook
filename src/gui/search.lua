@@ -155,7 +155,7 @@ function self.open(player, player_table, options)
         -- search bar
         {type='textfield', style={width=225, margin=8, bottom_margin=0}, clear_and_focus_on_right_click=true, handlers='search_textfield', save_as=true},
         -- results listbox
-        {type='frame', style={name='rb_search_results_listbox_frame', margin=8}, children={
+        {type='frame', style={name='rb_search_results_listbox_frame', margin=8, width=243, height=280}, children={
           {type='list-box', style='rb_listbox_for_keyboard_nav', handlers='results_listbox', save_as=true}
         }}
       }}
