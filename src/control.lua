@@ -247,6 +247,21 @@ local function setup_player(player, index)
   end
 end
 
+-- closes all of a player's open GUIs
+local function close_player_guis(player, player_table)
+  local gui_data = player_table.gui
+  player_table.flags.can_open_gui = false
+  if gui_data.search then
+    search_gui.close(player, player_table)
+  end
+  if gui_data.info then
+    info_gui.close(player, player_table)
+  end
+  if gui_data.recipe_quick_reference then
+    recipe_quick_reference_gui.close(player, player_table)
+  end
+end
+
 event.on_init(function()
   global.players = {}
   for i,p in pairs(game.players) do
@@ -266,9 +281,10 @@ end)
 
 -- retranslate all dictionaries for a player when they re-join
 event.on_player_joined_game(function(e)
-  global.players[e.player_index].flags.can_open_gui = false
-  -- TODO: close open GUIs
-  translate_whole(game.get_player(e.player_index))
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  close_player_guis(player, player_table)
+  translate_whole(player)
 end)
 
 -- when a translation is finished
@@ -413,9 +429,16 @@ event.on_configuration_changed(function(e)
           f(e)
         end
       end
-      -- generic migrations
-      build_recipe_data()
-      translate_for_all_players()
+    else
+      -- our mod was just added, so all of the generic migrations were done in on_init
+      return
     end
   end
+  -- generic migrations
+  log('generic migrations')
+  for _,p in ipairs(game.connected_players) do
+    close_player_guis(p, global.players[p.index])
+  end
+  build_recipe_data()
+  translate_for_all_players()
 end)
