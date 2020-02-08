@@ -80,6 +80,9 @@ handlers = {
         end
       end
       results_listbox.items = items
+      if e.selected_index then
+        results_listbox.scroll_to_item(e.selected_index)
+      end
     end
   },
   results_listbox = {
@@ -92,7 +95,7 @@ handlers = {
       if e.keyboard_confirm or gui_data.state ~= 'select_result' then
         local _,_,object_name = e.element.get_item(e.element.selected_index):find('^.*/(.*)%].*$')
         event.raise(open_gui_event, {player_index=e.player_index, gui_type=gui_data.category, object_name=object_name, source_data={mod_name='RecipeBook',
-          gui_name='search', category=gui_data.category, query=gui_data.search_textfield.text, selected_elem=e.element.selected_index}})
+          gui_name='search', category=gui_data.category, query=gui_data.search_textfield.text, selected_index=e.element.selected_index}})
         if e.keyboard_confirm then
           self.close(game.get_player(e.player_index), player_table)
         end
@@ -167,12 +170,15 @@ function self.open(player, player_table, options)
   gui_data.category = category
   player.opened = gui_data.search_textfield
   gui_data.search_textfield.focus()
+  if options.query then
+    gui_data.search_textfield.text = options.query
+  end
 
   -- add to global
   player_table.gui.search = gui_data
 
   -- populate initial results
-  handlers.search_textfield.on_gui_text_changed{player_index=player.index, text=''}
+  handlers.search_textfield.on_gui_text_changed{player_index=player.index, text=options.query or '', selected_index=options.selected_index}
 end
 
 function self.close(player, player_table)
@@ -180,14 +186,14 @@ function self.close(player, player_table)
   player_table.gui.search = nil
 end
 
-function self.toggle(player, player_table)
+function self.toggle(player, player_table, options)
   local search_window = player.gui.screen.rb_search_window
   if search_window then
     self.close(player, player_table)
   else
     -- check if we actually CAN open the GUI
     if player_table.flags.can_open_gui then
-      self.open(player, player_table)
+      self.open(player, player_table, options)
     else
       -- set flag and tell the player that they cannot open it
       player_table.flags.tried_to_open_gui = true
