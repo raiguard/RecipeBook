@@ -8,7 +8,6 @@ local gui = require('lualib/gui')
 -- locals
 local math_max = math.max
 local math_min = math.min
-local table_sort = table.sort
 
 -- because LUA doesn't have a math.round...
 -- from http://lua-users.org/wiki/SimpleRound

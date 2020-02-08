@@ -449,7 +449,7 @@ event.on_configuration_changed(function(e)
     end
   end
   -- generic migrations
-  log('generic migrations')
+  log('Applying generic migrations')
   for _,p in ipairs(game.connected_players) do
     close_player_guis(p, global.players[p.index])
   end

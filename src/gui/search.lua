@@ -9,7 +9,6 @@ local gui = require('lualib/gui')
 local self = {}
 
 -- locals
-local string_len = string.len
 local string_lower = string.lower
 local string_match = string.match
 
@@ -66,10 +65,6 @@ handlers = {
       local results_listbox = gui_data.results_listbox
       local items = {}
       local i = 0
-      -- if string_len(query) < 2 then
-      --   results_listbox.clear_items()
-      --   return
-      -- end
       for i1=1,#search_table do
         local t = search_table[i1]
         local translated_lower = t.translated_lower
