@@ -15,6 +15,7 @@ local string_match = string.match
 
 -- utilities
 local category_by_index = {'crafter', 'material', 'recipe'}
+local category_to_index = {crafter=1, material=2, recipe=3}
 
 -- -----------------------------------------------------------------------------
 -- HANDLERS
@@ -128,7 +129,9 @@ gui.add_handlers('search', handlers)
 -- -----------------------------------------------------------------------------
 -- GUI MANAGEMENT
 
-function self.open(player, player_table)
+function self.open(player, player_table, options)
+  options = options or {}
+  local category = options.category or player_table.settings.default_category
   -- create GUI structure
   local gui_data = gui.create(player.gui.screen, 'search', player.index,
     {type='frame', name='rb_search_window', style='dialog_frame', direction='vertical', save_as='window', children={
@@ -143,8 +146,8 @@ function self.open(player, player_table)
         {type='frame', style='subheader_frame', children={
           {type='label', style='subheader_caption_label', caption={'rb-gui.search-by'}},
           {template='pushers.horizontal'},
-          {type='drop-down', items={{'rb-gui.crafter'}, {'rb-gui.material'}, {'rb-gui.recipe'}}, selected_index=2, handlers='category_dropdown',
-            save_as=true}
+          {type='drop-down', items={{'rb-gui.crafter'}, {'rb-gui.material'}, {'rb-gui.recipe'}}, selected_index=category_to_index[category],
+            handlers='category_dropdown', save_as=true}
         }},
         -- search bar
         {type='textfield', style={width=225, margin=8, bottom_margin=0}, clear_and_focus_on_right_click=true, handlers='search_textfield', save_as=true},
@@ -161,7 +164,7 @@ function self.open(player, player_table)
 
   -- gui state
   gui_data.state = 'search'
-  gui_data.category = 'material'
+  gui_data.category = category
   player.opened = gui_data.search_textfield
   gui_data.search_textfield.focus()
 
