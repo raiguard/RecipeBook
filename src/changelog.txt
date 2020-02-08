@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.1
+Date: ????
+  Features:
+    - Using the hotkey while hovering over a pipe, pump, or storage tank will open its fluid's material page.
+
+---------------------------------------------------------------------------------------------------
 Version: 1.0.0
 Date: 2020-02-09
   Features:

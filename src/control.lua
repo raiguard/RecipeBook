@@ -346,10 +346,34 @@ event.register(translation.finish_event, function(e)
   end
 end)
 
--- toggle the search GUI when the button or the hotkey are used
+local open_fluid_types = {
+  ['pipe'] = true,
+  ['pipe-to-ground'] = true,
+  ['storage-tank'] = true,
+  ['pump'] = true,
+  ['offshore-pump'] = true
+}
+
+-- recipe book hotkey (default CONTROL + B)
 event.register('rb-toggle-search', function(e)
-  search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index])
+  -- get player's currently selected entity to check for a fluid filter
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local selected = player.selected
+  if selected and selected.valid and open_fluid_types[selected.type] then
+    local fluidbox = selected.fluidbox
+    if fluidbox and fluidbox.valid then
+      local locked_fluid = fluidbox.get_locked_fluid(1)
+      if locked_fluid then
+        info_gui.open_or_update(player, player_table, 'material', locked_fluid)
+        return
+      end
+    end
+  end
+  search_gui.toggle(player, player_table)
 end)
+
+-- mod gui button
 event.on_gui_click(function(e)
   -- read player's cursor stack to see if we should open the material GUI
   local player = game.get_player(e.player_index)
