@@ -148,6 +148,14 @@ local function build_recipe_data()
       local materials = prototype[mode]
       for i=1,#materials do
         local material = materials[i]
+        -- build amount string, to display probability, [min/max] amount - includes the 'x'
+        local amount = material.amount
+        local amount_string = amount and (tostring(amount)..'x') or ('['..material.min_amount..' - '..material.max_amount..'] x')
+        local probability = material.probability
+        if probability then
+          amount_string = amount_string .. (probability * 100) .. '%'
+        end
+        material.amount_string = amount_string
         -- add hidden flag to table
         material.hidden = material_book[material.name].hidden
       end
