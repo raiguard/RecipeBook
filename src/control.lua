@@ -153,7 +153,7 @@ local function build_recipe_data()
         local amount_string = amount and (tostring(amount)..'x') or ('['..material.min_amount..' - '..material.max_amount..'] x')
         local probability = material.probability
         if probability then
-          amount_string = amount_string .. (probability * 100) .. '%'
+          amount_string = amount_string..' '..tostring(probability * 100)..'%'
         end
         material.amount_string = amount_string
         -- add hidden flag to table
