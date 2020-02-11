@@ -329,6 +329,13 @@ event.register(translation.finish_event, function(e)
     end
   end
 
+  -- when a player requests a retranslation of all dictionaries
+  event.register(translation.retranslate_all_event, function(e)
+    local player = game.get_player(e.player_index)
+    close_player_guis(player, global.players[e.player_index])
+    translate_whole(game.get_player(e.player_index))
+  end)
+
   -- add to player table
   player_table.dictionary[e.dictionary_name] = {
     lookup = lookup,
@@ -365,7 +372,7 @@ event.register('rb-toggle-search', function(e)
     if fluidbox and fluidbox.valid then
       local locked_fluid = fluidbox.get_locked_fluid(1)
       if locked_fluid then
-        info_gui.open_or_update(player, player_table, 'material', locked_fluid)
+        event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=locked_fluid})
         return
       end
     end
@@ -381,9 +388,9 @@ event.on_gui_click(function(e)
   local cursor_stack = player.cursor_stack
   if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read then
     -- the player is holding something, so open to its material GUI
-    info_gui.open_or_update(player, player_table, 'material', cursor_stack.name)
+    event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=cursor_stack.name})
   else
-    search_gui.toggle(player, player_table)
+    event.raise(open_gui_event, {player_index=e.player_index, gui_type='search'})
   end
 end, {gui_filters='recipe_book_button'})
 
@@ -404,6 +411,8 @@ event.register(open_gui_event, function(e)
   if player_table.flags.can_open_gui then
     -- check for existing GUI
     if gui_type == 'search' then
+      -- don't do anything if it's already open
+      if player_table.gui.search then return end
       search_gui.open(player, player_table)
     elseif info_guis[gui_type] then
       info_gui.open_or_update(player, player_table, gui_type, e.object_name, e.source_data)

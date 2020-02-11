@@ -320,7 +320,7 @@ local function setup_remote()
     })
     commands.add_command(
       'retranslate-all-dictionaries',
-      {'rb-command-help.retranslate-all-dictionaries'},
+      '- retranslates all of your personal dictionaries',
       function(e)
         event.raise(translation.retranslate_all_event, {player_index=e.player_index})
       end
