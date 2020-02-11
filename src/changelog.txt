@@ -1,8 +1,13 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.0.1
+Version: 1.1.0
 Date: ????
   Features:
-    - Using the hotkey while hovering over a pipe, pump, or storage tank will open its fluid's material page.
+    - Using the hotkey while hovering over a pipe, pump, or storage tank will open its fluid's material page
+    - Added support for the /retranslate-all-dictionaries command, which will retranslate all of your dictionaries
+  Bugfixes:
+    - Fixed a crash when there is more than one player on the map in some cases
+    - Fixed the translation module doing extraneous translating
+    - Fixed the translation module would never stop translating if the previous translation finished before you restarted it
 
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.0
