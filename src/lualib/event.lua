@@ -137,7 +137,9 @@ function event.register(id, handler, options)
       for i=1,#players do
         if players[i] == player_index then
           -- don't do anything
-          log('Tried to re-register \''..name..'\' for player '..player_index..', skipping!')
+          if not options.suppress_logging then
+            log('Tried to re-register conditional event \''..name..'\' for player '..player_index..', skipping!')
+          end
           return event
         end
       end
@@ -179,7 +181,9 @@ function event.register(id, handler, options)
       -- if it is a conditional event,
       if t.handler == handler and not name then
         -- remove handler for re-insertion at the bottom
-        log('Re-registering existing event ID, moving to bottom')
+        if not options.suppress_logging then
+          log('Re-registering existing event \''..n..'\', moving to bottom')
+        end
         table.remove(registry, i)
       end
     end
