@@ -46,12 +46,15 @@ handlers = {
     on_gui_confirmed = function(e)
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.search
+      local results_listbox = gui_data.results_listbox
+      -- don't do anything if the listbox is empty
+      if #results_listbox.items == 0 then return end
       -- set initial selected index
-      gui_data.results_listbox.selected_index = 1
+      results_listbox.selected_index = 1
       -- set GUI state
       gui_data.state = 'select_result'
       game.get_player(e.player_index).opened = gui_data.results_listbox
-      gui_data.results_listbox.focus()
+      results_listbox.focus()
       -- register navigation confirmation handler
       gui.register_handlers('search', 'results_nav', {player_index=e.player_index})
     end,
