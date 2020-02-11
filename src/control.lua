@@ -458,7 +458,17 @@ remote.add_interface('RecipeBook', {
 -- MIGRATIONS
 
 -- table of migration functions
-local migrations = {}
+local migrations = {
+  ['1.1.0'] = function(e)
+    -- update active_translations_count to properly reflect the active translations
+    local __translation = global.__lualib.translation
+    local count = 0
+    for _,t in pairs(__translation.players) do
+      count = count + t.active_translations_count
+    end
+    __translation.active_translations_count = count
+  end
+}
 
 -- returns true if v2 is newer than v1, false if otherwise
 local function compare_versions(v1, v2)
