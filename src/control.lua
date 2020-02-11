@@ -152,7 +152,7 @@ local function build_recipe_data()
         local amount = material.amount
         local amount_string = amount and (tostring(amount)..' x') or (material.min_amount..'-'..material.max_amount..' x')
         local probability = material.probability
-        if probability then
+        if probability and probability < 1 then
           amount_string = tostring(probability * 100)..'% '..amount_string
         end
         material.amount_string = amount_string
