@@ -366,7 +366,8 @@ local open_fluid_types = {
   ['pipe-to-ground'] = true,
   ['storage-tank'] = true,
   ['pump'] = true,
-  ['offshore-pump'] = true
+  ['offshore-pump'] = true,
+  ['fluid-wagon'] = true
 }
 
 -- recipe book hotkey (default CONTROL + B)
@@ -375,13 +376,15 @@ event.register('rb-toggle-search', function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
   local selected = player.selected
-  if selected and selected.valid and open_fluid_types[selected.type] then
-    local fluidbox = selected.fluidbox
-    if fluidbox and fluidbox.valid then
-      local locked_fluid = fluidbox.get_locked_fluid(1)
-      if locked_fluid then
-        event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=locked_fluid})
-        return
+  if player.mod_settings['rb-open-fluid-hotkey'].value then
+    if selected and selected.valid and open_fluid_types[selected.type] then
+      local fluidbox = selected.fluidbox
+      if fluidbox and fluidbox.valid then
+        local locked_fluid = fluidbox.get_locked_fluid(1)
+        if locked_fluid then
+          event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=locked_fluid})
+          return
+        end
       end
     end
   end
