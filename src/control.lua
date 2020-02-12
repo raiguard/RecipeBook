@@ -272,6 +272,12 @@ local function close_player_guis(player, player_table)
   end
 end
 
+-- close the player's GUIs, then start translating
+local function close_guis_then_translate(e)
+  local player = game.get_player(e.player_index)
+  close_player_guis(player, global.players[e.player_index])
+  translate_whole(game.get_player(e.player_index))
+end
 
 event.on_init(function()
   global.players = {}
@@ -280,6 +286,11 @@ event.on_init(function()
   end
   build_recipe_data()
   translate_for_all_players()
+  event.register(translation.retranslate_all_event, close_guis_then_translate)
+end)
+
+event.on_load(function()
+  event.register(translation.retranslate_all_event, close_guis_then_translate)
 end)
 
 -- player insertion and removal
@@ -336,13 +347,6 @@ event.register(translation.finish_event, function(e)
       end
     end
   end
-
-  -- when a player requests a retranslation of all dictionaries
-  event.register(translation.retranslate_all_event, function(e)
-    local player = game.get_player(e.player_index)
-    close_player_guis(player, global.players[e.player_index])
-    translate_whole(game.get_player(e.player_index))
-  end)
 
   -- add to player table
   player_table.dictionary[e.dictionary_name] = {

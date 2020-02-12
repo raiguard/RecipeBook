@@ -280,7 +280,7 @@ function event.generate_id(name)
   if not custom_id_registry[name] then
     custom_id_registry[name] = script.generate_event_name()
   end
-  return custom_id_registry[name], event
+  return custom_id_registry[name]
 end
 
 -- -------------------------------------
