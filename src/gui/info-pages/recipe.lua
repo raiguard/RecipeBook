@@ -87,7 +87,8 @@ function self.create(player, player_table, content_container, name)
       local material = materials_list[ri]
       if show_hidden or not material.hidden then
         items_index = items_index + 1
-        items[items_index] = '[img='..material.type..'/'..material.name..']  '..material.amount_string..' '..material_translations[material.name]
+        items[items_index] = '[img='..material.type..'/'..material.name..']  [font=default-semibold]'..material.amount_string..'[/font] '
+          ..material_translations[material.name]
       end
     end
     listbox.items = items
@@ -109,14 +110,14 @@ function self.create(player, player_table, content_container, name)
     local items = {}
     local items_index = 0
     if recipe_data.hand_craftable then
-      items[1] = '[img=entity/character]  ('..recipe_data.energy..'s) '..dictionary.other.translations.character
+      items[1] = '[img=entity/character]  [font=default-semibold]('..recipe_data.energy..'s)[/font] '..dictionary.other.translations.character
       items_index = 1
     end
     for ri=1,#crafters_list do
       local crafter = crafters_list[ri]
       if show_hidden or not crafter.hidden then
         items_index = items_index + 1
-        items[items_index] = '[img=entity/'..crafter.name..']  ('..math_round(recipe_data.energy/crafter.crafting_speed,2)..'s) '
+        items[items_index] = '[img=entity/'..crafter.name..']  [font=default-semibold]('..math_round(recipe_data.energy/crafter.crafting_speed,2)..'s)[/font] '
           ..crafter_translations[crafter.name]
       end
     end
