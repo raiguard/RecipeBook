@@ -64,17 +64,31 @@ handlers = {
       local show_hidden = player_table.settings.show_hidden
       local query = string_lower(e.text)
       local category = gui_data.category
-      local search_table = player_table.dictionary[category].search
+      local objects = global.recipe_book[category]
+      local dictionary = player_table.dictionary[category]
+      local lookup_lower = dictionary.lookup_lower
+      local sorted_translations = dictionary.sorted_translations
+      local translations = dictionary.translations
       local results_listbox = gui_data.results_listbox
+      local skip_matching = query == ''
       local items = {}
       local i = 0
-      for i1=1,#search_table do
-        local t = search_table[i1]
-        local translated_lower = t.translated_lower
-        if string_match(translated_lower, query) and (show_hidden or not t.hidden) then
-          local caption = '[img='..t.sprite_class..'/'..t.internal..']  '..t.translated
-          i = i + 1
-          items[i] = caption
+      for i1=1,#sorted_translations do
+        local translation = sorted_translations[i1]
+        if skip_matching or string_match(translation, query) then
+          local names = lookup_lower[translation]
+          if names then
+            for i2=1,#names do
+              local name = names[i2]
+              local t = objects[name]
+              -- check conditions
+              if (show_hidden or not t.hidden) then
+                local caption = '[img='..t.sprite_class..'/'..name..']  '..translations[name] -- get the non-lowercase version
+                i = i + 1
+                items[i] = caption
+              end
+            end
+          end
         end
       end
       results_listbox.items = items

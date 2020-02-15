@@ -217,7 +217,7 @@ end
 
 local function translate_whole(player)
   for name,data in pairs(global.__lualib.translation.translation_data) do
-    translation.start(player, name, data, {include_failed_translations=true})
+    translation.start(player, name, data, {include_failed_translations=true, lowercase_sorted_translations=true})
   end
 end
 
@@ -325,33 +325,11 @@ event.register(translation.finish_event, function(e)
   local player_table = global.players[e.player_index]
   if not player_table.dictionary then player_table.dictionary = {} end
 
-  -- create searchable array
-  local data = global.recipe_book[e.dictionary_name]
-  local lookup = e.lookup
-  local search = {}
-  local sorted_results = e.sorted_results
-  if e.dictionary_name ~= 'technology' and e.dictionary_name ~= 'other' then
-    -- si: search index; ri: results index; ii: internals index
-    local si = 0
-    -- create an entry in the search table for every prototype that each result matches with
-    for ri=1,#sorted_results do
-      local translated = sorted_results[ri]
-      local internals = lookup[translated]
-      for ii=1,#internals do
-        local internal = internals[ii]
-        local object_data = data[internal]
-        si = si + 1
-        -- get whether or not it's hidden so we can include or not include it depending on the user's settings
-        search[si] = {internal=internal, translated=translated, translated_lower=string_lower(translated), hidden=object_data.hidden,
-          sprite_class=object_data.sprite_class}
-      end
-    end
-  end
-
   -- add to player table
   player_table.dictionary[e.dictionary_name] = {
-    lookup = lookup,
-    search = search,
+    lookup = e.lookup,
+    lookup_lower = e.lookup_lower,
+    sorted_translations = e.sorted_translations,
     translations = e.translations
   }
 
