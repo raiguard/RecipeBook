@@ -101,14 +101,11 @@ local function sort_translated_string(e)
         else
           -- do this only if the result will be the same for all internal names
           if success then
-            -- convert to lowercase first if wanted
-            if data.convert_to_lowercase then
-              result = string_lower(result)
-            end
             -- add to lookup table
             data.lookup[result] = internal_names
+            data.lookup_lower[string_lower(result)] = internal_names
             -- add to sorted results table
-            data.sorted_results[#data.sorted_results+1] = result
+            data.sorted_translations[#data.sorted_translations+1] = data.lowercase_sorted_translations and string_lower(result) or result
           end
 
           -- for every internal name that this string applies do
@@ -117,14 +114,14 @@ local function sort_translated_string(e)
             -- set result to internal name if the translation failed and the option is active
             if not success and include_failed_translations then
               result = internal
-              -- add to lookup and sorted_results tables here, as each iteration will have a different name
+              -- add to lookup and sorted_translations tables here, as each iteration will have a different name
               local lookup = data.lookup[result]
               if lookup then
                 lookup[#lookup+1] = internal
               else
                 data.lookup[result] = {internal}
               end
-              data.sorted_results[#data.sorted_results+1] = result
+              data.sorted_translations[#data.sorted_translations+1] = result
             -- convert to lowercase if the option is active and the translation succeeded
             elseif data.convert_to_lowercase then
               result = string_lower(result)
@@ -141,13 +138,13 @@ local function sort_translated_string(e)
         -- check if this dictionary has finished translation
         if data.registry_index_size == 0 then
           -- sort sorted results table
-          table_sort(data.sorted_results)
+          table_sort(data.sorted_translations)
           -- decrement active translation counters
           __translation.active_translations_count = __translation.active_translations_count - 1
           player_data.active_translations_count = player_data.active_translations_count - 1
           -- raise finished event with the output tables
           event.raise(translation.finish_event, {player_index=e.player_index, dictionary_name=dictionary_name, lookup=data.lookup,
-            sorted_results=data.sorted_results, translations=data.translations})
+            lookup_lower=data.lookup_lower, sorted_translations=data.sorted_translations, translations=data.translations})
           -- remove from active translations table
           player_data.active_translations[dictionary_name] = nil
 
@@ -224,11 +221,12 @@ function translation.start(player, dictionary_name, data, options)
     registry_index = registry_index,
     registry_index_size = table_size(registry_index), -- used to determine when the translation has finished
     -- options
-    convert_to_lowercase = options.convert_to_lowercase,
+    lowercase_sorted_translations = options.lowercase_sorted_translations,
     include_failed_translations = options.include_failed_translations,
     -- output
     lookup = {},
-    sorted_results = {},
+    lookup_lower = {},
+    sorted_translations = {},
     translations = {}
   }
 
