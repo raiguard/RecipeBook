@@ -273,7 +273,10 @@ function translation.cancel(player, dictionary_name)
   if player_data.active_translations_count == 0 then
     -- deregister events for this player
     event.deregister(defines.events.on_string_translated, sort_translated_string, 'translation_sort_result', player.index)
-    event.deregister(defines.events.on_tick, translate_batch, 'translation_translate_batch', player.index)
+    -- only deregister this if it's actually registered
+    if event.is_registered('translation_translate_batch', player.index) then
+      event.deregister(defines.events.on_tick, translate_batch, 'translation_translate_batch', player.index)
+    end
     -- reset for the next time stuff is translated
     player_data.next_index = 0
     player_data.strings = {}
@@ -322,7 +325,7 @@ local function setup_remote()
       'retranslate-all-dictionaries',
       '- retranslates all of your personal dictionaries',
       function(e)
-        event.raise(translation.retranslate_all_event, {player_index=e.player_index})
+        event.raise(event.generate_id('retranslate_all_event'), {player_index=e.player_index})
       end
     )
   end
@@ -361,12 +364,11 @@ event.on_player_joined_game(function(e)
   setup_player(e.player_index)
 end, {insert_at_front=true}) -- guarantee that this will be run first to avoid crashes later on
 
--- cancel all translations for the player and destroy their global data
+-- cancel all translations for the player when they leave
 event.on_player_left_game(function(e)
   local player_translation = global.__lualib.translation.players[e.player_index]
   if player_translation.active_translations_count > 0 then
     translation.cancel_all_for_player(game.get_player(e.player_index))
-    global.__lualib.translation.players[e.player_index] = nil
   end
 end)
 

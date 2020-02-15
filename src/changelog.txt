@@ -1,9 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.3
+Date: 2020-02-15
+  Bugfixes:
+    - Fixed a crash when opening a material from the recipe page (bad pattern matching)
+---------------------------------------------------------------------------------------------------
 Version: 1.1.2
 Date: 2020-02-12
   Bugfixes:
     - Fixed incompatibilities with Quick Item Search
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.1
 Date: 2020-02-12
@@ -11,7 +15,6 @@ Date: 2020-02-12
     - Recipe amounts and crafting times are now shown in a slightly bold font
   Bugfixes:
     - Fixed a crash when reading a product with a variable amount of materials
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.0
 Date: 2020-02-11
@@ -25,7 +28,6 @@ Date: 2020-02-11
     - Fixed a crash when there was more than one player on the map in some cases
     - Fixed the translation module doing extraneous translating
     - Fixed the translation module would never stop translating if the previous translation finished before you restarted it
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.0
 Date: 2020-02-09

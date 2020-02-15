@@ -53,7 +53,7 @@ gui.add_templates{
 -- common GUI handlers
 gui.add_handlers('common', {
   generic_open_from_listbox = function(e)
-    local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), '^%[img=(.*)/(.*)%].*$')
+    local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), '^%[img=(.-)/(.-)%].*$')
     event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object_name=object_name})
   end,
   open_material_from_listbox = function(e)
@@ -61,12 +61,12 @@ gui.add_handlers('common', {
     if string_sub(selected_item, 1, 1) == ' ' then
       e.element.selected_index = 0
     else
-      local _,_,object_name = string_find(selected_item, '^.*/(.*)%].*$')
+      local _,_,object_name = string_find(selected_item, '^%[img=.-/(.-)%].*$')
       event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_name})
     end
   end,
   open_crafter_from_listbox = function(e)
-    local _,_,object_name = string_find(e.element.get_item(e.element.selected_index), '^.*/(.*)%].*$')
+    local _,_,object_name = string_find(e.element.get_item(e.element.selected_index), '^%[img=.-/(.-)%].*$')
     if object_name == 'character' then
       e.element.selected_index = 0
     else
