@@ -15,6 +15,9 @@ open_gui_event = event.generate_id('open_gui')
 reopen_source_event = event.generate_id('reopen_source')
 info_guis = {crafter=true, material=true, recipe=true}
 
+-- constants
+local INTERFACE_VERSION = 1
+
 -- locals
 local string_find = string.find
 local string_lower = string.lower
@@ -433,7 +436,8 @@ remote.add_interface('RecipeBook', {
     -- raise internal mod event
     event.raise(open_gui_event, {player_index=player_index, gui_type=category, object_name=object_name, source_data=source_data})
   end,
-  reopen_source_event = function() return reopen_source_event end
+  reopen_source_event = function() return reopen_source_event end,
+  version = function() return INTERFACE_VERSION end
 })
 
 -- -----------------------------------------------------------------------------
