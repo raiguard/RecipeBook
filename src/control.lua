@@ -1,14 +1,11 @@
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- CONTROL SCRIPTING
 
--- debug adapter
-pcall(require,'__debugadapter__/debugadapter.lua')
-
 -- dependencies
-local event = require('lualib/event')
-local gui = require('lualib/gui')
+local event = require('__RaiLuaLib__.lualib.event')
+local gui = require('__RaiLuaLib__.lualib.gui')
 local mod_gui = require('mod-gui')
-local translation = require('lualib/translation')
+local translation = require('__RaiLuaLib__.lualib.translation')
 
 -- globals
 open_gui_event = event.generate_id('open_gui')
@@ -79,9 +76,9 @@ gui.add_handlers('common', {
 })
 
 -- modules
-local search_gui = require('gui/search')
-local recipe_quick_reference_gui = require('gui/recipe-quick-reference')
-local info_gui = require('gui/info-base')
+local search_gui = require('gui.search')
+local recipe_quick_reference_gui = require('gui.recipe-quick-reference')
+local info_gui = require('gui.info-base')
 
 -- -----------------------------------------------------------------------------
 -- RECIPE DATA
@@ -130,6 +127,7 @@ local function build_recipe_data()
       hidden = hidden,
       ingredient_in = {},
       product_of = {},
+      unlocked_by = {},
       sprite_class = is_fluid and 'fluid' or 'item'
     }
     translation_data.material[#translation_data.material+1] = {internal=name, localised=prototype.localised_name}
@@ -169,7 +167,7 @@ local function build_recipe_data()
     local category = prototype.category
     for crafter_name,crafter_data in pairs(recipe_book.crafter) do
       if crafter_data.categories[category] then
-        data.made_in[#data.made_in+1] = {name=crafter_name, crafting_speed=crafter_data.crafting_speed, hidden=crafter_data.hidden}
+        data.made_in[#data.made_in+1] = crafter_name
         crafter_data.recipes[#crafter_data.recipes+1] = {name=name, hidden=prototype.hidden}
       end
     end
@@ -179,7 +177,7 @@ local function build_recipe_data()
       local ingredient = ingredients[i]
       local ingredient_data = recipe_book.material[ingredient.name]
       if ingredient_data then
-        ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = {name=name, hidden=prototype.hidden}
+        ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
       end
     end
     -- material: product of
@@ -188,7 +186,7 @@ local function build_recipe_data()
       local product = products[i]
       local product_data = recipe_book.material[product.name]
       if product_data then
-        product_data.product_of[#product_data.product_of+1] = {name=name, hidden=prototype.hidden}
+        product_data.product_of[#product_data.product_of+1] = name
       end
     end
     -- insert into recipe book
@@ -197,12 +195,13 @@ local function build_recipe_data()
     translation_data.recipe[#translation_data.recipe+1] = {internal=name, localised=prototype.localised_name}
   end
 
-  -- iterate technologies (to populate the recipe unlocked_by tables)
+  -- iterate technologies
   for name,prototype in pairs(game.technology_prototypes) do
     for _,modifier in ipairs(prototype.effects) do
       if modifier.type == 'unlock-recipe' then
+        -- add to recipe data
         local recipe = recipe_book.recipe[modifier.recipe]
-        recipe.unlocked_by[#recipe.unlocked_by+1] = {name=name, hidden=prototype.hidden}
+        recipe.unlocked_by[#recipe.unlocked_by+1] = name
       end
     end
     translation_data.technology[#translation_data.technology+1] = {internal=prototype.name, localised=prototype.localised_name}

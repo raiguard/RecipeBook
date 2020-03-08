@@ -2,8 +2,8 @@
 -- SEARCH GUI
 
 -- dependencies
-local event = require('lualib/event')
-local gui = require('lualib/gui')
+local event = require('__RaiLuaLib__.lualib.event')
+local gui = require('__RaiLuaLib__.lualib.gui')
 
 -- self object
 local self = {}
@@ -148,7 +148,7 @@ function self.open(player, player_table, options)
   options = options or {}
   local category = options.category or player_table.settings.default_category
   -- create GUI structure
-  local gui_data = gui.create(player.gui.screen, 'search', player.index,
+  local gui_data = gui.build(player.gui.screen, {
     {type='frame', name='rb_search_window', style='dialog_frame', direction='vertical', save_as='window', children={
       -- titlebar
       {type='flow', style='rb_titlebar_flow', children={
@@ -165,14 +165,14 @@ function self.open(player, player_table, options)
             handlers='category_dropdown', save_as=true}
         }},
         -- search bar
-        {type='textfield', style={width=225, margin=8, bottom_margin=0}, clear_and_focus_on_right_click=true, handlers='search_textfield', save_as=true},
+        {type='textfield', style_mods={width=225, margin=8, bottom_margin=0}, clear_and_focus_on_right_click=true, handlers='search_textfield', save_as=true},
         -- results listbox
-        {type='frame', style={name='rb_search_results_listbox_frame', margin=8}, children={
+        {type='frame', style='rb_search_results_listbox_frame', style_mods={margin=8}, children={
           {type='list-box', style='rb_listbox_for_keyboard_nav', handlers='results_listbox', save_as=true}
         }}
       }}
     }}
-  )
+  }, 'search', player.index)
   -- screen data
   gui_data.drag_handle.drag_target = gui_data.window
   gui_data.window.force_auto_center()
@@ -194,7 +194,8 @@ function self.open(player, player_table, options)
 end
 
 function self.close(player, player_table)
-  gui.destroy(player_table.gui.search.window, 'search', player.index)
+  gui.deregister_all('search', player.index)
+  player_table.gui.search.window.destroy()
   player_table.gui.search = nil
 end
 

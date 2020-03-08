@@ -2,8 +2,8 @@
 -- RECIPE GUI
 
 -- dependencies
-local event = require('lualib/event')
-local gui = require('lualib/gui')
+local event = require('__RaiLuaLib__.lualib.event')
+local gui = require('__RaiLuaLib__.lualib.gui')
 
 -- locals
 local math_max = math.max
@@ -12,8 +12,8 @@ local math_min = math.min
 -- because LUA doesn't have a math.round...
 -- from http://lua-users.org/wiki/SimpleRound
 local function math_round(num, numDecimalPlaces)
-local mult = 10^(numDecimalPlaces or 0)
-return math.floor(num * mult + 0.5) / mult
+  local mult = 10^(numDecimalPlaces or 0)
+  return math.floor(num * mult + 0.5) / mult
 end
 
 -- self object
@@ -47,20 +47,20 @@ gui.add_handlers('recipe', {
 -- GUI MANAGEMENT
 
 function self.create(player, player_table, content_container, name)
-  local gui_data = gui.create(content_container, 'recipe', player.index,
-    {type='flow', style={vertical_spacing=8}, direction='vertical', children={
-      {type='flow', style={horizontal_spacing=8}, direction='horizontal', children={
+  local gui_data = gui.build(content_container, {
+    {type='flow', style_mods={vertical_spacing=8}, direction='vertical', children={
+      {type='flow', style_mods={horizontal_spacing=8}, direction='horizontal', children={
         gui.call_template('listbox_with_label', 'ingredients'),
         gui.call_template('listbox_with_label', 'products')
       }},
-      {type='flow', style={horizontal_spacing=8}, direction='horizontal', children={
+      {type='flow', style_mods={horizontal_spacing=8}, direction='horizontal', children={
         gui.call_template('listbox_with_label', 'crafters'),
         gui.call_template('listbox_with_label', 'technologies')
       }},
-      {type='button', style={horizontally_stretchable=true}, caption={'rb-gui.open-quick-reference'}, mouse_button_filter={'left'},
+      {type='button', style_mods={horizontally_stretchable=true}, caption={'rb-gui.open-quick-reference'}, mouse_button_filter={'left'},
         handlers='quick_reference_button'}
     }}
-  )
+  }, 'recipe', player.index)
 
   -- get data
   local recipe_book = global.recipe_book
@@ -159,7 +159,8 @@ function self.create(player, player_table, content_container, name)
 end
 
 function self.destroy(player, content_container)
-  gui.destroy(content_container.children[1], 'recipe', player.index)
+  gui.deregister_all('recipe', player.index)
+  content_container.children[1].destroy()
 end
 
 -- -----------------------------------------------------------------------------

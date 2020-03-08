@@ -2,8 +2,8 @@
 -- BASE INFO GUI
 
 -- dependencies
-local event = require('lualib/event')
-local gui = require('lualib/gui')
+local event = require('__RaiLuaLib__.lualib.event')
+local gui = require('__RaiLuaLib__.lualib.gui')
 
 -- self object
 local self = {}
@@ -13,15 +13,15 @@ gui.add_templates{
   close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
     clicked_sprite='utility/close_black', handlers='close_button', mouse_button_filter={'left'}},
   pushers = {
-    horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
-    vertical = {type='empty-widget', style={vertically_stretchable=true}}
+    horizontal = {type='empty-widget', style_mods={horizontally_stretchable=true}},
+    vertical = {type='empty-widget', style_mods={vertically_stretchable=true}}
   }
 }
 
 -- info pages
 local pages = {}
 for n,_ in pairs(info_guis) do
-  pages[n] = require('gui/info-pages/'..n)
+  pages[n] = require('gui.info-pages.'..n)
 end
 
 -- locals
@@ -85,7 +85,7 @@ gui.add_handlers('info_base', handlers)
 
 function self.open(player, player_table, category, name, source_data)
   -- gui structure
-  local gui_data = gui.create(player.gui.screen, 'info_base', player.index,
+  local gui_data = gui.build(player.gui.screen, {
     {type='frame', name='rb_info_window', style='dialog_frame', direction='vertical', handlers='window', save_as=true, children={
       -- titlebar
       {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
@@ -93,7 +93,7 @@ function self.open(player, player_table, category, name, source_data)
           mouse_button_filter={'left'}, handlers='nav_backward_button', save_as=true},
         {type='sprite-button', style='close_button', sprite='rb_nav_forward', hovered_sprite='rb_nav_forward_dark', clicked_sprite='rb_nav_forward_dark',
           mouse_button_filter={'left'}, handlers='nav_forward_button', save_as=true},
-        {type='label', style={name='frame_title', left_padding=6}, save_as='window_title'},
+        {type='label', style='frame_title', style_mods={left_padding=6}, save_as='window_title'},
         {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
         {type='sprite-button', style='close_button', sprite='rb_nav_search', hovered_sprite='rb_nav_search_dark', clicked_sprite='rb_nav_search_dark',
           mouse_button_filter={'left'}, handlers='search_button'},
@@ -103,14 +103,14 @@ function self.open(player, player_table, category, name, source_data)
         -- toolbar
         {type='frame', style='subheader_frame', direction='horizontal', children={
           {type='sprite', style='rb_object_icon', save_as='object_icon'},
-          {type='label', style={name='subheader_caption_label', left_padding=0}, save_as='object_name'},
+          {type='label', style='subheader_caption_label', style_mods={left_padding=0}, save_as='object_name'},
           {template='pushers.horizontal'}
         }},
         -- content container
-        {type='flow', style={padding=8}, save_as='content_container'}
+        {type='flow', style_mods={padding=8}, save_as='content_container'}
       }}
     }}
-  )
+  }, 'info_base', player.index)
 
   -- drag handle
   gui_data.drag_handle.drag_target = gui_data.window
@@ -130,7 +130,8 @@ function self.close(player, player_table)
   -- destroy content / deregister handlers
   pages[gui_data.info.category].destroy(player, gui_data.info.base.content_container)
   -- destroy base
-  gui.destroy(gui_data.info.base.window, 'info_base', player.index)
+  gui.deregister_all('info_base', player.index)
+  gui_data.info.base.window.destroy()
   -- remove data from global
   gui_data.info = nil
   -- reset session history

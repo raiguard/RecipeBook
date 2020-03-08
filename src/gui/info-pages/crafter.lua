@@ -2,7 +2,7 @@
 -- CRAFTER GUI
 
 -- dependencies
-local gui = require('lualib/gui')
+local gui = require('__RaiLuaLib__.lualib.gui')
 
 -- self object
 local self = {}
@@ -20,9 +20,9 @@ gui.add_handlers('crafter', {
 -- GUI MANAGEMENT
 
 function self.create(player, player_table, content_container, name)
-  local gui_data = gui.create(content_container, 'crafter', player.index,
+  local gui_data = gui.build(content_container, {
     gui.call_template('listbox_with_label', 'recipes')
-  )
+  }, 'crafter', player.index)
 
   -- get data
   local crafter_data = global.recipe_book.crafter[name]
@@ -53,7 +53,8 @@ function self.create(player, player_table, content_container, name)
 end
 
 function self.destroy(player, content_container)
-  gui.destroy(content_container.children[1], 'crafter', player.index)
+  gui.deregister_all('crafter', player.index)
+  content_container.children[1].destroy()
 end
 
 -- -----------------------------------------------------------------------------

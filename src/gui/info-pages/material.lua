@@ -2,7 +2,7 @@
 -- INGREDIENT GUI
 
 -- dependencies
-local gui = require('lualib/gui')
+local gui = require('__RaiLuaLib__.lualib.gui')
 
 -- locals
 local math_max = math.max
@@ -25,12 +25,12 @@ gui.add_handlers('material', {
 -- GUI MANAGEMENT
 
 function self.create(player, player_table, content_container, name)
-  local gui_data = gui.create(content_container, 'material', player.index,
-    {type='flow', style={horizontal_spacing=8}, direction='horizontal', children={
+  local gui_data = gui.build(content_container, {
+    {type='flow', style_mods={horizontal_spacing=8}, direction='horizontal', children={
       gui.call_template('listbox_with_label', 'ingredient_in'),
       gui.call_template('listbox_with_label', 'product_of')
     }}
-  )
+  }, 'material', player.index)
 
   -- set up data
   local material_data = global.recipe_book.material[name]
@@ -69,7 +69,8 @@ function self.create(player, player_table, content_container, name)
 end
 
 function self.destroy(player, content_container)
-  gui.destroy(content_container.children[1], 'material', player.index)
+  gui.deregister_all('material', player.index)
+  content_container.children[1].destroy()
 end
 
 -- -----------------------------------------------------------------------------

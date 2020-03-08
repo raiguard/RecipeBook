@@ -2,8 +2,8 @@
 -- RECIPE QUICK REFERENCE GUI
 
 -- dependencies
-local event = require('lualib/event')
-local gui = require('lualib/gui')
+local event = require('__RaiLuaLib__.lualib.event')
+local gui = require('__RaiLuaLib__.lualib.gui')
 local mod_gui = require('mod-gui')
 
 -- locals
@@ -40,7 +40,7 @@ gui.add_handlers('recipe_quick_reference', {
 
 function self.open(player, player_table, recipe_name)
   -- build GUI structure
-  local gui_data = gui.create(mod_gui.get_frame_flow(player), 'recipe_quick_reference', player.index,
+  local gui_data = gui.build(mod_gui.get_frame_flow(player), {
     {type='frame', style='dialog_frame', direction='vertical', save_as='window', children={
       -- titlebar
       {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
@@ -50,18 +50,18 @@ function self.open(player, player_table, recipe_name)
         handlers='open_info_button', tooltip={'rb-gui.view-recipe-details'}, mouse_button_filter={'left'}},
         {template='close_button'}
       }},
-      {type='frame', style={name='window_content_frame_packed'}, direction='vertical', children={
+      {type='frame', style='window_content_frame_packed', direction='vertical', children={
         {type='frame', style='subheader_frame', direction='horizontal', children={
-          {type='label', style={name='subheader_caption_label', width=207}, caption=player_table.dictionary.recipe.translations[recipe_name]}
+          {type='label', style='subheader_caption_label', style_mods={width=207}, caption=player_table.dictionary.recipe.translations[recipe_name]}
         }},
         -- materials
-        {type='flow', style={padding=8}, direction='vertical', children={
+        {type='flow', style_mods={padding=8}, direction='vertical', children={
           gui.call_template('quick_reference_scrollpane', 'ingredients'),
           gui.call_template('quick_reference_scrollpane', 'products')
         }}
       }}
     }}
-  )
+  }, 'recipe_quick_reference', player.index)
 
   -- get data
   local recipe_data = global.recipe_book.recipe[recipe_name]
@@ -100,7 +100,8 @@ function self.open(player, player_table, recipe_name)
 end
 
 function self.close(player, player_table)
-  gui.destroy(player_table.gui.recipe_quick_reference.window, 'recipe_quick_reference', player.index)
+  gui.deregister_all('recipe_quick_reference', player.index)
+  player_table.gui.recipe_quick_reference.window.destroy()
   player_table.gui.recipe_quick_reference = nil
 end
 
