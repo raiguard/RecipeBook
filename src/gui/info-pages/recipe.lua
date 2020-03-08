@@ -65,6 +65,8 @@ function self.create(player, player_table, content_container, name)
   -- get data
   local recipe_book = global.recipe_book
   local recipe_data = recipe_book.recipe[name]
+  local crafters = recipe_book.crafter
+  local technologies = recipe_book.technology
   local dictionary = player_table.dictionary
   local crafter_translations = dictionary.crafter.translations
   local material_translations = dictionary.material.translations
@@ -114,11 +116,12 @@ function self.create(player, player_table, content_container, name)
       items_index = 1
     end
     for ri=1,#crafters_list do
-      local crafter = crafters_list[ri]
+      local crafter_name = crafters_list[ri]
+      local crafter = crafters[crafter_name]
       if show_hidden or not crafter.hidden then
         items_index = items_index + 1
-        items[items_index] = '[img=entity/'..crafter.name..']  [font=default-semibold]('..math_round(recipe_data.energy/crafter.crafting_speed,2)..'s)[/font] '
-          ..crafter_translations[crafter.name]
+        items[items_index] = '[img=entity/'..crafter_name..']  [font=default-semibold]('..math_round(recipe_data.energy/crafter.crafting_speed,2)..'s)[/font] '
+          ..crafter_translations[crafter_name]
       end
     end
     listbox.items = items
@@ -134,10 +137,11 @@ function self.create(player, player_table, content_container, name)
     local items = {}
     local items_index = 0
     for ri=1,#technologies_list do
-      local technology = technologies_list[ri]
+      local technology_name = technologies_list[ri]
+      local technology = technologies[technology_name]
       if show_hidden or not technology.hidden then
         items_index = items_index + 1
-        items[items_index] = '[img=technology/'..technology.name..']  '..technology_translations[technology.name]
+        items[items_index] = '[img=technology/'..technology_name..']  '..technology_translations[technology_name]
       end
     end
     listbox.items = items

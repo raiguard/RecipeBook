@@ -25,8 +25,8 @@ gui.add_templates{
   close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
     clicked_sprite='utility/close_black', handlers='close_button', mouse_button_filter={'left'}},
   pushers = {
-    horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
-    vertical = {type='empty-widget', style={vertically_stretchable=true}}
+    horizontal = {type='empty-widget', style_mods={horizontally_stretchable=true}},
+    vertical = {type='empty-widget', style_mods={vertically_stretchable=true}}
   },
   listbox_with_label = function(name)
     return
@@ -41,9 +41,9 @@ gui.add_templates{
     return
     {type='flow', direction='vertical', children={
       {type='label', style='rb_listbox_label', save_as=name..'_label'},
-      {type='frame', style={name='rb_icon_slot_table_frame', maximal_height=160}, children={
+      {type='frame', style='rb_icon_slot_table_frame', style_mods={maximal_height=160}, children={
         {type='scroll-pane', style='rb_icon_slot_table_scrollpane', children={
-          {type='table', style={name='rb_icon_slot_table', width=200}, column_count=5, save_as=name..'_table'}
+          {type='table', style='rb_icon_slot_table', style_mods={width=200}, column_count=5, save_as=name..'_table'}
         }}
       }}
     }}
@@ -89,7 +89,8 @@ local function build_recipe_data()
   local recipe_book = {
     crafter = {},
     material = {},
-    recipe = {}
+    recipe = {},
+    technology = {}
   }
   local translation_data = {
     crafter = {},
@@ -204,6 +205,7 @@ local function build_recipe_data()
         recipe.unlocked_by[#recipe.unlocked_by+1] = name
       end
     end
+    recipe_book.technology[name] = {hidden=prototype.hidden}
     translation_data.technology[#translation_data.technology+1] = {internal=prototype.name, localised=prototype.localised_name}
   end
 

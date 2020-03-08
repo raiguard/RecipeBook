@@ -36,6 +36,7 @@ function self.create(player, player_table, content_container, name)
   local material_data = global.recipe_book.material[name]
   local recipe_translations = player_table.dictionary.recipe.translations
   local show_hidden = player_table.settings.show_hidden
+  local recipes = global.recipe_book.recipe
   local rows = 0
 
   -- populate tables
@@ -46,10 +47,11 @@ function self.create(player, player_table, content_container, name)
     local items = {}
     local items_index = 0
     for ri=1,#recipe_list do
-      local recipe = recipe_list[ri]
+      local recipe_name = recipe_list[ri]
+      local recipe = recipes[recipe_name]
       if show_hidden or not recipe.hidden then
         items_index = items_index + 1
-        items[items_index] = '[img=recipe/'..recipe.name..']  '..(recipe_translations[recipe.name])
+        items[items_index] = '[img=recipe/'..recipe_name..']  '..(recipe_translations[recipe_name])
       end
     end
     listbox.items = items
