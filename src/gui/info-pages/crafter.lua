@@ -2,6 +2,7 @@
 -- CRAFTER GUI
 
 -- dependencies
+local event = require('__RaiLuaLib__.lualib.event')
 local gui = require('__RaiLuaLib__.lualib.gui')
 
 -- self object
@@ -47,13 +48,13 @@ function self.create(player, player_table, content_container, name)
   label.caption = {'rb-gui.craftable-recipes', items_index}
 
   -- register handler
-  gui.register_handlers('crafter', 'generic_listbox', {player_index=player.index, gui_filters=listbox})
+  event.enable_group('gui.crafter.generic_listbox', player.index, listbox)
 
   return gui_data
 end
 
 function self.destroy(player, content_container)
-  gui.deregister_all('crafter', player.index)
+  event.disable_group('gui.crafter', player.index)
   content_container.children[1].destroy()
 end
 

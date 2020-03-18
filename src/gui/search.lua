@@ -54,8 +54,8 @@ gui.handlers:extend{search={
       gui_data.state = 'select_result'
       game.get_player(e.player_index).opened = gui_data.results_listbox
       results_listbox.focus()
-      -- register navigation confirmation handler
-      gui.register_handlers('search', 'results_nav', {player_index=e.player_index})
+      -- enable navigation confirmation handler
+      event.enable_group('gui.search.results_nav', e.player_index)
     end,
     on_gui_text_changed = function(e)
       local player_table = global.players[e.player_index]
@@ -150,7 +150,7 @@ function self.open(player, player_table, options)
       {type='flow', style='rb_titlebar_flow', children={
         {type='label', style='frame_title', caption={'mod-name.RecipeBook'}},
         {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
-        {template='close_button'}
+        {template='close_button', handlers='search.close_button'}
       }},
       {type='frame', style='window_content_frame_packed', direction='vertical', children={
         -- toolbar
@@ -158,14 +158,14 @@ function self.open(player, player_table, options)
           {type='label', style='subheader_caption_label', caption={'rb-gui.search-by'}},
           {template='pushers.horizontal'},
           {type='drop-down', items={{'rb-gui.crafter'}, {'rb-gui.material'}, {'rb-gui.recipe'}}, selected_index=category_to_index[category],
-            handlers='search.category_dropdown', save_as=true}
+            handlers='search.category_dropdown', save_as='category_dropdown'}
         }},
         -- search bar
         {type='textfield', style_mods={width=225, margin=8, bottom_margin=0}, clear_and_focus_on_right_click=true, handlers='search.search_textfield',
-          save_as=true},
+          save_as='search_textfield'},
         -- results listbox
         {type='frame', style='rb_search_results_listbox_frame', style_mods={margin=8}, children={
-          {type='list-box', style='rb_listbox_for_keyboard_nav', handlers='search.results_listbox', save_as=true}
+          {type='list-box', style='rb_listbox_for_keyboard_nav', handlers='search.results_listbox', save_as='results_listbox'}
         }}
       }}
     }}
@@ -191,7 +191,7 @@ function self.open(player, player_table, options)
 end
 
 function self.close(player, player_table)
-  gui.deregister_all('search', player.index)
+  event.disable_group('gui.search', player.index)
   player_table.gui.search.window.destroy()
   player_table.gui.search = nil
 end

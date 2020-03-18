@@ -58,7 +58,7 @@ function self.create(player, player_table, content_container, name)
         gui.templates.listbox_with_label('technologies')
       }},
       {type='button', style_mods={horizontally_stretchable=true}, caption={'rb-gui.open-quick-reference'}, mouse_button_filter={'left'},
-        handlers='quick_reference_button'}
+        handlers='recipe.quick_reference_button'}
     }}
   }, 'recipe', player.index)
 
@@ -155,15 +155,15 @@ function self.create(player, player_table, content_container, name)
   gui_data.technologies_frame.style.height = height
 
   -- register handlers for listboxes
-  gui.register_handlers('recipe', 'material_listboxes', {player_index=player.index, gui_filters={gui_data.ingredients_listbox, gui_data.products_listbox}})
-  gui.register_handlers('recipe', 'crafters_listbox', {player_index=player.index, gui_filters=gui_data.crafters_listbox})
-  gui.register_handlers('recipe', 'technologies_listbox', {player_index=player.index, gui_filters=gui_data.technologies_listbox})
+  event.enable_group('gui.recipe.material_listboxes', player.index, {gui_data.ingredients_listbox, gui_data.products_listbox})
+  event.enable_group('gui.recipe.crafters_listbox', player.index, gui_data.crafters_listbox)
+  event.enable_group('gui.recipe.technologies_listbox', player.index, gui_data.technologies_listbox)
 
   return gui_data
 end
 
 function self.destroy(player, content_container)
-  gui.deregister_all('recipe', player.index)
+  event.disable_group('gui.recipe', player.index)
   content_container.children[1].destroy()
 end
 

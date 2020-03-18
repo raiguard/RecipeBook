@@ -2,6 +2,7 @@
 -- INGREDIENT GUI
 
 -- dependencies
+local event = require('__RaiLuaLib__.lualib.event')
 local gui = require('__RaiLuaLib__.lualib.gui')
 
 -- locals
@@ -64,14 +65,13 @@ function self.create(player, player_table, content_container, name)
   gui_data.ingredient_in_frame.style.height = height
   gui_data.product_of_frame.style.height = height
 
-  gui.register_handlers('material', 'generic_listbox', {player_index=player.index,
-    gui_filters={gui_data.ingredient_in_listbox, gui_data.product_of_listbox}})
+  event.enable_group('gui.material.generic_listbox', player.index, {gui_data.ingredient_in_listbox, gui_data.product_of_listbox})
 
   return gui_data
 end
 
 function self.destroy(player, content_container)
-  gui.deregister_all('material', player.index)
+  event.disable_group('gui.material', player.index)
   content_container.children[1].destroy()
 end
 

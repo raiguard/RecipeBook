@@ -72,18 +72,18 @@ gui.handlers:extend{info_base={
 function self.open(player, player_table, category, name, source_data)
   -- gui structure
   local gui_data = gui.build(player.gui.screen, {
-    {type='frame', name='rb_info_window', style='dialog_frame', direction='vertical', handlers='info_base.window', save_as=true, children={
+    {type='frame', name='rb_info_window', style='dialog_frame', direction='vertical', handlers='info_base.window', save_as='window', children={
       -- titlebar
       {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
         {type='sprite-button', style='close_button', sprite='rb_nav_backward', hovered_sprite='rb_nav_backward_dark', clicked_sprite='rb_nav_backward_dark',
-          mouse_button_filter={'left'}, handlers='info_base.nav_backward_button', save_as=true},
+          mouse_button_filter={'left'}, handlers='info_base.nav_backward_button', save_as='nav_backward_button'},
         {type='sprite-button', style='close_button', sprite='rb_nav_forward', hovered_sprite='rb_nav_forward_dark', clicked_sprite='rb_nav_forward_dark',
-          mouse_button_filter={'left'}, handlers='info_base.nav_forward_button', save_as=true},
+          mouse_button_filter={'left'}, handlers='info_base.nav_forward_button', save_as='nav_forward_button'},
         {type='label', style='frame_title', style_mods={left_padding=6}, save_as='window_title'},
         {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
         {type='sprite-button', style='close_button', sprite='rb_nav_search', hovered_sprite='rb_nav_search_dark', clicked_sprite='rb_nav_search_dark',
           mouse_button_filter={'left'}, handlers='info_base.search_button'},
-        {template='close_button'}
+        {template='close_button', handlers='info_base.close_button'}
       }},
       {type='frame', style='window_content_frame_packed', direction='vertical', children={
         -- toolbar
@@ -116,7 +116,7 @@ function self.close(player, player_table)
   -- destroy content / deregister handlers
   pages[gui_data.info.category].destroy(player, gui_data.info.base.content_container)
   -- destroy base
-  gui.deregister_all('info_base', player.index)
+  event.disable_group('gui.info_base', player.index)
   gui_data.info.base.window.destroy()
   -- remove data from global
   gui_data.info = nil

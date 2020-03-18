@@ -48,7 +48,7 @@ function self.open(player, player_table, recipe_name)
         {template='pushers.horizontal'},
         {type='sprite-button', style='close_button', sprite='rb_nav_open_info', hovered_sprite='rb_nav_open_info_dark', clicked_sprite='rb_nav_open_info_dark',
           handlers='recipe_quick_reference.open_info_button', tooltip={'rb-gui.view-recipe-details'}, mouse_button_filter={'left'}},
-        {template='close_button'}
+        {template='close_button', handlers='recipe_quick_reference.close_button'}
       }},
       {type='frame', style='window_content_frame_packed', direction='vertical', children={
         {type='frame', style='subheader_frame', direction='horizontal', children={
@@ -56,8 +56,8 @@ function self.open(player, player_table, recipe_name)
         }},
         -- materials
         {type='flow', style_mods={padding=8}, direction='vertical', children={
-          gui.call_template('quick_reference_scrollpane', 'ingredients'),
-          gui.call_template('quick_reference_scrollpane', 'products')
+          gui.templates.quick_reference_scrollpane('ingredients'),
+          gui.templates.quick_reference_scrollpane('products')
         }}
       }}
     }}
@@ -92,7 +92,7 @@ function self.open(player, player_table, recipe_name)
   end
 
   -- register handler for material buttons
-  gui.register_handlers('recipe_quick_reference', 'material_button', {player_index=player.index, gui_filters=material_button_ids})
+  event.enable_group('gui.recipe_quick_reference.material_button', player.index, material_button_ids)
 
   -- save to global
   gui_data.recipe_name = recipe_name
@@ -100,7 +100,7 @@ function self.open(player, player_table, recipe_name)
 end
 
 function self.close(player, player_table)
-  gui.deregister_all('recipe_quick_reference', player.index)
+  event.disable_group('gui.recipe_quick_reference', player.index)
   player_table.gui.recipe_quick_reference.window.destroy()
   player_table.gui.recipe_quick_reference = nil
 end
