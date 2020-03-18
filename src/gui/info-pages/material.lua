@@ -15,11 +15,11 @@ local self = {}
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
-gui.add_handlers('material', {
+gui.handlers:extend{material={
   generic_listbox = {
-    on_gui_selection_state_changed = gui.get_handler('common.generic_open_from_listbox')
+    on_gui_selection_state_changed = gui.handlers.common.generic_open_from_listbox
   }
-})
+}}
 
 -- -----------------------------------------------------------------------------
 -- GUI MANAGEMENT
@@ -27,8 +27,8 @@ gui.add_handlers('material', {
 function self.create(player, player_table, content_container, name)
   local gui_data = gui.build(content_container, {
     {type='flow', style_mods={horizontal_spacing=8}, direction='horizontal', children={
-      gui.call_template('listbox_with_label', 'ingredient_in'),
-      gui.call_template('listbox_with_label', 'product_of')
+      gui.templates.listbox_with_label('ingredient_in'),
+      gui.templates.listbox_with_label('product_of')
     }}
   }, 'material', player.index)
 

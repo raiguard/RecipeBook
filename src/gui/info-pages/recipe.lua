@@ -22,12 +22,12 @@ local self = {}
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
-gui.add_handlers('recipe', {
+gui.handlers:extend{recipe={
   material_listboxes = {
-    on_gui_selection_state_changed = gui.get_handler('common.open_material_from_listbox')
+    on_gui_selection_state_changed = gui.handlers.common.open_material_from_listbox
   },
   crafters_listbox = {
-    on_gui_selection_state_changed = gui.get_handler('common.open_crafter_from_listbox')
+    on_gui_selection_state_changed = gui.handlers.common.open_crafter_from_listbox
   },
   quick_reference_button = {
     on_gui_click = function(e)
@@ -41,7 +41,7 @@ gui.add_handlers('recipe', {
       game.get_player(e.player_index).open_technology_gui(name)
     end
   }
-})
+}}
 
 -- -----------------------------------------------------------------------------
 -- GUI MANAGEMENT
@@ -50,12 +50,12 @@ function self.create(player, player_table, content_container, name)
   local gui_data = gui.build(content_container, {
     {type='flow', style_mods={vertical_spacing=8}, direction='vertical', children={
       {type='flow', style_mods={horizontal_spacing=8}, direction='horizontal', children={
-        gui.call_template('listbox_with_label', 'ingredients'),
-        gui.call_template('listbox_with_label', 'products')
+        gui.templates.listbox_with_label('ingredients'),
+        gui.templates.listbox_with_label('products')
       }},
       {type='flow', style_mods={horizontal_spacing=8}, direction='horizontal', children={
-        gui.call_template('listbox_with_label', 'crafters'),
-        gui.call_template('listbox_with_label', 'technologies')
+        gui.templates.listbox_with_label('crafters'),
+        gui.templates.listbox_with_label('technologies')
       }},
       {type='button', style_mods={horizontally_stretchable=true}, caption={'rb-gui.open-quick-reference'}, mouse_button_filter={'left'},
         handlers='quick_reference_button'}

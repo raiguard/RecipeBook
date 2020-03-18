@@ -15,7 +15,7 @@ local self = {}
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
-gui.add_handlers('recipe_quick_reference', {
+gui.handlers:extend{recipe_quick_reference={
   close_button = {
     on_gui_click = function(e)
       self.close(game.get_player(e.player_index), global.players[e.player_index])
@@ -33,7 +33,7 @@ gui.add_handlers('recipe_quick_reference', {
         object_name=global.players[e.player_index].gui.recipe_quick_reference.recipe_name})
     end
   }
-})
+}}
 
 -- -----------------------------------------------------------------------------
 -- GUI MANAGEMENT
@@ -47,7 +47,7 @@ function self.open(player, player_table, recipe_name)
         {type='label', style='frame_title', caption={'rb-gui.recipe-upper'}},
         {template='pushers.horizontal'},
         {type='sprite-button', style='close_button', sprite='rb_nav_open_info', hovered_sprite='rb_nav_open_info_dark', clicked_sprite='rb_nav_open_info_dark',
-        handlers='open_info_button', tooltip={'rb-gui.view-recipe-details'}, mouse_button_filter={'left'}},
+          handlers='recipe_quick_reference.open_info_button', tooltip={'rb-gui.view-recipe-details'}, mouse_button_filter={'left'}},
         {template='close_button'}
       }},
       {type='frame', style='window_content_frame_packed', direction='vertical', children={
@@ -61,7 +61,7 @@ function self.open(player, player_table, recipe_name)
         }}
       }}
     }}
-  }, 'recipe_quick_reference', player.index)
+  })
 
   -- get data
   local recipe_data = global.recipe_book.recipe[recipe_name]

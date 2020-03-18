@@ -4,12 +4,13 @@
 -- dependencies
 local event = require('__RaiLuaLib__.lualib.event')
 local gui = require('__RaiLuaLib__.lualib.gui')
+local migration = require('__RaiLuaLib__.lualib.migration')
 local mod_gui = require('mod-gui')
 local translation = require('__RaiLuaLib__.lualib.translation')
 
 -- globals
-open_gui_event = event.generate_id('open_gui')
-reopen_source_event = event.generate_id('reopen_source')
+open_gui_event = event.get_id('open_gui')
+reopen_source_event = event.get_id('reopen_source')
 info_guis = {crafter=true, material=true, recipe=true}
 
 -- constants
@@ -21,7 +22,7 @@ local string_lower = string.lower
 local string_sub = string.sub
 
 -- GUI templates
-gui.add_templates{
+gui.templates:extend{
   close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
     clicked_sprite='utility/close_black', handlers='close_button', mouse_button_filter={'left'}},
   pushers = {
@@ -51,7 +52,7 @@ gui.add_templates{
 }
 
 -- common GUI handlers
-gui.add_handlers('common', {
+gui.handlers:extend{common={
   generic_open_from_listbox = function(e)
     local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), '^%[img=(.-)/(.-)%].*$')
     event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object_name=object_name})
@@ -73,7 +74,7 @@ gui.add_handlers('common', {
       event.raise(open_gui_event, {player_index=e.player_index, gui_type='crafter', object_name=object_name})
     end
   end
-})
+}}
 
 -- modules
 local search_gui = require('gui.search')
@@ -389,7 +390,7 @@ event.on_gui_click(function(e)
   else
     event.raise(open_gui_event, {player_index=e.player_index, gui_type='search'})
   end
-end, {gui_filters='recipe_book_button'})
+end, 'recipe_book_button')
 
 -- reopen the search GUI when the back button is pressed
 event.register(reopen_source_event, function(e)
@@ -457,43 +458,15 @@ local migrations = {
   end
 }
 
--- returns true if v2 is newer than v1, false if otherwise
-local function compare_versions(v1, v2)
-  local v1_split = util.split(v1, '.')
-  local v2_split = util.split(v2, '.')
-  for i=1,#v1_split do
-    if v1_split[i] < v2_split[i] then
-      return true
-    end
-  end
-  return false
-end
-
 -- handle migrations
 event.on_configuration_changed(function(e)
-  local changes = e.mod_changes[script.mod_name]
-  if changes then
-    local old = changes.old_version
-    if old then
-      -- version migrations
-      local migrate = false
-      for v,f in pairs(migrations) do
-        if migrate or compare_versions(old, v) then
-          migrate = true
-          log('Applying migration: '..v)
-          f(e)
-        end
-      end
-    else
-      -- our mod was just added, so all of the generic migrations were done in on_init
-      return
+  if migration.on_config_changed(e, migrations) then
+    -- generic migrations
+    log('Applying generic migrations')
+    for _,p in ipairs(game.connected_players) do
+      close_player_guis(p, global.players[p.index])
     end
+    build_recipe_data()
+    translate_for_all_players()
   end
-  -- generic migrations
-  log('Applying generic migrations')
-  for _,p in ipairs(game.connected_players) do
-    close_player_guis(p, global.players[p.index])
-  end
-  build_recipe_data()
-  translate_for_all_players()
 end)

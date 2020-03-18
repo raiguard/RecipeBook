@@ -10,19 +10,19 @@ local self = {}
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
-gui.add_handlers('crafter', {
+gui.handlers:extend{crafter={
   generic_listbox = {
-    on_gui_selection_state_changed = gui.get_handler('common.generic_open_from_listbox')
+    on_gui_selection_state_changed = gui.handlers.common.generic_open_from_listbox
   }
-})
+}}
 
 -- -----------------------------------------------------------------------------
 -- GUI MANAGEMENT
 
 function self.create(player, player_table, content_container, name)
   local gui_data = gui.build(content_container, {
-    gui.call_template('listbox_with_label', 'recipes')
-  }, 'crafter', player.index)
+    gui.templates.listbox_with_label('recipes')
+  })
 
   -- get data
   local crafter_data = global.recipe_book.crafter[name]

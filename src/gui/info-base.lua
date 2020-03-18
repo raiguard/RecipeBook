@@ -8,16 +8,6 @@ local gui = require('__RaiLuaLib__.lualib.gui')
 -- self object
 local self = {}
 
--- GUI templates
-gui.add_templates{
-  close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
-    clicked_sprite='utility/close_black', handlers='close_button', mouse_button_filter={'left'}},
-  pushers = {
-    horizontal = {type='empty-widget', style_mods={horizontally_stretchable=true}},
-    vertical = {type='empty-widget', style_mods={vertically_stretchable=true}}
-  }
-}
-
 -- info pages
 local pages = {}
 for n,_ in pairs(info_guis) do
@@ -32,9 +22,7 @@ local table_remove = table.remove
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
--- we must define it like this so memmbers can access other members
-local handlers = {}
-handlers = {
+gui.handlers:extend{info_base={
   close_button = {
     on_gui_click = function(e)
       self.close(game.get_player(e.player_index), global.players[e.player_index])
@@ -76,9 +64,7 @@ handlers = {
       self.close(game.get_player(e.player_index), global.players[e.player_index])
     end
   }
-}
-
-gui.add_handlers('info_base', handlers)
+}}
 
 -- -----------------------------------------------------------------------------
 -- GUI MANAGEMENT
@@ -86,17 +72,17 @@ gui.add_handlers('info_base', handlers)
 function self.open(player, player_table, category, name, source_data)
   -- gui structure
   local gui_data = gui.build(player.gui.screen, {
-    {type='frame', name='rb_info_window', style='dialog_frame', direction='vertical', handlers='window', save_as=true, children={
+    {type='frame', name='rb_info_window', style='dialog_frame', direction='vertical', handlers='info_base.window', save_as=true, children={
       -- titlebar
       {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
         {type='sprite-button', style='close_button', sprite='rb_nav_backward', hovered_sprite='rb_nav_backward_dark', clicked_sprite='rb_nav_backward_dark',
-          mouse_button_filter={'left'}, handlers='nav_backward_button', save_as=true},
+          mouse_button_filter={'left'}, handlers='info_base.nav_backward_button', save_as=true},
         {type='sprite-button', style='close_button', sprite='rb_nav_forward', hovered_sprite='rb_nav_forward_dark', clicked_sprite='rb_nav_forward_dark',
-          mouse_button_filter={'left'}, handlers='nav_forward_button', save_as=true},
+          mouse_button_filter={'left'}, handlers='info_base.nav_forward_button', save_as=true},
         {type='label', style='frame_title', style_mods={left_padding=6}, save_as='window_title'},
         {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
         {type='sprite-button', style='close_button', sprite='rb_nav_search', hovered_sprite='rb_nav_search_dark', clicked_sprite='rb_nav_search_dark',
-          mouse_button_filter={'left'}, handlers='search_button'},
+          mouse_button_filter={'left'}, handlers='info_base.search_button'},
         {template='close_button'}
       }},
       {type='frame', style='window_content_frame_packed', direction='vertical', children={
