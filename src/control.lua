@@ -115,22 +115,24 @@ local function build_recipe_data()
   end
 
   -- iterate materials
-  for name,prototype in pairs(util.merge{game.fluid_prototypes, game.item_prototypes}) do
-    local is_fluid = prototype.object_name == 'LuaFluidPrototype' and true or false
-    local hidden
-    if is_fluid then
-      hidden = prototype.hidden
-    else
-      hidden = prototype.has_flag('hidden')
+  for _,t in ipairs{game.fluid_prototypes, game.item_prototypes} do
+    for name,prototype in pairs(t) do
+      local is_fluid = prototype.object_name == 'LuaFluidPrototype' and true or false
+      local hidden
+      if is_fluid then
+        hidden = prototype.hidden
+      else
+        hidden = prototype.has_flag('hidden')
+      end
+      recipe_book.material[name] = {
+        hidden = hidden,
+        ingredient_in = {},
+        product_of = {},
+        unlocked_by = {},
+        sprite_class = is_fluid and 'fluid' or 'item'
+      }
+      translation_data.material[#translation_data.material+1] = {internal=name, localised=prototype.localised_name}
     end
-    recipe_book.material[name] = {
-      hidden = hidden,
-      ingredient_in = {},
-      product_of = {},
-      unlocked_by = {},
-      sprite_class = is_fluid and 'fluid' or 'item'
-    }
-    translation_data.material[#translation_data.material+1] = {internal=name, localised=prototype.localised_name}
   end
 
   -- iterate recipes
