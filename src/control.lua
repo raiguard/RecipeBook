@@ -256,16 +256,15 @@ local function setup_player(player, index)
     gui = {},
     settings = import_player_settings(player)
   }
-  data.gui.mod_gui_button = mod_gui.get_button_flow(player).add{type='sprite-button', name='recipe_book_button', style=mod_gui.button_style,
-    sprite='rb_mod_gui_icon', tooltip={'mod-name.RecipeBook'}}
-  data.gui.mod_gui_button.visible = data.settings.show_mod_gui_button
   global.players[index] = data
+  -- 
 end
 
 -- closes all of a player's open GUIs
 local function close_player_guis(player, player_table)
   local gui_data = player_table.gui
   player_table.flags.can_open_gui = false
+  player.set_shortcut_available('rb-toggle-search', false)
   if gui_data.search then
     search_gui.close(player, player_table)
   end
@@ -340,10 +339,12 @@ event.register(translation.finish_event, function(e)
 
   -- set flag if we're done
   if global.__lualib.translation.players[e.player_index].active_translations_count == 0 then
+    local player = game.get_player(e.player_index)
+    player.set_shortcut_available('rb-toggle-search', true)
     player_table.flags.can_open_gui = true
     if player_table.flags.tried_to_open_gui then
       player_table.flags.tried_to_open_gui = nil
-      game.get_player(e.player_index).print{'rb-message.translation-finished'}
+      player.print{'rb-message.translation-finished'}
     end
   end
 end)
@@ -378,19 +379,21 @@ event.register('rb-toggle-search', function(e)
   search_gui.toggle(player, player_table)
 end)
 
--- mod gui button
-event.on_gui_click(function(e)
-  -- read player's cursor stack to see if we should open the material GUI
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local cursor_stack = player.cursor_stack
-  if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read then
-    -- the player is holding something, so open to its material GUI
-    event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=cursor_stack.name})
-  else
-    event.raise(open_gui_event, {player_index=e.player_index, gui_type='search'})
+-- shortcut
+event.on_lua_shortcut(function(e)
+  if e.prototype_name == 'rb-toggle-search' then
+    -- read player's cursor stack to see if we should open the material GUI
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    local cursor_stack = player.cursor_stack
+    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read then
+      -- the player is holding something, so open to its material GUI
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=cursor_stack.name})
+    else
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='search'})
+    end
   end
-end, 'recipe_book_button')
+end)
 
 -- reopen the search GUI when the back button is pressed
 event.register(reopen_source_event, function(e)
@@ -455,14 +458,20 @@ local migrations = {
       count = count + t.active_translations_count
     end
     __translation.active_translations_count = count
+  end,
+  ['1.1.5'] = function(e)
+    -- delete all mod GUI buttons
+    for i,t in pairs(global.players) do
+      t.gui.mod_gui_button.destroy()
+      t.gui.mod_gui_button = nil
+    end
   end
 }
 
 -- handle migrations
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
-    -- generic migrations
-    log('Applying generic migrations')
+    -- close all player GUIs
     for _,p in ipairs(game.connected_players) do
       close_player_guis(p, global.players[p.index])
     end
