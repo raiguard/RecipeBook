@@ -23,7 +23,7 @@ local string_sub = string.sub
 
 -- GUI templates
 gui.templates:extend{
-  close_button = {type='sprite-button', style='close_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
+  close_button = {type='sprite-button', style='rb_frame_action_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
     clicked_sprite='utility/close_black', mouse_button_filter={'left'}},
   pushers = {
     horizontal = {type='empty-widget', style_mods={horizontally_stretchable=true}},

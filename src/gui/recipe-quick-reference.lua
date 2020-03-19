@@ -46,7 +46,7 @@ function self.open(player, player_table, recipe_name)
       {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
         {type='label', style='frame_title', caption={'rb-gui.recipe-upper'}},
         {template='pushers.horizontal'},
-        {type='sprite-button', style='close_button', sprite='rb_nav_open_info', hovered_sprite='rb_nav_open_info_dark', clicked_sprite='rb_nav_open_info_dark',
+        {type='sprite-button', style='rb_frame_action_button', sprite='rb_nav_open_info', hovered_sprite='rb_nav_open_info_dark', clicked_sprite='rb_nav_open_info_dark',
           handlers='recipe_quick_reference.open_info_button', tooltip={'rb-gui.view-recipe-details'}, mouse_button_filter={'left'}},
         {template='close_button', handlers='recipe_quick_reference.close_button'}
       }},
