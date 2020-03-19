@@ -5,7 +5,6 @@
 local event = require('__RaiLuaLib__.lualib.event')
 local gui = require('__RaiLuaLib__.lualib.gui')
 local migration = require('__RaiLuaLib__.lualib.migration')
-local mod_gui = require('mod-gui')
 local translation = require('__RaiLuaLib__.lualib.translation')
 
 -- globals
@@ -18,7 +17,6 @@ local INTERFACE_VERSION = 1
 
 -- locals
 local string_find = string.find
-local string_lower = string.lower
 local string_sub = string.sub
 
 -- GUI templates
@@ -233,14 +231,13 @@ local function translate_for_all_players()
 end
 
 -- -----------------------------------------------------------------------------
--- EVENT HANDLERS
+-- BOOTSTRAP / SETUP EVENTS
 
 local function import_player_settings(player)
   local mod_settings = player.mod_settings
   return {
     default_category = mod_settings['rb-default-search-category'].value,
-    show_hidden = mod_settings['rb-show-hidden-objects'].value,
-    show_mod_gui_button = mod_settings['rb-show-mod-gui-button'].value
+    show_hidden = mod_settings['rb-show-hidden-objects'].value
   }
 end
 
@@ -349,6 +346,9 @@ event.register(translation.finish_event, function(e)
   end
 end)
 
+-- -----------------------------------------------------------------------------
+-- BASE INTERACTION EVENTS
+
 local open_fluid_types = {
   ['pipe'] = true,
   ['pipe-to-ground'] = true,
@@ -428,7 +428,7 @@ event.register(open_gui_event, function(e)
 end)
 
 -- -----------------------------------------------------------------------------
--- REMOTE
+-- REMOTE INTERFACE
 
 remote.add_interface('RecipeBook', {
   open_info_gui = function(player_index, category, object_name, source_data)
@@ -465,6 +465,8 @@ local migrations = {
       t.gui.mod_gui_button.destroy()
       t.gui.mod_gui_button = nil
     end
+    -- remove GUI lualib table - it is no longer needed
+    global.__lualib.gui = nil
   end
 }
 
