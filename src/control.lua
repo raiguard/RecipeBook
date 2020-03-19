@@ -310,8 +310,6 @@ event.on_runtime_mod_setting_changed(function(e)
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
     player_table.settings = import_player_settings(player)
-    -- show or hide mod GUI button
-    player_table.gui.mod_gui_button.visible = player_table.settings.show_mod_gui_button
   end
 end)
 
