@@ -9,6 +9,7 @@ Date: ????
   Bugfixes:
     - Fixed crash when a clicking an object with rich text in the name (Krastorio 2)
     - Fixed GUI alignment issues caused by style changes in 0.18.13
+    - Fixed potential issues with conditionally registered handlers losing their correlations with custom mod events when configuration changes
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.4
 Date: 2020-03-08
