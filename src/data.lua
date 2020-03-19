@@ -44,7 +44,7 @@ data:extend{
         scale = 40,
       },
       {
-        filename = '__RecipeBook__/graphics/shortcut.png',
+        filename = '__RecipeBook__/graphics/search-shortcut.png',
         size = 32,
         mipmap_count = 2,
         flags = {'icon'}
@@ -64,10 +64,10 @@ data:extend{
     type = 'shortcut',
     name = 'rb-toggle-search',
     action = 'lua',
-    icon = mipped_icon(nil, {0,0}, '__RecipeBook__/graphics/shortcut.png', 32, 2),
-    small_icon = mipped_icon(nil, {0,32}, '__RecipeBook__/graphics/shortcut.png', 24, 2),
-    disabled_icon = mipped_icon(nil, {48,0}, '__RecipeBook__/graphics/shortcut.png', 32, 2),
-    disabled_small_icon = mipped_icon(nil, {36,32}, '__RecipeBook__/graphics/shortcut.png', 24, 2),
+    icon = mipped_icon(nil, {0,0}, '__RecipeBook__/graphics/search-shortcut.png', 32, 2),
+    small_icon = mipped_icon(nil, {0,32}, '__RecipeBook__/graphics/search-shortcut.png', 24, 2),
+    disabled_icon = mipped_icon(nil, {48,0}, '__RecipeBook__/graphics/search-shortcut.png', 32, 2),
+    disabled_small_icon = mipped_icon(nil, {36,32}, '__RecipeBook__/graphics/search-shortcut.png', 24, 2),
     toggleable = true,
     associated_control_input = 'rb-toggle-search'
   }
