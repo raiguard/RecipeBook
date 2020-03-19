@@ -1,9 +1,13 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.2.0
+Version: 1.1.5
 Date: ????
   Changes:
+    - The search interface is now accessed through a shortcut instead of the mod GUI. The mod GUI button still exists, but is disabled by default
     - Refactored search loop to make adding more features easier
-    - Removed lualib and made it a separate mod, RaiLuaLib
+    - Removed lualib and made it a separate mod, RaiLuaLib, that this mod now depends on
+  Bugfixes:
+    - Fixed crash when a clicking an object with rich text in the name (Krastorio 2)
+    - Fixed GUI alignment issues caused by style changes in 0.18.13
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.4
 Date: 2020-03-08

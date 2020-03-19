@@ -1,16 +1,22 @@
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- PROTOTYPES
 
-local function mipped_nav_icon(name, position)
-  return {
+local function mipped_icon(name, position, filename, size, mipmap_count, mods)
+  local def = {
     type = 'sprite',
     name = name,
-    filename = '__RecipeBook__/graphics/gui-nav-icons.png',
-    size = 32,
-    mipmap_count = 2,
+    filename = filename,
     position = position,
+    size = size or 32,
+    mipmap_count = mipmap_count or 2,
     flags = {'icon'}
   }
+  if mods then
+    for k,v in pairs(mods) do
+      def[k] = v
+    end
+  end
+  return def
 end
 
 data:extend{
@@ -31,22 +37,54 @@ data:extend{
   {
     type = 'sprite',
     name = 'rb_mod_gui_icon',
-    filename = '__RecipeBook__/graphics/recipe-book.png',
-    size = 32,
-    mipmap_count = 2,
-    flags = {'icon'}
+    layers = {
+      {
+        filename = '__core__/graphics/empty.png',
+        size = 1,
+        scale = 40,
+      },
+      {
+        filename = '__RecipeBook__/graphics/shortcut.png',
+        size = 32,
+        mipmap_count = 2,
+        flags = {'icon'}
+      }
+    }
   },
-  mipped_nav_icon('rb_nav_backward', {0,0}),
-  mipped_nav_icon('rb_nav_backward_dark', {48,0}),
-  mipped_nav_icon('rb_nav_forward', {0,32}),
-  mipped_nav_icon('rb_nav_forward_dark', {48,32}),
-  mipped_nav_icon('rb_nav_open_info', {0,64}),
-  mipped_nav_icon('rb_nav_open_info_dark', {48,64}),
-  mipped_nav_icon('rb_nav_search', {0,96}),
-  mipped_nav_icon('rb_nav_search_dark', {48,96})
+  mipped_icon('rb_nav_backward', {0,0}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
+  mipped_icon('rb_nav_backward_dark', {48,0}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
+  mipped_icon('rb_nav_forward', {0,32}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
+  mipped_icon('rb_nav_forward_dark', {48,32}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
+  mipped_icon('rb_nav_open_info', {0,64}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
+  mipped_icon('rb_nav_open_info_dark', {48,64}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
+  mipped_icon('rb_nav_search', {0,96}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
+  mipped_icon('rb_nav_search_dark', {48,96}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
+  -- SHORTCUTS
+  {
+    type = 'shortcut',
+    name = 'rb-toggle-search',
+    action = 'lua',
+    icon = mipped_icon(nil, {0,0}, '__RecipeBook__/graphics/shortcut.png', 32, 2),
+    small_icon = mipped_icon(nil, {0,32}, '__RecipeBook__/graphics/shortcut.png', 24, 2),
+    disabled_icon = mipped_icon(nil, {48,0}, '__RecipeBook__/graphics/shortcut.png', 32, 2),
+    disabled_small_icon = mipped_icon(nil, {36,32}, '__RecipeBook__/graphics/shortcut.png', 24, 2),
+    toggleable = true,
+    associated_control_input = 'rb-toggle-search'
+  }
 }
 
 local styles = data.raw['gui-style'].default
+
+-- -----------------------------------------------------------------------------
+-- BUTTON STYLES
+
+-- slightly smaller close button that looks WAY better ;)
+styles.rb_frame_action_button = {
+  type = 'button_style',
+  parent = 'close_button',
+  size = 20,
+  top_margin = 2
+}
 
 -- -----------------------------------------------------------------------------
 -- EMPTY WIDGET STYLES
@@ -57,7 +95,7 @@ styles.rb_titlebar_draggable_space = {
   horizontally_stretchable = 'on',
   natural_height = 24,
   minimal_width = 24,
-  right_margin = 7
+  right_margin = 6
 }
 
 -- -----------------------------------------------------------------------------
@@ -134,8 +172,7 @@ styles.rb_titlebar_flow = {
   type = 'horizontal_flow_style',
   direction = 'horizontal',
   horizontally_stretchable = 'on',
-  vertical_align = 'center',
-  top_margin = -3
+  -- top_margin = -3
 }
 
 -- -----------------------------------------------------------------------------
