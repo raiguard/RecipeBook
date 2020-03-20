@@ -1,8 +1,9 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.5
-Date: ????
+Date: 2020-03-20
   Changes:
     - Materials that aren't used in any recipes are excluded from the Recipe Book
+    - Significantly optimized GUI construction and update logic (it is now over 4x faster!)
     - Removed mod GUI button, it is replaced by a shortcut
     - Replaced the chef hat book icon with a proper "search recipe book" icon
     - Refactored search loop to make adding more features easier
