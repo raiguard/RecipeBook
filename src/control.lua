@@ -18,6 +18,7 @@ local INTERFACE_VERSION = 1
 -- locals
 local string_find = string.find
 local string_sub = string.sub
+local table_remove = table.remove
 
 -- GUI templates
 gui.templates:extend{
@@ -115,6 +116,7 @@ local function build_recipe_data()
   end
 
   -- iterate materials
+  local material_translation_locations = {}
   for _,t in ipairs{game.fluid_prototypes, game.item_prototypes} do
     for name,prototype in pairs(t) do
       local is_fluid = prototype.object_name == 'LuaFluidPrototype' and true or false
@@ -131,6 +133,7 @@ local function build_recipe_data()
         unlocked_by = {},
         sprite_class = is_fluid and 'fluid' or 'item'
       }
+      -- add to translation table
       translation_data.material[#translation_data.material+1] = {internal=name, localised=prototype.localised_name}
     end
   end
@@ -214,6 +217,21 @@ local function build_recipe_data()
   translation_data.other = {
     {internal='character', localised={'entity-name.character'}}
   }
+
+  -- remove all materials that aren't used in recipes
+  do
+    local materials = recipe_book.material
+    local translations = translation_data.material
+    for i=#translations,1,-1 do
+      local t = translations[i]
+      local data = materials[t.internal]
+      if #data.ingredient_in == 0 and #data.product_of == 0 then
+        log('Removing material \''..t.internal..'\', which is not used in any recipes')
+        materials[t.internal] = nil
+        table_remove(translations, i)
+      end
+    end
+  end
 
   -- apply to global
   global.recipe_book = recipe_book
