@@ -13,7 +13,7 @@ reopen_source_event = event.get_id('reopen_source')
 info_guis = {crafter=true, material=true, recipe=true}
 
 -- constants
-local INTERFACE_VERSION = 1
+local INTERFACE_VERSION = 2
 
 -- locals
 local string_find = string.find
@@ -61,8 +61,8 @@ gui.handlers:extend{common={
     if string_sub(selected_item, 1, 1) == ' ' then
       e.element.selected_index = 0
     else
-      local _,_,object_name = string_find(selected_item, '^%[img=.-/(.-)%].*$')
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_name})
+      local _,_,object_class,object_name = string_find(selected_item, '^%[img=(.-)/(.-)%].*$')
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_class..','..object_name})
     end
   end,
   open_crafter_from_listbox = function(e)
@@ -110,31 +110,32 @@ local function build_recipe_data()
       hidden = prototype.has_flag('hidden'),
       categories = prototype.crafting_categories,
       recipes = {},
-      sprite_class = 'entity'
+      sprite_class = 'entity',
+      prototype_name = name
     }
     translation_data.crafter[#translation_data.crafter+1] = {internal=name, localised=prototype.localised_name}
   end
 
   -- iterate materials
   local material_translation_locations = {}
-  for _,t in ipairs{game.fluid_prototypes, game.item_prototypes} do
+  for class,t in pairs{fluid=game.fluid_prototypes, item=game.item_prototypes} do
     for name,prototype in pairs(t) do
-      local is_fluid = prototype.object_name == 'LuaFluidPrototype' and true or false
       local hidden
-      if is_fluid then
+      if class == 'fluid' then
         hidden = prototype.hidden
       else
         hidden = prototype.has_flag('hidden')
       end
-      recipe_book.material[name] = {
+      recipe_book.material[class..','..name] = {
         hidden = hidden,
         ingredient_in = {},
         product_of = {},
         unlocked_by = {},
-        sprite_class = is_fluid and 'fluid' or 'item'
+        sprite_class = class,
+        prototype_name = name
       }
       -- add to translation table
-      translation_data.material[#translation_data.material+1] = {internal=name, localised=prototype.localised_name}
+      translation_data.material[#translation_data.material+1] = {internal=class..','..name, localised=prototype.localised_name}
     end
   end
 
@@ -146,7 +147,8 @@ local function build_recipe_data()
       hidden = prototype.hidden,
       made_in = {},
       unlocked_by = {},
-      sprite_class = 'recipe'
+      sprite_class = 'recipe',
+      prototype_name = name
     }
     -- ingredients / products
     local material_book = recipe_book.material
@@ -163,7 +165,7 @@ local function build_recipe_data()
         end
         material.amount_string = amount_string
         -- add hidden flag to table
-        material.hidden = material_book[material.name].hidden
+        material.hidden = material_book[material.type..','..material.name].hidden
       end
       -- add to data
       data[mode] = materials
@@ -180,7 +182,7 @@ local function build_recipe_data()
     local ingredients = prototype.ingredients
     for i=1,#ingredients do
       local ingredient = ingredients[i]
-      local ingredient_data = recipe_book.material[ingredient.name]
+      local ingredient_data = recipe_book.material[ingredient.type..','..ingredient.name]
       if ingredient_data then
         ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
       end
@@ -189,7 +191,7 @@ local function build_recipe_data()
     local products = prototype.products
     for i=1,#products do
       local product = products[i]
-      local product_data = recipe_book.material[product.name]
+      local product_data = recipe_book.material[product.type..','..product.name]
       if product_data then
         product_data.product_of[#product_data.product_of+1] = name
       end
@@ -352,6 +354,33 @@ event.register(translation.finish_event, function(e)
     translations = e.translations
   }
 
+  -- create lookup tables
+  local jan_dir = {}
+  player_table.dictionary[e.dictionary_name].jan_dir = jan_dir
+  local string_len = string.len
+  for _,localised in pairs(e.sorted_translations) do
+    for i=1,string_len(localised) do
+      -- round 1
+      local char = string_sub(localised, i, i)
+      local sub_dir = jan_dir[char]
+      if not sub_dir then
+        sub_dir = {all = {}}
+        jan_dir[char] = sub_dir
+      end
+      -- round 2
+      char = string_sub(localised, i+1, i+1)
+      local sub_dir2 = sub_dir[char]
+      if not sub_dir2 then
+        sub_dir2 = {}
+        sub_dir[char] = sub_dir2
+      end
+      -- add it
+      sub_dir2[localised] = true
+      sub_dir.all[localised] = true
+    end
+  end
+  local breakpoint
+
   -- set flag if we're done
   if global.__lualib.translation.players[e.player_index].active_translations_count == 0 then
     local player = game.get_player(e.player_index)
@@ -434,9 +463,16 @@ event.register(open_gui_event, function(e)
       if player_table.gui.search then return end
       search_gui.open(player, player_table)
     elseif info_guis[gui_type] then
+      if gui_type == 'material' then
+        error('\'material\' is not a valid GUI type! Use \'item\' or \'fluid\' instead.')
+      end
       info_gui.open_or_update(player, player_table, gui_type, e.object_name, e.source_data)
+    elseif gui_type == 'item' or gui_type == 'fluid' then
+      info_gui.open_or_update(player, player_table, 'material', gui_type..','..e.object_name, e.source_data)
     elseif gui_type == 'recipe_quick_reference' then
       recipe_quick_reference_gui.open_or_update(player, player_table, e.object_name)
+    else
+      error('\''..gui_type..'\' is not a valid GUI type!')
     end
   else
     -- set flag and tell the player that they cannot open it

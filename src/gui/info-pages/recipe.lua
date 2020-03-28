@@ -90,7 +90,7 @@ function self.create(player, player_table, content_container, name)
       if show_hidden or not material.hidden then
         items_index = items_index + 1
         items[items_index] = '[img='..material.type..'/'..material.name..']  [font=default-semibold]'..material.amount_string..'[/font] '
-          ..material_translations[material.name]
+          ..material_translations[material.type..','..material.name]
       end
     end
     listbox.items = items

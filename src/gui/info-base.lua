@@ -178,7 +178,7 @@ function self.update_contents(player, player_table, category, name, source_data,
   base_elems.window_title.caption = {'rb-gui.'..category..'-upper'}
 
   -- update object name
-  base_elems.object_icon.sprite = object_data.sprite_class..'/'..name
+  base_elems.object_icon.sprite = object_data.sprite_class..'/'..object_data.prototype_name
   base_elems.object_name.caption = dictionary[category].translations[name]
 
   -- update main content
