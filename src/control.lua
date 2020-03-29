@@ -8,9 +8,10 @@ local migration = require('__RaiLuaLib__.lualib.migration')
 local translation = require('__RaiLuaLib__.lualib.translation')
 
 -- globals
-open_gui_event = event.get_id('open_gui')
-reopen_source_event = event.get_id('reopen_source')
-info_guis = {crafter=true, material=true, recipe=true}
+INFO_GUIS = {crafter=true, material=true, recipe=true}
+OPEN_GUI_EVENT = event.get_id('open_gui')
+REOPEN_SOURCE_EVENT = event.get_id('reopen_source')
+SEARCH_CACHE = {}
 
 -- locals
 local string_find = string.find
@@ -52,7 +53,7 @@ gui.templates:extend{
 gui.handlers:extend{common={
   generic_open_from_listbox = function(e)
     local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), '^%[img=(.-)/(.-)%].*$')
-    event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object=object_name})
+    event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type=category, object=object_name})
   end,
   open_material_from_listbox = function(e)
     local selected_item = e.element.get_item(e.element.selected_index)
@@ -60,7 +61,7 @@ gui.handlers:extend{common={
       e.element.selected_index = 0
     else
       local _,_,object_class,object_name = string_find(selected_item, '^%[img=(.-)/(.-)%].*$')
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object={object_class, object_name}})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={object_class, object_name}})
     end
   end,
   open_crafter_from_listbox = function(e)
@@ -68,7 +69,7 @@ gui.handlers:extend{common={
     if object_name == 'character' then
       e.element.selected_index = 0
     else
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='crafter', object=object_name})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='crafter', object=object_name})
     end
   end
 }}
@@ -273,7 +274,6 @@ local function setup_player(player, index)
     settings = import_player_settings(player)
   }
   global.players[index] = data
-  -- 
 end
 
 -- closes all of a player's open GUIs
@@ -300,6 +300,7 @@ local function close_guis_then_translate(e)
 end
 
 event.on_init(function()
+  global.dictionaries = {}
   global.players = {}
   for i,p in pairs(game.players) do
     setup_player(p, i)
@@ -317,6 +318,7 @@ end)
 event.on_player_created(function(e)
   setup_player(game.get_player(e.player_index), e.player_index)
 end)
+
 event.on_player_removed(function(e)
   global.players[e.player_index] = nil
 end)
@@ -412,7 +414,7 @@ event.register('rb-toggle-search', function(e)
       if fluidbox and fluidbox.valid then
         local locked_fluid = fluidbox.get_locked_fluid(1)
         if locked_fluid then
-          event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=locked_fluid})
+          event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object_name=locked_fluid})
           return
         end
       end
@@ -430,15 +432,15 @@ event.on_lua_shortcut(function(e)
     local cursor_stack = player.cursor_stack
     if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read then
       -- the player is holding something, so open to its material GUI
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=cursor_stack.name})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object_name=cursor_stack.name})
     else
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='search'})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='search'})
     end
   end
 end)
 
 -- reopen the search GUI when the back button is pressed
-event.register(reopen_source_event, function(e)
+event.register(REOPEN_SOURCE_EVENT, function(e)
   local source_data = e.source_data
   if source_data.mod_name == 'RecipeBook' and source_data.gui_name == 'search' then
     search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index], source_data)
@@ -446,7 +448,7 @@ event.register(reopen_source_event, function(e)
 end)
 
 -- open the specified GUI
-event.register(open_gui_event, function(e)
+event.register(OPEN_GUI_EVENT, function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
   local gui_type = e.gui_type
@@ -457,7 +459,7 @@ event.register(open_gui_event, function(e)
       -- don't do anything if it's already open
       if player_table.gui.search then return end
       search_gui.open(player, player_table)
-    elseif info_guis[gui_type] then
+    elseif INFO_GUIS[gui_type] then
       if gui_type == 'material' then
         if type(e.object) ~= 'table' then
           error('Invalid material object, it must be a table!')
@@ -483,17 +485,17 @@ end)
 -- REMOTE INTERFACE
 
 remote.add_interface('RecipeBook', {
-  open_info_gui = function(player_index, gui_type, object, source_data)
+  open_gui = function(player_index, gui_type, object, source_data)
     -- error checking
     if not object then error('Must provide an object!') end
     if source_data and (not source_data.mod_name or not source_data.gui_name) then
       error('Incomplete source_data table!')
     end
     -- raise internal mod event
-    event.raise(open_gui_event, {player_index=player_index, gui_type=gui_type, object=object, source_data=source_data})
+    event.raise(OPEN_GUI_EVENT, {player_index=player_index, gui_type=gui_type, object=object, source_data=source_data})
   end,
-  reopen_source_event = function() return reopen_source_event end,
-  version = function() return 2 end
+  reopen_source_event = function() return REOPEN_SOURCE_EVENT end,
+  version = function() return 2 end -- increment when backward-incompatible changes are made
 })
 
 -- -----------------------------------------------------------------------------

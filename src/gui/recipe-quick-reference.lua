@@ -4,7 +4,6 @@
 -- dependencies
 local event = require('__RaiLuaLib__.lualib.event')
 local gui = require('__RaiLuaLib__.lualib.gui')
-local mod_gui = require('mod-gui')
 
 -- locals
 local string_find = string.find
@@ -23,13 +22,13 @@ gui.handlers:extend{recipe_quick_reference={
   },
   material_button = {
     on_gui_click = function(e)
-      local _,_,object_name = string_find(e.element.sprite, '^.*/(.*)$')
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_name})
+      local _,_,object_class,object_name = string_find(e.element.sprite, '^(.-)/(.-)$')
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={object_class, object_name}})
     end
   },
   open_info_button = {
     on_gui_click = function(e)
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='recipe',
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='recipe',
         object=global.players[e.player_index].gui.recipe_quick_reference.recipe_name})
     end
   }
@@ -40,12 +39,12 @@ gui.handlers:extend{recipe_quick_reference={
 
 function self.open(player, player_table, recipe_name)
   -- build GUI structure
-  local gui_data = gui.build(mod_gui.get_frame_flow(player), {
+  local gui_data = gui.build(player.gui.screen, {
     {type='frame', style='dialog_frame', direction='vertical', save_as='window', children={
       -- titlebar
       {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
         {type='label', style='frame_title', caption={'rb-gui.recipe-upper'}},
-        {template='pushers.horizontal'},
+        {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
         {type='sprite-button', style='rb_frame_action_button', sprite='rb_nav_open_info', hovered_sprite='rb_nav_open_info_dark', clicked_sprite='rb_nav_open_info_dark',
           handlers='recipe_quick_reference.open_info_button', tooltip={'rb-gui.view-recipe-details'}, mouse_button_filter={'left'}},
         {template='close_button', handlers='recipe_quick_reference.close_button'}
@@ -62,6 +61,9 @@ function self.open(player, player_table, recipe_name)
       }}
     }}
   })
+  -- screen data
+  gui_data.drag_handle.drag_target = gui_data.window
+  gui_data.window.force_auto_center()
 
   -- get data
   local recipe_data = global.recipe_book.recipe[recipe_name]

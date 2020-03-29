@@ -10,7 +10,7 @@ local self = {}
 
 -- info pages
 local pages = {}
-for n,_ in pairs(info_guis) do
+for n,_ in pairs(INFO_GUIS) do
   pages[n] = require('gui.info-pages.'..n)
 end
 
@@ -36,7 +36,7 @@ gui.handlers:extend{info_base={
       if back_obj.mod_name and back_obj.gui_name then
         -- this is a source
         self.close(game.get_player(e.player_index), player_table)
-        event.raise(reopen_source_event, {player_index=e.player_index, source_data=back_obj})
+        event.raise(REOPEN_SOURCE_EVENT, {player_index=e.player_index, source_data=back_obj})
       else
         -- this is an info page
         session_history.position = session_history.position + 1
@@ -56,7 +56,7 @@ gui.handlers:extend{info_base={
   },
   search_button = {
     on_gui_click = function(e)
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='search'})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='search'})
     end
   },
   window = {

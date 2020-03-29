@@ -1,10 +1,16 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.0
 Date: ????
+  Features:
+    - You can now open multiple recipe quick reference windows simultaneously
   Changes:
+    - Recipe quick reference windows are now draggable
     - Remote Interface:
+      - open_info_gui -> open_gui
       - object_name -> object
-      - When opening a material GUI, the object must be specified as a table with the type of material, then the name. See the documentation for more information.
+      - 'object' is now specified as a table when opening a material GUI, the first entry being the material type, and the second the name
+      - Recipe Quick Reference windows may be opened using the 'recipe-quick-reference` gui_type
+        - source_data is not supported when opening this GUI type
   Bugfixes:
     - Fixed that items and fluids with identical names would conflict
 
