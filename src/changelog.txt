@@ -3,8 +3,8 @@ Version: 1.2.0
 Date: ????
   Changes:
     - Remote Interface:
-      - Removed "material" gui type, replaced with separate "item" and "fluid" gui types
-      - Bumped version
+      - object_name -> object
+      - When opening a material GUI, the object must be specified as a table with the type of material, then the name. See the documentation for more information.
   Bugfixes:
     - Fixed that items and fluids with identical names would conflict
 

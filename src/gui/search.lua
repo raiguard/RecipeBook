@@ -107,9 +107,9 @@ gui.handlers:extend{search={
         local _,_,object_class,object_name = e.element.get_item(e.element.selected_index):find('^%[img=(.-)/(.-)%].*$')
         local category = gui_data.category
         if gui_data.category == 'material' then
-          category = object_class
+          object_name = {object_class, object_name}
         end
-        event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object_name=object_name, source_data={mod_name='RecipeBook',
+        event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object=object_name, source_data={mod_name='RecipeBook',
           gui_name='search', category=gui_data.category, query=gui_data.search_textfield.text, selected_index=e.element.selected_index}})
         if e.keyboard_confirm then
           self.close(game.get_player(e.player_index), player_table)

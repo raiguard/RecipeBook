@@ -30,7 +30,7 @@ gui.handlers:extend{recipe_quick_reference={
   open_info_button = {
     on_gui_click = function(e)
       event.raise(open_gui_event, {player_index=e.player_index, gui_type='recipe',
-        object_name=global.players[e.player_index].gui.recipe_quick_reference.recipe_name})
+        object=global.players[e.player_index].gui.recipe_quick_reference.recipe_name})
     end
   }
 }}

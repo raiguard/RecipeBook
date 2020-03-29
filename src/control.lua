@@ -12,11 +12,9 @@ open_gui_event = event.get_id('open_gui')
 reopen_source_event = event.get_id('reopen_source')
 info_guis = {crafter=true, material=true, recipe=true}
 
--- constants
-local INTERFACE_VERSION = 2
-
 -- locals
 local string_find = string.find
+local string_len = string.len
 local string_sub = string.sub
 local table_remove = table.remove
 
@@ -54,7 +52,7 @@ gui.templates:extend{
 gui.handlers:extend{common={
   generic_open_from_listbox = function(e)
     local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), '^%[img=(.-)/(.-)%].*$')
-    event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object_name=object_name})
+    event.raise(open_gui_event, {player_index=e.player_index, gui_type=category, object=object_name})
   end,
   open_material_from_listbox = function(e)
     local selected_item = e.element.get_item(e.element.selected_index)
@@ -62,7 +60,7 @@ gui.handlers:extend{common={
       e.element.selected_index = 0
     else
       local _,_,object_class,object_name = string_find(selected_item, '^%[img=(.-)/(.-)%].*$')
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object_name=object_class..','..object_name})
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='material', object={object_class, object_name}})
     end
   end,
   open_crafter_from_listbox = function(e)
@@ -70,7 +68,7 @@ gui.handlers:extend{common={
     if object_name == 'character' then
       e.element.selected_index = 0
     else
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='crafter', object_name=object_name})
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='crafter', object=object_name})
     end
   end
 }}
@@ -117,7 +115,6 @@ local function build_recipe_data()
   end
 
   -- iterate materials
-  local material_translation_locations = {}
   for class,t in pairs{fluid=game.fluid_prototypes, item=game.item_prototypes} do
     for name,prototype in pairs(t) do
       local hidden
@@ -355,17 +352,15 @@ event.register(translation.finish_event, function(e)
   }
 
   -- create lookup tables
-  local jan_dir = {}
-  player_table.dictionary[e.dictionary_name].jan_dir = jan_dir
-  local string_len = string.len
+  local search_lookup = {}
   for _,localised in pairs(e.sorted_translations) do
     for i=1,string_len(localised) do
       -- round 1
       local char = string_sub(localised, i, i)
-      local sub_dir = jan_dir[char]
+      local sub_dir = search_lookup[char]
       if not sub_dir then
         sub_dir = {all = {}}
-        jan_dir[char] = sub_dir
+        search_lookup[char] = sub_dir
       end
       -- round 2
       char = string_sub(localised, i+1, i+1)
@@ -379,7 +374,7 @@ event.register(translation.finish_event, function(e)
       sub_dir.all[localised] = true
     end
   end
-  local breakpoint
+  player_table.dictionary[e.dictionary_name].search_lookup = search_lookup
 
   -- set flag if we're done
   if global.__lualib.translation.players[e.player_index].active_translations_count == 0 then
@@ -464,13 +459,16 @@ event.register(open_gui_event, function(e)
       search_gui.open(player, player_table)
     elseif info_guis[gui_type] then
       if gui_type == 'material' then
-        error('\'material\' is not a valid GUI type! Use \'item\' or \'fluid\' instead.')
+        if type(e.object) ~= 'table' then
+          error('Invalid material object, it must be a table!')
+        end
+        e.object = e.object[1]..','..e.object[2]
       end
-      info_gui.open_or_update(player, player_table, gui_type, e.object_name, e.source_data)
+      info_gui.open_or_update(player, player_table, gui_type, e.object, e.source_data)
     elseif gui_type == 'item' or gui_type == 'fluid' then
-      info_gui.open_or_update(player, player_table, 'material', gui_type..','..e.object_name, e.source_data)
+      info_gui.open_or_update(player, player_table, 'material', gui_type..','..e.object, e.source_data)
     elseif gui_type == 'recipe_quick_reference' then
-      recipe_quick_reference_gui.open_or_update(player, player_table, e.object_name)
+      recipe_quick_reference_gui.open_or_update(player, player_table, e.object)
     else
       error('\''..gui_type..'\' is not a valid GUI type!')
     end
@@ -485,18 +483,17 @@ end)
 -- REMOTE INTERFACE
 
 remote.add_interface('RecipeBook', {
-  open_info_gui = function(player_index, category, object_name, source_data)
+  open_info_gui = function(player_index, gui_type, object, source_data)
     -- error checking
-    if not info_guis[category] then error('Invalid Recipe Book category: '..category) end
-    if not object_name then error('Must provide an object name!') end
+    if not object then error('Must provide an object!') end
     if source_data and (not source_data.mod_name or not source_data.gui_name) then
       error('Incomplete source_data table!')
     end
     -- raise internal mod event
-    event.raise(open_gui_event, {player_index=player_index, gui_type=category, object_name=object_name, source_data=source_data})
+    event.raise(open_gui_event, {player_index=player_index, gui_type=gui_type, object=object, source_data=source_data})
   end,
   reopen_source_event = function() return reopen_source_event end,
-  version = function() return INTERFACE_VERSION end
+  version = function() return 2 end
 })
 
 -- -----------------------------------------------------------------------------

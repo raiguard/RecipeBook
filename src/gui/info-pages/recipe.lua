@@ -31,7 +31,7 @@ gui.handlers:extend{recipe={
   },
   quick_reference_button = {
     on_gui_click = function(e)
-      event.raise(open_gui_event, {player_index=e.player_index, gui_type='recipe_quick_reference', object_name=global.players[e.player_index].gui.info.name})
+      event.raise(open_gui_event, {player_index=e.player_index, gui_type='recipe_quick_reference', object=global.players[e.player_index].gui.info.name})
     end
   },
   technologies_listbox = {
