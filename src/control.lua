@@ -14,7 +14,6 @@ REOPEN_SOURCE_EVENT = event.get_id('reopen_source')
 
 -- locals
 local string_find = string.find
-local string_len = string.len
 local string_sub = string.sub
 local table_remove = table.remove
 
@@ -352,31 +351,6 @@ event.register(translation.finish_event, function(e)
     translations = e.translations
   }
 
-  -- create lookup tables
-  local search_lookup = {}
-  for _,localised in pairs(e.sorted_translations) do
-    for i=1,string_len(localised) do
-      -- round 1
-      local char = string_sub(localised, i, i)
-      local sub_dir = search_lookup[char]
-      if not sub_dir then
-        sub_dir = {all = {}}
-        search_lookup[char] = sub_dir
-      end
-      -- round 2
-      char = string_sub(localised, i+1, i+1)
-      local sub_dir2 = sub_dir[char]
-      if not sub_dir2 then
-        sub_dir2 = {}
-        sub_dir[char] = sub_dir2
-      end
-      -- add it
-      sub_dir2[localised] = true
-      sub_dir.all[localised] = true
-    end
-  end
-  player_table.dictionary[e.dictionary_name].search_lookup = search_lookup
-
   -- set flag if we're done
   if global.__lualib.translation.players[e.player_index].active_translations_count == 0 then
     local player = game.get_player(e.player_index)
@@ -427,11 +401,10 @@ event.on_lua_shortcut(function(e)
   if e.prototype_name == 'rb-toggle-search' then
     -- read player's cursor stack to see if we should open the material GUI
     local player = game.get_player(e.player_index)
-    local player_table = global.players[e.player_index]
     local cursor_stack = player.cursor_stack
     if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read then
       -- the player is holding something, so open to its material GUI
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object_name=cursor_stack.name})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={cursor_stack.type, cursor_stack.name}})
     else
       event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='search'})
     end
@@ -502,7 +475,7 @@ remote.add_interface('RecipeBook', {
 
 -- table of migration functions
 local migrations = {
-  ['1.1.0'] = function(e)
+  ['1.1.0'] = function()
     -- update active_translations_count to properly reflect the active translations
     local __translation = global.__lualib.translation
     local count = 0
@@ -511,7 +484,7 @@ local migrations = {
     end
     __translation.active_translations_count = count
   end,
-  ['1.1.5'] = function(e)
+  ['1.1.5'] = function()
     -- delete all mod GUI buttons
     for i,t in pairs(global.players) do
       t.gui.mod_gui_button.destroy()
@@ -519,6 +492,20 @@ local migrations = {
     end
     -- remove GUI lualib table - it is no longer needed
     global.__lualib.gui = nil
+  end,
+  ['1.2.0'] = function()
+    -- migrate recipe quick reference data format
+    for _,t in pairs(global.players) do
+      local rqr_gui = t.gui.recipe_quick_reference
+      local new_t = {}
+      if rqr_gui then
+        -- add an empty filters table to prevent crashes
+        rqr_gui.filters = {}
+        -- nest into a parent table
+        new_t = {[rqr_gui.recipe_name]=rqr_gui}
+      end
+      t.gui.recipe_quick_reference = new_t
+    end
   end
 }
 
