@@ -65,7 +65,7 @@ function self.create(player, player_table, content_container, name)
   gui_data.ingredient_in_frame.style.height = height
   gui_data.product_of_frame.style.height = height
 
-  event.enable_group('gui.material.generic_listbox', player.index, {gui_data.ingredient_in_listbox, gui_data.product_of_listbox})
+  event.enable_group('gui.material.generic_listbox', player.index, {gui_data.ingredient_in_listbox.index, gui_data.product_of_listbox.index})
 
   return gui_data
 end

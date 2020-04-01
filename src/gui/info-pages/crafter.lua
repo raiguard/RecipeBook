@@ -48,7 +48,7 @@ function self.create(player, player_table, content_container, name)
   label.caption = {'rb-gui.craftable-recipes', items_index}
 
   -- register handler
-  event.enable_group('gui.crafter.generic_listbox', player.index, listbox)
+  event.enable_group('gui.crafter.generic_listbox', player.index, listbox.index)
 
   return gui_data
 end

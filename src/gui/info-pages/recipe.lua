@@ -155,9 +155,9 @@ function self.create(player, player_table, content_container, name)
   gui_data.technologies_frame.style.height = height
 
   -- register handlers for listboxes
-  event.enable_group('gui.recipe.material_listboxes', player.index, {gui_data.ingredients_listbox, gui_data.products_listbox})
-  event.enable_group('gui.recipe.crafters_listbox', player.index, gui_data.crafters_listbox)
-  event.enable_group('gui.recipe.technologies_listbox', player.index, gui_data.technologies_listbox)
+  event.enable_group('gui.recipe.material_listboxes', player.index, {gui_data.ingredients_listbox.index, gui_data.products_listbox.index})
+  event.enable_group('gui.recipe.crafters_listbox', player.index, gui_data.crafters_listbox.index)
+  event.enable_group('gui.recipe.technologies_listbox', player.index, gui_data.technologies_listbox.index)
 
   return gui_data
 end

@@ -5,6 +5,6 @@
   "author": "raiguard",
   "homepage": "https://github.com/raiguard/Factorio-RecipeBook",
   "factorio_version": "0.18",
-  "dependencies": ["base >= 0.18.14", "RaiLuaLib >= 0.1.0", "!ptx0-attach-notes"],
-  "description": "Search for information about recipes, materials, and crafting machines. View detailed recipe data, or pin a summary to your screen for easy reference. See what items or fluids are used for. Browse through the recipes that a certain crafting machine can make.\n\nSimilar to FNEI and What is it Really Used For?."
+  "dependencies": ["base >= 0.18.14", "RaiLuaLib >= 0.2.0", "!ptx0-attach-notes"],
+  "description": "Search for information about recipes, materials, and crafting machines in a clean, easy-to-use interface. Similar to FNEI and What is it Really Used For?."
 }

@@ -11,7 +11,6 @@ local translation = require('__RaiLuaLib__.lualib.translation')
 INFO_GUIS = {crafter=true, material=true, recipe=true}
 OPEN_GUI_EVENT = event.get_id('open_gui')
 REOPEN_SOURCE_EVENT = event.get_id('reopen_source')
-SEARCH_CACHE = {}
 
 -- locals
 local string_find = string.find
@@ -270,7 +269,9 @@ local function setup_player(player, index)
       session = {position=0},
       overall = {}
     },
-    gui = {},
+    gui = {
+      recipe_quick_reference = {}
+    },
     settings = import_player_settings(player)
   }
   global.players[index] = data
@@ -287,9 +288,7 @@ local function close_player_guis(player, player_table)
   if gui_data.info then
     info_gui.close(player, player_table)
   end
-  if gui_data.recipe_quick_reference then
-    recipe_quick_reference_gui.close(player, player_table)
-  end
+  recipe_quick_reference_gui.close_all(player, player_table)
 end
 
 -- close the player's GUIs, then start translating
@@ -467,10 +466,10 @@ event.register(OPEN_GUI_EVENT, function(e)
         e.object = e.object[1]..','..e.object[2]
       end
       info_gui.open_or_update(player, player_table, gui_type, e.object, e.source_data)
-    elseif gui_type == 'item' or gui_type == 'fluid' then
-      info_gui.open_or_update(player, player_table, 'material', gui_type..','..e.object, e.source_data)
     elseif gui_type == 'recipe_quick_reference' then
-      recipe_quick_reference_gui.open_or_update(player, player_table, e.object)
+      if not player_table.gui.recipe_quick_reference[e.object] then
+        recipe_quick_reference_gui.open(player, player_table, e.object)
+      end
     else
       error('\''..gui_type..'\' is not a valid GUI type!')
     end
