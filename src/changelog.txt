@@ -3,6 +3,8 @@ Version: 1.2.0
 Date: ????
   Features:
     - You can now open multiple recipe quick reference windows simultaneously
+    - Using the search hotkey while holding an item will open that item's material page, if one exists
+    - Fluid searching with the hotkey now supports infinity pipes
   Changes:
     - Recipe quick reference windows are now draggable
     - Remote Interface:

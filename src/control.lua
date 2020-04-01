@@ -372,14 +372,22 @@ local open_fluid_types = {
   ['storage-tank'] = true,
   ['pump'] = true,
   ['offshore-pump'] = true,
-  ['fluid-wagon'] = true
+  ['fluid-wagon'] = true,
+  ['infinity-pipe'] = true
 }
 
 -- recipe book hotkey (default CONTROL + B)
 event.register('rb-toggle-search', function(e)
-  -- get player's currently selected entity to check for a fluid filter
   local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
+  -- open held item, if it has a material page
+  if player.mod_settings['rb-open-item-hotkey'].value then
+    local cursor_stack = player.cursor_stack
+    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material['item,'..cursor_stack.name] then
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={'item', cursor_stack.name}})
+      return
+    end
+  end
+  -- get player's currently selected entity to check for a fluid filter
   local selected = player.selected
   if player.mod_settings['rb-open-fluid-hotkey'].value then
     if selected and selected.valid and open_fluid_types[selected.type] then
@@ -387,13 +395,16 @@ event.register('rb-toggle-search', function(e)
       if fluidbox and fluidbox.valid then
         local locked_fluid = fluidbox.get_locked_fluid(1)
         if locked_fluid then
-          event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object_name=locked_fluid})
-          return
+          -- check recipe book to see if this fluid has a material page
+          if global.recipe_book.material['fluid,'..locked_fluid] then
+            event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={'fluid', locked_fluid}})
+            return
+          end
         end
       end
     end
   end
-  search_gui.toggle(player, player_table)
+  event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='search'})
 end)
 
 -- shortcut
@@ -402,9 +413,9 @@ event.on_lua_shortcut(function(e)
     -- read player's cursor stack to see if we should open the material GUI
     local player = game.get_player(e.player_index)
     local cursor_stack = player.cursor_stack
-    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read then
+    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material['item,'..cursor_stack.name] then
       -- the player is holding something, so open to its material GUI
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={cursor_stack.type, cursor_stack.name}})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={'item', cursor_stack.name}})
     else
       event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='search'})
     end
