@@ -76,165 +76,10 @@ gui.handlers:extend{common={
 local search_gui = require('gui.search')
 local recipe_quick_reference_gui = require('gui.recipe-quick-reference')
 local info_gui = require('gui.info-base')
+local recipe_data = require('scripts.recipe-data')
 
 -- -----------------------------------------------------------------------------
--- RECIPE DATA
-
--- builds recipe data table
-local function build_recipe_data()
-  -- table skeletons
-  local recipe_book = {
-    crafter = {},
-    material = {},
-    recipe = {},
-    technology = {}
-  }
-  local translation_data = {
-    crafter = {},
-    material = {},
-    recipe = {},
-    technology = {}
-  }
-  
-  -- iterate crafters
-  for name,prototype in pairs(game.get_filtered_entity_prototypes{
-    {filter='type', type='assembling-machine'},
-    {filter='type', type='furnace'}
-  })
-  do
-    recipe_book.crafter[name] = {
-      crafting_speed = prototype.crafting_speed,
-      hidden = prototype.has_flag('hidden'),
-      categories = prototype.crafting_categories,
-      recipes = {},
-      sprite_class = 'entity',
-      prototype_name = name
-    }
-    translation_data.crafter[#translation_data.crafter+1] = {internal=name, localised=prototype.localised_name}
-  end
-
-  -- iterate materials
-  for class,t in pairs{fluid=game.fluid_prototypes, item=game.item_prototypes} do
-    for name,prototype in pairs(t) do
-      local hidden
-      if class == 'fluid' then
-        hidden = prototype.hidden
-      else
-        hidden = prototype.has_flag('hidden')
-      end
-      recipe_book.material[class..','..name] = {
-        hidden = hidden,
-        ingredient_in = {},
-        product_of = {},
-        unlocked_by = {},
-        sprite_class = class,
-        prototype_name = name
-      }
-      -- add to translation table
-      translation_data.material[#translation_data.material+1] = {internal=class..','..name, localised=prototype.localised_name}
-    end
-  end
-
-  -- iterate recipes
-  for name,prototype in pairs(game.recipe_prototypes) do
-    local data = {
-      energy = prototype.energy,
-      hand_craftable = prototype.category == 'crafting',
-      hidden = prototype.hidden,
-      made_in = {},
-      unlocked_by = {},
-      sprite_class = 'recipe',
-      prototype_name = name
-    }
-    -- ingredients / products
-    local material_book = recipe_book.material
-    for _,mode in ipairs{'ingredients', 'products'} do
-      local materials = prototype[mode]
-      for i=1,#materials do
-        local material = materials[i]
-        -- build amount string, to display probability, [min/max] amount - includes the 'x'
-        local amount = material.amount
-        local amount_string = amount and (tostring(amount)..'x') or (material.amount_min..'-'..material.amount_max..'x')
-        local probability = material.probability
-        if probability and probability < 1 then
-          amount_string = tostring(probability * 100)..'% '..amount_string
-        end
-        material.amount_string = amount_string
-        -- add hidden flag to table
-        material.hidden = material_book[material.type..','..material.name].hidden
-      end
-      -- add to data
-      data[mode] = materials
-    end
-    -- made in
-    local category = prototype.category
-    for crafter_name,crafter_data in pairs(recipe_book.crafter) do
-      if crafter_data.categories[category] then
-        data.made_in[#data.made_in+1] = crafter_name
-        crafter_data.recipes[#crafter_data.recipes+1] = {name=name, hidden=prototype.hidden}
-      end
-    end
-    -- material: ingredient in
-    local ingredients = prototype.ingredients
-    for i=1,#ingredients do
-      local ingredient = ingredients[i]
-      local ingredient_data = recipe_book.material[ingredient.type..','..ingredient.name]
-      if ingredient_data then
-        ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
-      end
-    end
-    -- material: product of
-    local products = prototype.products
-    for i=1,#products do
-      local product = products[i]
-      local product_data = recipe_book.material[product.type..','..product.name]
-      if product_data then
-        product_data.product_of[#product_data.product_of+1] = name
-      end
-    end
-    -- insert into recipe book
-    recipe_book.recipe[name] = data
-    -- translation data
-    translation_data.recipe[#translation_data.recipe+1] = {internal=name, localised=prototype.localised_name}
-  end
-
-  -- iterate technologies
-  for name,prototype in pairs(game.technology_prototypes) do
-    for _,modifier in ipairs(prototype.effects) do
-      if modifier.type == 'unlock-recipe' then
-        -- add to recipe data
-        local recipe = recipe_book.recipe[modifier.recipe]
-        recipe.unlocked_by[#recipe.unlocked_by+1] = name
-      end
-    end
-    recipe_book.technology[name] = {hidden=prototype.hidden}
-    translation_data.technology[#translation_data.technology+1] = {internal=prototype.name, localised=prototype.localised_name}
-  end
-
-  -- misc translation data
-  translation_data.other = {
-    {internal='character', localised={'entity-name.character'}}
-  }
-
-  -- remove all materials that aren't used in recipes
-  do
-    local materials = recipe_book.material
-    local translations = translation_data.material
-    for i=#translations,1,-1 do
-      local t = translations[i]
-      local data = materials[t.internal]
-      if #data.ingredient_in == 0 and #data.product_of == 0 then
-        log('Removing material \''..t.internal..'\', which is not used in any recipes')
-        materials[t.internal] = nil
-        table_remove(translations, i)
-      end
-    end
-  end
-
-  -- apply to global
-  global.recipe_book = recipe_book
-  global.__lualib.translation.translation_data = translation_data
-end
+-- BOOTSTRAP / SETUP EVENTS
 
 local function translate_whole(player)
   for name,data in pairs(global.__lualib.translation.translation_data) do
@@ -247,9 +92,6 @@ local function translate_for_all_players()
     translate_whole(player)
   end
 end
-
--- -----------------------------------------------------------------------------
--- BOOTSTRAP / SETUP EVENTS
 
 local function import_player_settings(player)
   local mod_settings = player.mod_settings
@@ -304,7 +146,7 @@ event.on_init(function()
   for i,p in pairs(game.players) do
     setup_player(p, i)
   end
-  build_recipe_data()
+  recipe_data.build()
   translate_for_all_players()
   event.register(translation.retranslate_all_event, close_guis_then_translate)
 end)
@@ -498,7 +340,7 @@ local migrations = {
   end,
   ['1.1.5'] = function()
     -- delete all mod GUI buttons
-    for i,t in pairs(global.players) do
+    for _,t in pairs(global.players) do
       t.gui.mod_gui_button.destroy()
       t.gui.mod_gui_button = nil
     end
@@ -528,7 +370,11 @@ event.on_configuration_changed(function(e)
     for _,p in ipairs(game.connected_players) do
       close_player_guis(p, global.players[p.index])
     end
-    build_recipe_data()
+    -- update player settings
+    for _,p in pairs(game.players) do
+      import_player_settings(p)
+    end
+    recipe_data.build()
     translate_for_all_players()
   end
 end)
