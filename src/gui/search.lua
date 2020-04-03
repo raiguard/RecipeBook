@@ -9,6 +9,7 @@ local gui = require('__RaiLuaLib__.lualib.gui')
 local self = {}
 
 -- locals
+local string_gsub = string.gsub
 local string_lower = string.lower
 local string_match = string.match
 
@@ -90,6 +91,10 @@ Please gather the following and report it to the mod author on either GitHub (pr
       local gui_data = player_table.gui.search
       local show_hidden = player_table.settings.show_hidden
       local query = string_lower(e.text)
+      -- fuzzy search
+      if player_table.settings.use_fuzzy_search then
+        query = string_gsub(query, '.', '%1.*')
+      end
       local category = gui_data.category
       local objects = global.recipe_book[category]
       local dictionary = player_table.dictionary[category]

@@ -1,9 +1,12 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.1
 Date: ????
+  Features:
+    - Added fuzzy search option
   Changes:
-    - Added an error catch for a common error that I cannot reproduce. It gives instructions on how to report the error, and prints several helpful things to a file.
     - Marked Death Markers as incompatible, because it somehow causes this mod to desync in multiplayer
+  Bugfixes:
+    - Added an error catch for a common error that I cannot reproduce. It gives instructions on how to report the error, and prints several helpful things to a file.
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.0
 Date: 2020-04-01

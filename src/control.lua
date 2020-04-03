@@ -255,7 +255,8 @@ local function import_player_settings(player)
   local mod_settings = player.mod_settings
   return {
     default_category = mod_settings['rb-default-search-category'].value,
-    show_hidden = mod_settings['rb-show-hidden-objects'].value
+    show_hidden = mod_settings['rb-show-hidden-objects'].value,
+    use_fuzzy_search = mod_settings['rb-use-fuzzy-search'].value
   }
 end
 
