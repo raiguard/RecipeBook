@@ -34,23 +34,6 @@ data:extend{
     order = 'bd'
   },
   -- SPRITES
-  {
-    type = 'sprite',
-    name = 'rb_mod_gui_icon',
-    layers = {
-      {
-        filename = '__core__/graphics/empty.png',
-        size = 1,
-        scale = 40,
-      },
-      {
-        filename = '__RecipeBook__/graphics/search-shortcut.png',
-        size = 32,
-        mipmap_count = 2,
-        flags = {'icon'}
-      }
-    }
-  },
   mipped_icon('rb_nav_backward', {0,0}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
   mipped_icon('rb_nav_backward_dark', {48,0}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
   mipped_icon('rb_nav_forward', {0,32}, '__RecipeBook__/graphics/gui-nav-icons.png', 32, 2),
