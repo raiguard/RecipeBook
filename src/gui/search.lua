@@ -38,6 +38,34 @@ gui.handlers:extend{search={
     end,
     on_gui_closed = function(e)
       local player_table = global.players[e.player_index]
+      -- temporary error catching - print a butt-ton of data to script_output, then crash
+      if not player_table.gui.search then
+        local tables = {
+          events = event.events,
+          conditional_events = event.conditional_events,
+          conditional_event_groups = event.conditional_event_groups,
+          global_data = global.__lualib.event,
+          players = {}
+        }
+        for i,t in pairs(global.players) do
+          tables.players[i] = {
+            flags = t.flags,
+            history = t.history,
+            gui = t.gui,
+            settings = t.settings
+          }
+        end
+        game.write_file('RecipeBook/crash_dump_'..game.tick..'.log', serpent.block(tables))
+        error([[
+
+RECIPE BOOK: A FATAL ERROR HAS OCCURED.
+Please gather the following and report it to the mod author on either GitHub (preferred) or the mod portal:
+  - Your savegame
+  - The crash dump. This can be found in your Factorio install directory, under 'script-output/RecipeBook/crash_dump_(gametick).log'.
+  - A description of exactly what you (and any other players on the server) were doing at the time of the crash.
+]]
+        )
+      end
       if player_table.gui.search.state ~= 'select_result' then
         self.close(game.get_player(e.player_index), player_table)
       end
