@@ -1,9 +1,10 @@
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- RECIPE DATA BUILDER
+-- RECIPE DATA
 
 -- locals
 local table_remove = table.remove
 
+-- module
 local recipe_data = {}
 
 -- builds recipe data table
