@@ -9,9 +9,9 @@ local gui = require('__RaiLuaLib__.lualib.gui')
 local self = {}
 
 -- locals
+local string_find = string.find
 local string_gsub = string.gsub
 local string_lower = string.lower
-local string_match = string.match
 
 -- utilities
 local category_by_index = {'crafter', 'material', 'recipe'}
@@ -98,7 +98,7 @@ Please gather the following and report it to the mod author on either GitHub (pr
       local category = gui_data.category
       local objects = global.recipe_book[category]
       local dictionary = player_table.dictionary[category]
-      local lookup_lower = dictionary.lookup_lower
+      local lookup = dictionary.lookup
       local sorted_translations = dictionary.sorted_translations
       local translations = dictionary.translations
       local results_listbox = gui_data.results_listbox
@@ -107,8 +107,8 @@ Please gather the following and report it to the mod author on either GitHub (pr
       local i = 0
       for i1=1,#sorted_translations do
         local translation = sorted_translations[i1]
-        if skip_matching or string_match(translation, query) then
-          local names = lookup_lower[translation]
+        if skip_matching or string_find(translation, query) then
+          local names = lookup[translation]
           if names then
             for i2=1,#names do
               local name = names[i2]

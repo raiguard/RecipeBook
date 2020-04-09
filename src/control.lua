@@ -189,7 +189,6 @@ event.register(translation.finish_event, function(e)
   -- add to player table
   player_table.dictionary[e.dictionary_name] = {
     lookup = e.lookup,
-    lookup_lower = e.lookup_lower,
     sorted_translations = e.sorted_translations,
     translations = e.translations
   }
