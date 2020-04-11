@@ -2,6 +2,9 @@
 Version: 1.2.3
 Date: ????
   Changes:
+    - Translations are no longer performed on every join. If you change languages, simply use the /retranslate-all-dictionaries command
+  Bugfixes:
+    - Fixed crash when using RaiLuaLib 0.2.4
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.2
 Date: 2020-04-09
