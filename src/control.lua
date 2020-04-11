@@ -188,11 +188,11 @@ event.register(translation.finish_event, function(e)
 end)
 
 -- retranslate_all_event doesn't exist in the root scope, so register the handler in bootstrap
-event.register{"on_init", "on_load", function()
+event.register({"on_init", "on_load"}, function()
   event.register(translation.retranslate_all_event, function(e)
     refresh_player_data(game.get_player(e.player_index), global.players[e.player_index])
   end)
-end}
+end)
 
 -- -----------------------------------------------------------------------------
 -- BASE INTERACTION EVENTS

@@ -2,7 +2,9 @@
 Version: 1.2.3
 Date: ????
   Changes:
-    - Translations are no longer performed on every join. If you change languages, simply use the /retranslate-all-dictionaries command
+    - Converted all strings to double quotes
+    - Removed search button from next to close button (it will come back as an ACTUAL search button later)
+    - Translations are no longer performed on every join. If you change languages, simply use the /retranslate-all-dictionaries command to retranslate your dictionaries
   Bugfixes:
     - Fixed crash when using RaiLuaLib 0.2.4
 ---------------------------------------------------------------------------------------------------
