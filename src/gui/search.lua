@@ -2,8 +2,8 @@
 -- SEARCH GUI
 
 -- dependencies
-local event = require('__RaiLuaLib__.lualib.event')
-local gui = require('__RaiLuaLib__.lualib.gui')
+local event = require("__RaiLuaLib__.lualib.event")
+local gui = require("__RaiLuaLib__.lualib.gui")
 
 -- self object
 local self = {}
@@ -14,7 +14,7 @@ local string_gsub = string.gsub
 local string_lower = string.lower
 
 -- utilities
-local category_by_index = {'crafter', 'material', 'recipe'}
+local category_by_index = {"crafter", "material", "recipe"}
 local category_to_index = {crafter=1, material=2, recipe=3}
 
 -- -----------------------------------------------------------------------------
@@ -33,7 +33,7 @@ gui.handlers:extend{search={
       local gui_data = player_table.gui.search
       -- reset GUI state
       gui_data.results_listbox.selected_index = 0
-      gui_data.state = 'search'
+      gui_data.state = "search"
       gui_data.search_textfield.focus()
       game.get_player(e.player_index).opened = gui_data.search_textfield
     end,
@@ -56,18 +56,18 @@ gui.handlers:extend{search={
             settings = t.settings
           }
         end
-        game.write_file('RecipeBook/crash_dump_'..game.tick..'.log', serpent.block(tables))
+        game.write_file("RecipeBook/crash_dump_"..game.tick..".log", serpent.block(tables))
         error([[
 
 RECIPE BOOK: A FATAL ERROR HAS OCCURED.
 Please gather the following and report it to the mod author on either GitHub (preferred) or the mod portal:
   - Your savegame
-  - The crash dump. This can be found in your Factorio install directory, under 'script-output/RecipeBook/crash_dump_(gametick).log'.
+  - The crash dump. This can be found in your Factorio install directory, under "script-output/RecipeBook/crash_dump_(gametick).log".
   - A description of exactly what you (and any other players on the server) were doing at the time of the crash.
 ]]
         )
       end
-      if player_table.gui.search.state ~= 'select_result' then
+      if player_table.gui.search.state ~= "select_result" then
         self.close(game.get_player(e.player_index), player_table)
       end
     end,
@@ -80,11 +80,11 @@ Please gather the following and report it to the mod author on either GitHub (pr
       -- set initial selected index
       results_listbox.selected_index = 1
       -- set GUI state
-      gui_data.state = 'select_result'
+      gui_data.state = "select_result"
       game.get_player(e.player_index).opened = gui_data.results_listbox
       results_listbox.focus()
       -- enable navigation confirmation handler
-      event.enable_group('gui.search.results_nav', e.player_index)
+      event.enable_group("gui.search.results_nav", e.player_index)
     end,
     on_gui_text_changed = function(e)
       local player_table = global.players[e.player_index]
@@ -93,7 +93,7 @@ Please gather the following and report it to the mod author on either GitHub (pr
       local query = string_lower(e.text)
       -- fuzzy search
       if player_table.settings.use_fuzzy_search then
-        query = string_gsub(query, '.', '%1.*')
+        query = string_gsub(query, ".", "%1.*")
       end
       local category = gui_data.category
       local objects = global.recipe_book[category]
@@ -102,7 +102,7 @@ Please gather the following and report it to the mod author on either GitHub (pr
       local sorted_translations = dictionary.sorted_translations
       local translations = dictionary.translations
       local results_listbox = gui_data.results_listbox
-      local skip_matching = query == ''
+      local skip_matching = query == ""
       local items = {}
       local i = 0
       for i1=1,#sorted_translations do
@@ -115,7 +115,7 @@ Please gather the following and report it to the mod author on either GitHub (pr
               local t = objects[name]
               -- check conditions
               if (show_hidden or not t.hidden) then
-                local caption = '[img='..t.sprite_class..'/'..t.prototype_name..']  '..translations[name] -- get the non-lowercase version
+                local caption = "[img="..t.sprite_class.."/"..t.prototype_name.."]  "..translations[name] -- get the non-lowercase version
                 i = i + 1
                 items[i] = caption
               end
@@ -136,14 +136,14 @@ Please gather the following and report it to the mod author on either GitHub (pr
     on_gui_selection_state_changed = function(e)
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.search
-      if e.keyboard_confirm or gui_data.state ~= 'select_result' then
-        local _,_,object_class,object_name = e.element.get_item(e.element.selected_index):find('^%[img=(.-)/(.-)%].*$')
+      if e.keyboard_confirm or gui_data.state ~= "select_result" then
+        local _,_,object_class,object_name = e.element.get_item(e.element.selected_index):find("^%[img=(.-)/(.-)%].*$")
         local category = gui_data.category
-        if gui_data.category == 'material' then
+        if gui_data.category == "material" then
           object_name = {object_class, object_name}
         end
-        event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type=category, object=object_name, source_data={mod_name='RecipeBook',
-          gui_name='search', category=gui_data.category, query=gui_data.search_textfield.text, selected_index=e.element.selected_index}})
+        event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type=category, object=object_name, source_data={mod_name="RecipeBook",
+          gui_name="search", category=gui_data.category, query=gui_data.search_textfield.text, selected_index=e.element.selected_index}})
         if e.keyboard_confirm then
           self.close(game.get_player(e.player_index), player_table)
         end
@@ -156,17 +156,17 @@ Please gather the following and report it to the mod author on either GitHub (pr
       local gui_data = player_table.gui.search
       -- update GUI state
       gui_data.category = category_by_index[e.element.selected_index]
-      if gui_data.state == 'search' then
+      if gui_data.state == "search" then
         gui_data.search_textfield.focus()
-        gui_data.search_textfield.text = ''
-        gui.handlers.search.search_textfield.on_gui_text_changed{player_index=e.player_index, text=''}
+        gui_data.search_textfield.text = ""
+        gui.handlers.search.search_textfield.on_gui_text_changed{player_index=e.player_index, text=""}
       else
         game.get_player(e.player_index).opened = gui_data.search_textfield
       end
     end
   },
   results_nav = {
-    ['rb-results-nav-confirm'] = function(e)
+    ["rb-results-nav-confirm"] = function(e)
       e.element = global.players[e.player_index].gui.search.results_listbox
       e.keyboard_confirm = true
       gui.handlers.search.results_listbox.on_gui_selection_state_changed(e)
@@ -182,27 +182,27 @@ function self.open(player, player_table, options)
   local category = options.category or player_table.settings.default_category
   -- create GUI structure
   local gui_data = gui.build(player.gui.screen, {
-    {type='frame', name='rb_search_window', style='dialog_frame', direction='vertical', save_as='window', children={
+    {type="frame", name="rb_search_window", style="dialog_frame", direction="vertical", save_as="window", children={
       -- titlebar
-      {type='flow', style='rb_titlebar_flow', children={
-        {type='label', style='frame_title', caption={'mod-name.RecipeBook'}},
-        {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
-        {template='close_button', handlers='search.close_button'}
+      {type="flow", style="rb_titlebar_flow", children={
+        {type="label", style="frame_title", caption={"mod-name.RecipeBook"}},
+        {type="empty-widget", style="rb_titlebar_draggable_space", save_as="drag_handle"},
+        {template="close_button", handlers="search.close_button"}
       }},
-      {type='frame', style='window_content_frame_packed', direction='vertical', children={
+      {type="frame", style="window_content_frame_packed", direction="vertical", children={
         -- toolbar
-        {type='frame', style='subheader_frame', children={
-          {type='label', style='subheader_caption_label', caption={'rb-gui.search-by'}},
-          {template='pushers.horizontal'},
-          {type='drop-down', items={{'rb-gui.crafter'}, {'rb-gui.material'}, {'rb-gui.recipe'}}, selected_index=category_to_index[category],
-            handlers='search.category_dropdown', save_as='category_dropdown'}
+        {type="frame", style="subheader_frame", children={
+          {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
+          {template="pushers.horizontal"},
+          {type="drop-down", items={{"rb-gui.crafter"}, {"rb-gui.material"}, {"rb-gui.recipe"}}, selected_index=category_to_index[category],
+            handlers="search.category_dropdown", save_as="category_dropdown"}
         }},
         -- search bar
-        {type='textfield', style_mods={width=225, margin=8, bottom_margin=0}, clear_and_focus_on_right_click=true, handlers='search.search_textfield',
-          save_as='search_textfield'},
+        {type="textfield", style_mods={width=225, margin=8, bottom_margin=0}, clear_and_focus_on_right_click=true, handlers="search.search_textfield",
+          save_as="search_textfield"},
         -- results listbox
-        {type='frame', style='rb_search_results_listbox_frame', style_mods={margin=8}, children={
-          {type='list-box', style='rb_listbox_for_keyboard_nav', handlers='search.results_listbox', save_as='results_listbox'}
+        {type="frame", style="rb_search_results_listbox_frame", style_mods={margin=8}, children={
+          {type="list-box", style="rb_listbox_for_keyboard_nav", handlers="search.results_listbox", save_as="results_listbox"}
         }}
       }}
     }}
@@ -212,7 +212,7 @@ function self.open(player, player_table, options)
   gui_data.window.force_auto_center()
 
   -- gui state
-  gui_data.state = 'search'
+  gui_data.state = "search"
   gui_data.category = category
   player.opened = gui_data.search_textfield
   gui_data.search_textfield.focus()
@@ -224,11 +224,11 @@ function self.open(player, player_table, options)
   player_table.gui.search = gui_data
 
   -- populate initial results
-  gui.handlers.search.search_textfield.on_gui_text_changed{player_index=player.index, text=options.query or '', selected_index=options.selected_index}
+  gui.handlers.search.search_textfield.on_gui_text_changed{player_index=player.index, text=options.query or "", selected_index=options.selected_index}
 end
 
 function self.close(player, player_table)
-  event.disable_group('gui.search', player.index)
+  event.disable_group("gui.search", player.index)
   player_table.gui.search.window.destroy()
   player_table.gui.search = nil
 end
@@ -244,7 +244,7 @@ function self.toggle(player, player_table, options)
     else
       -- set flag and tell the player that they cannot open it
       player_table.flags.tried_to_open_gui = true
-      player.print{'rb-message.translation-not-finished'}
+      player.print{"rb-message.translation-not-finished"}
     end
   end
 end

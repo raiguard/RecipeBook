@@ -2,8 +2,8 @@
 -- BASE INFO GUI
 
 -- dependencies
-local event = require('__RaiLuaLib__.lualib.event')
-local gui = require('__RaiLuaLib__.lualib.gui')
+local event = require("__RaiLuaLib__.lualib.event")
+local gui = require("__RaiLuaLib__.lualib.gui")
 
 -- self object
 local self = {}
@@ -11,7 +11,7 @@ local self = {}
 -- info pages
 local pages = {}
 for n,_ in pairs(INFO_GUIS) do
-  pages[n] = require('gui.info-pages.'..n)
+  pages[n] = require("gui.info-pages."..n)
 end
 
 -- locals
@@ -56,7 +56,7 @@ gui.handlers:extend{info_base={
   },
   search_button = {
     on_gui_click = function(e)
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='search'})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="search"})
     end
   },
   window = {
@@ -72,31 +72,31 @@ gui.handlers:extend{info_base={
 function self.open(player, player_table, category, name, source_data)
   -- gui structure
   local gui_data = gui.build(player.gui.screen, {
-    {type='frame', name='rb_info_window', style='dialog_frame', direction='vertical', handlers='info_base.window', save_as='window', children={
+    {type="frame", name="rb_info_window", style="dialog_frame", direction="vertical", handlers="info_base.window", save_as="window", children={
       -- titlebar
-      {type='flow', style='rb_titlebar_flow', direction='horizontal', children={
-        {type='sprite-button', style='rb_frame_action_button', sprite='rb_nav_backward', hovered_sprite='rb_nav_backward_dark',
-          clicked_sprite='rb_nav_backward_dark', mouse_button_filter={'left'}, handlers='info_base.nav_backward_button', save_as='nav_backward_button'},
-        {type='sprite-button', style='rb_frame_action_button', sprite='rb_nav_forward', hovered_sprite='rb_nav_forward_dark',
-          clicked_sprite='rb_nav_forward_dark', mouse_button_filter={'left'}, handlers='info_base.nav_forward_button', save_as='nav_forward_button'},
-        {type='label', style='frame_title', style_mods={left_padding=6}, save_as='window_title'},
-        {type='empty-widget', style='rb_titlebar_draggable_space', save_as='drag_handle'},
-        {type='sprite-button', style='rb_frame_action_button', sprite='rb_nav_search', hovered_sprite='rb_nav_search_dark',
-          clicked_sprite='rb_nav_search_dark', mouse_button_filter={'left'}, handlers='info_base.search_button'},
-        {template='close_button', handlers='info_base.close_button'}
+      {type="flow", style="rb_titlebar_flow", direction="horizontal", children={
+        {type="sprite-button", style="rb_frame_action_button", sprite="rb_nav_backward", hovered_sprite="rb_nav_backward_dark",
+          clicked_sprite="rb_nav_backward_dark", mouse_button_filter={"left"}, handlers="info_base.nav_backward_button", save_as="nav_backward_button"},
+        {type="sprite-button", style="rb_frame_action_button", sprite="rb_nav_forward", hovered_sprite="rb_nav_forward_dark",
+          clicked_sprite="rb_nav_forward_dark", mouse_button_filter={"left"}, handlers="info_base.nav_forward_button", save_as="nav_forward_button"},
+        {type="label", style="frame_title", style_mods={left_padding=6}, save_as="window_title"},
+        {type="empty-widget", style="rb_titlebar_draggable_space", save_as="drag_handle"},
+        {type="sprite-button", style="rb_frame_action_button", sprite="rb_nav_search", hovered_sprite="rb_nav_search_dark",
+          clicked_sprite="rb_nav_search_dark", mouse_button_filter={"left"}, handlers="info_base.search_button"},
+        {template="close_button", handlers="info_base.close_button"}
       }},
-      {type='frame', style='window_content_frame_packed', direction='vertical', children={
+      {type="frame", style="window_content_frame_packed", direction="vertical", children={
         -- toolbar
-        {type='frame', style='subheader_frame', direction='horizontal', children={
-          {type='sprite', style='rb_object_icon', save_as='object_icon'},
-          {type='label', style='subheader_caption_label', style_mods={left_padding=0}, save_as='object_name'},
-          {template='pushers.horizontal'}
+        {type="frame", style="subheader_frame", direction="horizontal", children={
+          {type="sprite", style="rb_object_icon", save_as="object_icon"},
+          {type="label", style="subheader_caption_label", style_mods={left_padding=0}, save_as="object_name"},
+          {template="pushers.horizontal"}
         }},
         -- content container
-        {type='flow', style_mods={padding=8}, save_as='content_container'}
+        {type="flow", style_mods={padding=8}, save_as="content_container"}
       }}
     }}
-  }, 'info_base', player.index)
+  }, "info_base", player.index)
 
   -- drag handle
   gui_data.drag_handle.drag_target = gui_data.window
@@ -116,7 +116,7 @@ function self.close(player, player_table)
   -- destroy content / deregister handlers
   pages[gui_data.info.category].destroy(player, gui_data.info.base.content_container)
   -- destroy base
-  event.disable_group('gui.info_base', player.index)
+  event.disable_group("gui.info_base", player.index)
   gui_data.info.base.window.destroy()
   -- remove data from global
   gui_data.info = nil
@@ -158,27 +158,27 @@ function self.update_contents(player, player_table, category, name, source_data,
   local back_obj = session_history[session_history.position+1]
   if back_obj then
     if back_obj.mod_name and back_obj.gui_name then
-      back_button.tooltip = {'rb-gui.back-to', {'rb-remote.source-'..back_obj.mod_name..'-'..back_obj.gui_name}}
+      back_button.tooltip = {"rb-gui.back-to", {"rb-remote.source-"..back_obj.mod_name.."-"..back_obj.gui_name}}
     else
-      back_button.tooltip = {'rb-gui.back-to', string_lower(dictionary[back_obj.category].translations[back_obj.name])}
+      back_button.tooltip = {"rb-gui.back-to", string_lower(dictionary[back_obj.category].translations[back_obj.name])}
     end
   else
     back_button.enabled = false
-    back_button.tooltip = ''
+    back_button.tooltip = ""
   end
   local forward_button = base_elems.nav_forward_button
   if session_history.position > 1 then
     forward_button.enabled = true
     local forward_obj = session_history[session_history.position-1]
-    forward_button.tooltip = {'rb-gui.forward-to', string_lower(dictionary[forward_obj.category].translations[forward_obj.name])}
+    forward_button.tooltip = {"rb-gui.forward-to", string_lower(dictionary[forward_obj.category].translations[forward_obj.name])}
   else
     forward_button.enabled = false
-    forward_button.tooltip = ''
+    forward_button.tooltip = ""
   end
-  base_elems.window_title.caption = {'rb-gui.'..category..'-upper'}
+  base_elems.window_title.caption = {"rb-gui."..category.."-upper"}
 
   -- update object name
-  base_elems.object_icon.sprite = object_data.sprite_class..'/'..object_data.prototype_name
+  base_elems.object_icon.sprite = object_data.sprite_class.."/"..object_data.prototype_name
   base_elems.object_name.caption = dictionary[category].translations[name]
 
   -- update main content

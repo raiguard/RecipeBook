@@ -2,8 +2,8 @@
 -- CRAFTER GUI
 
 -- dependencies
-local event = require('__RaiLuaLib__.lualib.event')
-local gui = require('__RaiLuaLib__.lualib.gui')
+local event = require("__RaiLuaLib__.lualib.event")
+local gui = require("__RaiLuaLib__.lualib.gui")
 
 -- self object
 local self = {}
@@ -22,7 +22,7 @@ gui.handlers:extend{crafter={
 
 function self.create(player, player_table, content_container, name)
   local gui_data = gui.build(content_container, {
-    gui.templates.listbox_with_label('recipes')
+    gui.templates.listbox_with_label("recipes")
   })
 
   -- get data
@@ -41,20 +41,20 @@ function self.create(player, player_table, content_container, name)
     if show_hidden or not recipe.hidden then
       local recipe_name = recipe.name
       items_index = items_index + 1
-      items[items_index] = '[img=recipe/'..recipe_name..']  '..(recipe_translations[recipe_name])
+      items[items_index] = "[img=recipe/"..recipe_name.."]  "..(recipe_translations[recipe_name])
     end
   end
   listbox.items = items
-  label.caption = {'rb-gui.craftable-recipes', items_index}
+  label.caption = {"rb-gui.craftable-recipes", items_index}
 
   -- register handler
-  event.enable_group('gui.crafter.generic_listbox', player.index, listbox.index)
+  event.enable_group("gui.crafter.generic_listbox", player.index, listbox.index)
 
   return gui_data
 end
 
 function self.destroy(player, content_container)
-  event.disable_group('gui.crafter', player.index)
+  event.disable_group("gui.crafter", player.index)
   content_container.children[1].destroy()
 end
 

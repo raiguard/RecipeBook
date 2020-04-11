@@ -2,15 +2,15 @@
 -- CONTROL SCRIPTING
 
 -- dependencies
-local event = require('__RaiLuaLib__.lualib.event')
-local gui = require('__RaiLuaLib__.lualib.gui')
-local migration = require('__RaiLuaLib__.lualib.migration')
-local translation = require('__RaiLuaLib__.lualib.translation')
+local event = require("__RaiLuaLib__.lualib.event")
+local gui = require("__RaiLuaLib__.lualib.gui")
+local migration = require("__RaiLuaLib__.lualib.migration")
+local translation = require("__RaiLuaLib__.lualib.translation")
 
 -- globals
 INFO_GUIS = {crafter=true, material=true, recipe=true}
-OPEN_GUI_EVENT = event.get_id('open_gui')
-REOPEN_SOURCE_EVENT = event.get_id('reopen_source')
+OPEN_GUI_EVENT = event.get_id("open_gui")
+REOPEN_SOURCE_EVENT = event.get_id("reopen_source")
 
 -- locals
 local string_find = string.find
@@ -19,28 +19,28 @@ local table_remove = table.remove
 
 -- GUI templates
 gui.templates:extend{
-  close_button = {type='sprite-button', style='rb_frame_action_button', sprite='utility/close_white', hovered_sprite='utility/close_black',
-    clicked_sprite='utility/close_black', mouse_button_filter={'left'}},
+  close_button = {type="sprite-button", style="rb_frame_action_button", sprite="utility/close_white", hovered_sprite="utility/close_black",
+    clicked_sprite="utility/close_black", mouse_button_filter={"left"}},
   pushers = {
-    horizontal = {type='empty-widget', style_mods={horizontally_stretchable=true}},
-    vertical = {type='empty-widget', style_mods={vertically_stretchable=true}}
+    horizontal = {type="empty-widget", style_mods={horizontally_stretchable=true}},
+    vertical = {type="empty-widget", style_mods={vertically_stretchable=true}}
   },
   listbox_with_label = function(name)
     return
-    {type='flow', direction='vertical', children={
-      {type='label', style='rb_listbox_label', save_as=name..'_label'},
-      {type='frame', style='rb_listbox_frame', save_as=name..'_frame', children={
-        {type='list-box', style='rb_listbox', save_as=name..'_listbox'}
+    {type="flow", direction="vertical", children={
+      {type="label", style="rb_listbox_label", save_as=name.."_label"},
+      {type="frame", style="rb_listbox_frame", save_as=name.."_frame", children={
+        {type="list-box", style="rb_listbox", save_as=name.."_listbox"}
       }}
     }}
   end,
   quick_reference_scrollpane = function(name)
     return
-    {type='flow', direction='vertical', children={
-      {type='label', style='rb_listbox_label', save_as=name..'_label'},
-      {type='frame', style='rb_icon_slot_table_frame', style_mods={maximal_height=160}, children={
-        {type='scroll-pane', style='rb_icon_slot_table_scrollpane', children={
-          {type='table', style='rb_icon_slot_table', style_mods={width=200}, column_count=5, save_as=name..'_table'}
+    {type="flow", direction="vertical", children={
+      {type="label", style="rb_listbox_label", save_as=name.."_label"},
+      {type="frame", style="rb_icon_slot_table_frame", style_mods={maximal_height=160}, children={
+        {type="scroll-pane", style="rb_icon_slot_table_scrollpane", children={
+          {type="table", style="rb_icon_slot_table", style_mods={width=200}, column_count=5, save_as=name.."_table"}
         }}
       }}
     }}
@@ -50,33 +50,33 @@ gui.templates:extend{
 -- common GUI handlers
 gui.handlers:extend{common={
   generic_open_from_listbox = function(e)
-    local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), '^%[img=(.-)/(.-)%].*$')
+    local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=(.-)/(.-)%].*$")
     event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type=category, object=object_name})
   end,
   open_material_from_listbox = function(e)
     local selected_item = e.element.get_item(e.element.selected_index)
-    if string_sub(selected_item, 1, 1) == ' ' then
+    if string_sub(selected_item, 1, 1) == " " then
       e.element.selected_index = 0
     else
-      local _,_,object_class,object_name = string_find(selected_item, '^%[img=(.-)/(.-)%].*$')
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={object_class, object_name}})
+      local _,_,object_class,object_name = string_find(selected_item, "^%[img=(.-)/(.-)%].*$")
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={object_class, object_name}})
     end
   end,
   open_crafter_from_listbox = function(e)
-    local _,_,object_name = string_find(e.element.get_item(e.element.selected_index), '^%[img=.-/(.-)%].*$')
-    if object_name == 'character' then
+    local _,_,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=.-/(.-)%].*$")
+    if object_name == "character" then
       e.element.selected_index = 0
     else
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='crafter', object=object_name})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="crafter", object=object_name})
     end
   end
 }}
 
 -- modules
-local search_gui = require('gui.search')
-local recipe_quick_reference_gui = require('gui.recipe-quick-reference')
-local info_gui = require('gui.info-base')
-local recipe_data = require('scripts.recipe-data')
+local search_gui = require("gui.search")
+local recipe_quick_reference_gui = require("gui.recipe-quick-reference")
+local info_gui = require("gui.info-base")
+local recipe_data = require("scripts.recipe-data")
 
 -- -----------------------------------------------------------------------------
 -- BOOTSTRAP / PLAYER DATA
@@ -106,9 +106,9 @@ end
 local function import_player_settings(player, player_table)
   local mod_settings = player.mod_settings
   player_table.settings = {
-    default_category = mod_settings['rb-default-search-category'].value,
-    show_hidden = mod_settings['rb-show-hidden-objects'].value,
-    use_fuzzy_search = mod_settings['rb-use-fuzzy-search'].value
+    default_category = mod_settings["rb-default-search-category"].value,
+    show_hidden = mod_settings["rb-show-hidden-objects"].value,
+    use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value
   }
 end
 
@@ -116,7 +116,7 @@ end
 local function destroy_player_guis(player, player_table)
   local gui_data = player_table.gui
   player_table.flags.can_open_gui = false
-  player.set_shortcut_available('rb-toggle-search', false)
+  player.set_shortcut_available("rb-toggle-search", false)
   if gui_data.search then
     search_gui.close(player, player_table)
   end
@@ -156,7 +156,7 @@ end)
 
 -- update player settings
 event.on_runtime_mod_setting_changed(function(e)
-  if string_sub(e.setting, 1, 3) == 'rb-' then
+  if string_sub(e.setting, 1, 3) == "rb-" then
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
     import_player_settings(player, player_table)
@@ -178,11 +178,11 @@ event.register(translation.finish_event, function(e)
   -- set flag if we're done
   if global.__lualib.translation.players[e.player_index].active_translations_count == 0 then
     local player = game.get_player(e.player_index)
-    player.set_shortcut_available('rb-toggle-search', true)
+    player.set_shortcut_available("rb-toggle-search", true)
     player_table.flags.can_open_gui = true
     if player_table.flags.tried_to_open_gui then
       player_table.flags.tried_to_open_gui = nil
-      player.print{'rb-message.translation-finished'}
+      player.print{"rb-message.translation-finished"}
     end
   end
 end)
@@ -198,57 +198,57 @@ end}
 -- BASE INTERACTION EVENTS
 
 local open_fluid_types = {
-  ['pipe'] = true,
-  ['pipe-to-ground'] = true,
-  ['storage-tank'] = true,
-  ['pump'] = true,
-  ['offshore-pump'] = true,
-  ['fluid-wagon'] = true,
-  ['infinity-pipe'] = true
+  ["pipe"] = true,
+  ["pipe-to-ground"] = true,
+  ["storage-tank"] = true,
+  ["pump"] = true,
+  ["offshore-pump"] = true,
+  ["fluid-wagon"] = true,
+  ["infinity-pipe"] = true
 }
 
 -- recipe book hotkey (default CONTROL + B)
-event.register('rb-toggle-search', function(e)
+event.register("rb-toggle-search", function(e)
   local player = game.get_player(e.player_index)
   -- open held item, if it has a material page
-  if player.mod_settings['rb-open-item-hotkey'].value then
+  if player.mod_settings["rb-open-item-hotkey"].value then
     local cursor_stack = player.cursor_stack
-    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material['item,'..cursor_stack.name] then
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={'item', cursor_stack.name}})
+    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
       return
     end
   end
   -- get player's currently selected entity to check for a fluid filter
   local selected = player.selected
-  if player.mod_settings['rb-open-fluid-hotkey'].value then
+  if player.mod_settings["rb-open-fluid-hotkey"].value then
     if selected and selected.valid and open_fluid_types[selected.type] then
       local fluidbox = selected.fluidbox
       if fluidbox and fluidbox.valid then
         local locked_fluid = fluidbox.get_locked_fluid(1)
         if locked_fluid then
           -- check recipe book to see if this fluid has a material page
-          if global.recipe_book.material['fluid,'..locked_fluid] then
-            event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={'fluid', locked_fluid}})
+          if global.recipe_book.material["fluid,"..locked_fluid] then
+            event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={"fluid", locked_fluid}})
             return
           end
         end
       end
     end
   end
-  event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='search'})
+  event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="search"})
 end)
 
 -- shortcut
 event.on_lua_shortcut(function(e)
-  if e.prototype_name == 'rb-toggle-search' then
+  if e.prototype_name == "rb-toggle-search" then
     -- read player's cursor stack to see if we should open the material GUI
     local player = game.get_player(e.player_index)
     local cursor_stack = player.cursor_stack
-    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material['item,'..cursor_stack.name] then
+    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
       -- the player is holding something, so open to its material GUI
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='material', object={'item', cursor_stack.name}})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
     else
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type='search'})
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="search"})
     end
   end
 end)
@@ -256,7 +256,7 @@ end)
 -- reopen the search GUI when the back button is pressed
 event.register(REOPEN_SOURCE_EVENT, function(e)
   local source_data = e.source_data
-  if source_data.mod_name == 'RecipeBook' and source_data.gui_name == 'search' then
+  if source_data.mod_name == "RecipeBook" and source_data.gui_name == "search" then
     search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index], source_data)
   end
 end)
@@ -269,41 +269,41 @@ event.register(OPEN_GUI_EVENT, function(e)
   -- protected open
   if player_table.flags.can_open_gui then
     -- check for existing GUI
-    if gui_type == 'search' then
-      -- don't do anything if it's already open
+    if gui_type == "search" then
+      -- don"t do anything if it"s already open
       if player_table.gui.search then return end
       search_gui.open(player, player_table)
     elseif INFO_GUIS[gui_type] then
-      if gui_type == 'material' then
-        if type(e.object) ~= 'table' then
-          error('Invalid material object, it must be a table!')
+      if gui_type == "material" then
+        if type(e.object) ~= "table" then
+          error("Invalid material object, it must be a table!")
         end
-        e.object = e.object[1]..','..e.object[2]
+        e.object = e.object[1]..","..e.object[2]
       end
       info_gui.open_or_update(player, player_table, gui_type, e.object, e.source_data)
-    elseif gui_type == 'recipe_quick_reference' then
+    elseif gui_type == "recipe_quick_reference" then
       if not player_table.gui.recipe_quick_reference[e.object] then
         recipe_quick_reference_gui.open(player, player_table, e.object)
       end
     else
-      error('\''..gui_type..'\' is not a valid GUI type!')
+      error("["..gui_type.."] is not a valid GUI type!")
     end
   else
     -- set flag and tell the player that they cannot open it
     player_table.flags.tried_to_open_gui = true
-    player.print{'rb-message.translation-not-finished'}
+    player.print{"rb-message.translation-not-finished"}
   end
 end)
 
 -- -----------------------------------------------------------------------------
 -- REMOTE INTERFACE
 
-remote.add_interface('RecipeBook', {
+remote.add_interface("RecipeBook", {
   open_gui = function(player_index, gui_type, object, source_data)
     -- error checking
-    if not object then error('Must provide an object!') end
+    if not object then error("Must provide an object!") end
     if source_data and (not source_data.mod_name or not source_data.gui_name) then
-      error('Incomplete source_data table!')
+      error("Incomplete source_data table!")
     end
     -- raise internal mod event
     event.raise(OPEN_GUI_EVENT, {player_index=player_index, gui_type=gui_type, object=object, source_data=source_data})
@@ -317,7 +317,7 @@ remote.add_interface('RecipeBook', {
 
 -- table of migration functions
 local migrations = {
-  ['1.1.0'] = function()
+  ["1.1.0"] = function()
     -- update active_translations_count to properly reflect the active translations
     local __translation = global.__lualib.translation
     local count = 0
@@ -326,7 +326,7 @@ local migrations = {
     end
     __translation.active_translations_count = count
   end,
-  ['1.1.5'] = function()
+  ["1.1.5"] = function()
     -- delete all mod GUI buttons
     for _,t in pairs(global.players) do
       t.gui.mod_gui_button.destroy()
@@ -335,7 +335,7 @@ local migrations = {
     -- remove GUI lualib table - it is no longer needed
     global.__lualib.gui = nil
   end,
-  ['1.2.0'] = function()
+  ["1.2.0"] = function()
     -- migrate recipe quick reference data format
     for _,t in pairs(global.players) do
       local rqr_gui = t.gui.recipe_quick_reference
