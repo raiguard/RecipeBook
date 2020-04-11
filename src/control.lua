@@ -79,28 +79,7 @@ local info_gui = require('gui.info-base')
 local recipe_data = require('scripts.recipe-data')
 
 -- -----------------------------------------------------------------------------
--- BOOTSTRAP / SETUP EVENTS
-
-local function translate_whole(player)
-  for name,data in pairs(global.__lualib.translation.translation_data) do
-    translation.start(player, name, data, {include_failed_translations=true, lowercase_sorted_translations=true})
-  end
-end
-
-local function translate_for_all_players()
-  for _,player in ipairs(game.connected_players) do
-    translate_whole(player)
-  end
-end
-
-local function import_player_settings(player)
-  local mod_settings = player.mod_settings
-  return {
-    default_category = mod_settings['rb-default-search-category'].value,
-    show_hidden = mod_settings['rb-show-hidden-objects'].value,
-    use_fuzzy_search = mod_settings['rb-use-fuzzy-search'].value
-  }
-end
+-- BOOTSTRAP / PLAYER DATA
 
 local function setup_player(player, index)
   local data = {
@@ -113,14 +92,28 @@ local function setup_player(player, index)
     },
     gui = {
       recipe_quick_reference = {}
-    },
-    settings = import_player_settings(player)
+    }
   }
   global.players[index] = data
 end
 
--- closes all of a player's open GUIs
-local function close_player_guis(player, player_table)
+local function run_translations(player)
+  for name,data in pairs(global.__lualib.translation.translation_data) do
+    translation.start(player, name, data, {include_failed_translations=true, lowercase_sorted_translations=true})
+  end
+end
+
+local function import_player_settings(player, player_table)
+  local mod_settings = player.mod_settings
+  player_table.settings = {
+    default_category = mod_settings['rb-default-search-category'].value,
+    show_hidden = mod_settings['rb-show-hidden-objects'].value,
+    use_fuzzy_search = mod_settings['rb-use-fuzzy-search'].value
+  }
+end
+
+-- destroys all of a player's open GUIs
+local function destroy_player_guis(player, player_table)
   local gui_data = player_table.gui
   player_table.flags.can_open_gui = false
   player.set_shortcut_available('rb-toggle-search', false)
@@ -134,10 +127,10 @@ local function close_player_guis(player, player_table)
 end
 
 -- close the player's GUIs, then start translating
-local function close_guis_then_translate(e)
-  local player = game.get_player(e.player_index)
-  close_player_guis(player, global.players[e.player_index])
-  translate_whole(game.get_player(e.player_index))
+local function refresh_player_data(player, player_table)
+  destroy_player_guis(player, player_table)
+  import_player_settings(player, player_table)
+  run_translations(player)
 end
 
 event.on_init(function()
@@ -145,19 +138,16 @@ event.on_init(function()
   global.players = {}
   for i,p in pairs(game.players) do
     setup_player(p, i)
+    refresh_player_data(p, global.players[i])
   end
   recipe_data.build()
-  translate_for_all_players()
-  event.register(translation.retranslate_all_event, close_guis_then_translate)
-end)
-
-event.on_load(function()
-  event.register(translation.retranslate_all_event, close_guis_then_translate)
 end)
 
 -- player insertion and removal
 event.on_player_created(function(e)
-  setup_player(game.get_player(e.player_index), e.player_index)
+  local player = game.get_player(e.player_index)
+  setup_player(player, e.player_index)
+  refresh_player_data(player, global.players[e.player_index])
 end)
 
 event.on_player_removed(function(e)
@@ -169,16 +159,8 @@ event.on_runtime_mod_setting_changed(function(e)
   if string_sub(e.setting, 1, 3) == 'rb-' then
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
-    player_table.settings = import_player_settings(player)
+    import_player_settings(player, player_table)
   end
-end)
-
--- retranslate all dictionaries for a player when they re-join
-event.on_player_joined_game(function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  close_player_guis(player, player_table)
-  translate_whole(player)
 end)
 
 -- when a translation is finished
@@ -204,6 +186,13 @@ event.register(translation.finish_event, function(e)
     end
   end
 end)
+
+-- retranslate_all_event doesn't exist in the root scope, so register the handler in bootstrap
+event.register{"on_init", "on_load", function()
+  event.register(translation.retranslate_all_event, function(e)
+    refresh_player_data(game.get_player(e.player_index), global.players[e.player_index])
+  end)
+end}
 
 -- -----------------------------------------------------------------------------
 -- BASE INTERACTION EVENTS
@@ -367,7 +356,7 @@ event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
     -- close all player GUIs
     for _,p in ipairs(game.connected_players) do
-      close_player_guis(p, global.players[p.index])
+      destroy_player_guis(p, global.players[p.index])
     end
     -- update player settings
     for _,p in pairs(game.players) do
