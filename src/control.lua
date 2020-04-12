@@ -134,7 +134,6 @@ local function refresh_player_data(player, player_table)
 end
 
 event.on_init(function()
-  global.dictionaries = {}
   global.players = {}
   recipe_data.build()
   for i,p in pairs(game.players) do
@@ -348,6 +347,10 @@ local migrations = {
       end
       t.gui.recipe_quick_reference = new_t
     end
+  end,
+  ["1.2.3"] = function()
+    -- remove global.dictionaries, it hasn't been needed since v1.1.0
+    global.dictionaries = {}
   end
 }
 
