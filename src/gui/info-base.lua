@@ -96,7 +96,7 @@ function self.open(player, player_table, category, name, source_data)
         {type="flow", style_mods={padding=8}, save_as="content_container"}
       }}
     }}
-  }, "info_base", player.index)
+  })
 
   -- drag handle
   gui_data.drag_handle.drag_target = gui_data.window
