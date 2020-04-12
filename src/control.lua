@@ -136,11 +136,11 @@ end
 event.on_init(function()
   global.dictionaries = {}
   global.players = {}
+  recipe_data.build()
   for i,p in pairs(game.players) do
     setup_player(p, i)
     refresh_player_data(p, global.players[i])
   end
-  recipe_data.build()
 end)
 
 -- player insertion and removal
