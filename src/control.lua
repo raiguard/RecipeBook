@@ -84,7 +84,8 @@ local recipe_data = require("scripts.recipe-data")
 local function setup_player(player, index)
   local data = {
     flags = {
-      can_open_gui = false
+      can_open_gui = false,
+      translate_on_join = false
     },
     history = {
       session = {position=0},
@@ -126,11 +127,16 @@ local function destroy_player_guis(player, player_table)
   recipe_quick_reference_gui.close_all(player, player_table)
 end
 
--- close the player's GUIs, then start translating
+-- refresh all player data
 local function refresh_player_data(player, player_table)
   destroy_player_guis(player, player_table)
   import_player_settings(player, player_table)
-  run_translations(player)
+
+  if player.connected then
+    run_translations(player)
+  else
+    player_table.flags.translate_on_join = true
+  end
 end
 
 event.on_init(function()
@@ -151,6 +157,13 @@ end)
 
 event.on_player_removed(function(e)
   global.players[e.player_index] = nil
+end)
+
+-- retranslate on player join after on_config_changed
+event.on_player_joined_game(function(e)
+  if global.players[e.player_index].flags.translate_on_join then
+    run_translations(game.get_player(e.player_index))
+  end
 end)
 
 -- update player settings
@@ -197,13 +210,13 @@ end)
 -- BASE INTERACTION EVENTS
 
 local open_fluid_types = {
-  ["pipe"] = true,
-  ["pipe-to-ground"] = true,
-  ["storage-tank"] = true,
-  ["pump"] = true,
-  ["offshore-pump"] = true,
   ["fluid-wagon"] = true,
-  ["infinity-pipe"] = true
+  ["infinity-pipe"] = true,
+  ["offshore-pump"] = true,
+  ["pipe-to-ground"] = true,
+  ["pipe"] = true,
+  ["pump"] = true,
+  ["storage-tank"] = true
 }
 
 -- recipe book hotkey (default CONTROL + B)
@@ -357,15 +370,11 @@ local migrations = {
 -- handle migrations
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
-    -- close all player GUIs
-    for _,p in ipairs(game.connected_players) do
-      destroy_player_guis(p, global.players[p.index])
-    end
-    -- update player settings
-    for _,p in pairs(game.players) do
-      import_player_settings(p)
-    end
+    -- rebuild recipe book data
     recipe_data.build()
-    translate_for_all_players()
+    -- refresh all player data
+    for i,p in pairs(game.players) do
+      refresh_player_data(p, global.players[i])
+    end
   end
 end)
