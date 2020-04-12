@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.3
-Date: ????
+Date: 2020-04-12
   Changes:
     - Converted all strings to double quotes
     - Removed search button from next to close button (it will come back as an ACTUAL search button later)
