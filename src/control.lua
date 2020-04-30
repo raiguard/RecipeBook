@@ -92,8 +92,8 @@ event.on_init(function()
   translation.init()
 
   global_data.init()
-  for i,p in pairs(game.players) do
-    player_data.init(p, i)
+  for i, player in pairs(game.players) do
+    player_data.init(player, i)
   end
 
   gui.build_lookup_tables()
@@ -107,8 +107,8 @@ event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
     global_data.build_recipe_book()
 
-    for i,p in pairs(game.players) do
-      player_data.refresh(p, global.players[i])
+    for i, player in pairs(game.players) do
+      player_data.refresh(player, global.players[i])
     end
   end
 end)

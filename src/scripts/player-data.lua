@@ -21,7 +21,7 @@ function player_data.init(player, index)
 end
 
 function player_data.start_translations(player_index)
-  for name,data in pairs(global.translation_data) do
+  for name, data in pairs(global.translation_data) do
     translation.start(player_index, name, data, {include_failed_translations=true, lowercase_sorted_translations=true})
   end
 end

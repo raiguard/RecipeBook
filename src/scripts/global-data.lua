@@ -24,7 +24,7 @@ function global_data.build_recipe_book()
   }
 
   -- iterate crafters
-  for name,prototype in pairs(game.get_filtered_entity_prototypes{
+  for name, prototype in pairs(game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
     {filter="type", type="furnace"}
   })
@@ -41,8 +41,8 @@ function global_data.build_recipe_book()
   end
 
   -- iterate materials
-  for class,t in pairs{fluid=game.fluid_prototypes, item=game.item_prototypes} do
-    for name,prototype in pairs(t) do
+  for class, t in pairs{fluid=game.fluid_prototypes, item=game.item_prototypes} do
+    for name, prototype in pairs(t) do
       local hidden
       if class == "fluid" then
         hidden = prototype.hidden
@@ -63,7 +63,7 @@ function global_data.build_recipe_book()
   end
 
   -- iterate recipes
-  for name,prototype in pairs(game.recipe_prototypes) do
+  for name, prototype in pairs(game.recipe_prototypes) do
     local data = {
       energy = prototype.energy,
       hand_craftable = prototype.category == "crafting",
@@ -75,7 +75,7 @@ function global_data.build_recipe_book()
     }
     -- ingredients / products
     local material_book = recipe_book.material
-    for _,mode in ipairs{"ingredients", "products"} do
+    for _, mode in ipairs{"ingredients", "products"} do
       local materials = prototype[mode]
       for i=1,#materials do
         local material = materials[i]
@@ -95,7 +95,7 @@ function global_data.build_recipe_book()
     end
     -- made in
     local category = prototype.category
-    for crafter_name,crafter_data in pairs(recipe_book.crafter) do
+    for crafter_name, crafter_data in pairs(recipe_book.crafter) do
       if crafter_data.categories[category] then
         data.made_in[#data.made_in+1] = crafter_name
         crafter_data.recipes[#crafter_data.recipes+1] = {name=name, hidden=prototype.hidden}
@@ -126,8 +126,8 @@ function global_data.build_recipe_book()
   end
 
   -- iterate technologies
-  for name,prototype in pairs(game.technology_prototypes) do
-    for _,modifier in ipairs(prototype.effects) do
+  for name, prototype in pairs(game.technology_prototypes) do
+    for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
         -- add to recipe data
         local recipe = recipe_book.recipe[modifier.recipe]
