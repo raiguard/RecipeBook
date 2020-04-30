@@ -11,7 +11,7 @@ local self = {}
 -- info pages
 local pages = {}
 for n,_ in pairs(INFO_GUIS) do
-  pages[n] = require("gui.info-pages."..n)
+  pages[n] = require("scripts.gui.info-pages."..n)
 end
 
 -- locals

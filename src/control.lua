@@ -63,11 +63,11 @@ gui.add_handlers{
 }
 
 local global_data = require("scripts.global-data")
-local info_gui = require("gui.info-base")
+local info_gui = require("scripts.gui.info-base")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
-local recipe_quick_reference_gui = require("gui.recipe-quick-reference")
-local search_gui = require("gui.search")
+local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
+local search_gui = require("scripts.gui.search")
 
 local open_fluid_types = {
   ["fluid-wagon"] = true,
