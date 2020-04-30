@@ -2,8 +2,8 @@
 -- CRAFTER GUI
 
 -- dependencies
-local event = require("__RaiLuaLib__.lualib.event")
-local gui = require("__RaiLuaLib__.lualib.gui")
+local event = require("__flib__.control.event")
+local gui = require("__flib__.control.gui")
 
 -- self object
 local self = {}

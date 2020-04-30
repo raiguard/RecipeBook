@@ -1,11 +1,7 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- CONTROL SCRIPTING
-
--- dependencies
-local event = require("__RaiLuaLib__.lualib.event")
-local gui = require("__RaiLuaLib__.lualib.gui")
-local migration = require("__RaiLuaLib__.lualib.migration")
-local translation = require("__RaiLuaLib__.lualib.translation")
+local event = require("__flib__.control.event")
+local gui = require("__flib__.control.gui")
+local migration = require("__flib__.control.migration")
+local translation = require("__flib__.control.translation")
 
 -- globals
 INFO_GUIS = {crafter=true, material=true, recipe=true}
