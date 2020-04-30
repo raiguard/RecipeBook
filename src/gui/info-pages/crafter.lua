@@ -11,7 +11,7 @@ local self = {}
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
-gui.handlers:extend{crafter={
+gui.add_handlers{crafter={
   generic_listbox = {
     on_gui_selection_state_changed = gui.handlers.common.generic_open_from_listbox
   }

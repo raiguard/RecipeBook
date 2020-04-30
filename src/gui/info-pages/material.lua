@@ -16,7 +16,7 @@ local self = {}
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
-gui.handlers:extend{material={
+gui.add_handlers{material={
   generic_listbox = {
     on_gui_selection_state_changed = gui.handlers.common.generic_open_from_listbox
   }

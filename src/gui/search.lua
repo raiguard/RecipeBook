@@ -20,8 +20,7 @@ local category_to_index = {crafter=1, material=2, recipe=3}
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
--- we must define it like this so members can access other members
-gui.handlers:extend{search={
+gui.add_handlers{search={
   close_button = {
     on_gui_click = function(e)
       self.close(game.get_player(e.player_index), global.players[e.player_index])

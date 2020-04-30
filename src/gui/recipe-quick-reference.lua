@@ -15,7 +15,7 @@ local self = {}
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
-gui.handlers:extend{recipe_quick_reference={
+gui.add_handlers{recipe_quick_reference={
   close_button = {
     on_gui_click = function(e)
       self.close(game.get_player(e.player_index), global.players[e.player_index], string_gsub(e.element.name, "rb_close_button_", ""))

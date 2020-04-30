@@ -22,7 +22,7 @@ local table_remove = table.remove
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
-gui.handlers:extend{info_base={
+gui.add_handlers{info_base={
   close_button = {
     on_gui_click = function(e)
       self.close(game.get_player(e.player_index), global.players[e.player_index])

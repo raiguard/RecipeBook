@@ -3,18 +3,11 @@ local gui = require("__flib__.control.gui")
 local migration = require("__flib__.control.migration")
 local translation = require("__flib__.control.translation")
 
--- globals
 INFO_GUIS = {crafter=true, material=true, recipe=true}
-OPEN_GUI_EVENT = event.get_id("open_gui")
-REOPEN_SOURCE_EVENT = event.get_id("reopen_source")
+OPEN_GUI_EVENT = event.generate_id()
+REOPEN_SOURCE_EVENT = event.generate_id()
 
--- locals
-local string_find = string.find
-local string_sub = string.sub
-local table_remove = table.remove
-
--- GUI templates
-gui.templates:extend{
+gui.add_templates{
   close_button = {type="sprite-button", style="rb_frame_action_button", sprite="utility/close_white", hovered_sprite="utility/close_black",
     clicked_sprite="utility/close_black", mouse_button_filter={"left"}},
   pushers = {
@@ -43,167 +36,38 @@ gui.templates:extend{
   end
 }
 
--- common GUI handlers
-gui.handlers:extend{common={
-  generic_open_from_listbox = function(e)
-    local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=(.-)/(.-)%].*$")
-    event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type=category, object=object_name})
-  end,
-  open_material_from_listbox = function(e)
-    local selected_item = e.element.get_item(e.element.selected_index)
-    if string_sub(selected_item, 1, 1) == " " then
-      e.element.selected_index = 0
-    else
-      local _,_,object_class,object_name = string_find(selected_item, "^%[img=(.-)/(.-)%].*$")
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={object_class, object_name}})
+gui.add_handlers{
+  common={
+    generic_open_from_listbox = function(e)
+      local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=(.-)/(.-)%].*$")
+      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type=category, object=object_name})
+    end,
+    open_material_from_listbox = function(e)
+      local selected_item = e.element.get_item(e.element.selected_index)
+      if string_sub(selected_item, 1, 1) == " " then
+        e.element.selected_index = 0
+      else
+        local _,_,object_class,object_name = string_find(selected_item, "^%[img=(.-)/(.-)%].*$")
+        event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={object_class, object_name}})
+      end
+    end,
+    open_crafter_from_listbox = function(e)
+      local _,_,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=.-/(.-)%].*$")
+      if object_name == "character" then
+        e.element.selected_index = 0
+      else
+        event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="crafter", object=object_name})
+      end
     end
-  end,
-  open_crafter_from_listbox = function(e)
-    local _,_,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=.-/(.-)%].*$")
-    if object_name == "character" then
-      e.element.selected_index = 0
-    else
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="crafter", object=object_name})
-    end
-  end
-}}
+  }
+}
 
--- modules
-local search_gui = require("gui.search")
-local recipe_quick_reference_gui = require("gui.recipe-quick-reference")
+local global_data = require("scripts.global-data")
 local info_gui = require("gui.info-base")
-local recipe_data = require("scripts.recipe-data")
-
--- -----------------------------------------------------------------------------
--- BOOTSTRAP / PLAYER DATA
-
-local function setup_player(player, index)
-  local data = {
-    flags = {
-      can_open_gui = false,
-      translate_on_join = false
-    },
-    history = {
-      session = {position=0},
-      overall = {}
-    },
-    gui = {
-      recipe_quick_reference = {}
-    }
-  }
-  global.players[index] = data
-end
-
-local function run_translations(player)
-  for name,data in pairs(global.__lualib.translation.translation_data) do
-    translation.start(player, name, data, {include_failed_translations=true, lowercase_sorted_translations=true})
-  end
-end
-
-local function import_player_settings(player, player_table)
-  local mod_settings = player.mod_settings
-  player_table.settings = {
-    default_category = mod_settings["rb-default-search-category"].value,
-    show_hidden = mod_settings["rb-show-hidden-objects"].value,
-    use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value
-  }
-end
-
--- destroys all of a player's open GUIs
-local function destroy_player_guis(player, player_table)
-  local gui_data = player_table.gui
-  player_table.flags.can_open_gui = false
-  player.set_shortcut_available("rb-toggle-search", false)
-  if gui_data.search then
-    search_gui.close(player, player_table)
-  end
-  if gui_data.info then
-    info_gui.close(player, player_table)
-  end
-  recipe_quick_reference_gui.close_all(player, player_table)
-end
-
--- refresh all player data
-local function refresh_player_data(player, player_table)
-  destroy_player_guis(player, player_table)
-  import_player_settings(player, player_table)
-
-  if player.connected then
-    run_translations(player)
-  else
-    player_table.flags.translate_on_join = true
-  end
-end
-
-event.on_init(function()
-  global.players = {}
-  recipe_data.build()
-  for i,p in pairs(game.players) do
-    setup_player(p, i)
-    refresh_player_data(p, global.players[i])
-  end
-end)
-
--- player insertion and removal
-event.on_player_created(function(e)
-  local player = game.get_player(e.player_index)
-  setup_player(player, e.player_index)
-  refresh_player_data(player, global.players[e.player_index])
-end)
-
-event.on_player_removed(function(e)
-  global.players[e.player_index] = nil
-end)
-
--- retranslate on player join after on_config_changed
-event.on_player_joined_game(function(e)
-  if global.players[e.player_index].flags.translate_on_join then
-    run_translations(game.get_player(e.player_index))
-  end
-end)
-
--- update player settings
-event.on_runtime_mod_setting_changed(function(e)
-  if string_sub(e.setting, 1, 3) == "rb-" then
-    local player = game.get_player(e.player_index)
-    local player_table = global.players[e.player_index]
-    import_player_settings(player, player_table)
-  end
-end)
-
--- when a translation is finished
-event.register(translation.finish_event, function(e)
-  local player_table = global.players[e.player_index]
-  if not player_table.dictionary then player_table.dictionary = {} end
-
-  -- add to player table
-  player_table.dictionary[e.dictionary_name] = {
-    lookup = e.lookup,
-    sorted_translations = e.sorted_translations,
-    translations = e.translations
-  }
-
-  -- set flag if we're done
-  if global.__lualib.translation.players[e.player_index].active_translations_count == 0 then
-    local player = game.get_player(e.player_index)
-    player.set_shortcut_available("rb-toggle-search", true)
-    player_table.flags.can_open_gui = true
-    if player_table.flags.tried_to_open_gui then
-      player_table.flags.tried_to_open_gui = nil
-      player.print{"rb-message.translation-finished"}
-    end
-  end
-end)
-
--- retranslate_all_event doesn't exist in the root scope, so register the handler in bootstrap
-event.register({"on_init", "on_load"}, function()
-  event.register(translation.retranslate_all_event, function(e)
-    refresh_player_data(game.get_player(e.player_index), global.players[e.player_index])
-  end)
-end)
-
--- -----------------------------------------------------------------------------
--- BASE INTERACTION EVENTS
+local migrations = require("scripts.migrations")
+local player_data = require("scripts.player-data")
+local recipe_quick_reference_gui = require("gui.recipe-quick-reference")
+local search_gui = require("gui.search")
 
 local open_fluid_types = {
   ["fluid-wagon"] = true,
@@ -215,7 +79,42 @@ local open_fluid_types = {
   ["storage-tank"] = true
 }
 
--- recipe book hotkey (default CONTROL + B)
+local string_find = string.find
+local string_sub = string.sub
+
+-- -----------------------------------------------------------------------------
+-- EVENT HANDLERS
+
+-- BOOTSTRAP
+
+event.on_init(function()
+  gui.init()
+  translation.init()
+
+  global_data.init()
+  for i,p in pairs(game.players) do
+    player_data.init(p, i)
+  end
+
+  gui.build_lookup_tables()
+end)
+
+event.on_load(function()
+  gui.build_lookup_tables()
+end)
+
+event.on_configuration_changed(function(e)
+  if migration.on_config_changed(e, migrations) then
+    global_data.build_recipe_book()
+
+    for i,p in pairs(game.players) do
+      player_data.refresh(p, global.players[i])
+    end
+  end
+end)
+
+-- INTERACTION
+
 event.register("rb-toggle-search", function(e)
   local player = game.get_player(e.player_index)
   -- open held item, if it has a material page
@@ -246,7 +145,6 @@ event.register("rb-toggle-search", function(e)
   event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="search"})
 end)
 
--- shortcut
 event.on_lua_shortcut(function(e)
   if e.prototype_name == "rb-toggle-search" then
     -- read player's cursor stack to see if we should open the material GUI
@@ -261,7 +159,8 @@ event.on_lua_shortcut(function(e)
   end
 end)
 
--- reopen the search GUI when the back button is pressed
+-- INTERFACE
+
 event.register(REOPEN_SOURCE_EVENT, function(e)
   local source_data = e.source_data
   if source_data.mod_name == "RecipeBook" and source_data.gui_name == "search" then
@@ -269,7 +168,6 @@ event.register(REOPEN_SOURCE_EVENT, function(e)
   end
 end)
 
--- open the specified GUI
 event.register(OPEN_GUI_EVENT, function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
@@ -303,74 +201,54 @@ event.register(OPEN_GUI_EVENT, function(e)
   end
 end)
 
--- -----------------------------------------------------------------------------
--- REMOTE INTERFACE
+-- PLAYER
 
-remote.add_interface("RecipeBook", {
-  open_gui = function(player_index, gui_type, object, source_data)
-    -- error checking
-    if not object then error("Must provide an object!") end
-    if source_data and (not source_data.mod_name or not source_data.gui_name) then
-      error("Incomplete source_data table!")
-    end
-    -- raise internal mod event
-    event.raise(OPEN_GUI_EVENT, {player_index=player_index, gui_type=gui_type, object=object, source_data=source_data})
-  end,
-  reopen_source_event = function() return REOPEN_SOURCE_EVENT end,
-  version = function() return 2 end -- increment when backward-incompatible changes are made
-})
+event.on_player_created(function(e)
+  local player = game.get_player(e.player_index)
+  player_data.init(player, e.player_index)
+end)
 
--- -----------------------------------------------------------------------------
--- MIGRATIONS
+event.on_player_removed(function(e)
+  global.players[e.player_index] = nil
+end)
 
--- table of migration functions
-local migrations = {
-  ["1.1.0"] = function()
-    -- update active_translations_count to properly reflect the active translations
-    local __translation = global.__lualib.translation
-    local count = 0
-    for _,t in pairs(__translation.players) do
-      count = count + t.active_translations_count
-    end
-    __translation.active_translations_count = count
-  end,
-  ["1.1.5"] = function()
-    -- delete all mod GUI buttons
-    for _,t in pairs(global.players) do
-      t.gui.mod_gui_button.destroy()
-      t.gui.mod_gui_button = nil
-    end
-    -- remove GUI lualib table - it is no longer needed
-    global.__lualib.gui = nil
-  end,
-  ["1.2.0"] = function()
-    -- migrate recipe quick reference data format
-    for _,t in pairs(global.players) do
-      local rqr_gui = t.gui.recipe_quick_reference
-      local new_t = {}
-      if rqr_gui then
-        -- add an empty filters table to prevent crashes
-        rqr_gui.filters = {}
-        -- nest into a parent table
-        new_t = {[rqr_gui.recipe_name]=rqr_gui}
-      end
-      t.gui.recipe_quick_reference = new_t
-    end
-  end,
-  ["1.2.3"] = function()
-    -- remove global.dictionaries, it hasn't been needed since v1.1.0
-    global.dictionaries = {}
+event.on_player_joined_game(function(e)
+  if global.players[e.player_index].flags.translate_on_join then
+    player_data.sorted_translations(e.player_index)
   end
-}
+end)
 
--- handle migrations
-event.on_configuration_changed(function(e)
-  if migration.on_config_changed(e, migrations) then
-    -- rebuild recipe book data
-    recipe_data.build()
-    -- refresh all player data
-    for i,p in pairs(game.players) do
-      refresh_player_data(p, global.players[i])
+-- SETTINGS
+
+event.on_runtime_mod_setting_changed(function(e)
+  if string_sub(e.setting, 1, 3) == "rb-" then
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    player_data.update_settings(player, player_table)
+  end
+end)
+
+-- TRANSLATIONS
+
+event.register(translation.finish_event, function(e)
+  local player_table = global.players[e.player_index]
+  if not player_table.dictionary then player_table.dictionary = {} end
+
+  -- add to player table
+  player_table.dictionary[e.dictionary_name] = {
+    lookup = e.lookup,
+    sorted_translations = e.sorted_translations,
+    translations = e.translations
+  }
+
+  -- set flag if we're done
+  if global.__lualib.translation.players[e.player_index].active_translations_count == 0 then
+    local player = game.get_player(e.player_index)
+    player.set_shortcut_available("rb-toggle-search", true)
+    player_table.flags.can_open_gui = true
+    if player_table.flags.tried_to_open_gui then
+      player_table.flags.tried_to_open_gui = nil
+      player.print{"rb-message.translation-finished"}
     end
   end
 end)

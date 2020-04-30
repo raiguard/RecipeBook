@@ -22,7 +22,7 @@ local self = {}
 -- -----------------------------------------------------------------------------
 -- HANDLERS
 
-gui.handlers:extend{recipe={
+gui.add_handlers{recipe={
   material_listboxes = {
     on_gui_selection_state_changed = gui.handlers.common.open_material_from_listbox
   },

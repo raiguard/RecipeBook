@@ -1,14 +1,14 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- RECIPE DATA
+local global_data = {}
 
--- locals
 local table_remove = table.remove
 
--- module
-local recipe_data = {}
+function global_data.init()
+  global.players = {}
 
--- builds recipe data table
-function recipe_data.build()
+  global_data.build_recipe_book()
+end
+
+function global_data.build_recipe_book()
   -- table skeletons
   local recipe_book = {
     crafter = {},
@@ -22,7 +22,7 @@ function recipe_data.build()
     recipe = {},
     technology = {}
   }
-  
+
   -- iterate crafters
   for name,prototype in pairs(game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
@@ -160,7 +160,7 @@ function recipe_data.build()
 
   -- apply to global
   global.recipe_book = recipe_book
-  global.__lualib.translation.translation_data = translation_data
+  global.translation_data = translation_data
 end
 
-return recipe_data
+return global_data
