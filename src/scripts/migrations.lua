@@ -1,3 +1,6 @@
+local gui = require("__flib__.control.gui")
+local translation = require("__flib__.control.translation")
+
 return {
   ["1.1.0"] = function()
     -- update active_translations_count to properly reflect the active translations
@@ -34,5 +37,12 @@ return {
   ["1.2.3"] = function()
     -- remove global.dictionaries, it hasn't been needed since v1.1.0
     global.dictionaries = {}
+  end,
+  ["1.3.0"] = function()
+    -- init flib modules
+    gui.init()
+    translation.init()
+    -- remove RaiLuaLib table
+    global.__lualib = nil
   end
 }
