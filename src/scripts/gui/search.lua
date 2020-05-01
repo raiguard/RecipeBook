@@ -110,9 +110,7 @@ gui.add_handlers{search={
         end
         event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type=category, object=object_name, source_data={mod_name="RecipeBook",
           gui_name="search", category=gui_data.category, query=gui_data.search_textfield.text, selected_index=e.element.selected_index}})
-        if e.keyboard_confirm then
-          search_gui.close(game.get_player(e.player_index), player_table)
-        end
+        search_gui.close(game.get_player(e.player_index), player_table)
       end
     end
   },
