@@ -141,7 +141,7 @@ Please gather the following and report it to the mod author on either GitHub (pr
         if gui_data.category == "material" then
           object_name = {object_class, object_name}
         end
-        event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type=category, object=object_name, source_data={mod_name="RecipeBook",
+        event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type=category, object=object_name, source_data={mod_name="RecipeBook",
           gui_name="search", category=gui_data.category, query=gui_data.search_textfield.text, selected_index=e.element.selected_index}})
         if e.keyboard_confirm then
           self.close(game.get_player(e.player_index), player_table)

@@ -24,12 +24,12 @@ gui.add_handlers{recipe_quick_reference={
   material_button = {
     on_gui_click = function(e)
       local _,_,object_class,object_name = string_find(e.element.sprite, "^(.-)/(.-)$")
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={object_class, object_name}})
+      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={object_class, object_name}})
     end
   },
   open_info_button = {
     on_gui_click = function(e)
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="recipe", object=string_gsub(e.element.name, "rb_open_info_button_", "")})
+      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="recipe", object=string_gsub(e.element.name, "rb_open_info_button_", "")})
     end
   }
 }}

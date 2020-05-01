@@ -3,12 +3,9 @@ local gui = require("__flib__.control.gui")
 local migration = require("__flib__.control.migration")
 local translation = require("__flib__.control.translation")
 
-INFO_GUIS = {crafter=true, material=true, recipe=true}
-OPEN_GUI_EVENT = event.generate_id()
-REOPEN_SOURCE_EVENT = event.generate_id()
-
 require("scripts.gui.common")
 
+local constants = require("scripts.constants")
 local global_data = require("scripts.global-data")
 local info_gui = require("scripts.gui.info-base")
 local migrations = require("scripts.migrations")
@@ -67,7 +64,7 @@ event.register("rb-toggle-search", function(e)
   if player.mod_settings["rb-open-item-hotkey"].value then
     local cursor_stack = player.cursor_stack
     if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
+      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
       return
     end
   end
@@ -81,14 +78,14 @@ event.register("rb-toggle-search", function(e)
         if locked_fluid then
           -- check recipe book to see if this fluid has a material page
           if global.recipe_book.material["fluid,"..locked_fluid] then
-            event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={"fluid", locked_fluid}})
+            event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"fluid", locked_fluid}})
             return
           end
         end
       end
     end
   end
-  event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="search"})
+  event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search"})
 end)
 
 event.on_lua_shortcut(function(e)
@@ -98,23 +95,23 @@ event.on_lua_shortcut(function(e)
     local cursor_stack = player.cursor_stack
     if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
       -- the player is holding something, so open to its material GUI
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
+      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
     else
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="search"})
+      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search"})
     end
   end
 end)
 
 -- INTERFACE
 
-event.register(REOPEN_SOURCE_EVENT, function(e)
+event.register(constants.reopen_source_event, function(e)
   local source_data = e.source_data
   if source_data.mod_name == "RecipeBook" and source_data.gui_name == "search" then
     search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index], source_data)
   end
 end)
 
-event.register(OPEN_GUI_EVENT, function(e)
+event.register(constants.open_gui_event, function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
   local gui_type = e.gui_type
@@ -125,7 +122,7 @@ event.register(OPEN_GUI_EVENT, function(e)
       -- don"t do anything if it"s already open
       if player_table.gui.search then return end
       search_gui.open(player, player_table)
-    elseif INFO_GUIS[gui_type] then
+    elseif constants.info_guis[gui_type] then
       if gui_type == "material" then
         if type(e.object) ~= "table" then
           error("Invalid material object, it must be a table!")

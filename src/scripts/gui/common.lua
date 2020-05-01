@@ -1,6 +1,8 @@
 local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
+local constants = require("scripts.constants")
+
 local string_find = string.find
 local string_sub = string.sub
 
@@ -37,7 +39,7 @@ gui.add_handlers{
   common={
     generic_open_from_listbox = function(e)
       local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=(.-)/(.-)%].*$")
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type=category, object=object_name})
+      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type=category, object=object_name})
     end,
     open_material_from_listbox = function(e)
       local selected_item = e.element.get_item(e.element.selected_index)
@@ -45,7 +47,7 @@ gui.add_handlers{
         e.element.selected_index = 0
       else
         local _,_,object_class,object_name = string_find(selected_item, "^%[img=(.-)/(.-)%].*$")
-        event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={object_class, object_name}})
+        event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={object_class, object_name}})
       end
     end,
     open_crafter_from_listbox = function(e)
@@ -53,7 +55,7 @@ gui.add_handlers{
       if object_name == "character" then
         e.element.selected_index = 0
       else
-        event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="crafter", object=object_name})
+        event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="crafter", object=object_name})
       end
     end
   }

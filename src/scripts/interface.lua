@@ -11,9 +11,9 @@ remote.add_interface("RecipeBook", {
       error("Incomplete source_data table!")
     end
     -- raise internal mod event
-    event.raise(OPEN_GUI_EVENT, {player_index=player_index, gui_type=gui_type, object=object, source_data=source_data})
+    event.raise(constants.open_gui_event, {player_index=player_index, gui_type=gui_type, object=object, source_data=source_data})
   end,
-  reopen_source_event = function() return REOPEN_SOURCE_EVENT end,
+  reopen_source_event = function() return constants.reopen_source_event end,
   version = function() return 2 end -- increment when backward-incompatible changes are made
 })
 
