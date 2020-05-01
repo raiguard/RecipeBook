@@ -2,6 +2,8 @@
 Version: 1.3.0
 Date: ????
   Changes:
+    - Refactored mod structure to improve performance and simplicity
+    - Switched from RaiLuaLib to FLib
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.3
 Date: 2020-04-12

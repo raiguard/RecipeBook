@@ -3,10 +3,11 @@ local player_data = {}
 local translation = require("__flib__.control.translation")
 
 function player_data.init(player, index)
-  local data = {
+  local player_table = {
     flags = {
       can_open_gui = false,
-      translate_on_join = false
+      translate_on_join = false,
+      tried_to_open_gui = false
     },
     history = {
       session = {position=0},
@@ -16,7 +17,7 @@ function player_data.init(player, index)
       recipe_quick_reference = {}
     }
   }
-  global.players[index] = data
+  global.players[index] = player_table
   player_data.refresh(player, global.players[index])
 end
 
@@ -52,8 +53,10 @@ function player_data.refresh(player, player_table)
   player_data.destroy_guis(player, player_table)
   player_data.update_settings(player, player_table)
 
+  player.set_shortcut_available("rb-toggle-search", false)
+
   if player.connected then
-    player_data.start_translations(player)
+    player_data.start_translations(player.index)
   else
     player_table.flags.translate_on_join = true
   end

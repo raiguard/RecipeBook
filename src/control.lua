@@ -7,60 +7,7 @@ INFO_GUIS = {crafter=true, material=true, recipe=true}
 OPEN_GUI_EVENT = event.generate_id()
 REOPEN_SOURCE_EVENT = event.generate_id()
 
-gui.add_templates{
-  close_button = {type="sprite-button", style="rb_frame_action_button", sprite="utility/close_white", hovered_sprite="utility/close_black",
-    clicked_sprite="utility/close_black", mouse_button_filter={"left"}},
-  pushers = {
-    horizontal = {type="empty-widget", style_mods={horizontally_stretchable=true}},
-    vertical = {type="empty-widget", style_mods={vertically_stretchable=true}}
-  },
-  listbox_with_label = function(name)
-    return
-    {type="flow", direction="vertical", children={
-      {type="label", style="rb_listbox_label", save_as=name.."_label"},
-      {type="frame", style="rb_listbox_frame", save_as=name.."_frame", children={
-        {type="list-box", style="rb_listbox", save_as=name.."_listbox"}
-      }}
-    }}
-  end,
-  quick_reference_scrollpane = function(name)
-    return
-    {type="flow", direction="vertical", children={
-      {type="label", style="rb_listbox_label", save_as=name.."_label"},
-      {type="frame", style="rb_icon_slot_table_frame", style_mods={maximal_height=160}, children={
-        {type="scroll-pane", style="rb_icon_slot_table_scrollpane", children={
-          {type="table", style="rb_icon_slot_table", style_mods={width=200}, column_count=5, save_as=name.."_table"}
-        }}
-      }}
-    }}
-  end
-}
-
-gui.add_handlers{
-  common={
-    generic_open_from_listbox = function(e)
-      local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=(.-)/(.-)%].*$")
-      event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type=category, object=object_name})
-    end,
-    open_material_from_listbox = function(e)
-      local selected_item = e.element.get_item(e.element.selected_index)
-      if string_sub(selected_item, 1, 1) == " " then
-        e.element.selected_index = 0
-      else
-        local _,_,object_class,object_name = string_find(selected_item, "^%[img=(.-)/(.-)%].*$")
-        event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="material", object={object_class, object_name}})
-      end
-    end,
-    open_crafter_from_listbox = function(e)
-      local _,_,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=.-/(.-)%].*$")
-      if object_name == "character" then
-        e.element.selected_index = 0
-      else
-        event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="crafter", object=object_name})
-      end
-    end
-  }
-}
+require("scripts.gui.common")
 
 local global_data = require("scripts.global-data")
 local info_gui = require("scripts.gui.info-base")
@@ -79,7 +26,6 @@ local open_fluid_types = {
   ["storage-tank"] = true
 }
 
-local string_find = string.find
 local string_sub = string.sub
 
 -- -----------------------------------------------------------------------------
@@ -228,9 +174,21 @@ event.on_runtime_mod_setting_changed(function(e)
   end
 end)
 
+-- TICK
+
+event.on_tick(function()
+  if global.__flib.translation.active_translations_count > 0 then
+    translation.translate_batch()
+  end
+end)
+
 -- TRANSLATIONS
 
-event.register(translation.finish_event, function(e)
+event.on_string_translated(function(e)
+  translation.sort_string(e)
+end)
+
+translation.on_finished(function(e)
   local player_table = global.players[e.player_index]
   if not player_table.dictionary then player_table.dictionary = {} end
 
@@ -242,12 +200,12 @@ event.register(translation.finish_event, function(e)
   }
 
   -- set flag if we're done
-  if global.__lualib.translation.players[e.player_index].active_translations_count == 0 then
+  if global.__flib.translation.players[e.player_index].active_translations_count == 0 then
     local player = game.get_player(e.player_index)
     player.set_shortcut_available("rb-toggle-search", true)
     player_table.flags.can_open_gui = true
     if player_table.flags.tried_to_open_gui then
-      player_table.flags.tried_to_open_gui = nil
+      player_table.flags.tried_to_open_gui = false
       player.print{"rb-message.translation-finished"}
     end
   end
