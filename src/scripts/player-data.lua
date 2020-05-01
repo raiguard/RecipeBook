@@ -2,6 +2,11 @@ local player_data = {}
 
 local translation = require("__flib__.control.translation")
 
+local info_gui = require("scripts.gui.info-base")
+local on_tick_manager = require("scripts.on-tick-manager")
+local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
+local search_gui = require("scripts.gui.search")
+
 function player_data.init(player, index)
   local player_table = {
     flags = {
@@ -25,6 +30,7 @@ function player_data.start_translations(player_index)
   for name, data in pairs(global.translation_data) do
     translation.start(player_index, name, data, {include_failed_translations=true, lowercase_sorted_translations=true})
   end
+  on_tick_manager.update()
 end
 
 function player_data.update_settings(player, player_table)
@@ -37,16 +43,16 @@ function player_data.update_settings(player, player_table)
 end
 
 function player_data.destroy_guis(player, player_table)
-  -- local gui_data = player_table.gui
-  -- player_table.flags.can_open_gui = false
-  -- player.set_shortcut_available("rb-toggle-search", false)
-  -- if gui_data.search then
-  --   search_gui.close(player, player_table)
-  -- end
-  -- if gui_data.info then
-  --   info_gui.close(player, player_table)
-  -- end
-  -- recipe_quick_reference_gui.close_all(player, player_table)
+  local gui_data = player_table.gui
+  player_table.flags.can_open_gui = false
+  player.set_shortcut_available("rb-toggle-search", false)
+  if gui_data.search then
+    search_gui.close(player, player_table)
+  end
+  if gui_data.info then
+    info_gui.close(player, player_table)
+  end
+  recipe_quick_reference_gui.close_all(player, player_table)
 end
 
 function player_data.refresh(player, player_table)

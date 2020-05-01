@@ -10,6 +10,7 @@ local global_data = require("scripts.global-data")
 local info_gui = require("scripts.gui.info-base")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
+local on_tick_manager = require("scripts.on-tick-manager")
 local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
 local search_gui = require("scripts.gui.search")
 
@@ -27,6 +28,7 @@ local string_sub = string.sub
 
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
+-- on_tick's handler is in scripts.on-tick-manager
 
 -- BOOTSTRAP
 
@@ -44,6 +46,7 @@ end)
 
 event.on_load(function()
   gui.build_lookup_tables()
+  on_tick_manager.update()
 end)
 
 event.on_configuration_changed(function(e)
@@ -182,14 +185,6 @@ event.on_runtime_mod_setting_changed(function(e)
   end
 end)
 
--- TICK
-
-event.on_tick(function()
-  if global.__flib.translation.active_translations_count > 0 then
-    translation.translate_batch()
-  end
-end)
-
 -- TRANSLATIONS
 
 event.on_string_translated(function(e)
@@ -216,6 +211,7 @@ translation.on_finished(function(e)
       player_table.flags.tried_to_open_gui = false
       player.print{"rb-message.translation-finished"}
     end
+    on_tick_manager.update()
   end
 end)
 
