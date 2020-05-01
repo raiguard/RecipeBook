@@ -60,6 +60,13 @@ end)
 
 gui.register_handlers()
 
+event.register("rb-results-nav-confirm", function(e)
+  local player_table = global.players[e.player_index]
+  if player_table.gui.search and player_table.gui.search.state == "select_result" then
+    search_gui.confirm_selection(e)
+  end
+end)
+
 -- INTERACTION
 
 event.on_lua_shortcut(function(e)

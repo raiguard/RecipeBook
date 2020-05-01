@@ -1,6 +1,5 @@
 local material_gui = {}
 
-local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
 local math_max = math.max
@@ -53,13 +52,13 @@ function material_gui.create(player, player_table, content_container, name)
   gui_data.ingredient_in_frame.style.height = height
   gui_data.product_of_frame.style.height = height
 
-  event.enable_group("gui.material.generic_listbox", player.index, {gui_data.ingredient_in_listbox.index, gui_data.product_of_listbox.index})
+  gui.update_filters("material.generic_listbox", player.index, {gui_data.ingredient_in_listbox.index, gui_data.product_of_listbox.index})
 
   return gui_data
 end
 
 function material_gui.destroy(player, content_container)
-  event.disable_group("gui.material", player.index)
+  gui.update_filters("material", player.index, nil, "remove")
   content_container.children[1].destroy()
 end
 

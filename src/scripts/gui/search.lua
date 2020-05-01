@@ -32,9 +32,6 @@ gui.add_handlers{search={
       -- temporary error catching - print a butt-ton of data to script_output, then crash
       if not player_table.gui.search then
         local tables = {
-          events = event.events,
-          conditional_events = event.conditional_events,
-          conditional_event_groups = event.conditional_event_groups,
           global_data = global.__lualib.event,
           players = {}
         }
@@ -73,8 +70,6 @@ Please gather the following and report it to the mod author on either GitHub (pr
       gui_data.state = "select_result"
       game.get_player(e.player_index).opened = gui_data.results_listbox
       results_listbox.focus()
-      -- enable navigation confirmation handler
-      event.enable_group("gui.search.results_nav", e.player_index)
     end,
     on_gui_text_changed = function(e)
       local player_table = global.players[e.player_index]
@@ -154,13 +149,6 @@ Please gather the following and report it to the mod author on either GitHub (pr
         game.get_player(e.player_index).opened = gui_data.search_textfield
       end
     end
-  },
-  results_nav = {
-    ["rb-results-nav-confirm"] = function(e)
-      e.element = global.players[e.player_index].gui.search.results_listbox
-      e.keyboard_confirm = true
-      gui.handlers.search.results_listbox.on_gui_selection_state_changed(e)
-    end
   }
 }}
 
@@ -215,7 +203,7 @@ function search_gui.open(player, player_table, options)
 end
 
 function search_gui.close(player, player_table)
-  event.disable_group("gui.search", player.index)
+  gui.update_filters("search", player.index, nil, "remove")
   player_table.gui.search.window.destroy()
   player_table.gui.search = nil
 end
@@ -234,6 +222,12 @@ function search_gui.toggle(player, player_table, options)
       player.print{"rb-message.translation-not-finished"}
     end
   end
+end
+
+function search_gui.confirm_selection(e)
+  e.element = global.players[e.player_index].gui.search.results_listbox
+  e.keyboard_confirm = true
+  gui.handlers.search.results_listbox.on_gui_selection_state_changed(e)
 end
 
 return search_gui

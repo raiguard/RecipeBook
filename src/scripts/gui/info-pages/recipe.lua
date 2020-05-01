@@ -8,7 +8,7 @@ local constants = require("scripts.constants")
 local math_max = math.max
 local math_min = math.min
 
--- because LUA doesn't have a math.round...
+-- because Lua doesn't have a math.round...
 -- from http://lua-users.org/wiki/SimpleRound
 local function math_round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
@@ -145,15 +145,15 @@ function recipe_gui.create(player, player_table, content_container, name)
   gui_data.technologies_frame.style.height = height
 
   -- register handlers for listboxes
-  event.enable_group("gui.recipe.material_listboxes", player.index, {gui_data.ingredients_listbox.index, gui_data.products_listbox.index})
-  event.enable_group("gui.recipe.crafters_listbox", player.index, gui_data.crafters_listbox.index)
-  event.enable_group("gui.recipe.technologies_listbox", player.index, gui_data.technologies_listbox.index)
+  gui.update_filters("recipe.material_listboxes", player.index, {gui_data.ingredients_listbox.index, gui_data.products_listbox.index})
+  gui.update_filters("recipe.crafters_listbox", player.index, {gui_data.crafters_listbox.index})
+  gui.update_filters("recipe.technologies_listbox", player.index, {gui_data.technologies_listbox.index})
 
   return gui_data
 end
 
 function recipe_gui.destroy(player, content_container)
-  event.disable_group("gui.recipe", player.index)
+  gui.update_filters("recipe", player.index, nil, "remove")
   content_container.children[1].destroy()
 end
 

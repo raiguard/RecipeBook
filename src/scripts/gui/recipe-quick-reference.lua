@@ -78,19 +78,15 @@ function recipe_quick_reference_gui.open(player, player_table, recipe_name)
       if show_hidden or not material.hidden then
         local index = table_add{type="sprite-button", style="quick_bar_slot_button", sprite=material.type.."/"..material.name, number=material.amount,
           tooltip=material_translations[material.name], mouse_button_filter={"left"}}.index
-        material_button_ids[index] = index
+        material_button_ids[#material_button_ids+1] = index
       end
     end
     label.caption = {"rb-gui."..mode, #table.children-delta}
   end
 
   -- register handler for material buttons
-  if event.is_enabled("gui.recipe_quick_reference.material_button.on_gui_click", player.index) then
-    event.update_gui_filters("gui.recipe_quick_reference.material_button.on_gui_click", player.index, material_button_ids, "add")
-  else
-    event.enable_group("gui.recipe_quick_reference.material_button", player.index, material_button_ids)
-  end
-  filters["gui.recipe_quick_reference.material_button"] = material_button_ids
+  gui.update_filters("recipe_quick_reference.material_button.on_gui_click", player.index, material_button_ids, "add")
+  filters["recipe_quick_reference.material_button.on_gui_click"] = material_button_ids
 
   -- save to global
   data.filters = filters
@@ -101,18 +97,15 @@ end
 function recipe_quick_reference_gui.close(player, player_table, recipe_name)
   local guis = player_table.gui.recipe_quick_reference
   local gui_data = guis[recipe_name]
-  for group_name,t in pairs(gui_data.filters) do
-    for _,name in pairs(event.conditional_event_groups[group_name]) do
-      event.update_gui_filters(name, player.index, t, "remove")
-    end
+  -- only remove filters for this GUI
+  local profiler = game.create_profiler()
+  for handler_name, filters in pairs(gui_data.filters) do
+    gui.update_filters(handler_name, player.index, filters, "remove")
   end
+  profiler.stop()
+  game.print(profiler)
   gui_data.window.destroy()
   guis[recipe_name] = nil
-
-  -- disable events if needed
-  if table_size(guis) == 0 then
-    event.disable_group("gui.recipe_quick_reference", player.index)
-  end
 end
 
 function recipe_quick_reference_gui.close_all(player, player_table)

@@ -14,49 +14,51 @@ local string_lower = string.lower
 local table_insert = table.insert
 local table_remove = table.remove
 
-gui.add_handlers{info_base={
-  close_button = {
-    on_gui_click = function(e)
-      info_base_gui.close(game.get_player(e.player_index), global.players[e.player_index])
-    end
-  },
-  nav_backward_button = {
-    on_gui_click = function(e)
-      local player_table = global.players[e.player_index]
-      local session_history = player_table.history.session
-      local back_obj = session_history[session_history.position+1]
-      if back_obj.mod_name and back_obj.gui_name then
-        -- this is a source
-        info_base_gui.close(game.get_player(e.player_index), player_table)
-        event.raise(constants.reopen_source_event, {player_index=e.player_index, source_data=back_obj})
-      else
-        -- this is an info page
-        session_history.position = session_history.position + 1
-        info_base_gui.update_contents(game.get_player(e.player_index), player_table, back_obj.category, back_obj.name, nil, true)
+gui.add_handlers{
+  info_base={
+    close_button = {
+      on_gui_click = function(e)
+        info_base_gui.close(game.get_player(e.player_index), global.players[e.player_index])
       end
-    end
-  },
-  nav_forward_button = {
-    on_gui_click = function(e)
-      local player_table = global.players[e.player_index]
-      local session_history = player_table.history.session
-      local forward_obj = session_history[session_history.position-1]
-      session_history.position = session_history.position - 1
-      -- update content
-      info_base_gui.update_contents(game.get_player(e.player_index), player_table, forward_obj.category, forward_obj.name, nil, true)
-    end
-  },
-  -- search_button = {
-  --   on_gui_click = function(e)
-  --     event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="search"})
-  --   end
-  -- },
-  window = {
-    on_gui_closed = function(e)
-      info_base_gui.close(game.get_player(e.player_index), global.players[e.player_index])
-    end
+    },
+    nav_backward_button = {
+      on_gui_click = function(e)
+        local player_table = global.players[e.player_index]
+        local session_history = player_table.history.session
+        local back_obj = session_history[session_history.position+1]
+        if back_obj.mod_name and back_obj.gui_name then
+          -- this is a source
+          info_base_gui.close(game.get_player(e.player_index), player_table)
+          event.raise(constants.reopen_source_event, {player_index=e.player_index, source_data=back_obj})
+        else
+          -- this is an info page
+          session_history.position = session_history.position + 1
+          info_base_gui.update_contents(game.get_player(e.player_index), player_table, back_obj.category, back_obj.name, nil, true)
+        end
+      end
+    },
+    nav_forward_button = {
+      on_gui_click = function(e)
+        local player_table = global.players[e.player_index]
+        local session_history = player_table.history.session
+        local forward_obj = session_history[session_history.position-1]
+        session_history.position = session_history.position - 1
+        -- update content
+        info_base_gui.update_contents(game.get_player(e.player_index), player_table, forward_obj.category, forward_obj.name, nil, true)
+      end
+    },
+    -- search_button = {
+    --   on_gui_click = function(e)
+    --     event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="search"})
+    --   end
+    -- },
+    window = {
+      on_gui_closed = function(e)
+        info_base_gui.close(game.get_player(e.player_index), global.players[e.player_index])
+      end
+    }
   }
-}}
+}
 
 function info_base_gui.open(player, player_table, category, name, source_data)
   -- gui structure
@@ -105,7 +107,7 @@ function info_base_gui.close(player, player_table)
   -- destroy content / deregister handlers
   pages[gui_data.info.category].destroy(player, gui_data.info.base.content_container)
   -- destroy base
-  event.disable_group("gui.info_base", player.index)
+  gui.update_filters("info_base", player.index, nil, "remove")
   gui_data.info.base.window.destroy()
   -- remove data from global
   gui_data.info = nil

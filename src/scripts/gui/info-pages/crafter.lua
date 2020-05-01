@@ -1,6 +1,5 @@
 local crafter_gui = {}
 
-local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
 gui.add_handlers{crafter={
@@ -37,13 +36,13 @@ function crafter_gui.create(player, player_table, content_container, name)
   label.caption = {"rb-gui.craftable-recipes", items_index}
 
   -- register handler
-  event.enable_group("gui.crafter.generic_listbox", player.index, listbox.index)
+  gui.update_filters("crafter.generic_listbox", player.index, {listbox.index})
 
   return gui_data
 end
 
 function crafter_gui.destroy(player, content_container)
-  event.disable_group("gui.crafter", player.index)
+  gui.update_filters("crafter", player.index, nil, "remove")
   content_container.children[1].destroy()
 end
 
