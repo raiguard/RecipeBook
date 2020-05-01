@@ -1,6 +1,3 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- PROTOTYPES
-
 local function mipped_icon(name, position, filename, size, mipmap_count, mods)
   local def = {
     type = "sprite",
@@ -20,7 +17,7 @@ local function mipped_icon(name, position, filename, size, mipmap_count, mods)
 end
 
 data:extend{
-  -- CUSTOM INPUTS
+  -- custom inputs
   {
     type = "custom-input",
     name = "rb-toggle-search",
@@ -33,16 +30,7 @@ data:extend{
     key_sequence = "ENTER",
     order = "bd"
   },
-  -- SPRITES
-  mipped_icon("rb_nav_backward", {0,0}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_backward_dark", {48,0}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_forward", {0,32}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_forward_dark", {48,32}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_open_info", {0,64}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_open_info_dark", {48,64}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_search", {0,96}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_search_dark", {48,96}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  -- SHORTCUTS
+  -- shortcut
   {
     type = "shortcut",
     name = "rb-toggle-search",
@@ -53,12 +41,20 @@ data:extend{
     disabled_small_icon = mipped_icon(nil, {36,32}, "__RecipeBook__/graphics/search-shortcut.png", 24, 2),
     toggleable = true,
     associated_control_input = "rb-toggle-search"
-  }
+  },
+  -- sprites
+  mipped_icon("rb_nav_backward", {0,0}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
+  mipped_icon("rb_nav_backward_dark", {48,0}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
+  mipped_icon("rb_nav_forward", {0,32}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
+  mipped_icon("rb_nav_forward_dark", {48,32}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
+  mipped_icon("rb_nav_open_info", {0,64}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
+  mipped_icon("rb_nav_open_info_dark", {48,64}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
+  mipped_icon("rb_nav_search", {0,96}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
+  mipped_icon("rb_nav_search_dark", {48,96}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2)
 }
 
 local styles = data.raw["gui-style"].default
 
--- -----------------------------------------------------------------------------
 -- BUTTON STYLES
 
 -- slightly smaller close button that looks WAY better ;)
@@ -69,7 +65,6 @@ styles.rb_frame_action_button = {
   top_margin = 2
 }
 
--- -----------------------------------------------------------------------------
 -- EMPTY WIDGET STYLES
 
 styles.rb_titlebar_draggable_space = {
@@ -81,7 +76,6 @@ styles.rb_titlebar_draggable_space = {
   right_margin = 6
 }
 
--- -----------------------------------------------------------------------------
 -- FRAME STYLES
 
 styles.rb_listbox_frame = {
@@ -141,7 +135,6 @@ styles.rb_icon_slot_table_frame = {
   }
 }
 
--- -----------------------------------------------------------------------------
 -- FLOW STYLES
 
 styles.rb_search_flow = {
@@ -158,7 +151,6 @@ styles.rb_titlebar_flow = {
   -- top_margin = -3
 }
 
--- -----------------------------------------------------------------------------
 -- LABEL STYLES
 
 styles.rb_listbox_label = {
@@ -167,7 +159,6 @@ styles.rb_listbox_label = {
   left_padding = 2
 }
 
--- -----------------------------------------------------------------------------
 -- IMAGE STYLES
 
 styles.rb_object_icon = {
@@ -177,7 +168,6 @@ styles.rb_object_icon = {
   padding = 2
 }
 
--- -----------------------------------------------------------------------------
 -- LIST BOX STYLES
 
 styles.rb_listbox_item = {
@@ -217,7 +207,6 @@ styles.rb_listbox_for_keyboard_nav = {
   }
 }
 
--- -----------------------------------------------------------------------------
 -- SCROLL PANE STYLES
 
 styles.rb_icon_slot_table_scrollpane = {
@@ -228,7 +217,6 @@ styles.rb_icon_slot_table_scrollpane = {
   extra_padding_when_activated = 0
 }
 
--- -----------------------------------------------------------------------------
 -- TABLE STYLES
 
 styles.rb_icon_slot_table = {
