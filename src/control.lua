@@ -65,8 +65,21 @@ gui.register_handlers()
 
 event.register("rb-results-nav-confirm", function(e)
   local player_table = global.players[e.player_index]
-  if player_table.gui.search and player_table.gui.search.state == "select_result" then
-    search_gui.confirm_selection(e)
+  local gui_data = player_table.gui.search
+  if not gui_data then return end
+  if gui_data.state == "select_category" then
+    search_gui.confirm_category(e)
+  elseif gui_data.state == "select_result" then
+    search_gui.confirm_result(e)
+  end
+end)
+
+event.register("rb-cycle-category", function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local gui_data = player_table.gui.search
+  if gui_data and gui_data.state == "select_category" then
+    search_gui.cycle_category(player, player_table)
   end
 end)
 
@@ -81,7 +94,7 @@ event.on_lua_shortcut(function(e)
       -- the player is holding something, so open to its material GUI
       event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
     else
-      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search"})
+      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search", toggle=true})
     end
   end
 end)
@@ -127,8 +140,11 @@ event.register(constants.open_gui_event, function(e)
     -- check for existing GUI
     if gui_type == "search" then
       -- don"t do anything if it"s already open
-      if player_table.gui.search then return end
-      search_gui.open(player, player_table)
+      if e.toggle then
+        search_gui.toggle(player, player_table)
+      elseif not player_table.gui.search then
+        search_gui.open(player, player_table)
+      end
     elseif constants.info_guis[gui_type] then
       if gui_type == "material" then
         if type(e.object) ~= "table" then

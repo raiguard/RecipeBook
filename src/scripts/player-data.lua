@@ -59,6 +59,7 @@ function player_data.refresh(player, player_table)
   player_data.destroy_guis(player, player_table)
   player_data.update_settings(player, player_table)
 
+  player.set_shortcut_toggled("rb-toggle-search", false)
   player.set_shortcut_available("rb-toggle-search", false)
 
   if player.connected then

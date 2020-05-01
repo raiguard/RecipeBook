@@ -6,7 +6,9 @@ local gui = require("__flib__.control.gui")
 local constants = require("scripts.constants")
 local category_by_index = {"crafter", "material", "recipe"}
 local category_to_index = {crafter=1, material=2, recipe=3}
+local num_categories = #category_by_index
 
+local math_max = math.max
 local string_find = string.find
 local string_gsub = string.gsub
 local string_lower = string.lower
@@ -29,33 +31,12 @@ gui.add_handlers{search={
     end,
     on_gui_closed = function(e)
       local player_table = global.players[e.player_index]
-      -- temporary error catching - print a butt-ton of data to script_output, then crash
-      if not player_table.gui.search then
-        local tables = {
-          global_data = global.__lualib.event,
-          players = {}
-        }
-        for i,t in pairs(global.players) do
-          tables.players[i] = {
-            flags = t.flags,
-            history = t.history,
-            gui = t.gui,
-            settings = t.settings
-          }
-        end
-        game.write_file("RecipeBook/crash_dump_"..game.tick..".log", serpent.block(tables))
-        error([[
-
-RECIPE BOOK: A FATAL ERROR HAS OCCURED.
-Please gather the following and report it to the mod author on either GitHub (preferred) or the mod portal:
-  - Your savegame
-  - The crash dump. This can be found in your Factorio install directory, under "script-output/RecipeBook/crash_dump_(gametick).log".
-  - A description of exactly what you (and any other players on the server) were doing at the time of the crash.
-]]
-        )
-      end
-      if player_table.gui.search.state ~= "select_result" then
-        search_gui.close(game.get_player(e.player_index), player_table)
+      local gui_data = player_table.gui.search
+      if gui_data.state == "search" then
+        gui_data.category_dropdown.style = "rb_active_dropdown"
+        gui_data.state = "select_category"
+        gui_data.category_dropdown.focus()
+        game.get_player(e.player_index).opened = gui_data.category_dropdown
       end
     end,
     on_gui_confirmed = function(e)
@@ -136,17 +117,51 @@ Please gather the following and report it to the mod author on either GitHub (pr
     end
   },
   category_dropdown = {
-    on_gui_selection_state_changed = function(e)
+    on_gui_selection_state_changed = function(e, new_category)
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.search
       -- update GUI state
-      gui_data.category = category_by_index[e.element.selected_index]
+      gui_data.category = new_category or category_by_index[e.element.selected_index]
       if gui_data.state == "search" then
         gui_data.search_textfield.focus()
-        gui_data.search_textfield.text = ""
-        gui.handlers.search.search_textfield.on_gui_text_changed{player_index=e.player_index, text=""}
+        gui.handlers.search.search_textfield.on_gui_text_changed{player_index=e.player_index, text=gui_data.search_textfield.text}
+      elseif gui_data.state == "select_category" then
+        gui.handlers.search.search_textfield.on_gui_text_changed{player_index=e.player_index, text=gui_data.search_textfield.text}
       else
         game.get_player(e.player_index).opened = gui_data.search_textfield
+      end
+    end,
+    on_gui_closed = function(e)
+      local player_table = global.players[e.player_index]
+      -- temporary error catching - print a butt-ton of data to script_output, then crash
+      if not player_table.gui.search then
+        local tables = {
+          global_data = global.__lualib.event,
+          players = {}
+        }
+        for i,t in pairs(global.players) do
+          tables.players[i] = {
+            flags = t.flags,
+            history = t.history,
+            gui = t.gui,
+            settings = t.settings
+          }
+        end
+        game.write_file("RecipeBook/crash_dump_"..game.tick..".log", serpent.block(tables))
+        error([[
+
+RECIPE BOOK: A FATAL ERROR HAS OCCURED.
+Please gather the following and report it to the mod author on either GitHub (preferred) or the mod portal:
+  - Your savegame
+  - The crash dump. This can be found in your Factorio install directory, under "script-output/RecipeBook/crash_dump_(gametick).log".
+  - A description of exactly what you (and any other players on the server) were doing at the time of the crash.
+]]
+        )
+      end
+      if player_table.gui.search.state == "select_category" then
+        search_gui.close(game.get_player(e.player_index), player_table)
+      else
+        e.element.style = "dropdown"
       end
     end
   }
@@ -200,12 +215,16 @@ function search_gui.open(player, player_table, options)
 
   -- populate initial results
   gui.handlers.search.search_textfield.on_gui_text_changed{player_index=player.index, text=options.query or "", selected_index=options.selected_index}
+
+  -- set shortcut state
+  player.set_shortcut_toggled("rb-toggle-search", true)
 end
 
 function search_gui.close(player, player_table)
   gui.update_filters("search", player.index, nil, "remove")
   player_table.gui.search.window.destroy()
   player_table.gui.search = nil
+  player.set_shortcut_toggled("rb-toggle-search", false)
 end
 
 function search_gui.toggle(player, player_table, options)
@@ -224,10 +243,24 @@ function search_gui.toggle(player, player_table, options)
   end
 end
 
-function search_gui.confirm_selection(e)
+function search_gui.confirm_category(e)
+  e.element = global.players[e.player_index].gui.search.search_textfield
+  gui.handlers.search.search_textfield.on_gui_click(e)
+end
+
+function search_gui.confirm_result(e)
   e.element = global.players[e.player_index].gui.search.results_listbox
   e.keyboard_confirm = true
   gui.handlers.search.results_listbox.on_gui_selection_state_changed(e)
+end
+
+function search_gui.cycle_category(player, player_table)
+  local gui_data = player_table.gui.search
+  local next_category_index = math_max((category_to_index[gui_data.category] + 1) % (num_categories + 1), 1)
+  local next_category = category_by_index[next_category_index]
+  gui.handlers.search.category_dropdown.on_gui_selection_state_changed({player_index=player.index, element=gui_data.category_dropdown}, next_category)
+  gui_data.category_dropdown.selected_index = next_category_index
+  gui_data.category_dropdown.focus()
 end
 
 return search_gui

@@ -28,7 +28,13 @@ data:extend{
     type = "custom-input",
     name = "rb-results-nav-confirm",
     key_sequence = "ENTER",
-    order = "bd"
+    order = "b"
+  },
+  {
+    type = "custom-input",
+    name = "rb-cycle-category",
+    key_sequence = "",
+    linked_game_control = "confirm-message"
   },
   -- shortcut
   {
@@ -74,6 +80,22 @@ styles.rb_titlebar_draggable_space = {
   natural_height = 24,
   minimal_width = 24,
   right_margin = 6
+}
+
+-- DROPDOWN STYLES
+
+styles.rb_active_dropdown = {
+  type = "dropdown_style",
+  parent = "dropdown",
+  button_style = {
+    type = "button_style",
+    parent = "button",
+    default_graphical_set = {
+      base = {position = {34, 17}, corner_size = 8},
+      shadow = default_dirt,
+      -- glow = default_glow(default_glow_color, 0.5) -- no glow when it's not being mouse-hovered
+    }
+  }
 }
 
 -- FRAME STYLES
