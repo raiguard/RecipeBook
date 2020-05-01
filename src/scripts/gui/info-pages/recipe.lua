@@ -1,11 +1,10 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- RECIPE GUI
+local recipe_gui = {}
 
--- dependencies
 local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
--- locals
+local constants = require("scripts.constants")
+
 local math_max = math.max
 local math_min = math.min
 
@@ -15,12 +14,6 @@ local function math_round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
 end
-
--- self object
-local self = {}
-
--- -----------------------------------------------------------------------------
--- HANDLERS
 
 gui.add_handlers{recipe={
   material_listboxes = {
@@ -43,10 +36,7 @@ gui.add_handlers{recipe={
   }
 }}
 
--- -----------------------------------------------------------------------------
--- GUI MANAGEMENT
-
-function self.create(player, player_table, content_container, name)
+function recipe_gui.create(player, player_table, content_container, name)
   local gui_data = gui.build(content_container, {
     {type="flow", style_mods={vertical_spacing=8}, direction="vertical", children={
       {type="flow", style_mods={horizontal_spacing=8}, direction="horizontal", children={
@@ -162,11 +152,9 @@ function self.create(player, player_table, content_container, name)
   return gui_data
 end
 
-function self.destroy(player, content_container)
+function recipe_gui.destroy(player, content_container)
   event.disable_group("gui.recipe", player.index)
   content_container.children[1].destroy()
 end
 
--- -----------------------------------------------------------------------------
-
-return self
+return recipe_gui

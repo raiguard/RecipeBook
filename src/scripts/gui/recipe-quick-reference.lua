@@ -1,24 +1,17 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- RECIPE QUICK REFERENCE GUI
+local recipe_quick_reference_gui = {}
 
--- dependencies
 local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
--- locals
+local constants = require("scripts.constants")
+
 local string_find = string.find
 local string_gsub = string.gsub
-
--- self object
-local self = {}
-
--- -----------------------------------------------------------------------------
--- HANDLERS
 
 gui.add_handlers{recipe_quick_reference={
   close_button = {
     on_gui_click = function(e)
-      self.close(game.get_player(e.player_index), global.players[e.player_index], string_gsub(e.element.name, "rb_close_button_", ""))
+      recipe_quick_reference_gui.close(game.get_player(e.player_index), global.players[e.player_index], string_gsub(e.element.name, "rb_close_button_", ""))
     end
   },
   material_button = {
@@ -34,10 +27,7 @@ gui.add_handlers{recipe_quick_reference={
   }
 }}
 
--- -----------------------------------------------------------------------------
--- GUI MANAGEMENT
-
-function self.open(player, player_table, recipe_name)
+function recipe_quick_reference_gui.open(player, player_table, recipe_name)
   -- build GUI structure
   local data, filters = gui.build(player.gui.screen, {
     {type="frame", style="dialog_frame", direction="vertical", save_as="window", children={
@@ -108,7 +98,7 @@ function self.open(player, player_table, recipe_name)
   player_table.gui.recipe_quick_reference[recipe_name] = data
 end
 
-function self.close(player, player_table, recipe_name)
+function recipe_quick_reference_gui.close(player, player_table, recipe_name)
   local guis = player_table.gui.recipe_quick_reference
   local gui_data = guis[recipe_name]
   for group_name,t in pairs(gui_data.filters) do
@@ -125,12 +115,10 @@ function self.close(player, player_table, recipe_name)
   end
 end
 
-function self.close_all(player, player_table)
+function recipe_quick_reference_gui.close_all(player, player_table)
   for name,_ in pairs(player_table.gui.recipe_quick_reference) do
-    self.close(player, player_table, name)
+    recipe_quick_reference_gui.close(player, player_table, name)
   end
 end
 
--- -----------------------------------------------------------------------------
-
-return self
+return recipe_quick_reference_gui

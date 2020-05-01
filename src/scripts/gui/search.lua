@@ -1,29 +1,20 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- SEARCH GUI
+local search_gui = {}
 
--- dependencies
 local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
--- self object
-local self = {}
+local constants = require("scripts.constants")
+local category_by_index = {"crafter", "material", "recipe"}
+local category_to_index = {crafter=1, material=2, recipe=3}
 
--- locals
 local string_find = string.find
 local string_gsub = string.gsub
 local string_lower = string.lower
 
--- utilities
-local category_by_index = {"crafter", "material", "recipe"}
-local category_to_index = {crafter=1, material=2, recipe=3}
-
--- -----------------------------------------------------------------------------
--- HANDLERS
-
 gui.add_handlers{search={
   close_button = {
     on_gui_click = function(e)
-      self.close(game.get_player(e.player_index), global.players[e.player_index])
+      search_gui.close(game.get_player(e.player_index), global.players[e.player_index])
     end
   },
   search_textfield = {
@@ -67,7 +58,7 @@ Please gather the following and report it to the mod author on either GitHub (pr
         )
       end
       if player_table.gui.search.state ~= "select_result" then
-        self.close(game.get_player(e.player_index), player_table)
+        search_gui.close(game.get_player(e.player_index), player_table)
       end
     end,
     on_gui_confirmed = function(e)
@@ -144,7 +135,7 @@ Please gather the following and report it to the mod author on either GitHub (pr
         event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type=category, object=object_name, source_data={mod_name="RecipeBook",
           gui_name="search", category=gui_data.category, query=gui_data.search_textfield.text, selected_index=e.element.selected_index}})
         if e.keyboard_confirm then
-          self.close(game.get_player(e.player_index), player_table)
+          search_gui.close(game.get_player(e.player_index), player_table)
         end
       end
     end
@@ -173,10 +164,7 @@ Please gather the following and report it to the mod author on either GitHub (pr
   }
 }}
 
--- -----------------------------------------------------------------------------
--- GUI MANAGEMENT
-
-function self.open(player, player_table, options)
+function search_gui.open(player, player_table, options)
   options = options or {}
   local category = options.category or player_table.settings.default_category
   -- create GUI structure
@@ -226,20 +214,20 @@ function self.open(player, player_table, options)
   gui.handlers.search.search_textfield.on_gui_text_changed{player_index=player.index, text=options.query or "", selected_index=options.selected_index}
 end
 
-function self.close(player, player_table)
+function search_gui.close(player, player_table)
   event.disable_group("gui.search", player.index)
   player_table.gui.search.window.destroy()
   player_table.gui.search = nil
 end
 
-function self.toggle(player, player_table, options)
+function search_gui.toggle(player, player_table, options)
   local search_window = player.gui.screen.rb_search_window
   if search_window then
-    self.close(player, player_table)
+    search_gui.close(player, player_table)
   else
     -- check if we actually CAN open the GUI
     if player_table.flags.can_open_gui then
-      self.open(player, player_table, options)
+      search_gui.open(player, player_table, options)
     else
       -- set flag and tell the player that they cannot open it
       player_table.flags.tried_to_open_gui = true
@@ -248,6 +236,4 @@ function self.toggle(player, player_table, options)
   end
 end
 
--- -----------------------------------------------------------------------------
-
-return self
+return search_gui

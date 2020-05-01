@@ -3,6 +3,8 @@ local interface = {}
 
 local event = require("__flib__.control.event")
 
+local constants = require("scripts.constants")
+
 remote.add_interface("RecipeBook", {
   open_gui = function(player_index, gui_type, object, source_data)
     -- error checking

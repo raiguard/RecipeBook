@@ -1,15 +1,7 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- CRAFTER GUI
+local crafter_gui = {}
 
--- dependencies
 local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
-
--- self object
-local self = {}
-
--- -----------------------------------------------------------------------------
--- HANDLERS
 
 gui.add_handlers{crafter={
   generic_listbox = {
@@ -17,10 +9,7 @@ gui.add_handlers{crafter={
   }
 }}
 
--- -----------------------------------------------------------------------------
--- GUI MANAGEMENT
-
-function self.create(player, player_table, content_container, name)
+function crafter_gui.create(player, player_table, content_container, name)
   local gui_data = gui.build(content_container, {
     gui.templates.listbox_with_label("recipes")
   })
@@ -53,11 +42,9 @@ function self.create(player, player_table, content_container, name)
   return gui_data
 end
 
-function self.destroy(player, content_container)
+function crafter_gui.destroy(player, content_container)
   event.disable_group("gui.crafter", player.index)
   content_container.children[1].destroy()
 end
 
--- -----------------------------------------------------------------------------
-
-return self
+return crafter_gui

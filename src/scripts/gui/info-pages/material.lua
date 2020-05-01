@@ -1,20 +1,11 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- INGREDIENT GUI
+local material_gui = {}
 
--- dependencies
 local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
--- locals
 local math_max = math.max
 local math_min = math.min
 local string_gsub = string.gsub
-
--- self object
-local self = {}
-
--- -----------------------------------------------------------------------------
--- HANDLERS
 
 gui.add_handlers{material={
   generic_listbox = {
@@ -22,10 +13,7 @@ gui.add_handlers{material={
   }
 }}
 
--- -----------------------------------------------------------------------------
--- GUI MANAGEMENT
-
-function self.create(player, player_table, content_container, name)
+function material_gui.create(player, player_table, content_container, name)
   local gui_data = gui.build(content_container, {
     {type="flow", style_mods={horizontal_spacing=8}, direction="horizontal", children={
       gui.templates.listbox_with_label("ingredient_in"),
@@ -70,11 +58,9 @@ function self.create(player, player_table, content_container, name)
   return gui_data
 end
 
-function self.destroy(player, content_container)
+function material_gui.destroy(player, content_container)
   event.disable_group("gui.material", player.index)
   content_container.children[1].destroy()
 end
 
--- -----------------------------------------------------------------------------
-
-return self
+return material_gui

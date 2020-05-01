@@ -1,31 +1,23 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- BASE INFO GUI
+local info_base_gui = {}
 
--- dependencies
 local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
--- self object
-local self = {}
+local constants = require("scripts.constants")
 
--- info pages
 local pages = {}
 for n,_ in pairs(constants.info_guis) do
   pages[n] = require("scripts.gui.info-pages."..n)
 end
 
--- locals
 local string_lower = string.lower
 local table_insert = table.insert
 local table_remove = table.remove
 
--- -----------------------------------------------------------------------------
--- HANDLERS
-
 gui.add_handlers{info_base={
   close_button = {
     on_gui_click = function(e)
-      self.close(game.get_player(e.player_index), global.players[e.player_index])
+      info_base_gui.close(game.get_player(e.player_index), global.players[e.player_index])
     end
   },
   nav_backward_button = {
@@ -35,12 +27,12 @@ gui.add_handlers{info_base={
       local back_obj = session_history[session_history.position+1]
       if back_obj.mod_name and back_obj.gui_name then
         -- this is a source
-        self.close(game.get_player(e.player_index), player_table)
+        info_base_gui.close(game.get_player(e.player_index), player_table)
         event.raise(constants.reopen_source_event, {player_index=e.player_index, source_data=back_obj})
       else
         -- this is an info page
         session_history.position = session_history.position + 1
-        self.update_contents(game.get_player(e.player_index), player_table, back_obj.category, back_obj.name, nil, true)
+        info_base_gui.update_contents(game.get_player(e.player_index), player_table, back_obj.category, back_obj.name, nil, true)
       end
     end
   },
@@ -51,7 +43,7 @@ gui.add_handlers{info_base={
       local forward_obj = session_history[session_history.position-1]
       session_history.position = session_history.position - 1
       -- update content
-      self.update_contents(game.get_player(e.player_index), player_table, forward_obj.category, forward_obj.name, nil, true)
+      info_base_gui.update_contents(game.get_player(e.player_index), player_table, forward_obj.category, forward_obj.name, nil, true)
     end
   },
   -- search_button = {
@@ -61,15 +53,12 @@ gui.add_handlers{info_base={
   -- },
   window = {
     on_gui_closed = function(e)
-      self.close(game.get_player(e.player_index), global.players[e.player_index])
+      info_base_gui.close(game.get_player(e.player_index), global.players[e.player_index])
     end
   }
 }}
 
--- -----------------------------------------------------------------------------
--- GUI MANAGEMENT
-
-function self.open(player, player_table, category, name, source_data)
+function info_base_gui.open(player, player_table, category, name, source_data)
   -- gui structure
   local gui_data = gui.build(player.gui.screen, {
     {type="frame", name="rb_info_window", style="dialog_frame", direction="vertical", handlers="info_base.window", save_as="window", children={
@@ -108,10 +97,10 @@ function self.open(player, player_table, category, name, source_data)
   player_table.gui.info = {base=gui_data}
 
   -- set initial content
-  self.update_contents(player, player_table, category, name, source_data)
+  info_base_gui.update_contents(player, player_table, category, name, source_data)
 end
 
-function self.close(player, player_table)
+function info_base_gui.close(player, player_table)
   local gui_data = player_table.gui
   -- destroy content / deregister handlers
   pages[gui_data.info.category].destroy(player, gui_data.info.base.content_container)
@@ -124,7 +113,7 @@ function self.close(player, player_table)
   player_table.history.session = {position=0}
 end
 
-function self.update_contents(player, player_table, category, name, source_data, nav_button)
+function info_base_gui.update_contents(player, player_table, category, name, source_data, nav_button)
   local gui_data = player_table.gui.info
   local base_elems = gui_data.base
   local dictionary = player_table.dictionary
@@ -198,15 +187,13 @@ function self.update_contents(player, player_table, category, name, source_data,
   gui_data.name = name
 end
 
-function self.open_or_update(player, player_table, category, name, source_data)
+function info_base_gui.open_or_update(player, player_table, category, name, source_data)
   -- check for pre-existing window
   if player_table.gui.info then
-    self.update_contents(player, player_table, category, name, source_data)
+    info_base_gui.update_contents(player, player_table, category, name, source_data)
   else
-    self.open(player, player_table, category, name, source_data)
+    info_base_gui.open(player, player_table, category, name, source_data)
   end
 end
 
--- -----------------------------------------------------------------------------
-
-return self
+return info_base_gui

@@ -56,7 +56,25 @@ event.on_configuration_changed(function(e)
   end
 end)
 
+-- GUI
+
+gui.register_handlers()
+
 -- INTERACTION
+
+event.on_lua_shortcut(function(e)
+  if e.prototype_name == "rb-toggle-search" then
+    -- read player's cursor stack to see if we should open the material GUI
+    local player = game.get_player(e.player_index)
+    local cursor_stack = player.cursor_stack
+    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
+      -- the player is holding something, so open to its material GUI
+      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
+    else
+      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search"})
+    end
+  end
+end)
 
 event.register("rb-toggle-search", function(e)
   local player = game.get_player(e.player_index)
@@ -88,28 +106,7 @@ event.register("rb-toggle-search", function(e)
   event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search"})
 end)
 
-event.on_lua_shortcut(function(e)
-  if e.prototype_name == "rb-toggle-search" then
-    -- read player's cursor stack to see if we should open the material GUI
-    local player = game.get_player(e.player_index)
-    local cursor_stack = player.cursor_stack
-    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
-      -- the player is holding something, so open to its material GUI
-      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
-    else
-      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search"})
-    end
-  end
-end)
-
 -- INTERFACE
-
-event.register(constants.reopen_source_event, function(e)
-  local source_data = e.source_data
-  if source_data.mod_name == "RecipeBook" and source_data.gui_name == "search" then
-    search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index], source_data)
-  end
-end)
 
 event.register(constants.open_gui_event, function(e)
   local player = game.get_player(e.player_index)
@@ -141,6 +138,13 @@ event.register(constants.open_gui_event, function(e)
     -- set flag and tell the player that they cannot open it
     player_table.flags.tried_to_open_gui = true
     player.print{"rb-message.translation-not-finished"}
+  end
+end)
+
+event.register(constants.reopen_source_event, function(e)
+  local source_data = e.source_data
+  if source_data.mod_name == "RecipeBook" and source_data.gui_name == "search" then
+    search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index], source_data)
   end
 end)
 
