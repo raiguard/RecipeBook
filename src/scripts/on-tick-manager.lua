@@ -10,7 +10,7 @@ local function handler()
 end
 
 function on_tick_manager.update()
-  if global.__flib.translation.active_translations_count > 0 then
+  if global.__flib and global.__flib.translation.active_translations_count > 0 then
     event.on_tick(handler)
     return
   end
