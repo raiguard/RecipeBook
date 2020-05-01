@@ -98,12 +98,9 @@ function recipe_quick_reference_gui.close(player, player_table, recipe_name)
   local guis = player_table.gui.recipe_quick_reference
   local gui_data = guis[recipe_name]
   -- only remove filters for this GUI
-  local profiler = game.create_profiler()
   for handler_name, filters in pairs(gui_data.filters) do
     gui.update_filters(handler_name, player.index, filters, "remove")
   end
-  profiler.stop()
-  game.print(profiler)
   gui_data.window.destroy()
   guis[recipe_name] = nil
 end
