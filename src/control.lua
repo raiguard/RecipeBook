@@ -8,21 +8,12 @@ require("scripts.gui.common")
 local constants = require("scripts.constants")
 local global_data = require("scripts.global-data")
 local info_gui = require("scripts.gui.info-base")
+local lookup_tables = require("scripts.lookup-tables")
 local migrations = require("scripts.migrations")
 local on_tick_manager = require("scripts.on-tick-manager")
 local player_data = require("scripts.player-data")
 local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
 local search_gui = require("scripts.gui.search")
-
-local open_fluid_types = {
-  ["fluid-wagon"] = true,
-  ["infinity-pipe"] = true,
-  ["offshore-pump"] = true,
-  ["pipe-to-ground"] = true,
-  ["pipe"] = true,
-  ["pump"] = true,
-  ["storage-tank"] = true
-}
 
 local string_sub = string.sub
 
@@ -41,12 +32,16 @@ event.on_init(function()
     player_data.init(player, i)
   end
 
+  lookup_tables.generate()
+
   gui.build_lookup_tables()
 end)
 
 event.on_load(function()
-  gui.build_lookup_tables()
+  lookup_tables.generate()
   on_tick_manager.update()
+
+  gui.build_lookup_tables()
 end)
 
 event.on_configuration_changed(function(e)
@@ -112,7 +107,7 @@ event.register("rb-toggle-search", function(e)
   -- get player's currently selected entity to check for a fluid filter
   local selected = player.selected
   if player.mod_settings["rb-open-fluid-hotkey"].value then
-    if selected and selected.valid and open_fluid_types[selected.type] then
+    if selected and selected.valid and constants.open_fluid_types[selected.type] then
       local fluidbox = selected.fluidbox
       if fluidbox and fluidbox.valid then
         local locked_fluid = fluidbox.get_locked_fluid(1)
@@ -145,7 +140,7 @@ event.register(constants.open_gui_event, function(e)
       elseif not player_table.gui.search then
         search_gui.open(player, player_table)
       end
-    elseif constants.info_guis[gui_type] then
+    elseif constants.category_to_index[gui_type] then
       if gui_type == "material" then
         if type(e.object) ~= "table" then
           error("Invalid material object, it must be a table!")
@@ -183,6 +178,7 @@ end)
 
 event.on_player_removed(function(e)
   global.players[e.player_index] = nil
+  lookup_tables.destroy(e.player_index)
 end)
 
 event.on_player_joined_game(function(e)
@@ -204,22 +200,18 @@ end)
 -- TRANSLATIONS
 
 event.on_string_translated(function(e)
-  translation.sort_string(e)
-end)
-
-translation.on_finished(function(e)
+  local names, finished = translation.process_result(e)
   local player_table = global.players[e.player_index]
-  if not player_table.dictionary then player_table.dictionary = {} end
-
-  -- add to player table
-  player_table.dictionary[e.dictionary_name] = {
-    lookup = e.lookup,
-    sorted_translations = e.sorted_translations,
-    translations = e.translations
-  }
-
-  -- set flag if we're done
-  if global.__flib.translation.players[e.player_index].active_translations_count == 0 then
+  if names then
+    local translations = player_table.translations
+    for dictionary_name, internal_names in pairs(names) do
+      local dictionary = translations[dictionary_name]
+      for i = 1, #internal_names do
+        dictionary[internal_names[i]] = e.translated and e.result or internal_names[i]
+      end
+    end
+  end
+  if finished then
     local player = game.get_player(e.player_index)
     player.set_shortcut_available("rb-toggle-search", true)
     player_table.flags.can_open_gui = true
@@ -227,6 +219,9 @@ translation.on_finished(function(e)
       player_table.flags.tried_to_open_gui = false
       player.print{"rb-message.translation-finished"}
     end
+    player_table.flags.translating = false
+    -- TODO generate as translations are returned
+    lookup_tables.generate()
     on_tick_manager.update()
   end
 end)

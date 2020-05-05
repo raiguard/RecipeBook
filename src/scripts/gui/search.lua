@@ -4,9 +4,7 @@ local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
 local constants = require("scripts.constants")
-local category_by_index = {"crafter", "material", "recipe"}
-local category_to_index = {crafter=1, material=2, recipe=3}
-local num_categories = #category_by_index
+local lookup_tables = require("scripts.lookup-tables")
 
 local math_max = math.max
 local string_find = string.find
@@ -182,7 +180,7 @@ function search_gui.open(player, player_table, options)
         {type="frame", style="subheader_frame", children={
           {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
           {template="pushers.horizontal"},
-          {type="drop-down", items={{"rb-gui.crafter"}, {"rb-gui.material"}, {"rb-gui.recipe"}}, selected_index=category_to_index[category],
+          {type="drop-down", items={{"rb-gui.crafter"}, {"rb-gui.material"}, {"rb-gui.recipe"}}, selected_index=constants.category_to_index[category],
             handlers="search.category_dropdown", save_as="category_dropdown"}
         }},
         -- search bar
@@ -254,8 +252,8 @@ end
 
 function search_gui.cycle_category(player, player_table)
   local gui_data = player_table.gui.search
-  local next_category_index = math_max((category_to_index[gui_data.category] + 1) % (num_categories + 1), 1)
-  local next_category = category_by_index[next_category_index]
+  local next_category_index = math_max((constants.category_to_index[gui_data.category] + 1) % (constants.num_categories + 1), 1)
+  local next_category = constants.category_by_index[next_category_index]
   gui.handlers.search.category_dropdown.on_gui_selection_state_changed({player_index=player.index, element=gui_data.category_dropdown}, next_category)
   gui_data.category_dropdown.selected_index = next_category_index
   gui_data.category_dropdown.focus()

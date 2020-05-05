@@ -2,6 +2,8 @@ local crafter_gui = {}
 
 local gui = require("__flib__.control.gui")
 
+local lookup_tables = require("scripts.lookup-tables")
+
 gui.add_handlers{crafter={
   generic_listbox = {
     on_gui_selection_state_changed = gui.handlers.common.generic_open_from_listbox
@@ -15,7 +17,7 @@ function crafter_gui.create(player, player_table, content_container, name)
 
   -- get data
   local crafter_data = global.recipe_book.crafter[name]
-  local recipe_translations = player_table.dictionary.recipe.translations
+  local recipe_translations = lookup_tables[player.index].recipe.translations
   local show_hidden = player_table.settings.show_hidden
 
   -- populate recipes table

@@ -2,6 +2,7 @@ local player_data = {}
 
 local translation = require("__flib__.control.translation")
 
+local constants = require("scripts.constants")
 local info_gui = require("scripts.gui.info-base")
 local on_tick_manager = require("scripts.on-tick-manager")
 local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
@@ -12,6 +13,7 @@ function player_data.init(player, index)
     flags = {
       can_open_gui = false,
       translate_on_join = false,
+      translating = false,
       tried_to_open_gui = false
     },
     history = {
@@ -20,16 +22,17 @@ function player_data.init(player, index)
     },
     gui = {
       recipe_quick_reference = {}
-    }
+    },
+    translation_lookup_tables = nil,
+    translations = nil
   }
   global.players[index] = player_table
   player_data.refresh(player, global.players[index])
 end
 
-function player_data.start_translations(player_index)
-  for name, data in pairs(global.translation_data) do
-    translation.start(player_index, name, data, {include_failed_translations=true, lowercase_sorted_translations=true})
-  end
+function player_data.start_translations(player_index, player_table)
+  player_table.flags.translating = true
+  translation.add_requests(player_index, global.translation_data)
   on_tick_manager.update()
 end
 
@@ -62,8 +65,11 @@ function player_data.refresh(player, player_table)
   player.set_shortcut_toggled("rb-toggle-search", false)
   player.set_shortcut_available("rb-toggle-search", false)
 
+  player_table.translation_lookup_tables = table.deepcopy(constants.empty_translation_tables)
+  player_table.translations = table.deepcopy(constants.empty_translation_tables)
+
   if player.connected then
-    player_data.start_translations(player.index)
+    player_data.start_translations(player.index, player_table)
   else
     player_table.flags.translate_on_join = true
   end

@@ -4,10 +4,11 @@ local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
 local constants = require("scripts.constants")
+local lookup_tables = require("scripts.lookup-tables")
 
 local pages = {}
-for n,_ in pairs(constants.info_guis) do
-  pages[n] = require("scripts.gui.info-pages."..n)
+for name in pairs(constants.category_to_index) do
+  pages[name] = require("scripts.gui.info-pages."..name)
 end
 
 local string_lower = string.lower
@@ -118,7 +119,7 @@ end
 function info_base_gui.update_contents(player, player_table, category, name, source_data, nav_button)
   local gui_data = player_table.gui.info
   local base_elems = gui_data.base
-  local dictionary = player_table.dictionary
+  local dictionary = lookup_tables[player.index]
   local object_data = global.recipe_book[category][name]
 
   -- update search history

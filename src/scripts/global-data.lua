@@ -17,10 +17,7 @@ function global_data.build_recipe_book()
     technology = {}
   }
   local translation_data = {
-    crafter = {},
-    material = {},
-    recipe = {},
-    technology = {}
+    {dictionary="other", internal="character", localised={"entity-name.character"}}
   }
 
   -- iterate crafters
@@ -37,7 +34,7 @@ function global_data.build_recipe_book()
       sprite_class = "entity",
       prototype_name = name
     }
-    translation_data.crafter[#translation_data.crafter+1] = {internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary="crafter", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate materials
@@ -58,7 +55,7 @@ function global_data.build_recipe_book()
         prototype_name = name
       }
       -- add to translation table
-      translation_data.material[#translation_data.material+1] = {internal=class..","..name, localised=prototype.localised_name}
+      translation_data[#translation_data+1] = {dictionary="material", internal=class..","..name, localised=prototype.localised_name}
     end
   end
 
@@ -122,7 +119,7 @@ function global_data.build_recipe_book()
     -- insert into recipe book
     recipe_book.recipe[name] = data
     -- translation data
-    translation_data.recipe[#translation_data.recipe+1] = {internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary="recipe", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate technologies
@@ -135,25 +132,22 @@ function global_data.build_recipe_book()
       end
     end
     recipe_book.technology[name] = {hidden=prototype.hidden}
-    translation_data.technology[#translation_data.technology+1] = {internal=prototype.name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary="technology", internal=prototype.name, localised=prototype.localised_name}
   end
-
-  -- misc translation data
-  translation_data.other = {
-    {internal="character", localised={"entity-name.character"}}
-  }
 
   -- remove all materials that aren't used in recipes
   do
     local materials = recipe_book.material
-    local translations = translation_data.material
-    for i=#translations,1,-1 do
+    local translations = translation_data
+    for i = #translations, 1, -1 do
       local t = translations[i]
-      local data = materials[t.internal]
-      if #data.ingredient_in == 0 and #data.product_of == 0 then
-        log("Removing material ["..t.internal.."], which is not used in any recipes")
-        materials[t.internal] = nil
-        table_remove(translations, i)
+      if t.dictionary == "material" then
+        local data = materials[t.internal]
+        if #data.ingredient_in == 0 and #data.product_of == 0 then
+          log("Removing material ["..t.internal.."], which is not used in any recipes")
+          materials[t.internal] = nil
+          table_remove(translations, i)
+        end
       end
     end
   end

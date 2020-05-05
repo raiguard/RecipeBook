@@ -39,10 +39,15 @@ return {
     global.dictionaries = {}
   end,
   ["1.3.0"] = function()
-    -- init flib modules
     gui.init()
     translation.init()
-    -- remove RaiLuaLib table
+
     global.__lualib = nil
+
+    for i in pairs(game.players) do
+      local player_table = global.players[i]
+      player_table.dictionary = nil
+      player_table.flags.translating = false
+    end
   end
 }

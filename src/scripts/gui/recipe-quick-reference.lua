@@ -4,6 +4,7 @@ local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
 local constants = require("scripts.constants")
+local lookup_tables = require("scripts.lookup-tables")
 
 local string_find = string.find
 local string_gsub = string.gsub
@@ -42,7 +43,7 @@ function recipe_quick_reference_gui.open(player, player_table, recipe_name)
       }},
       {type="frame", style="window_content_frame_packed", direction="vertical", children={
         {type="frame", style="subheader_frame", direction="horizontal", children={
-          {type="label", style="subheader_caption_label", style_mods={width=207}, caption=player_table.dictionary.recipe.translations[recipe_name]}
+          {type="label", style="subheader_caption_label", style_mods={width=207}, caption=lookup_tables[player.index].recipe.translations[recipe_name]}
         }},
         -- materials
         {type="flow", style_mods={padding=8}, direction="vertical", children={
@@ -57,7 +58,7 @@ function recipe_quick_reference_gui.open(player, player_table, recipe_name)
 
   -- get data
   local recipe_data = global.recipe_book.recipe[recipe_name]
-  local material_translations = player_table.dictionary.material.translations
+  local material_translations = lookup_tables[player.index].material.translations
   local show_hidden = player_table.settings.show_hidden
 
   local material_button_ids = {}
@@ -77,7 +78,7 @@ function recipe_quick_reference_gui.open(player, player_table, recipe_name)
       local material = materials_list[ri]
       if show_hidden or not material.hidden then
         local index = table_add{type="sprite-button", style="quick_bar_slot_button", sprite=material.type.."/"..material.name, number=material.amount,
-          tooltip=material_translations[material.name], mouse_button_filter={"left"}}.index
+          tooltip=material_translations[material.type..","..material.name], mouse_button_filter={"left"}}.index
         material_button_ids[#material_button_ids+1] = index
       end
     end

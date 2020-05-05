@@ -2,6 +2,8 @@ local material_gui = {}
 
 local gui = require("__flib__.control.gui")
 
+local lookup_tables = require("scripts.lookup-tables")
+
 local math_max = math.max
 local math_min = math.min
 local string_gsub = string.gsub
@@ -22,7 +24,7 @@ function material_gui.create(player, player_table, content_container, name)
 
   -- set up data
   local material_data = global.recipe_book.material[name]
-  local recipe_translations = player_table.dictionary.recipe.translations
+  local recipe_translations = lookup_tables[player.index].recipe.translations
   local show_hidden = player_table.settings.show_hidden
   local recipes = global.recipe_book.recipe
   local rows = 0

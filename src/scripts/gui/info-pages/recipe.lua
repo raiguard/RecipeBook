@@ -4,6 +4,7 @@ local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
 local constants = require("scripts.constants")
+local lookup_tables = require("scripts.lookup-tables")
 
 local math_max = math.max
 local math_min = math.min
@@ -57,7 +58,7 @@ function recipe_gui.create(player, player_table, content_container, name)
   local recipe_data = recipe_book.recipe[name]
   local crafters = recipe_book.crafter
   local technologies = recipe_book.technology
-  local dictionary = player_table.dictionary
+  local dictionary = lookup_tables[player.index]
   local crafter_translations = dictionary.crafter.translations
   local material_translations = dictionary.material.translations
   local technology_translations = dictionary.technology.translations
