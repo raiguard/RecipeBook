@@ -5,27 +5,35 @@ local constants = require("scripts.constants")
 local string = string
 local table = table
 
-function lookup_tables.add(player_index, dictionary, internal, translation)
-  -- TODO
-end
-
-function lookup_tables.create(player_index)
-  -- TODO
+function lookup_tables.add(player_table, dictionary_name, internal_name, translation)
+  translation = string.lower(translation)
+  local tables = player_table.translation_lookup_tables[dictionary_name]
+  local lookup = tables.lookup
+  local translation_lookup = lookup[translation]
+  if translation_lookup then
+    translation_lookup[#translation_lookup+1] = internal_name
+  else
+    lookup[translation] = {internal_name}
+  end
+  local sorted_translations = tables.sorted_translations
+  sorted_translations[#sorted_translations+1] = translation
 end
 
 function lookup_tables.destroy(player_index)
   lookup_tables[player_index] = nil
 end
 
-function lookup_tables.finish(player_index, player_table)
-  local translation_lookup_tables = player_table.translation_lookup_tables
-  lookup_tables[player_index] = {
-    lookup = translation_lookup_tables.lookup,
-    sorted_translations = translation_lookup_tables.sorted_translations,
-    translations = player_table.translations
-  }
+function lookup_tables.transfer(player_index, player_table)
+  local translations = player_table.translations
+  lookup_tables[player_index] = {}
+  local tables = lookup_tables[player_index]
+  -- copy over the sub-tables so they won't get destroyed
+  for category, t in pairs(player_table.translation_lookup_tables) do
+    tables[category] = t
+    table.sort(t.sorted_translations)
+    t.translations = translations[category]
+  end
   player_table.translation_lookup_tables = nil
-  table.sort(lookup_tables[player_index].sorted_translations)
 end
 
 function lookup_tables.generate()

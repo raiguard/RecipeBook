@@ -6,6 +6,13 @@ local category_to_index = {crafter=1, material=2, recipe=3}
 return {
   category_by_index = category_by_index,
   category_to_index = category_to_index,
+  empty_lookup_tables = {
+    crafter = {lookup={}, sorted_translations={}},
+    material = {lookup={}, sorted_translations={}},
+    other = {lookup={}, sorted_translations={}},
+    recipe = {lookup={}, sorted_translations={}},
+    technology = {lookup={}, sorted_translations={}}
+  },
   empty_translation_tables = {
     crafter = {},
     material = {},
@@ -13,6 +20,7 @@ return {
     recipe = {},
     technology = {}
   },
+  info_guis = {crafter=true, material=true, recipe=true},
   interface_version = 2,
   num_categories = #category_by_index,
   open_fluid_types = {

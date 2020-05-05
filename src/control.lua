@@ -207,7 +207,10 @@ event.on_string_translated(function(e)
     for dictionary_name, internal_names in pairs(names) do
       local dictionary = translations[dictionary_name]
       for i = 1, #internal_names do
-        dictionary[internal_names[i]] = e.translated and e.result or internal_names[i]
+        local internal_name = internal_names[i]
+        local result = e.translated and e.result or internal_name
+        dictionary[internal_name] = result
+        lookup_tables.add(player_table, dictionary_name, internal_name, result)
       end
     end
   end
@@ -220,8 +223,7 @@ event.on_string_translated(function(e)
       player.print{"rb-message.translation-finished"}
     end
     player_table.flags.translating = false
-    -- TODO generate as translations are returned
-    lookup_tables.generate()
+    lookup_tables.transfer(e.player_index, player_table)
     on_tick_manager.update()
   end
 end)

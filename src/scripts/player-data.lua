@@ -65,7 +65,7 @@ function player_data.refresh(player, player_table)
   player.set_shortcut_toggled("rb-toggle-search", false)
   player.set_shortcut_available("rb-toggle-search", false)
 
-  player_table.translation_lookup_tables = table.deepcopy(constants.empty_translation_tables)
+  player_table.translation_lookup_tables = table.deepcopy(constants.empty_lookup_tables)
   player_table.translations = table.deepcopy(constants.empty_translation_tables)
 
   if player.connected then

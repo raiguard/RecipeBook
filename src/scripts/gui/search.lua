@@ -61,7 +61,7 @@ gui.add_handlers{search={
       end
       local category = gui_data.category
       local objects = global.recipe_book[category]
-      local dictionary = player_table.dictionary[category]
+      local dictionary = lookup_tables[e.player_index][category]
       local lookup = dictionary.lookup
       local sorted_translations = dictionary.sorted_translations
       local translations = dictionary.translations
@@ -117,7 +117,7 @@ gui.add_handlers{search={
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.search
       -- update GUI state
-      gui_data.category = new_category or category_by_index[e.element.selected_index]
+      gui_data.category = new_category or constants.category_by_index[e.element.selected_index]
       if gui_data.state == "search" then
         gui_data.search_textfield.focus()
         gui.handlers.search.search_textfield.on_gui_text_changed{player_index=e.player_index, text=gui_data.search_textfield.text}

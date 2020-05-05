@@ -7,7 +7,7 @@ local constants = require("scripts.constants")
 local lookup_tables = require("scripts.lookup-tables")
 
 local pages = {}
-for name in pairs(constants.category_to_index) do
+for name in pairs(constants.info_guis) do
   pages[name] = require("scripts.gui.info-pages."..name)
 end
 
@@ -48,11 +48,6 @@ gui.add_handlers{
         info_base_gui.update_contents(game.get_player(e.player_index), player_table, forward_obj.category, forward_obj.name, nil, true)
       end
     },
-    -- search_button = {
-    --   on_gui_click = function(e)
-    --     event.raise(OPEN_GUI_EVENT, {player_index=e.player_index, gui_type="search"})
-    --   end
-    -- },
     window = {
       on_gui_closed = function(e)
         info_base_gui.close(game.get_player(e.player_index), global.players[e.player_index])
