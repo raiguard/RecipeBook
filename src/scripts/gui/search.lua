@@ -127,6 +127,7 @@ gui.add_handlers{search={
         game.get_player(e.player_index).opened = gui_data.search_textfield
       end
     end,
+    -- TODO close logic breaks when switching controllers
     on_gui_closed = function(e)
       local player_table = global.players[e.player_index]
       -- temporary error catching - print a butt-ton of data to script_output, then crash
@@ -188,7 +189,13 @@ function search_gui.open(player, player_table, options)
           save_as="search_textfield"},
         -- results listbox
         {type="frame", style="rb_search_results_listbox_frame", style_mods={margin=8}, children={
-          {type="list-box", style="rb_listbox_for_keyboard_nav", handlers="search.results_listbox", save_as="results_listbox"}
+          {type="list-box", style="rb_listbox_for_keyboard_nav", handlers="search.results_listbox", save_as="results_listbox"},
+          {type="frame", style="rb_blurry_frame", mods={visible=false}, save_as="results_cover_frame", children={
+            {type="flow", style_mods={horizontally_stretchable=true, vertically_stretchable=true, horizontal_align="center", vertical_align="center"}, children={
+              -- TODO give this an initial value
+              {type="label", style="bold_label", save_as="results_cover_label"}
+            }}
+          }}
         }}
       }}
     }}

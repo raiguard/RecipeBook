@@ -12,6 +12,7 @@ function player_data.init(player, index)
   local player_table = {
     flags = {
       can_open_gui = false,
+      searching = false,
       translate_on_join = false,
       translating = false,
       tried_to_open_gui = false

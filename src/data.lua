@@ -157,6 +157,24 @@ styles.rb_icon_slot_table_frame = {
   }
 }
 
+styles.rb_blurry_frame =
+{
+  type = "frame_style",
+  -- padding of the content area of the frame
+  top_padding  = 8,
+  right_padding = 12,
+  bottom_padding = 12,
+  left_padding = 12,
+  graphical_set = {
+    base = {
+      center = {position = {336, 0}, size = {1, 1}},
+      opacity = 0,
+      background_blur = true
+    },
+    shadow = default_shadow
+  }
+}
+
 -- FLOW STYLES
 
 styles.rb_search_flow = {
