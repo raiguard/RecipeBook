@@ -106,6 +106,7 @@ gui.add_handlers{search={
         if gui_data.category == "material" then
           object_name = {object_class, object_name}
         end
+        gui_data.state = "selected_result"
         event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type=category, object=object_name, source_data={mod_name="RecipeBook",
           gui_name="search", category=gui_data.category, query=gui_data.search_textfield.text, selected_index=e.element.selected_index}})
         search_gui.close(game.get_player(e.player_index), player_table)
