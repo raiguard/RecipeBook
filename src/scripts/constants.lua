@@ -4,6 +4,9 @@ local category_by_index = {"crafter", "material", "recipe"}
 local category_to_index = {crafter=1, material=2, recipe=3}
 
 return {
+  blacklisted_recipe_categories = {
+    ["transport-drone-request"] = true
+  },
   category_by_index = category_by_index,
   category_to_index = category_to_index,
   empty_lookup_tables = {

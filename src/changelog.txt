@@ -8,6 +8,7 @@ Date: ????
     - Refactored mod structure to improve performance and simplicity
     - Switched from RaiLuaLib to FLib
     - Changing search categories will no longer reset the textfield to blank
+    - Transport drones recipes are now excluded from the Recipe Book
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.3
 Date: 2020-04-12

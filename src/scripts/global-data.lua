@@ -1,5 +1,7 @@
 local global_data = {}
 
+local constants = require("scripts.constants")
+
 local table_remove = table.remove
 
 function global_data.init()
@@ -61,6 +63,9 @@ function global_data.build_recipe_book()
 
   -- iterate recipes
   for name, prototype in pairs(game.recipe_prototypes) do
+    if constants.blacklisted_recipe_categories[prototype.category] then
+      goto continue
+    end
     local data = {
       energy = prototype.energy,
       hand_craftable = prototype.category == "crafting",
@@ -120,6 +125,7 @@ function global_data.build_recipe_book()
     recipe_book.recipe[name] = data
     -- translation data
     translation_data[#translation_data+1] = {dictionary="recipe", internal=name, localised=prototype.localised_name}
+    ::continue::
   end
 
   -- iterate technologies
