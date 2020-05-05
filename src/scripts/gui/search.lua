@@ -149,7 +149,7 @@ gui.add_handlers{search={
         error([[
 
 RECIPE BOOK: A FATAL ERROR HAS OCCURED.
-Please gather the following and report it to the mod author on either GitHub (preferred) or the mod portal:
+Please gather the following and report it to the mod author on GitHub:
   - Your savegame
   - The crash dump. This can be found in your Factorio install directory, under "script-output/RecipeBook/crash_dump_(gametick).log".
   - A description of exactly what you (and any other players on the server) were doing at the time of the crash.
