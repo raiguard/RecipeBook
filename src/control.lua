@@ -10,7 +10,7 @@ local global_data = require("scripts.global-data")
 local info_gui = require("scripts.gui.info-base")
 local lookup_tables = require("scripts.lookup-tables")
 local migrations = require("scripts.migrations")
-local on_tick_manager = require("scripts.on-tick-manager")
+local on_tick = require("scripts.on-tick")
 local player_data = require("scripts.player-data")
 local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
 local search_gui = require("scripts.gui.search")
@@ -19,7 +19,7 @@ local string_sub = string.sub
 
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
--- on_tick's handler is in scripts.on-tick-manager
+-- on_tick's handler is in scripts.on-tick
 
 -- BOOTSTRAP
 
@@ -31,6 +31,7 @@ event.on_init(function()
   for i, player in pairs(game.players) do
     player_data.init(player, i)
   end
+  global_data.update_searching_state()
 
   lookup_tables.generate()
 
@@ -39,7 +40,7 @@ end)
 
 event.on_load(function()
   lookup_tables.generate()
-  on_tick_manager.update()
+  event.on_tick(on_tick.handler)
 
   gui.build_lookup_tables()
 end)
@@ -52,6 +53,12 @@ event.on_configuration_changed(function(e)
       player_data.refresh(player, global.players[i])
     end
   end
+end)
+
+-- FORCES
+
+event.on_research_finished(function(e)
+
 end)
 
 -- GUI
@@ -224,7 +231,7 @@ event.on_string_translated(function(e)
     end
     player_table.flags.translating = false
     lookup_tables.transfer(e.player_index, player_table)
-    on_tick_manager.update()
+    event.on_tick(on_tick.handler)
   end
 end)
 

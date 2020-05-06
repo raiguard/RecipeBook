@@ -4,12 +4,12 @@ local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
 local constants = require("scripts.constants")
-local lookup_tables = require("scripts.lookup-tables")
+-- local lookup_tables = require("scripts.lookup-tables")
+local search = require("scripts.search")
+local on_tick = require("scripts.on-tick")
 
-local math_max = math.max
-local string_find = string.find
-local string_gsub = string.gsub
-local string_lower = string.lower
+local math = math
+local string = string
 
 gui.add_handlers{search={
   close_button = {
@@ -52,45 +52,24 @@ gui.add_handlers{search={
     end,
     on_gui_text_changed = function(e)
       local player_table = global.players[e.player_index]
-      local gui_data = player_table.gui.search
-      local show_hidden = player_table.settings.show_hidden
-      local query = string_lower(e.text)
+      if player_table.flags.searching then
+        search.cancel(e.player_index, player_table)
+      end
+
+      local query = string.lower(e.text)
       -- fuzzy search
       if player_table.settings.use_fuzzy_search then
-        query = string_gsub(query, ".", "%1.*")
+        query = string.gsub(query, ".", "%1.*")
       end
-      local category = gui_data.category
-      local objects = global.recipe_book[category]
-      local dictionary = lookup_tables[e.player_index][category]
-      local lookup = dictionary.lookup
-      local sorted_translations = dictionary.sorted_translations
-      local translations = dictionary.translations
-      local results_listbox = gui_data.results_listbox
-      local skip_matching = query == ""
-      local items = {}
-      local i = 0
-      for i1=1,#sorted_translations do
-        local translation = sorted_translations[i1]
-        if skip_matching or string_find(translation, query) then
-          local names = lookup[translation]
-          if names then
-            for i2=1,#names do
-              local name = names[i2]
-              local t = objects[name]
-              -- check conditions
-              if (show_hidden or not t.hidden) then
-                local caption = "[img="..t.sprite_class.."/"..t.prototype_name.."]  "..translations[name] -- get the non-lowercase version
-                i = i + 1
-                items[i] = caption
-              end
-            end
-          end
-        end
+      -- input sanitization
+      for pattern, replacement in pairs(constants.input_sanitizers) do
+        query = string.gsub(query, pattern, replacement)
       end
-      results_listbox.items = items
-      if e.selected_index then
-        results_listbox.scroll_to_item(e.selected_index)
-      end
+
+      player_table.gui.search.query = query
+
+      search.start(e.player_index, player_table)
+      event.on_tick(on_tick.handler)
     end
   },
   results_listbox = {
@@ -193,7 +172,6 @@ function search_gui.open(player, player_table, options)
           {type="list-box", style="rb_listbox_for_keyboard_nav", handlers="search.results_listbox", save_as="results_listbox"},
           {type="frame", style="rb_blurry_frame", mods={visible=false}, save_as="results_cover_frame", children={
             {type="flow", style_mods={horizontally_stretchable=true, vertically_stretchable=true, horizontal_align="center", vertical_align="center"}, children={
-              -- TODO give this an initial value
               {type="label", style="bold_label", save_as="results_cover_label"}
             }}
           }}
@@ -225,6 +203,9 @@ function search_gui.open(player, player_table, options)
 end
 
 function search_gui.close(player, player_table)
+  if player_table.flags.searching then
+    search.cancel(player.index, player_table)
+  end
   gui.update_filters("search", player.index, nil, "remove")
   player_table.gui.search.window.destroy()
   player_table.gui.search = nil
@@ -260,7 +241,7 @@ end
 
 function search_gui.cycle_category(player, player_table)
   local gui_data = player_table.gui.search
-  local next_category_index = math_max((constants.category_to_index[gui_data.category] + 1) % (constants.num_categories + 1), 1)
+  local next_category_index = math.max((constants.category_to_index[gui_data.category] + 1) % (constants.num_categories + 1), 1)
   local next_category = constants.category_by_index[next_category_index]
   gui.handlers.search.category_dropdown.on_gui_selection_state_changed({player_index=player.index, element=gui_data.category_dropdown}, next_category)
   gui_data.category_dropdown.selected_index = next_category_index

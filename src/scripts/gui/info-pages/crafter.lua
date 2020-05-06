@@ -20,6 +20,8 @@ function crafter_gui.create(player, player_table, content_container, name)
   local recipe_translations = lookup_tables[player.index].recipe.translations
   local show_hidden = player_table.settings.show_hidden
 
+  local profiler = game.create_profiler()
+
   -- populate recipes table
   local label = gui_data.recipes_label
   local listbox = gui_data.recipes_listbox
@@ -36,6 +38,9 @@ function crafter_gui.create(player, player_table, content_container, name)
   end
   listbox.items = items
   label.caption = {"rb-gui.craftable-recipes", items_index}
+
+  profiler.stop()
+  game.print(profiler)
 
   -- register handler
   gui.update_filters("crafter.generic_listbox", player.index, {listbox.index})

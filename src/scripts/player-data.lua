@@ -1,10 +1,11 @@
 local player_data = {}
 
+local event = require("__flib__.control.event")
 local translation = require("__flib__.control.translation")
 
 local constants = require("scripts.constants")
 local info_gui = require("scripts.gui.info-base")
-local on_tick_manager = require("scripts.on-tick-manager")
+local on_tick = require("scripts.on-tick")
 local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
 local search_gui = require("scripts.gui.search")
 
@@ -34,7 +35,7 @@ end
 function player_data.start_translations(player_index, player_table)
   player_table.flags.translating = true
   translation.add_requests(player_index, global.translation_data)
-  on_tick_manager.update()
+  event.on_tick(on_tick.handler)
 end
 
 function player_data.update_settings(player, player_table)

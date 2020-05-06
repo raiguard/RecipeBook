@@ -5,7 +5,11 @@ local constants = require("scripts.constants")
 local table_remove = table.remove
 
 function global_data.init()
+  global.flags = {
+    searching = false
+  }
   global.players = {}
+  global.searching_players = {}
 
   global_data.build_recipe_book()
 end
@@ -161,6 +165,10 @@ function global_data.build_recipe_book()
   -- apply to global
   global.recipe_book = recipe_book
   global.translation_data = translation_data
+end
+
+function global_data.update_searching_state()
+  global.flags.searching = #global.searching_players > 0
 end
 
 return global_data

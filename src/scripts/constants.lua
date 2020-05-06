@@ -23,6 +23,19 @@ return {
     technology = {}
   },
   info_guis = {crafter=true, material=true, recipe=true},
+  input_sanitizers = {
+    ["%("] = "%%(",
+    ["%)"] = "%%)",
+    ["%.^[%*]"] = "%%.",
+    ["%+"] = "%%+",
+    ["%-"] = "%%-",
+    ["^[%.]%*"] = "%%*",
+    ["%?"] = "%%?",
+    ["%["] = "%%[",
+    ["%]"] = "%%]",
+    ["%^"] = "%%^",
+    ["%$"] = "%%$"
+  },
   interface_version = 2,
   num_categories = #category_by_index,
   open_fluid_types = {
