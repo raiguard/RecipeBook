@@ -1,5 +1,6 @@
 local search = {}
 
+local constants = require("scripts.constants")
 local lookup_tables = require("scripts.lookup-tables")
 
 --[[
@@ -50,6 +51,7 @@ function search.iterate(e)
     local objects = recipe_book[category]
     -- settings
     local show_hidden = player_table.settings.show_hidden
+    local show_unavailable = player_table.settings.show_unavailable
 
     while i <= iterations do
       i = i + 1
@@ -65,10 +67,15 @@ function search.iterate(e)
                 local t = objects[name]
                 -- check conditions
                 if (show_hidden or not t.hidden) then
-                  -- TODO: check recipe availability in force
-                  local caption = "[img="..t.sprite_class.."/"..t.prototype_name.."]  "..translations[name] -- get the non-lowercase version
-                  output_data.available_size = output_data.available_size + 1
-                  output_data.available[output_data.available_size] = caption
+                  if t.available_to_forces[force_index] then
+                    local caption = "[img="..t.sprite_class.."/"..t.prototype_name.."]  "..translations[name]
+                    output_data.available_size = output_data.available_size + 1
+                    output_data.available[output_data.available_size] = caption
+                  elseif show_unavailable then
+                    local caption = "[color="..constants.warning_red_color.."][img="..t.sprite_class.."/"..t.prototype_name.."]  "..translations[name].."[/color]"
+                    output_data.unavailable_size = output_data.unavailable_size + 1
+                    output_data.unavailable[output_data.unavailable_size] = caption
+                  end
                 end
               end
             end
@@ -85,6 +92,9 @@ function search.iterate(e)
         if next_item then
           add_item(next_item)
           search_data.next_index = item_index + 1
+        elseif search_data.add_table == "available" then
+          search_data.add_table = "unavailable"
+          search_data.next_index = 1
         else
           search_data.state = "finish"
         end
@@ -107,6 +117,7 @@ function search.start(player_index, player_table, query)
   local gui_data = player_table.gui.search
 
   -- set GUI state
+  -- TODO do this on a delay to prevent flickering with a low number of items
   gui_data.results_listbox.clear_items()
   gui_data.results_listbox.visible = false
   gui_data.results_cover_frame.visible = true

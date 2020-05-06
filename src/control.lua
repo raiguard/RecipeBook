@@ -31,7 +31,6 @@ event.on_init(function()
   for i, player in pairs(game.players) do
     player_data.init(player, i)
   end
-  global_data.update_searching_state()
 
   lookup_tables.generate()
 
@@ -58,7 +57,7 @@ end)
 -- FORCES
 
 event.on_research_finished(function(e)
-
+  global_data.update_available_objects(e)
 end)
 
 -- GUI

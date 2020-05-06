@@ -22,10 +22,17 @@ data:extend{
   },
   {
     type = "bool-setting",
+    name = "rb-show-unavailable-objects",
+    setting_type = "runtime-per-user",
+    default_value = true,
+    order = "d"
+  },
+  {
+    type = "bool-setting",
     name = "rb-use-fuzzy-search",
     setting_type = "runtime-per-user",
     default_value = false,
-    order = "d"
+    order = "e"
   },
   {
     type = "string-setting",
@@ -33,6 +40,6 @@ data:extend{
     setting_type = "runtime-per-user",
     default_value = "material",
     allowed_values = {"crafter", "material", "recipe"},
-    order = "e"
+    order = "f"
   }
 }
