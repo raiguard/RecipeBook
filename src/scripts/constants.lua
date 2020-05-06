@@ -4,7 +4,8 @@ local category_by_index = {"crafter", "material", "recipe"}
 
 return {
   blacklisted_recipe_categories = {
-    ["transport-drone-request"] = true
+    ["transport-drone-request"] = true,
+    ["transport-fluid-request"] = true
   },
   category_by_index = category_by_index,
   category_to_index = {crafter=1, material=2, recipe=3},
