@@ -99,7 +99,7 @@ function search.iterate(e)
           search_data.state = "finish"
         end
       elseif search_data.state == "finish" then
-        if search_data.next_index == 1 then
+        if search_data.output.available_size == 0 and search_data.output.unavailable_size == 0 then
           -- no results
           gui_data.results_cover_label.caption = {"rb-gui.no-results"}
         else
