@@ -50,5 +50,6 @@ return {
   },
   open_gui_event = event.generate_id(),
   reopen_source_event = event.generate_id(),
-  warning_red_color = "255,142,142" -- from __core__.prototypes.style
+  -- hidden_font_color = "200, 200, 200",
+  unavailable_font_color = "255, 142, 142"
 }

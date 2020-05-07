@@ -80,7 +80,7 @@ gui.add_handlers{search={
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.search
       if e.keyboard_confirm or gui_data.state ~= "select_result" then
-        local _,_,object_class,object_name = e.element.get_item(e.element.selected_index):find("^%[img=(.-)/(.-)%].*$")
+        local _,_,object_class,object_name = e.element.get_item(e.element.selected_index):find("^.-%[img=(.-)/(.-)%].*$")
         local category = gui_data.category
         if gui_data.category == "material" then
           object_name = {object_class, object_name}

@@ -5,7 +5,7 @@ local constants = require("scripts.constants")
 local string = string
 local table = table
 
-function lookup_tables.add(player_table, dictionary_name, internal_name, translation)
+function lookup_tables.add_lookup(player_table, dictionary_name, internal_name, translation)
   translation = string.lower(translation)
   local tables = player_table.translation_lookup_tables[dictionary_name]
   local lookup = tables.lookup
@@ -15,6 +15,11 @@ function lookup_tables.add(player_table, dictionary_name, internal_name, transla
   else
     lookup[translation] = {internal_name}
   end
+end
+
+function lookup_tables.add_translation(player_table, dictionary_name, translation)
+  translation = string.lower(translation)
+  local tables = player_table.translation_lookup_tables[dictionary_name]
   local sorted_translations = tables.sorted_translations
   sorted_translations[#sorted_translations+1] = translation
 end

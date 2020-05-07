@@ -216,7 +216,13 @@ event.on_string_translated(function(e)
         local internal_name = internal_names[i]
         local result = e.translated and e.result or internal_name
         dictionary[internal_name] = result
-        lookup_tables.add(player_table, dictionary_name, internal_name, result)
+        lookup_tables.add_lookup(player_table, dictionary_name, internal_name, result)
+        if not e.translated then
+          lookup_tables.add_translation(player_table, dictionary_name, result)
+        end
+      end
+      if e.translated then
+        lookup_tables.add_translation(player_table, dictionary_name, e.result)
       end
     end
   end

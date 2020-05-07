@@ -37,16 +37,15 @@ function search.iterate(e)
     local skip_matching = query == ""
     -- iteration data
     local search_data = player_table.search
-    local output_data = search_data.output
+    local sort_data = search_data.sort
+    local items = search_data.items
     local i = 0
-    -- listbox
-    local results_listbox = gui_data.results_listbox
-    local add_item = results_listbox.add_item
     -- lookup tables
     local player_lookup_tables = lookup_tables[player_index][category]
     local lookup = player_lookup_tables.lookup
     local sorted_translations = player_lookup_tables.sorted_translations
     local translations = player_lookup_tables.translations
+    local technology_translations = lookup_tables[player_index].technology.translations
     -- object data
     local objects = recipe_book[category]
     -- settings
@@ -68,13 +67,20 @@ function search.iterate(e)
                 -- check conditions
                 if (show_hidden or not t.hidden) then
                   if t.available_to_forces[force_index] then
-                    local caption = "[img="..t.sprite_class.."/"..t.prototype_name.."]  "..translations[name]
-                    output_data.available_size = output_data.available_size + 1
-                    output_data.available[output_data.available_size] = caption
+                    local caption = "[img="..t.sprite_class.."/"..t.prototype_name.."]  "..(t.hidden and "[H] " or "")..translations[name]
+                    sort_data.available_size = sort_data.available_size + 1
+                    sort_data.available[sort_data.available_size] = caption
                   elseif show_unavailable then
-                    local caption = "[color="..constants.warning_red_color.."][img="..t.sprite_class.."/"..t.prototype_name.."]  "..translations[name].."[/color]"
-                    output_data.unavailable_size = output_data.unavailable_size + 1
-                    output_data.unavailable[output_data.unavailable_size] = caption
+                    local caption ="[color="..constants.unavailable_font_color.."][img="..t.sprite_class.."/"..t.prototype_name.."]  "
+                      ..(t.hidden and "[H] " or "")..translations[name].."[/color]"
+                      -- .."\nUnlocked by:"
+                    -- -- unlocked by
+                    -- local unlocked_by = t.unlocked_by
+                    -- for unlocked_by_index = 1, #unlocked_by do
+                    --   caption = caption.."\n[img=technology/"..unlocked_by[unlocked_by_index].."]  "..technology_translations[unlocked_by[unlocked_by_index]]
+                    -- end
+                    sort_data.unavailable_size = sort_data.unavailable_size + 1
+                    sort_data.unavailable[sort_data.unavailable_size] = caption
                   end
                 end
               end
@@ -82,27 +88,35 @@ function search.iterate(e)
           end
           search_data.next_index = current_index + 1
         else
+          game.print("sort finished")
           search_data.add_table = "available"
           search_data.next_index = 1
           search_data.state = "add"
         end
       elseif search_data.state == "add" then
-        local item_index = search_data.next_index
-        local next_item = output_data[search_data.add_table][item_index]
+        local current_index = search_data.next_index
+        local next_item = sort_data[search_data.add_table][current_index]
+        local item_index = search_data.item_index
         if next_item then
-          add_item(next_item)
-          search_data.next_index = item_index + 1
+          items[item_index] = next_item
+          search_data.item_index = item_index + 1
+          search_data.next_index = current_index + 1
         elseif search_data.add_table == "available" then
           search_data.add_table = "unavailable"
           search_data.next_index = 1
         else
+          game.print("add finished")
           search_data.state = "finish"
         end
       elseif search_data.state == "finish" then
-        if search_data.output.available_size == 0 and search_data.output.unavailable_size == 0 then
+        if search_data.item_index == 1 then
           -- no results
           gui_data.results_cover_label.caption = {"rb-gui.no-results"}
         else
+          -- local profiler = game.create_profiler()
+          gui_data.results_listbox.items = items
+          -- profiler.stop()
+          -- game.print(profiler)
           gui_data.results_listbox.visible = true
           gui_data.results_cover_frame.visible = false
         end
@@ -125,10 +139,14 @@ function search.start(player_index, player_table, query)
 
   -- save iteration data
   player_table.search = {
+    items = {},
+    item_index = 1,
     next_index = 1,
-    output = {
+    sort = {
       available = {},
       available_size = 0,
+      -- hidden = {},
+      -- hidden_size = 0,
       unavailable = {},
       unavailable_size = 0
     },

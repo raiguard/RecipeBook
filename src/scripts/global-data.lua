@@ -172,21 +172,23 @@ function global_data.build_recipe_book()
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
         local recipe_data = recipe_book.recipe[modifier.recipe]
-        recipe_data.unlocked_by[#recipe_data.unlocked_by+1] = name
+        if recipe_data then
+          recipe_data.unlocked_by[#recipe_data.unlocked_by+1] = name
 
-        for _, product in pairs(recipe_data.products) do
-          local product_name = product.name
-          local product_type = product.type
-          -- product
-          local product_data = recipe_book.material[product_type..","..product_name]
-          product_data.unlocked_by[#product_data.unlocked_by+1] = name
-          -- crafter
-          if product.type == "item" then
-            local place_result = item_prototypes[product_name].place_result
-            if place_result then
-              local crafter_data = recipe_book.crafter[place_result.name]
-              if crafter_data then
-                crafter_data.unlocked_by[#crafter_data.unlocked_by+1] = name
+          for _, product in pairs(recipe_data.products) do
+            local product_name = product.name
+            local product_type = product.type
+            -- product
+            local product_data = recipe_book.material[product_type..","..product_name]
+            product_data.unlocked_by[#product_data.unlocked_by+1] = name
+            -- crafter
+            if product.type == "item" then
+              local place_result = item_prototypes[product_name].place_result
+              if place_result then
+                local crafter_data = recipe_book.crafter[place_result.name]
+                if crafter_data then
+                  crafter_data.unlocked_by[#crafter_data.unlocked_by+1] = name
+                end
               end
             end
           end
