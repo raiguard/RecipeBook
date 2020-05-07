@@ -73,12 +73,6 @@ function search.iterate(e)
                   elseif show_unavailable then
                     local caption ="[color="..constants.unavailable_font_color.."][img="..t.sprite_class.."/"..t.prototype_name.."]  "
                       ..(t.hidden and "[H] " or "")..translations[name].."[/color]"
-                      -- .."\nUnlocked by:"
-                    -- -- unlocked by
-                    -- local unlocked_by = t.unlocked_by
-                    -- for unlocked_by_index = 1, #unlocked_by do
-                    --   caption = caption.."\n[img=technology/"..unlocked_by[unlocked_by_index].."]  "..technology_translations[unlocked_by[unlocked_by_index]]
-                    -- end
                     sort_data.unavailable_size = sort_data.unavailable_size + 1
                     sort_data.unavailable[sort_data.unavailable_size] = caption
                   end
@@ -88,7 +82,6 @@ function search.iterate(e)
           end
           search_data.next_index = current_index + 1
         else
-          game.print("sort finished")
           search_data.add_table = "available"
           search_data.next_index = 1
           search_data.state = "add"
@@ -105,7 +98,6 @@ function search.iterate(e)
           search_data.add_table = "unavailable"
           search_data.next_index = 1
         else
-          game.print("add finished")
           search_data.state = "finish"
         end
       elseif search_data.state == "finish" then
@@ -113,10 +105,7 @@ function search.iterate(e)
           -- no results
           gui_data.results_cover_label.caption = {"rb-gui.no-results"}
         else
-          -- local profiler = game.create_profiler()
           gui_data.results_listbox.items = items
-          -- profiler.stop()
-          -- game.print(profiler)
           gui_data.results_listbox.visible = true
           gui_data.results_cover_frame.visible = false
         end
@@ -168,46 +157,3 @@ function search.cancel(player_index, player_table)
 end
 
 return search
-
---[[
-  local player_table = global.players[e.player_index]
-  local gui_data = player_table.gui.search
-  local show_hidden = player_table.settings.show_hidden
-  local query = string_lower(e.text)
-  -- fuzzy search
-  if player_table.settings.use_fuzzy_search then
-    query = string_gsub(query, ".", "%1.*")
-  end
-  local category = gui_data.category
-  local objects = global.recipe_book[category]
-  local dictionary = lookup_tables[e.player_index][category]
-  local lookup = dictionary.lookup
-  local sorted_translations = dictionary.sorted_translations
-  local translations = dictionary.translations
-  local results_listbox = gui_data.results_listbox
-  local skip_matching = query == ""
-  local items = {}
-  local i = 0
-  for i1=1,#sorted_translations do
-    local translation = sorted_translations[i1]
-    if skip_matching or string_find(translation, query) then
-      local names = lookup[translation]
-      if names then
-        for i2=1,#names do
-          local name = names[i2]
-          local t = objects[name]
-          -- check conditions
-          if (show_hidden or not t.hidden) then
-            local caption = "[img="..t.sprite_class.."/"..t.prototype_name.."]  "..translations[name] -- get the non-lowercase version
-            i = i + 1
-            items[i] = caption
-          end
-        end
-      end
-    end
-  end
-  results_listbox.items = items
-  if e.selected_index then
-    results_listbox.scroll_to_item(e.selected_index)
-  end
-]]

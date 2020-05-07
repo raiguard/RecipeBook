@@ -40,7 +40,6 @@ function crafter_gui.create(player, player_table, content_container, name)
   label.caption = {"rb-gui.craftable-recipes", items_index}
 
   profiler.stop()
-  game.print(profiler)
 
   -- register handler
   gui.update_filters("crafter.generic_listbox", player.index, {listbox.index})
