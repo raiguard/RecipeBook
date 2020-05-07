@@ -3,20 +3,6 @@ local search = {}
 local constants = require("scripts.constants")
 local lookup_tables = require("scripts.lookup-tables")
 
---[[
-  GOALS:
-    - Only certain amount of iterations per tick
-    - Iterations should be split between players if multiple are searching concurrently
-  ITERATION:
-    - For every entry in the sorted_translations table:
-      - If the query matches the translation:
-        - Retrieve recipe book data
-        - Check if object is hidden and is show_hidden is enabled
-        - Check if the object is unlocked
-          - If unlocked, add to unlocked results table
-          - If not, add to locked results table
-]]
-
 function search.iterate(e)
   local player_tables = global.players
   local players = global.searching_players
