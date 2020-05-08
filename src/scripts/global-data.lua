@@ -37,7 +37,7 @@ function global_data.build_recipe_book()
   local crafter_prototypes = game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
     {filter="type", type="furnace"},
-    -- TODO rocket silos
+    {filter="type", type="rocket-silo"}
   }
   for name, prototype in pairs(crafter_prototypes) do
     recipe_book.crafter[name] = {
@@ -176,14 +176,36 @@ function global_data.build_recipe_book()
             local product_type = product.type
             -- product
             local product_data = recipe_book.material[product_type..","..product_name]
-            product_data.unlocked_by[#product_data.unlocked_by+1] = name
+            if product_data then
+              -- check if we've already been added here
+              local add = true
+              for _, technology in ipairs(product_data.unlocked_by) do
+                if technology == name then
+                  add = false
+                  break
+                end
+              end
+              if add then
+                product_data.unlocked_by[#product_data.unlocked_by+1] = name
+              end
+            end
             -- crafter
             if product.type == "item" then
               local place_result = item_prototypes[product_name].place_result
               if place_result then
                 local crafter_data = recipe_book.crafter[place_result.name]
                 if crafter_data then
-                  crafter_data.unlocked_by[#crafter_data.unlocked_by+1] = name
+                  -- check if we've already been added here
+                  local add = true
+                  for _, technology in ipairs(crafter_data.unlocked_by) do
+                    if technology == name then
+                      add = false
+                      break
+                    end
+                  end
+                  if add then
+                    crafter_data.unlocked_by[#crafter_data.unlocked_by+1] = name
+                  end
                 end
               end
             end

@@ -29,29 +29,23 @@ gui.add_handlers{recipe={
     end
   },
   technologies_listbox = {
-    on_gui_selection_state_changed = function(e)
-      local _,_,name = e.element.get_item(e.element.selected_index):find("^.*/(.*)%].*$")
-      e.element.selected_index = 0
-      game.get_player(e.player_index).open_technology_gui(name)
-    end
+    on_gui_selection_state_changed = gui.handlers.common.open_technology_from_listbox
   }
 }}
 
 function recipe_gui.create(player, player_table, content_container, name)
   local gui_data = gui.build(content_container, {
-    {type="flow", style_mods={vertical_spacing=8}, direction="vertical", children={
-      {type="flow", style_mods={horizontal_spacing=8}, direction="horizontal", children={
-        gui.templates.listbox_with_label("ingredients"),
-        gui.templates.listbox_with_label("products")
-      }},
-      {type="flow", style_mods={horizontal_spacing=8}, direction="horizontal", children={
-        gui.templates.listbox_with_label("crafters"),
-        gui.templates.listbox_with_label("technologies")
-      }},
-      {type="button", style_mods={horizontally_stretchable=true}, caption={"rb-gui.open-quick-reference"}, mouse_button_filter={"left"},
-        handlers="recipe.quick_reference_button"}
-    }}
-  }, "recipe", player.index)
+    {type="flow", style_mods={horizontal_spacing=8}, direction="horizontal", children={
+      gui.templates.listbox_with_label("ingredients"),
+      gui.templates.listbox_with_label("products")
+    }},
+    {type="flow", style_mods={horizontal_spacing=8}, direction="horizontal", children={
+      gui.templates.listbox_with_label("crafters"),
+      gui.templates.listbox_with_label("technologies")
+    }},
+    {type="button", style_mods={horizontally_stretchable=true}, caption={"rb-gui.open-quick-reference"}, mouse_button_filter={"left"},
+      handlers="recipe.quick_reference_button"}
+  })
 
   -- get data
   local recipe_book = global.recipe_book
@@ -155,7 +149,7 @@ end
 
 function recipe_gui.destroy(player, content_container)
   gui.update_filters("recipe", player.index, nil, "remove")
-  content_container.children[1].destroy()
+  content_container.clear()
 end
 
 return recipe_gui

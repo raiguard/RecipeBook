@@ -49,7 +49,7 @@ end
 
 function crafter_gui.destroy(player, content_container)
   gui.update_filters("crafter", player.index, nil, "remove")
-  content_container.children[1].destroy()
+  content_container.clear()
 end
 
 return crafter_gui

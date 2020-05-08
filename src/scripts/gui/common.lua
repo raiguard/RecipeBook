@@ -57,6 +57,11 @@ gui.add_handlers{
       else
         event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="crafter", object=object_name})
       end
+    end,
+    open_technology_from_listbox = function(e)
+      local _,_,name = e.element.get_item(e.element.selected_index):find("^.*/(.*)%].*$")
+      e.element.selected_index = 0
+      game.get_player(e.player_index).open_technology_gui(name)
     end
   }
 }

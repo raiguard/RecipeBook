@@ -80,7 +80,7 @@ function info_base_gui.open(player, player_table, category, name, source_data)
           {template="pushers.horizontal"}
         }},
         -- content container
-        {type="flow", style_mods={padding=8}, save_as="content_container"}
+        {type="flow", style_mods={padding=8, vertical_spacing=8}, direction="vertical", save_as="content_container"}
       }}
     }}
   })
