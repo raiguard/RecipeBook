@@ -36,8 +36,7 @@ function global_data.build_recipe_book()
   -- iterate crafters
   local crafter_prototypes = game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
-    {filter="type", type="furnace"},
-    {filter="type", type="rocket-silo"}
+    {filter="type", type="furnace"}
   }
   for name, prototype in pairs(crafter_prototypes) do
     recipe_book.crafter[name] = {
@@ -78,69 +77,67 @@ function global_data.build_recipe_book()
   -- iterate recipes
   local recipe_prototypes = game.recipe_prototypes
   for name, prototype in pairs(recipe_prototypes) do
-    if constants.blacklisted_recipe_categories[prototype.category] or #prototype.ingredients == 0 then
-      goto continue
-    end
-    local data = {
-      available_to_forces = {},
-      energy = prototype.energy,
-      hand_craftable = prototype.category == "crafting",
-      hidden = prototype.hidden,
-      made_in = {},
-      prototype_name = name,
-      sprite_class = "recipe",
-      unlocked_by = {}
-    }
-    -- ingredients / products
-    local material_book = recipe_book.material
-    for _, mode in ipairs{"ingredients", "products"} do
-      local materials = prototype[mode]
-      for i=1,#materials do
-        local material = materials[i]
-        -- build amount string, to display probability, [min/max] amount - includes the "x"
-        local amount = material.amount
-        local amount_string = amount and (tostring(amount).."x") or (material.amount_min.."-"..material.amount_max.."x")
-        local probability = material.probability
-        if probability and probability < 1 then
-          amount_string = tostring(probability * 100).."% "..amount_string
+    if #prototype.ingredients > 0 and not constants.blacklisted_recipe_categories[prototype.category] then
+      local data = {
+        available_to_forces = {},
+        energy = prototype.energy,
+        hand_craftable = prototype.category == "crafting",
+        hidden = prototype.hidden,
+        made_in = {},
+        prototype_name = name,
+        sprite_class = "recipe",
+        unlocked_by = {}
+      }
+      -- ingredients / products
+      local material_book = recipe_book.material
+      for _, mode in ipairs{"ingredients", "products"} do
+        local materials = prototype[mode]
+        for i=1,#materials do
+          local material = materials[i]
+          -- build amount string, to display probability, [min/max] amount - includes the "x"
+          local amount = material.amount
+          local amount_string = amount and (tostring(amount).."x") or (material.amount_min.."-"..material.amount_max.."x")
+          local probability = material.probability
+          if probability and probability < 1 then
+            amount_string = tostring(probability * 100).."% "..amount_string
+          end
+          material.amount_string = amount_string
+          -- add hidden flag to table
+          material.hidden = material_book[material.type..","..material.name].hidden
         end
-        material.amount_string = amount_string
-        -- add hidden flag to table
-        material.hidden = material_book[material.type..","..material.name].hidden
+        -- add to data
+        data[mode] = materials
       end
-      -- add to data
-      data[mode] = materials
-    end
-    -- made in
-    local category = prototype.category
-    for crafter_name, crafter_data in pairs(recipe_book.crafter) do
-      if crafter_data.categories[category] then
-        data.made_in[#data.made_in+1] = crafter_name
+      -- made in
+      local category = prototype.category
+      for crafter_name, crafter_data in pairs(recipe_book.crafter) do
+        if crafter_data.categories[category] then
+          data.made_in[#data.made_in+1] = crafter_name
+        end
       end
-    end
-    -- material: ingredient in
-    local ingredients = prototype.ingredients
-    for i=1,#ingredients do
-      local ingredient = ingredients[i]
-      local ingredient_data = recipe_book.material[ingredient.type..","..ingredient.name]
-      if ingredient_data then
-        ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
+      -- material: ingredient in
+      local ingredients = prototype.ingredients
+      for i=1,#ingredients do
+        local ingredient = ingredients[i]
+        local ingredient_data = recipe_book.material[ingredient.type..","..ingredient.name]
+        if ingredient_data then
+          ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
+        end
       end
-    end
-    -- material: product of
-    local products = prototype.products
-    for i=1,#products do
-      local product = products[i]
-      local product_data = recipe_book.material[product.type..","..product.name]
-      if product_data then
-        product_data.product_of[#product_data.product_of+1] = name
+      -- material: product of
+      local products = prototype.products
+      for i=1,#products do
+        local product = products[i]
+        local product_data = recipe_book.material[product.type..","..product.name]
+        if product_data then
+          product_data.product_of[#product_data.product_of+1] = name
+        end
       end
+      -- insert into recipe book
+      recipe_book.recipe[name] = data
+      -- translation data
+      translation_data[#translation_data+1] = {dictionary="recipe", internal=name, localised=prototype.localised_name}
     end
-    -- insert into recipe book
-    recipe_book.recipe[name] = data
-    -- translation data
-    translation_data[#translation_data+1] = {dictionary="recipe", internal=name, localised=prototype.localised_name}
-    ::continue::
   end
 
   -- iterate resources

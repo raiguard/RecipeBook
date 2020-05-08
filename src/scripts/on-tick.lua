@@ -5,7 +5,7 @@ local translation = require("__flib__.control.translation")
 
 local search = require("scripts.search")
 
-function on_tick.handler(e)
+local function handler(e)
   local deregister = true
   if global.__flib.translation.translating_players_count > 0 then
     deregister = false
@@ -24,7 +24,7 @@ function on_tick.update()
   if global.__flib.translation.translating_players_count > 0
     or #global.searching_players > 0
   then
-    event.on_tick(on_tick.handler)
+    event.on_tick(handler)
   else
     event.on_tick(nil)
   end
