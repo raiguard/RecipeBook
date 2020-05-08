@@ -19,8 +19,6 @@ local string_sub = string.sub
 
 -- TODO pyanodon's causes EE items to not be removed
 -- TODO rocket silos as crafters
--- TODO mined_from and unlocked_by for materials
--- TODO unlocked_by for crafters
 
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS

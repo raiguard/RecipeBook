@@ -12,7 +12,9 @@ Date: ????
     - Switched from RaiLuaLib to FLib
     - Search is now spread out over multiple ticks to save performance and allow the addition of more complex features
     - Changing search categories will no longer reset the textfield to blank
+    - Removed crafters as a searchable category and info screen, the utility offered by them was minimal
     - Transport drones recipes are now excluded from the Recipe Book
+    - Recipes that have no ingredients are excluded from the Recipe Book
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.3
 Date: 2020-04-12

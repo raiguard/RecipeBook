@@ -1,6 +1,6 @@
 local event = require("__flib__.control.event")
 
-local category_by_index = {"crafter", "material", "recipe"}
+local category_by_index = {"material", "recipe"}
 
 -- TODO dynamically generate translation tables from list of categories
 
@@ -10,7 +10,7 @@ return {
     ["transport-fluid-request"] = true
   },
   category_by_index = category_by_index,
-  category_to_index = {crafter=1, material=2, recipe=3},
+  category_to_index = {material=1, recipe=2},
   empty_lookup_tables = {
     crafter = {lookup={}, sorted_translations={}},
     material = {lookup={}, sorted_translations={}},
@@ -27,7 +27,7 @@ return {
     resource = {},
     technology = {}
   },
-  info_guis = {crafter=true, material=true, recipe=true},
+  info_guis = {material=true, recipe=true},
   input_sanitizers = {
     ["%("] = "%%(",
     ["%)"] = "%%)",

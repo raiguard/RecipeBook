@@ -160,7 +160,7 @@ function search_gui.open(player, player_table, options)
         {type="frame", style="subheader_frame", children={
           {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
           {template="pushers.horizontal"},
-          {type="drop-down", items={{"rb-gui.crafter"}, {"rb-gui.material"}, {"rb-gui.recipe"}}, selected_index=constants.category_to_index[category],
+          {type="drop-down", items={{"rb-gui.material"}, {"rb-gui.recipe"}}, selected_index=constants.category_to_index[category],
             handlers="search.category_dropdown", save_as="category_dropdown"}
         }},
         -- search bar

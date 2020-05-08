@@ -39,7 +39,7 @@ data:extend{
     name = "rb-default-search-category",
     setting_type = "runtime-per-user",
     default_value = "material",
-    allowed_values = {"crafter", "material", "recipe"},
+    allowed_values = {"material", "recipe"},
     order = "f"
   }
 }

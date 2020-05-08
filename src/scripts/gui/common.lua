@@ -51,12 +51,7 @@ gui.add_handlers{
       end
     end,
     open_crafter_from_listbox = function(e)
-      local _,_,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=.-/(.-)%].*$")
-      if object_name == "character" then
-        e.element.selected_index = 0
-      else
-        event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="crafter", object=object_name})
-      end
+      e.element.selected_index = 0
     end,
     open_technology_from_listbox = function(e)
       local _,_,name = e.element.get_item(e.element.selected_index):find("^.*/(.*)%].*$")
