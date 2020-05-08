@@ -157,36 +157,38 @@ function global_data.build_recipe_book()
 
   -- iterate technologies
   for name, prototype in pairs(game.technology_prototypes) do
-    for _, modifier in ipairs(prototype.effects) do
-      if modifier.type == "unlock-recipe" then
-        local recipe_data = recipe_book.recipe[modifier.recipe]
-        if recipe_data then
-          recipe_data.unlocked_by[#recipe_data.unlocked_by+1] = name
+    if prototype.enabled then
+      for _, modifier in ipairs(prototype.effects) do
+        if modifier.type == "unlock-recipe" then
+          local recipe_data = recipe_book.recipe[modifier.recipe]
+          if recipe_data then
+            recipe_data.unlocked_by[#recipe_data.unlocked_by+1] = name
 
-          for _, product in pairs(recipe_data.products) do
-            local product_name = product.name
-            local product_type = product.type
-            -- product
-            local product_data = recipe_book.material[product_type..","..product_name]
-            if product_data then
-              -- check if we've already been added here
-              local add = true
-              for _, technology in ipairs(product_data.unlocked_by) do
-                if technology == name then
-                  add = false
-                  break
+            for _, product in pairs(recipe_data.products) do
+              local product_name = product.name
+              local product_type = product.type
+              -- product
+              local product_data = recipe_book.material[product_type..","..product_name]
+              if product_data then
+                -- check if we've already been added here
+                local add = true
+                for _, technology in ipairs(product_data.unlocked_by) do
+                  if technology == name then
+                    add = false
+                    break
+                  end
                 end
-              end
-              if add then
-                product_data.unlocked_by[#product_data.unlocked_by+1] = name
+                if add then
+                  product_data.unlocked_by[#product_data.unlocked_by+1] = name
+                end
               end
             end
           end
         end
       end
+      recipe_book.technology[name] = {hidden=prototype.hidden}
+      translation_data[#translation_data+1] = {dictionary="technology", internal=prototype.name, localised=prototype.localised_name}
     end
-    recipe_book.technology[name] = {hidden=prototype.hidden}
-    translation_data[#translation_data+1] = {dictionary="technology", internal=prototype.name, localised=prototype.localised_name}
   end
 
   -- remove all materials that aren't used in recipes
