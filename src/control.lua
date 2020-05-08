@@ -44,7 +44,7 @@ end)
 
 event.on_load(function()
   lookup_tables.generate()
-  event.on_tick(on_tick.handler)
+  on_tick.update()
 
   gui.build_lookup_tables()
 end)
@@ -247,7 +247,6 @@ event.on_string_translated(function(e)
     end
     player_table.flags.translating = false
     lookup_tables.transfer(e.player_index, player_table)
-    event.on_tick(on_tick.handler)
   end
 end)
 

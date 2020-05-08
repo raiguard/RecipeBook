@@ -12,7 +12,6 @@ function global_data.init()
 
   for _, force in pairs(game.forces) do
     global_data.check_force_recipes(force)
-    -- global_data.check_force_technologies(force)
   end
 end
 
@@ -37,7 +36,8 @@ function global_data.build_recipe_book()
   -- iterate crafters
   local crafter_prototypes = game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
-    {filter="type", type="furnace"}
+    {filter="type", type="furnace"},
+    -- TODO rocket silos
   }
   for name, prototype in pairs(crafter_prototypes) do
     recipe_book.crafter[name] = {
@@ -68,6 +68,7 @@ function global_data.build_recipe_book()
         available_to_forces = {},
         hidden = hidden,
         ingredient_in = {},
+        mined_from = {},
         product_of = {},
         prototype_name = name,
         sprite_class = class,
@@ -145,6 +146,21 @@ function global_data.build_recipe_book()
     -- translation data
     translation_data[#translation_data+1] = {dictionary="recipe", internal=name, localised=prototype.localised_name}
     ::continue::
+  end
+
+  -- iterate resources
+  local resource_prototypes = game.get_filtered_entity_prototypes{{filter="type", type="resource"}}
+  for name, prototype in pairs(resource_prototypes) do
+    local products = prototype.mineable_properties.products
+    if products then
+      for _, product in ipairs(products) do
+        local product_data = recipe_book.material[product.type..","..product.name]
+        if product_data then
+          product_data.mined_from[#product_data.mined_from+1] = name
+        end
+      end
+    end
+    translation_data[#translation_data+1] = {dictionary="resource", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate technologies

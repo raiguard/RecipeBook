@@ -68,7 +68,7 @@ gui.add_handlers{search={
       player_table.gui.search.query = query
 
       search.start(e.player_index, player_table, e.selected_index)
-      event.on_tick(on_tick.handler)
+      on_tick.update()
     end
   },
   results_listbox = {

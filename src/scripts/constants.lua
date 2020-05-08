@@ -2,6 +2,8 @@ local event = require("__flib__.control.event")
 
 local category_by_index = {"crafter", "material", "recipe"}
 
+-- TODO dynamically generate translation tables from list of categories
+
 return {
   blacklisted_recipe_categories = {
     ["transport-drone-request"] = true,
@@ -14,6 +16,7 @@ return {
     material = {lookup={}, sorted_translations={}},
     other = {lookup={}, sorted_translations={}},
     recipe = {lookup={}, sorted_translations={}},
+    resource = {lookup={}, sorted_translations={}},
     technology = {lookup={}, sorted_translations={}}
   },
   empty_translation_tables = {
@@ -21,6 +24,7 @@ return {
     material = {},
     other = {},
     recipe = {},
+    resource = {},
     technology = {}
   },
   info_guis = {crafter=true, material=true, recipe=true},

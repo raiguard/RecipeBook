@@ -35,7 +35,7 @@ end
 function player_data.start_translations(player_index, player_table)
   player_table.flags.translating = true
   translation.add_requests(player_index, global.translation_data)
-  event.on_tick(on_tick.handler)
+  on_tick.update()
 end
 
 function player_data.update_settings(player, player_table)
