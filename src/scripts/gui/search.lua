@@ -4,7 +4,6 @@ local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 
 local constants = require("scripts.constants")
--- local lookup_tables = require("scripts.lookup-tables")
 local search = require("scripts.search")
 local on_tick = require("scripts.on-tick")
 
@@ -68,7 +67,7 @@ gui.add_handlers{search={
 
       player_table.gui.search.query = query
 
-      search.start(e.player_index, player_table)
+      search.start(e.player_index, player_table, e.selected_index)
       event.on_tick(on_tick.handler)
     end
   },

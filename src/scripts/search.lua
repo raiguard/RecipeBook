@@ -3,7 +3,7 @@ local search = {}
 local constants = require("scripts.constants")
 local lookup_tables = require("scripts.lookup-tables")
 
-function search.iterate(e)
+function search.iterate()
   local player_tables = global.players
   local players = global.searching_players
   local num_searching_players = #players
@@ -31,7 +31,6 @@ function search.iterate(e)
     local lookup = player_lookup_tables.lookup
     local sorted_translations = player_lookup_tables.sorted_translations
     local translations = player_lookup_tables.translations
-    local technology_translations = lookup_tables[player_index].technology.translations
     -- object data
     local objects = recipe_book[category]
     -- settings
@@ -52,7 +51,7 @@ function search.iterate(e)
                 local t = objects[name]
                 -- check conditions
                 if (show_hidden or not t.hidden) then
-                  if t.available_to_forces[force_index] then
+                  if t.available_to_all_forces or t.available_to_forces[force_index] then
                     local caption = "[img="..t.sprite_class.."/"..t.prototype_name.."]  "..(t.hidden and "[H] " or "")..translations[name]
                     sort_data.available_size = sort_data.available_size + 1
                     sort_data.available[sort_data.available_size] = caption
@@ -92,6 +91,10 @@ function search.iterate(e)
           gui_data.results_cover_label.caption = {"rb-gui.no-results"}
         else
           gui_data.results_listbox.items = items
+          local selected_index = search_data.selected_index
+          if selected_index and selected_index < search_data.item_index then
+            gui_data.results_listbox.scroll_to_item(selected_index)
+          end
           gui_data.results_listbox.visible = true
           gui_data.results_cover_frame.visible = false
         end
@@ -102,7 +105,7 @@ function search.iterate(e)
   end
 end
 
-function search.start(player_index, player_table, query)
+function search.start(player_index, player_table, selected_index)
   local gui_data = player_table.gui.search
 
   -- set GUI state
@@ -125,7 +128,7 @@ function search.start(player_index, player_table, query)
       unavailable = {},
       unavailable_size = 0
     },
-    query = query,
+    selected_index = selected_index,
     state = "sort"
   }
 

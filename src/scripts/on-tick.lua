@@ -13,7 +13,7 @@ function on_tick.handler(e)
   end
   if #global.searching_players > 0 then
     deregister = false
-    search.iterate(e)
+    search.iterate()
   end
   if deregister then
     event.on_tick(nil)

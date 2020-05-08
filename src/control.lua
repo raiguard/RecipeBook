@@ -17,6 +17,11 @@ local search_gui = require("scripts.gui.search")
 
 local string_sub = string.sub
 
+-- TODO pyanodon's causes EE items to not be removed
+-- TODO rocket silos as crafters
+-- TODO mined_from and unlocked_by for materials
+-- TODO unlocked_by for crafters
+
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 -- on_tick's handler is in scripts.on-tick
@@ -57,7 +62,7 @@ end)
 -- FORCES
 
 event.on_research_finished(function(e)
-  global_data.update_available_objects(e)
+  global_data.update_available_objects(e.research)
 end)
 
 -- GUI
