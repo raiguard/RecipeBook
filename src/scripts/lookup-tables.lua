@@ -49,23 +49,28 @@ function lookup_tables.generate()
       for dictionary_name, t in pairs(tables) do
         local lookup = {}
         local sorted_translations = {}
-        local translations = player_table.translations[dictionary_name]
-        local i = 0
-        for internal, translation in pairs(translations) do
-          translation = string.lower(translation)
-          local translation_lookup = lookup[translation]
-          if translation_lookup then
-            translation_lookup[#translation_lookup+1] = internal
-          else
-            lookup[translation] = {internal}
+        local player_translations = player_table.translations
+        if player_translations then
+          local translations = player_translations[dictionary_name]
+          if translations then
+            local i = 0
+            for internal, translation in pairs(translations) do
+              translation = string.lower(translation)
+              local translation_lookup = lookup[translation]
+              if translation_lookup then
+                translation_lookup[#translation_lookup+1] = internal
+              else
+                lookup[translation] = {internal}
+              end
+              i = i + 1
+              sorted_translations[i] = translation
+            end
+            table.sort(sorted_translations)
+            t.lookup = lookup
+            t.sorted_translations = sorted_translations
+            t.translations = player_table.translations[dictionary_name]
           end
-          i = i + 1
-          sorted_translations[i] = translation
         end
-        table.sort(sorted_translations)
-        t.lookup = lookup
-        t.sorted_translations = sorted_translations
-        t.translations = player_table.translations[dictionary_name]
       end
       lookup_tables[player_index] = tables
     end

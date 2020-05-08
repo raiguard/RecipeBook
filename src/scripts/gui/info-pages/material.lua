@@ -2,6 +2,7 @@ local material_gui = {}
 
 local gui = require("__flib__.control.gui")
 
+local constants = require("scripts.constants")
 local lookup_tables = require("scripts.lookup-tables")
 
 local math_max = math.max
@@ -11,6 +12,9 @@ local string_gsub = string.gsub
 gui.add_handlers{material={
   generic_listbox = {
     on_gui_selection_state_changed = gui.handlers.common.generic_open_from_listbox
+  },
+  mined_from_listbox = {
+    on_gui_selection_state_changed = gui.handlers.common.do_nothing_listbox
   },
   technology_listbox = {
     on_gui_selection_state_changed = gui.handlers.common.open_technology_from_listbox
@@ -30,14 +34,18 @@ function material_gui.create(player, player_table, content_container, name)
   })
 
   -- set up data
-  local material_data = global.recipe_book.material[name]
+  local force_index = player.force.index
+  local recipe_book = global.recipe_book
+  local technologies = recipe_book.technology
+  local material_data = recipe_book.material[name]
   local player_lookup_tables = lookup_tables[player.index]
   local recipe_translations = player_lookup_tables.recipe.translations
   local recipes = global.recipe_book.recipe
   local resource_translations = player_lookup_tables.resource.translations
-  local show_hidden = player_table.settings.show_hidden
-  local technology_translations = player_lookup_tables.technology.translations
   local rows = 0
+  local show_hidden = player_table.settings.show_hidden
+  local show_unavailable = player_table.settings.show_unavailable
+  local technology_translations = player_lookup_tables.technology.translations
 
   -- recipe tables
   for _, mode in ipairs{"ingredient_in", "product_of"} do
@@ -48,10 +56,16 @@ function material_gui.create(player, player_table, content_container, name)
     local items_index = 0
     for ri=1,#recipe_list do
       local recipe_name = recipe_list[ri]
-      local recipe = recipes[recipe_name]
-      if show_hidden or not recipe.hidden then
-        items_index = items_index + 1
-        items[items_index] = "[img=recipe/"..recipe_name.."]  "..(recipe_translations[recipe_name])
+      local recipe_data = recipes[recipe_name]
+      if show_hidden or not recipe_data.hidden then
+        if recipe_data.available_to_all_forces or recipe_data.available_to_forces[force_index] then
+          items_index = items_index + 1
+          items[items_index] = "[img=recipe/"..recipe_name.."]  "..(recipe_data.hidden and "[H] " or "")..recipe_translations[recipe_name]
+        elseif show_unavailable then
+          items_index = items_index + 1
+          items[items_index] = "[color="..constants.unavailable_font_color.."][img=recipe/"..recipe_name.."]  "..(recipe_data.hidden and "[H] " or "")
+            ..recipe_translations[recipe_name].."[/color]"
+        end
       end
     end
     listbox.items = items
@@ -82,7 +96,6 @@ function material_gui.create(player, player_table, content_container, name)
         items[items_index] = "[img=entity/"..resource_name.."]  "..(resource_translations[resource_name])
       end
       listbox.items = items
-      listbox.ignored_by_interaction = true -- no actions when clicking resources
       label.caption = {"rb-gui.mined-from", items_index}
       rows = math_max(rows, math_min(6, items_index))
     end
@@ -96,8 +109,15 @@ function material_gui.create(player, player_table, content_container, name)
       local items_index = 0
       for ri=1,#technologies_list do
         local technology_name = technologies_list[ri]
-        items_index = items_index + 1
-        items[items_index] = "[img=technology/"..technology_name.."]  "..(technology_translations[technology_name])
+        local technology_data = technologies[technology_name]
+        if technology_data.researched_forces[force_index] then
+          items_index = items_index + 1
+          items[items_index] = "[img=technology/"..technology_name.."]  "..(technology_translations[technology_name])
+        else
+          items_index = items_index + 1
+          items[items_index] = "[color="..constants.unavailable_font_color.."][img=technology/"..technology_name.."]  "
+            ..(technology_translations[technology_name]).."[/color]"
+        end
       end
       listbox.items = items
       label.caption = {"rb-gui.unlocked-by", items_index}
@@ -109,6 +129,7 @@ function material_gui.create(player, player_table, content_container, name)
     gui_data.mined_from_frame.style.height = height
     gui_data.unlocked_by_frame.style.height = height
 
+    gui.update_filters("material.mined_from_listbox", player.index, {gui_data.mined_from_listbox.index}, "add")
     gui.update_filters("material.technology_listbox", player.index, {gui_data.unlocked_by_listbox.index}, "add")
   else
     gui_data.lower_flow.destroy()

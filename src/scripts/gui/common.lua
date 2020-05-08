@@ -38,7 +38,7 @@ gui.add_templates{
 gui.add_handlers{
   common={
     generic_open_from_listbox = function(e)
-      local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), "^%[img=(.-)/(.-)%].*$")
+      local _,_,category,object_name = string_find(e.element.get_item(e.element.selected_index), "^.-%[img=(.-)/(.-)%].*$")
       event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type=category, object=object_name})
     end,
     open_material_from_listbox = function(e)
@@ -46,15 +46,15 @@ gui.add_handlers{
       if string_sub(selected_item, 1, 1) == " " then
         e.element.selected_index = 0
       else
-        local _,_,object_class,object_name = string_find(selected_item, "^%[img=(.-)/(.-)%].*$")
+        local _,_,object_class,object_name = string_find(selected_item, "^.-%[img=(.-)/(.-)%].*$")
         event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={object_class, object_name}})
       end
     end,
-    open_crafter_from_listbox = function(e)
+    do_nothing_listbox = function(e)
       e.element.selected_index = 0
     end,
     open_technology_from_listbox = function(e)
-      local _,_,name = e.element.get_item(e.element.selected_index):find("^.*/(.*)%].*$")
+      local _,_,name = e.element.get_item(e.element.selected_index):find("^.-%[img=.-/(.-)%].*$")
       e.element.selected_index = 0
       game.get_player(e.player_index).open_technology_gui(name)
     end

@@ -123,8 +123,6 @@ function search.start(player_index, player_table, selected_index)
     sort = {
       available = {},
       available_size = 0,
-      -- hidden = {},
-      -- hidden_size = 0,
       unavailable = {},
       unavailable_size = 0
     },

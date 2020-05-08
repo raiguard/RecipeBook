@@ -1,6 +1,5 @@
 local player_data = {}
 
-local event = require("__flib__.control.event")
 local translation = require("__flib__.control.translation")
 
 local constants = require("scripts.constants")
@@ -26,7 +25,7 @@ function player_data.init(player, index)
       recipe_quick_reference = {}
     },
     translation_lookup_tables = nil,
-    translations = nil
+    translations = {}
   }
   global.players[index] = player_table
   player_data.refresh(player, global.players[index])
