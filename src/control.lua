@@ -59,7 +59,13 @@ event.on_configuration_changed(function(e)
   end
 end)
 
--- FORCES
+-- FORCE
+
+event.on_force_created(function(e)
+  global_data.check_force_recipes(e.force)
+end)
+
+-- TODO remove force data when deleted (needs a new event)
 
 event.on_research_finished(function(e)
   global_data.update_available_objects(e.research)

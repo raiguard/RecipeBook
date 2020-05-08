@@ -9,6 +9,11 @@ function global_data.init()
   global.searching_players = {}
 
   global_data.build_recipe_book()
+
+  for _, force in pairs(game.forces) do
+    global_data.check_force_recipes(force)
+    -- global_data.check_force_technologies(force)
+  end
 end
 
 function global_data.build_recipe_book()
@@ -135,31 +140,6 @@ function global_data.build_recipe_book()
         product_data.product_of[#product_data.product_of+1] = name
       end
     end
-    -- initial availability
-    for force_index, recipes in pairs(forces) do
-      local recipe = recipes[name]
-      if recipe.enabled then
-        data.available_to_forces[force_index] = true
-        -- availability
-        for _, product in pairs(recipe.products) do
-          local product_name = product.name
-          local product_type = product.type
-          -- product
-          local product_data = recipe_book.material[product_type..","..product_name]
-          product_data.available_to_forces[force_index] = true
-          -- crafter
-          if product.type == "item" then
-            local place_result = item_prototypes[product_name].place_result
-            if place_result then
-              local crafter_data = recipe_book.crafter[place_result.name]
-              if crafter_data then
-                crafter_data.available_to_forces[force_index] = true
-              end
-            end
-          end
-        end
-      end
-    end
     -- insert into recipe book
     recipe_book.recipe[name] = data
     -- translation data
@@ -211,7 +191,6 @@ function global_data.build_recipe_book()
           log("Removing material ["..t.internal.."], which is not used in any recipes")
           materials[t.internal] = nil
           table_remove(translations, i)
-        -- TODO don't assume, check resources instead
         elseif #data.unlocked_by == 0 then
           -- set unlocked by default
           log("Material ["..t.internal.."] has no technologies to unlock it, setting to unlocked by default")
@@ -227,6 +206,27 @@ function global_data.build_recipe_book()
   global.translation_data = translation_data
 end
 
+local function set_recipe_available(force_index, recipe_data, recipe_book, item_prototypes)
+  recipe_data.available_to_forces[force_index] = true
+  for _, product in ipairs(recipe_data.products) do
+    -- product
+    local product_data = recipe_book.material[product.type..","..product.name]
+    if product_data and product_data.available_to_forces then
+      product_data.available_to_forces[force_index] = true
+    end
+    -- crafter
+    if product.type == "item" then
+      local place_result = item_prototypes[product.name].place_result
+      if place_result then
+        local crafter_data = recipe_book.crafter[place_result.name]
+        if crafter_data then
+          crafter_data.available_to_forces[force_index] = true
+        end
+      end
+    end
+  end
+end
+
 function global_data.update_available_objects(technology)
   local force_index = technology.force.index
   local item_prototypes = game.item_prototypes
@@ -234,25 +234,22 @@ function global_data.update_available_objects(technology)
   for _, effect in ipairs(technology.effects) do
     if effect.type == "unlock-recipe" then
       local recipe_data = recipe_book.recipe[effect.recipe]
+      if recipe_data and not recipe_data.available_to_forces[force_index] then
+        set_recipe_available(force_index, recipe_data, recipe_book, item_prototypes)
+      end
+    end
+  end
+end
+
+function global_data.check_force_recipes(force)
+  local item_prototypes = game.item_prototypes
+  local recipe_book = global.recipe_book
+  local force_index = force.index
+  for name, recipe in pairs(force.recipes) do
+    if recipe.enabled then
+      local recipe_data = recipe_book.recipe[name]
       if recipe_data then
-        recipe_data.available_to_forces[force_index] = true
-        for _, product in ipairs(recipe_data.products) do
-          -- product
-          local product_data = recipe_book.material[product.type..","..product.name]
-          if product_data then
-            product_data.available_to_forces[force_index] = true
-          end
-          -- crafter
-          if product.type == "item" then
-            local place_result = item_prototypes[product.name].place_result
-            if place_result then
-              local crafter_data = recipe_book.crafter[place_result.name]
-              if crafter_data then
-                crafter_data.available_to_forces[force_index] = true
-              end
-            end
-          end
-        end
+        set_recipe_available(force_index, recipe_data, recipe_book, item_prototypes)
       end
     end
   end
