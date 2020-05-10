@@ -1,6 +1,6 @@
 local material_gui = {}
 
-local gui = require("__flib__.control.gui")
+local gui = require("__flib__.gui")
 
 local constants = require("scripts.constants")
 local lookup_tables = require("scripts.lookup-tables")

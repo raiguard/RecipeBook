@@ -1,7 +1,7 @@
 local on_tick = {}
 
-local event = require("__flib__.control.event")
-local translation = require("__flib__.control.translation")
+local event = require("__flib__.event")
+local translation = require("__flib__.translation")
 
 local search = require("scripts.search")
 

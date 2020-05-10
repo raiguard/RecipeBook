@@ -1,7 +1,7 @@
 local info_base_gui = {}
 
-local event = require("__flib__.control.event")
-local gui = require("__flib__.control.gui")
+local event = require("__flib__.event")
+local gui = require("__flib__.gui")
 
 local constants = require("scripts.constants")
 local lookup_tables = require("scripts.lookup-tables")

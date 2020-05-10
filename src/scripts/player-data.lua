@@ -1,6 +1,6 @@
 local player_data = {}
 
-local translation = require("__flib__.control.translation")
+local translation = require("__flib__.translation")
 
 local constants = require("scripts.constants")
 local info_gui = require("scripts.gui.info-base")

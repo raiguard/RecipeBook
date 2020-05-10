@@ -1,4 +1,4 @@
-local event = require("__flib__.control.event")
+local event = require("__flib__.event")
 
 local category_by_index = {"material", "recipe"}
 

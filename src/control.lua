@@ -1,7 +1,7 @@
-local event = require("__flib__.control.event")
-local gui = require("__flib__.control.gui")
-local migration = require("__flib__.control.migration")
-local translation = require("__flib__.control.translation")
+local event = require("__flib__.event")
+local gui = require("__flib__.gui")
+local migration = require("__flib__.migration")
+local translation = require("__flib__.translation")
 
 require("scripts.gui.common")
 
