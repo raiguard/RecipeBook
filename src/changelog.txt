@@ -4,8 +4,8 @@ Date: ????
   Features:
     - Added keyboard shortcuts for changing categories in the search GUI
     - The shortcut button properly toggles the search GUI open/closed, instead of just opening it
-    - Hidden objects are now indicated in the search results
-    - Unavailable objects are colored red in the search results
+    - Hidden objects are now indicated with an [H] moniker
+    - Unavailable (unresearched) objects are colored red
     - Added an option to hide unavailable objects
   Changes:
     - Refactored mod structure to improve performance and simplicity
