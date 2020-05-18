@@ -6,6 +6,8 @@ local category_by_index = {"material", "recipe"}
 
 return {
   blacklisted_recipe_categories = {
+    -- transport drones
+    ["fluid-depot"] = true,
     ["transport-drone-request"] = true,
     ["transport-fluid-request"] = true
   },
