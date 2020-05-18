@@ -44,10 +44,7 @@ return {
 
     global.__lualib = nil
 
-    global.search = {
-      players = {},
-      searching_players_count = 0
-    }
+    global.searching_players = {}
 
     for i in pairs(game.players) do
       local player_table = global.players[i]
