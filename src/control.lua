@@ -43,7 +43,9 @@ end)
 
 event.on_load(function()
   lookup_tables.generate()
-  on_tick.update()
+  if global.__flib then
+    on_tick.update()
+  end
 
   gui.build_lookup_tables()
 end)
