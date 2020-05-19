@@ -10,6 +10,8 @@ local migrations = require("scripts.migrations")
 local on_tick = require("scripts.on-tick")
 local player_data = require("scripts.player-data")
 
+local base_gui = require("scripts.gui.base")
+
 local string_sub = string.sub
 
 -- TODO pyanodon's causes EE items to not be removed
@@ -144,39 +146,43 @@ end)
 -- INTERFACE
 
 event.register(constants.open_gui_event, function(e)
-  -- local player = game.get_player(e.player_index)
-  -- local player_table = global.players[e.player_index]
-  -- local gui_type = e.gui_type
-  -- -- protected open
-  -- if player_table.flags.can_open_gui then
-  --   -- check for existing GUI
-  --   if gui_type == "search" then
-  --     -- don"t do anything if it"s already open
-  --     if e.toggle then
-  --       search_gui.toggle(player, player_table)
-  --     elseif not player_table.gui.search then
-  --       search_gui.open(player, player_table)
-  --     end
-  --   elseif constants.category_to_index[gui_type] then
-  --     if gui_type == "material" then
-  --       if type(e.object) ~= "table" then
-  --         error("Invalid material object, it must be a table!")
-  --       end
-  --       e.object = e.object[1]..","..e.object[2]
-  --     end
-  --     info_gui.open_or_update(player, player_table, gui_type, e.object, e.source_data)
-  --   elseif gui_type == "recipe_quick_reference" then
-  --     if not player_table.gui.recipe_quick_reference[e.object] then
-  --       recipe_quick_reference_gui.open(player, player_table, e.object)
-  --     end
-  --   else
-  --     error("["..gui_type.."] is not a valid GUI type!")
-  --   end
-  -- else
-  --   -- set flag and tell the player that they cannot open it
-  --   player_table.flags.tried_to_open_gui = true
-  --   player.print{"rb-message.translation-not-finished"}
-  -- end
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local gui_type = e.gui_type
+  -- protected open
+  if player_table.flags.can_open_gui then
+    if gui_type == "search" then
+      base_gui.create(player, player_table)
+    end
+
+    -- -- check for existing GUI
+    -- if gui_type == "search" then
+    --   -- don"t do anything if it"s already open
+    --   if e.toggle then
+    --     search_gui.toggle(player, player_table)
+    --   elseif not player_table.gui.search then
+    --     search_gui.open(player, player_table)
+    --   end
+    -- elseif constants.category_to_index[gui_type] then
+    --   if gui_type == "material" then
+    --     if type(e.object) ~= "table" then
+    --       error("Invalid material object, it must be a table!")
+    --     end
+    --     e.object = e.object[1]..","..e.object[2]
+    --   end
+    --   info_gui.open_or_update(player, player_table, gui_type, e.object, e.source_data)
+    -- elseif gui_type == "recipe_quick_reference" then
+    --   if not player_table.gui.recipe_quick_reference[e.object] then
+    --     recipe_quick_reference_gui.open(player, player_table, e.object)
+    --   end
+    -- else
+    --   error("["..gui_type.."] is not a valid GUI type!")
+    -- end
+  else
+    -- set flag and tell the player that they cannot open it
+    player_table.flags.tried_to_open_gui = true
+    player.print{"rb-message.translations-not-finished"}
+  end
 end)
 
 event.register(constants.reopen_source_event, function(e)
@@ -243,7 +249,7 @@ event.on_string_translated(function(e)
     player_table.flags.can_open_gui = true
     if player_table.flags.tried_to_open_gui then
       player_table.flags.tried_to_open_gui = false
-      player.print{"rb-message.translation-finished"}
+      player.print{"rb-message.translations-finished"}
     end
     player_table.flags.translating = false
     lookup_tables.transfer(e.player_index, player_table)

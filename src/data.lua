@@ -39,6 +39,7 @@ data:extend{
   -- shortcut
   {
     type = "shortcut",
+    -- TODO rename to rb-toggle-gui
     name = "rb-toggle-search",
     action = "lua",
     icon = mipped_icon(nil, {0,0}, "__RecipeBook__/graphics/search-shortcut.png", 32, 2),
@@ -49,14 +50,14 @@ data:extend{
     associated_control_input = "rb-toggle-search"
   },
   -- sprites
-  mipped_icon("rb_nav_backward", {0,0}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_backward_dark", {48,0}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_forward", {0,32}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_forward_dark", {48,32}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_open_info", {0,64}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_open_info_dark", {48,64}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_search", {0,96}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_search_dark", {48,96}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2)
+  mipped_icon("rb_close_black", {0,0}, "__RecipeBook__/graphics/frame-action-icons.png", 40, 2),
+  mipped_icon("rb_close_white", {60,0}, "__RecipeBook__/graphics/frame-action-icons.png", 40, 2),
+  mipped_icon("rb_pin_black", {0,40}, "__RecipeBook__/graphics/frame-action-icons.png", 40, 2),
+  mipped_icon("rb_pin_white", {60,40}, "__RecipeBook__/graphics/frame-action-icons.png", 40, 2),
+  mipped_icon("rb_nav_forward_black", {0,80}, "__RecipeBook__/graphics/frame-action-icons.png", 40, 2),
+  mipped_icon("rb_nav_forward_white", {60,80}, "__RecipeBook__/graphics/frame-action-icons.png", 40, 2),
+  mipped_icon("rb_nav_backward_black", {0,120}, "__RecipeBook__/graphics/frame-action-icons.png", 40, 2),
+  mipped_icon("rb_nav_backward_white", {60,120}, "__RecipeBook__/graphics/frame-action-icons.png", 40, 2),
 }
 
 local styles = data.raw["gui-style"].default
@@ -71,6 +72,23 @@ styles.rb_frame_action_button = {
   top_margin = 2
 }
 
+styles.rb_active_frame_action_button = {
+  type = "button_style",
+  parent = "rb_frame_action_button",
+  default_graphical_set = {
+    base = {position = {272, 169}, corner_size = 8},
+    shadow = {position = {440, 24}, corner_size = 8, draw_type = "outer"}
+  },
+  hovered_graphical_set = {
+    base = {position = {369, 17}, corner_size = 8},
+    shadow = default_dirt
+  },
+  clicked_graphical_set = {
+    base = {position = {352, 17}, corner_size = 8},
+    shadow = default_dirt
+  }
+}
+
 -- EMPTY WIDGET STYLES
 
 styles.rb_drag_handle = {
@@ -78,7 +96,6 @@ styles.rb_drag_handle = {
   parent = "draggable_space",
   height = 24,
   minimal_width = 24,
-  right_margin = 6,
   horizontally_stretchable = "on"
 }
 
@@ -153,12 +170,24 @@ styles.rb_slot_table_frame = {
   }
 }
 
+styles.rb_window_frame = {
+  type = "frame_style",
+  parent = "dialog_frame",
+  top_padding = 6
+}
+
 -- LABEL STYLES
 
 styles.rb_list_box_label = {
   type = "label_style",
   font = "default-semibold",
   left_padding = 2
+}
+
+styles.rb_window_title_label = {
+  type = "label_style",
+  parent = "frame_title",
+  left_margin = 8
 }
 
 -- IMAGE STYLES
