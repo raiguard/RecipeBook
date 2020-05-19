@@ -14,6 +14,13 @@ local base_gui = require("scripts.gui.base")
 
 local string_sub = string.sub
 
+-- debugging-only print function
+if __DebugAdapter then
+  __dlog = __DebugAdapter.print
+else
+  __dlog = function(msg) return end
+end
+
 -- TODO pyanodon's causes EE items to not be removed
 -- TODO rocket silos as crafters
 -- TODO pumped from for offshore pumps
