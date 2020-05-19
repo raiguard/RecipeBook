@@ -20,7 +20,7 @@ data:extend{
   -- custom inputs
   {
     type = "custom-input",
-    name = "rb-toggle-search",
+    name = "rb-toggle-gui",
     key_sequence = "CONTROL + B",
     order = "a"
   },
@@ -39,15 +39,14 @@ data:extend{
   -- shortcut
   {
     type = "shortcut",
-    -- TODO rename to rb-toggle-gui
-    name = "rb-toggle-search",
+    name = "rb-toggle-gui",
     action = "lua",
     icon = mipped_icon(nil, {0,0}, "__RecipeBook__/graphics/search-shortcut.png", 32, 2),
     small_icon = mipped_icon(nil, {0,32}, "__RecipeBook__/graphics/search-shortcut.png", 24, 2),
     disabled_icon = mipped_icon(nil, {48,0}, "__RecipeBook__/graphics/search-shortcut.png", 32, 2),
     disabled_small_icon = mipped_icon(nil, {36,32}, "__RecipeBook__/graphics/search-shortcut.png", 24, 2),
     toggleable = true,
-    associated_control_input = "rb-toggle-search"
+    associated_control_input = "rb-toggle-gui"
   },
   -- sprites
   mipped_icon("rb_close_black", {0,0}, "__RecipeBook__/graphics/frame-action-icons.png", 40, 2),

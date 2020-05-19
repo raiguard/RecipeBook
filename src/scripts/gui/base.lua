@@ -90,7 +90,7 @@ function base_gui.create(player, player_table)
   gui_data.base.drag_handle.drag_target = gui_data.base.window
 
   -- shortcut
-  player.set_shortcut_toggled("rb-toggle-search", true)
+  player.set_shortcut_toggled("rb-toggle-gui", true)
 
   player_table.gui = gui_data
 end
@@ -100,7 +100,7 @@ function base_gui.destroy(player, player_table)
   player_table.gui.base.window.destroy()
   player_table.gui = nil
 
-  player.set_shortcut_toggled("rb-toggle-search", false)
+  player.set_shortcut_toggled("rb-toggle-gui", false)
 end
 
 return base_gui

@@ -47,7 +47,7 @@ end
 function player_data.destroy_guis(player, player_table)
   local gui_data = player_table.gui
   player_table.flags.can_open_gui = false
-  player.set_shortcut_available("rb-toggle-search", false)
+  player.set_shortcut_available("rb-toggle-gui", false)
   if gui_data.search then
     -- TODO
     -- search_gui.close(player, player_table)
@@ -64,8 +64,8 @@ function player_data.refresh(player, player_table)
   player_data.destroy_guis(player, player_table)
   player_data.update_settings(player, player_table)
 
-  player.set_shortcut_toggled("rb-toggle-search", false)
-  player.set_shortcut_available("rb-toggle-search", false)
+  player.set_shortcut_toggled("rb-toggle-gui", false)
+  player.set_shortcut_available("rb-toggle-gui", false)
 
   player_table.translation_lookup_tables = table.deepcopy(constants.empty_lookup_tables)
   player_table.translations = table.deepcopy(constants.empty_translation_tables)

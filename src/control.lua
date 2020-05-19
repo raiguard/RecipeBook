@@ -107,7 +107,7 @@ end)
 -- INTERACTION
 
 event.on_lua_shortcut(function(e)
-  if e.prototype_name == "rb-toggle-search" then
+  if e.prototype_name == "rb-toggle-gui" then
     -- read player's cursor stack to see if we should open the material GUI
     local player = game.get_player(e.player_index)
     local cursor_stack = player.cursor_stack
@@ -120,7 +120,7 @@ event.on_lua_shortcut(function(e)
   end
 end)
 
-event.register("rb-toggle-search", function(e)
+event.register("rb-toggle-gui", function(e)
   local player = game.get_player(e.player_index)
   -- open held item, if it has a material page
   if player.mod_settings["rb-open-item-hotkey"].value then
@@ -252,7 +252,7 @@ event.on_string_translated(function(e)
   end
   if finished then
     local player = game.get_player(e.player_index)
-    player.set_shortcut_available("rb-toggle-search", true)
+    player.set_shortcut_available("rb-toggle-gui", true)
     player_table.flags.can_open_gui = true
     if player_table.flags.tried_to_open_gui then
       player_table.flags.tried_to_open_gui = false

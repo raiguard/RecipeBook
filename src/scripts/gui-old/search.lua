@@ -198,7 +198,7 @@ function search_gui.open(player, player_table, options)
   gui.handlers.search.search_textfield.on_gui_text_changed{player_index=player.index, text=options.query or "", selected_index=options.selected_index}
 
   -- set shortcut state
-  player.set_shortcut_toggled("rb-toggle-search", true)
+  player.set_shortcut_toggled("rb-toggle-gui", true)
 end
 
 function search_gui.close(player, player_table)
@@ -208,7 +208,7 @@ function search_gui.close(player, player_table)
   gui.update_filters("search", player.index, nil, "remove")
   player_table.gui.search.window.destroy()
   player_table.gui.search = nil
-  player.set_shortcut_toggled("rb-toggle-search", false)
+  player.set_shortcut_toggled("rb-toggle-gui", false)
 end
 
 function search_gui.toggle(player, player_table, options)
