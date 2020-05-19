@@ -7,7 +7,11 @@ local search_pane = require("scripts.gui.panes.search")
 local content_panes = {}
 
 gui.add_templates{
-  frame_action_button = {type="sprite-button", style="rb_frame_action_button", mouse_button_filter={"left"}}
+  frame_action_button = {type="sprite-button", style="rb_frame_action_button", mouse_button_filter={"left"}},
+  pushers = {
+    horizontal = {type="empty-widget", style_mods={horizontally_stretchable=true}},
+    vertical = {type="empty-widget", style_mods={vertically_stretchable=true}}
+  }
 }
 
 gui.add_handlers{
@@ -44,7 +48,21 @@ function base_gui.create(player, player_table)
       }},
       {type="flow", style="rb_window_content_flow", children={
         -- search
-        {type="frame", style="window_content_frame_packed", style_mods={width=210, height=400}},
+        {type="frame", style="window_content_frame_packed", direction="vertical", children={
+          {type="frame", style="rb_toolbar_frame", children={
+            {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
+            {template="pushers.horizontal"},
+            {type="drop-down"}
+          }},
+          {type="flow", style="rb_search_content_flow", direction="vertical", children={
+            {type="textfield", style="rb_search_textfield"},
+            {type="frame", style="rb_search_list_box_frame", style_mods={right_margin=12}, children={
+              {type="scroll-pane", style="rb_list_box_scroll_pane", children={
+                {type="empty-widget", style_mods={horizontally_stretchable=true}}
+              }}
+            }}
+          }}
+        }},
         -- info
         {type="frame", style="window_content_frame_packed", style_mods={width=450, height=400}}
       }}

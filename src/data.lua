@@ -117,6 +117,29 @@ styles.rb_active_dropdown = {
 
 -- FLOW STYLES
 
+styles.rb_content_flow = {
+  type = "vertical_flow_style",
+  bottom_padding = 12,
+  left_padding = 12,
+  right_padding = 0,
+  top_padding = 12
+}
+
+styles.rb_search_content_flow = {
+  type = "vertical_flow_style",
+  parent = "rb_content_flow",
+  top_padding = 8
+}
+
+styles.rb_toolbar_frame = {
+  type = "frame_style",
+  parent = "subheader_frame",
+  horizontal_flow_style = {
+    type = "horizontal_flow_style",
+    vertical_align = "center"
+  }
+}
+
 styles.rb_window_content_flow = {
   type = "horizontal_flow_style",
   horizontal_spacing = 12,
@@ -159,10 +182,11 @@ styles.rb_list_box_frame = {
   }
 }
 
-styles.rb_search_results_list_box_frame = {
+styles.rb_search_list_box_frame = {
   type = "frame_style",
   parent = "rb_list_box_frame",
-  height = 196
+  height = 0,
+  vertically_stretchable = "on"
 }
 
 styles.rb_slot_table_frame = {
@@ -259,4 +283,14 @@ styles.rb_icon_slot_table = {
   parent = "slot_table",
   horizontal_spacing = 0,
   vertical_spacing = 0
+}
+
+-- TEXTFIELDS STYLES
+
+styles.rb_search_textfield = {
+  type = "textbox_style",
+  horizontally_stretchable = "on",
+  right_margin = 12,
+  bottom_margin=6,
+  width = 0
 }
