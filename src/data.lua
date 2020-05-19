@@ -119,10 +119,7 @@ styles.rb_active_dropdown = {
 
 styles.rb_content_flow = {
   type = "vertical_flow_style",
-  bottom_padding = 12,
-  left_padding = 12,
-  right_padding = 0,
-  top_padding = 12
+  padding = 12
 }
 
 styles.rb_search_content_flow = {
@@ -149,23 +146,6 @@ styles.rb_window_content_flow = {
 
 -- FRAME STYLES
 
-styles.rb_blurry_frame = {
-  type = "frame_style",
-  -- padding of the content area of the frame
-  top_padding  = 8,
-  right_padding = 12,
-  bottom_padding = 12,
-  left_padding = 12,
-  graphical_set = {
-    base = {
-      center = {position = {336, 0}, size = {1, 1}},
-      opacity = 0,
-      background_blur = true
-    },
-    shadow = default_shadow
-  }
-}
-
 styles.rb_list_box_frame = {
   type = "frame_style",
   padding = 0,
@@ -179,6 +159,34 @@ styles.rb_list_box_frame = {
       center = {position={42,8}, size=1}
     },
     shadow = default_inner_shadow
+  },
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    vertical_spacing = 0
+  }
+}
+
+styles.rb_search_cover_frame = {
+  type = "frame_style",
+  -- padding of the content area of the frame
+  top_padding  = 8,
+  right_padding = 12,
+  bottom_padding = 12,
+  left_padding = 12,
+  graphical_set = {
+    base = {
+      center = {position = {336, 0}, size = {1, 1}},
+      opacity = 0,
+      background_blur = true
+    },
+    shadow = default_shadow
+  },
+  horizontal_flow_style = {
+    type = "horizontal_flow_style",
+    horizontal_align = "center",
+    horizontally_stretchable = "on",
+    vertical_align = "center",
+    vertically_stretchable = "on"
   }
 }
 
@@ -187,6 +195,16 @@ styles.rb_search_list_box_frame = {
   parent = "rb_list_box_frame",
   height = 0,
   vertically_stretchable = "on"
+}
+
+styles.rb_list_box_toolbar_frame = {
+  type = "frame_style",
+  parent = "rb_toolbar_frame",
+  height = 28,
+  bottom_padding = 0,
+  top_padding = 2,
+  left_padding = 6,
+  right_padding = 6
 }
 
 styles.rb_slot_table_frame = {
@@ -290,7 +308,6 @@ styles.rb_icon_slot_table = {
 styles.rb_search_textfield = {
   type = "textbox_style",
   horizontally_stretchable = "on",
-  right_margin = 12,
   bottom_margin=6,
   width = 0
 }

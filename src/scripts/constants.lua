@@ -2,7 +2,7 @@ local constants = {}
 
 local event = require("__flib__.event")
 
--- TODO dynamically generate translation tables from list of categories
+local search_categories = {material={"rb-gui.material"}, recipe={"rb-gui.recipe"}}
 
 constants.blacklisted_recipe_categories = {
   -- transport drones
@@ -10,6 +10,17 @@ constants.blacklisted_recipe_categories = {
   ["transport-drone-request"] = true,
   ["transport-fluid-request"] = true
 }
+
+constants.search_category_by_index = {}
+constants.search_category_items = {}
+constants.search_category_to_index = {}
+local i = 0
+for internal, localised in pairs(search_categories) do
+  i = i + 1
+  constants.search_category_by_index[i] = internal
+  constants.search_category_items[i] = localised
+  constants.search_category_to_index[internal] = i
+end
 
 constants.content_panes = {home=true, material=true, recipe=true}
 

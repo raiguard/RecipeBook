@@ -2,6 +2,7 @@ local base_gui = {}
 
 local gui = require("__flib__.gui")
 
+local constants = require("scripts.constants")
 local search_pane = require("scripts.gui.panes.search")
 
 local content_panes = {}
@@ -52,13 +53,24 @@ function base_gui.create(player, player_table)
           {type="frame", style="rb_toolbar_frame", children={
             {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
             {template="pushers.horizontal"},
-            {type="drop-down"}
+            {type="drop-down", items=constants.search_category_items, selected_index=2}
           }},
           {type="flow", style="rb_search_content_flow", direction="vertical", children={
             {type="textfield", style="rb_search_textfield"},
-            {type="frame", style="rb_search_list_box_frame", style_mods={right_margin=12}, children={
+            {type="frame", style="rb_search_list_box_frame", direction="vertical", mods={visible=false}, children={
+              {type="frame", style="rb_list_box_toolbar_frame", children={
+                {type="label", caption="1 - 50 of 234"},
+                {template="pushers.horizontal"}
+              }},
               {type="scroll-pane", style="rb_list_box_scroll_pane", children={
                 {type="empty-widget", style_mods={horizontally_stretchable=true}}
+              }}
+            }},
+            {type="frame", style="rb_search_list_box_frame", direction="vertical", mods={visible=true}, children={
+              {type="scroll-pane", style="rb_list_box_scroll_pane", children={
+                {type="frame", style="rb_search_cover_frame", children={
+                  {type="label", style="bold_label", caption={"rb-gui.searching"}}
+                }}
               }}
             }}
           }}

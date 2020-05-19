@@ -8,7 +8,6 @@ Date: ????
     - Unavailable (unresearched) objects are colored red
     - Added an option to hide unavailable objects
   Changes:
-    - Refactored mod structure to improve performance and simplicity
     - Switched from RaiLuaLib to FLib
     - Search is now spread out over multiple ticks to save performance and allow the addition of more complex features
     - Changing search categories will no longer reset the textfield to blank
