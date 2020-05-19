@@ -73,13 +73,13 @@ styles.rb_frame_action_button = {
 
 -- EMPTY WIDGET STYLES
 
-styles.rb_titlebar_draggable_space = {
+styles.rb_drag_handle = {
   type = "empty_widget_style",
-  parent = "draggable_space_header",
-  horizontally_stretchable = "on",
-  natural_height = 24,
+  parent = "draggable_space",
+  height = 24,
   minimal_width = 24,
-  right_margin = 6
+  right_margin = 6,
+  horizontally_stretchable = "on"
 }
 
 -- DROPDOWN STYLES
@@ -100,65 +100,7 @@ styles.rb_active_dropdown = {
 
 -- FRAME STYLES
 
-styles.rb_listbox_frame = {
-  type = "frame_style",
-  padding = 0,
-  width = 225,
-  height = 168, -- six rows
-  graphical_set = { -- inset from a light frame, but keep the dark background
-    base = {
-      position = {85,0},
-      corner_size = 8,
-      draw_type = "outer",
-      center = {position={42,8}, size=1}
-    },
-    shadow = default_inner_shadow
-  },
-  background_graphical_set = { -- rubber grid
-    position = {282,17},
-    corner_size = 8,
-    overall_tiling_vertical_size = 20,
-    overall_tiling_vertical_spacing = 8,
-    overall_tiling_vertical_padding = 4,
-    overall_tiling_horizontal_padding = 4
-  },
-  vertically_stretchable = "on"
-}
-
-styles.rb_search_results_listbox_frame = {
-  type = "frame_style",
-  parent = "rb_listbox_frame",
-  height = 196
-}
-
-styles.rb_icon_slot_table_frame = {
-  type = "frame_style",
-  padding = 0,
-  graphical_set = {
-    base = {
-      position = {85,0},
-      corner_size = 8,
-      draw_type = "outer",
-      center = {position={42,8}, size=1}
-    },
-    shadow = default_inner_shadow
-  },
-  background_graphical_set = {
-    base = {
-      position = {282, 17},
-      corner_size = 8,
-      overall_tiling_horizontal_padding = 4,
-      overall_tiling_horizontal_size = 32,
-      overall_tiling_horizontal_spacing = 8,
-      overall_tiling_vertical_padding = 4,
-      overall_tiling_vertical_size = 32,
-      overall_tiling_vertical_spacing = 8
-    }
-  }
-}
-
-styles.rb_blurry_frame =
-{
+styles.rb_blurry_frame = {
   type = "frame_style",
   -- padding of the content area of the frame
   top_padding  = 8,
@@ -175,25 +117,45 @@ styles.rb_blurry_frame =
   }
 }
 
--- FLOW STYLES
-
-styles.rb_search_flow = {
-  type = "horizontal_flow_style",
-  margin = 8,
-  vertical_align = "center",
-  horizontal_spacing = 6
+styles.rb_list_box_frame = {
+  type = "frame_style",
+  padding = 0,
+  width = 225,
+  height = 168, -- six rows
+  graphical_set = { -- inset from a light frame, but keep the dark background
+    base = {
+      position = {85,0},
+      corner_size = 8,
+      draw_type = "outer",
+      center = {position={42,8}, size=1}
+    },
+    shadow = default_inner_shadow
+  }
 }
 
-styles.rb_titlebar_flow = {
-  type = "horizontal_flow_style",
-  direction = "horizontal",
-  horizontally_stretchable = "on",
-  -- top_margin = -3
+styles.rb_search_results_list_box_frame = {
+  type = "frame_style",
+  parent = "rb_list_box_frame",
+  height = 196
+}
+
+styles.rb_slot_table_frame = {
+  type = "frame_style",
+  padding = 0,
+  graphical_set = {
+    base = {
+      position = {85,0},
+      corner_size = 8,
+      draw_type = "outer",
+      center = {position={42,8}, size=1}
+    },
+    shadow = default_inner_shadow
+  }
 }
 
 -- LABEL STYLES
 
-styles.rb_listbox_label = {
+styles.rb_list_box_label = {
   type = "label_style",
   font = "default-semibold",
   left_padding = 2
@@ -208,53 +170,48 @@ styles.rb_object_icon = {
   padding = 2
 }
 
--- LIST BOX STYLES
-
-styles.rb_listbox_item = {
-  type = "button_style",
-  parent = "list_box_item",
-  horizontally_stretchable = "on",
-  left_padding = 4,
-  right_padding = 4
-}
-
-styles.rb_listbox = {
-  type = "list_box_style",
-  parent = "list_box",
-  scroll_pane_style = { -- invisible scroll pane
-    type = "scroll_pane_style",
-    parent = "list_box_scroll_pane",
-    graphical_set = {},
-    background_graphical_set = {},
-    vertically_stretchable = "on"
-  },
-  item_style = {
-    type = "button_style",
-    parent = "rb_listbox_item"
-  }
-}
-
-styles.rb_listbox_for_keyboard_nav = {
-  type = "list_box_style",
-  parent = "rb_listbox",
-  item_style = {
-    type = "button_style",
-    parent = "rb_listbox_item",
-    selected_graphical_set = {
-      base = {position = {34,17}, corner_size=8},
-      shadow = default_dirt
-    }
-  }
-}
-
 -- SCROLL PANE STYLES
 
-styles.rb_icon_slot_table_scrollpane = {
+styles.rb_list_box_scroll_pane = {
+  type = "scroll_pane_style",
+  extra_padding_when_activated = 0,
+  margin = 0,
+  padding = 0,
+  background_graphical_set = { -- rubber grid
+    position = {282,17},
+    corner_size = 8,
+    overall_tiling_vertical_size = 20,
+    overall_tiling_vertical_spacing = 8,
+    overall_tiling_vertical_padding = 4,
+    overall_tiling_horizontal_padding = 4
+  },
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    margin = 0,
+    padding = 0,
+    vertical_spacing = 0,
+    vertically_stretchable = "on"
+  }
+}
+
+styles.rb_slot_table_scroll_pane = {
   type = "scroll_pane_style",
   parent = "scroll_pane",
   padding = 0,
   margin = 0,
-  extra_padding_when_activated = 0
+  extra_padding_when_activated = 0,
+  background_graphical_set = {
+    base = {
+      position = {282, 17},
+      corner_size = 8,
+      overall_tiling_horizontal_padding = 4,
+      overall_tiling_horizontal_size = 32,
+      overall_tiling_horizontal_spacing = 8,
+      overall_tiling_vertical_padding = 4,
+      overall_tiling_vertical_size = 32,
+      overall_tiling_vertical_spacing = 8
+    }
+  }
 }
 
 -- TABLE STYLES
