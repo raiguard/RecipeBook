@@ -3,17 +3,14 @@ local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
 local translation = require("__flib__.translation")
 
-require("scripts.gui.common")
+-- require("scripts.gui.common")
 
 local constants = require("scripts.constants")
 local global_data = require("scripts.global-data")
-local info_gui = require("scripts.gui.info-base")
 local lookup_tables = require("scripts.lookup-tables")
 local migrations = require("scripts.migrations")
 local on_tick = require("scripts.on-tick")
 local player_data = require("scripts.player-data")
-local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
-local search_gui = require("scripts.gui.search")
 
 local string_sub = string.sub
 
@@ -79,23 +76,23 @@ end)
 gui.register_handlers()
 
 event.register("rb-results-nav-confirm", function(e)
-  local player_table = global.players[e.player_index]
-  local gui_data = player_table.gui.search
-  if not gui_data then return end
-  if gui_data.state == "select_category" then
-    search_gui.confirm_category(e)
-  elseif gui_data.state == "select_result" then
-    search_gui.confirm_result(e)
-  end
+  -- local player_table = global.players[e.player_index]
+  -- local gui_data = player_table.gui.search
+  -- if not gui_data then return end
+  -- if gui_data.state == "select_category" then
+  --   search_gui.confirm_category(e)
+  -- elseif gui_data.state == "select_result" then
+  --   search_gui.confirm_result(e)
+  -- end
 end)
 
 event.register("rb-cycle-category", function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local gui_data = player_table.gui.search
-  if gui_data and gui_data.state == "select_category" then
-    search_gui.cycle_category(player, player_table)
-  end
+  -- local player = game.get_player(e.player_index)
+  -- local player_table = global.players[e.player_index]
+  -- local gui_data = player_table.gui.search
+  -- if gui_data and gui_data.state == "select_category" then
+  --   search_gui.cycle_category(player, player_table)
+  -- end
 end)
 
 -- INTERACTION
