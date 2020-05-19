@@ -3,8 +3,6 @@ local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
 local translation = require("__flib__.translation")
 
--- require("scripts.gui.common")
-
 local constants = require("scripts.constants")
 local global_data = require("scripts.global-data")
 local lookup_tables = require("scripts.lookup-tables")
@@ -76,6 +74,7 @@ end)
 gui.register_handlers()
 
 event.register("rb-results-nav-confirm", function(e)
+  -- TODO
   -- local player_table = global.players[e.player_index]
   -- local gui_data = player_table.gui.search
   -- if not gui_data then return end
@@ -87,6 +86,7 @@ event.register("rb-results-nav-confirm", function(e)
 end)
 
 event.register("rb-cycle-category", function(e)
+  -- TODO
   -- local player = game.get_player(e.player_index)
   -- local player_table = global.players[e.player_index]
   -- local gui_data = player_table.gui.search
