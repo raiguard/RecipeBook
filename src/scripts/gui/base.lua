@@ -28,7 +28,7 @@ gui.add_handlers{
 
 function base_gui.create(player, player_table)
   local gui_data = gui.build(player.gui.screen, {
-    {type="frame", style="dialog_frame", handlers="base.window", save_as="base.window", children={
+    {type="frame", style="dialog_frame", direction="vertical", handlers="base.window", save_as="base.window", children={
       -- titlebar
       {type="flow", children={
         -- TODO tooltips
@@ -41,6 +41,12 @@ function base_gui.create(player, player_table)
         {template="frame_action_button", sprite="rb_pin_white", hovered_sprite="rb_pin_black", clicked_sprite="rb_pin_black", tooltip={"rb-gui.keep-open"}},
         {template="frame_action_button", sprite="rb_close_white", hovered_sprite="rb_close_black", clicked_sprite="rb_close_black",
           handlers="base.close_button"}
+      }},
+      {type="flow", style="rb_window_content_flow", children={
+        -- search
+        {type="frame", style="window_content_frame_packed", style_mods={width=210, height=400}},
+        -- info
+        {type="frame", style="window_content_frame_packed", style_mods={width=450, height=400}}
       }}
     }}
   })

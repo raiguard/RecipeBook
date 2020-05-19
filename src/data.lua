@@ -115,6 +115,15 @@ styles.rb_active_dropdown = {
   }
 }
 
+-- FLOW STYLES
+
+styles.rb_window_content_flow = {
+  type = "horizontal_flow_style",
+  horizontal_spacing = 12,
+  margin = 0,
+  padding = 0
+}
+
 -- FRAME STYLES
 
 styles.rb_blurry_frame = {
