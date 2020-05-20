@@ -113,9 +113,11 @@ event.on_lua_shortcut(function(e)
     local cursor_stack = player.cursor_stack
     if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
       -- the player is holding something, so open to its material GUI
-      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
+      -- TODO
+      -- event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
     else
-      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search", toggle=true})
+      -- TODO
+      -- event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search", toggle=true})
     end
   end
 end)
@@ -126,7 +128,8 @@ event.register("rb-toggle-gui", function(e)
   if player.mod_settings["rb-open-item-hotkey"].value then
     local cursor_stack = player.cursor_stack
     if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
-      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
+      -- TODO
+      -- event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
       return
     end
   end
@@ -140,64 +143,66 @@ event.register("rb-toggle-gui", function(e)
         if locked_fluid then
           -- check recipe book to see if this fluid has a material page
           if global.recipe_book.material["fluid,"..locked_fluid] then
-            event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"fluid", locked_fluid}})
+            -- TODO
+            -- event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"fluid", locked_fluid}})
             return
           end
         end
       end
     end
   end
-  event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search"})
+  -- TODO
+  -- event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search"})
 end)
 
 -- INTERFACE
 
-event.register(constants.open_gui_event, function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local gui_type = e.gui_type
-  -- protected open
-  if player_table.flags.can_open_gui then
-    if gui_type == "search" then
-      base_gui.create(player, player_table)
-    end
+-- event.register(constants.open_gui_event, function(e)
+--   local player = game.get_player(e.player_index)
+--   local player_table = global.players[e.player_index]
+--   local gui_type = e.gui_type
+--   -- protected open
+--   if player_table.flags.can_open_gui then
+--     if gui_type == "search" then
+--       base_gui.create(player, player_table)
+--     end
 
-    -- -- check for existing GUI
-    -- if gui_type == "search" then
-    --   -- don"t do anything if it"s already open
-    --   if e.toggle then
-    --     search_gui.toggle(player, player_table)
-    --   elseif not player_table.gui.search then
-    --     search_gui.open(player, player_table)
-    --   end
-    -- elseif constants.category_to_index[gui_type] then
-    --   if gui_type == "material" then
-    --     if type(e.object) ~= "table" then
-    --       error("Invalid material object, it must be a table!")
-    --     end
-    --     e.object = e.object[1]..","..e.object[2]
-    --   end
-    --   info_gui.open_or_update(player, player_table, gui_type, e.object, e.source_data)
-    -- elseif gui_type == "recipe_quick_reference" then
-    --   if not player_table.gui.recipe_quick_reference[e.object] then
-    --     recipe_quick_reference_gui.open(player, player_table, e.object)
-    --   end
-    -- else
-    --   error("["..gui_type.."] is not a valid GUI type!")
-    -- end
-  else
-    -- set flag and tell the player that they cannot open it
-    player_table.flags.tried_to_open_gui = true
-    player.print{"rb-message.translations-not-finished"}
-  end
-end)
+--     -- -- check for existing GUI
+--     -- if gui_type == "search" then
+--     --   -- don"t do anything if it"s already open
+--     --   if e.toggle then
+--     --     search_gui.toggle(player, player_table)
+--     --   elseif not player_table.gui.search then
+--     --     search_gui.open(player, player_table)
+--     --   end
+--     -- elseif constants.category_to_index[gui_type] then
+--     --   if gui_type == "material" then
+--     --     if type(e.object) ~= "table" then
+--     --       error("Invalid material object, it must be a table!")
+--     --     end
+--     --     e.object = e.object[1]..","..e.object[2]
+--     --   end
+--     --   info_gui.open_or_update(player, player_table, gui_type, e.object, e.source_data)
+--     -- elseif gui_type == "recipe_quick_reference" then
+--     --   if not player_table.gui.recipe_quick_reference[e.object] then
+--     --     recipe_quick_reference_gui.open(player, player_table, e.object)
+--     --   end
+--     -- else
+--     --   error("["..gui_type.."] is not a valid GUI type!")
+--     -- end
+--   else
+--     -- set flag and tell the player that they cannot open it
+--     player_table.flags.tried_to_open_gui = true
+--     player.print{"rb-message.translations-not-finished"}
+--   end
+-- end)
 
-event.register(constants.reopen_source_event, function(e)
-  -- local source_data = e.source_data
-  -- if source_data.mod_name == "RecipeBook" and source_data.gui_name == "search" then
-  --   search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index], source_data)
-  -- end
-end)
+-- event.register(constants.reopen_source_event, function(e)
+--   -- local source_data = e.source_data
+--   -- if source_data.mod_name == "RecipeBook" and source_data.gui_name == "search" then
+--   --   search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index], source_data)
+--   -- end
+-- end)
 
 -- PLAYER
 
@@ -251,6 +256,9 @@ event.on_string_translated(function(e)
     end
   end
   if finished then
+    player_table.flags.translating = false
+    lookup_tables.transfer(e.player_index, player_table)
+
     local player = game.get_player(e.player_index)
     player.set_shortcut_available("rb-toggle-gui", true)
     player_table.flags.can_open_gui = true
@@ -258,8 +266,8 @@ event.on_string_translated(function(e)
       player_table.flags.tried_to_open_gui = false
       player.print{"rb-message.translations-finished"}
     end
-    player_table.flags.translating = false
-    lookup_tables.transfer(e.player_index, player_table)
+
+    base_gui.create(player, player_table)
   end
 end)
 
