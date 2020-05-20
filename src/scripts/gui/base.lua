@@ -76,7 +76,14 @@ function base_gui.create(player, player_table)
           }}
         }},
         -- info
-        {type="frame", style="window_content_frame_packed", style_mods={width=450, height=400}}
+        {type="frame", style="window_content_frame_packed", children={
+          {type="frame", style="rb_toolbar_frame", children={
+            {type="sprite", style="rb_object_icon", sprite="item/oil-refinery", save_as="base.info_bar.object_icon"},
+            {type="label", style="caption_label", caption="Oil Refinery", save_as="base.info_bar.object_name"},
+            {template="pushers.horizontal"}
+          }},
+
+        }}
       }}
     }}
   })
