@@ -110,4 +110,17 @@ function base_gui.destroy(player, player_table)
   player.set_shortcut_toggled("rb-toggle-gui", false)
 end
 
+function base_gui.open(player, player_table, type, object_data)
+  -- TODO open to various desired pages
+
+end
+
+function base_gui.close(player, player_table)
+
+end
+
+function base_gui.toggle(player, player_table, type, object_data)
+
+end
+
 return base_gui
