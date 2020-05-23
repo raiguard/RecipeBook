@@ -31,22 +31,22 @@ gui.add_handlers{recipe_quick_reference={
 function recipe_quick_reference_gui.open(player, player_table, recipe_name)
   -- build GUI structure
   local data, filters = gui.build(player.gui.screen, {
-    {type="frame", style="dialog_frame", direction="vertical", save_as="window", children={
+    {type="frame", style="standalone_inner_frame_in_outer_frame", direction="vertical", save_as="window", children={
       -- titlebar
-      {type="flow", style="rb_titlebar_flow", direction="horizontal", children={
+      {type="flow", children={
         {type="label", style="frame_title", caption={"rb-gui.recipe-upper"}},
-        {type="empty-widget", style="rb_titlebar_draggable_space", save_as="drag_handle"},
-        {type="sprite-button", name="rb_open_info_button_"..recipe_name, style="rb_frame_action_button", sprite="rb_nav_open_info",
+        {type="empty-widget", style="rb_titlebar_drag_handle", save_as="drag_handle"},
+        {type="sprite-button", name="rb_open_info_button_"..recipe_name, style="frame_action_button", sprite="rb_nav_open_info",
           hovered_sprite="rb_nav_open_info_dark", clicked_sprite="rb_nav_open_info_dark", handlers="recipe_quick_reference.open_info_button",
           tooltip={"rb-gui.view-recipe-details"}, mouse_button_filter={"left"}},
         {template="close_button", name="rb_close_button_"..recipe_name, handlers="recipe_quick_reference.close_button"}
       }},
-      {type="frame", style="window_content_frame_packed", direction="vertical", children={
+      {type="frame", style="inside_shallow_frame", style_mods={width=224}, direction="vertical", children={
         {type="frame", style="subheader_frame", direction="horizontal", children={
-          {type="label", style="subheader_caption_label", style_mods={width=207}, caption=lookup_tables[player.index].recipe.translations[recipe_name]}
+          {type="label", style="subheader_caption_label", style_mods={width=216}, caption=lookup_tables[player.index].recipe.translations[recipe_name]},
         }},
         -- materials
-        {type="flow", style_mods={padding=8}, direction="vertical", children={
+        {type="flow", style_mods={top_padding=6, left_padding=12, bottom_padding=12, right_padding=0}, direction="vertical", children={
           gui.templates.quick_reference_scrollpane("ingredients"),
           gui.templates.quick_reference_scrollpane("products")
         }}
@@ -71,13 +71,13 @@ function recipe_quick_reference_gui.open(player, player_table, recipe_name)
     local materials_list = recipe_data[mode]
     local delta = 0
     if mode == "ingredients" then
-      table_add{type="sprite-button", style="quick_bar_slot_button", sprite="quantity-time", number=recipe_data.energy}
+      table_add{type="sprite-button", style="slot_button", sprite="quantity-time", number=recipe_data.energy}
       delta = 1
     end
     for ri=1,#materials_list do
       local material = materials_list[ri]
       if show_hidden or not material.hidden then
-        local index = table_add{type="sprite-button", style="quick_bar_slot_button", sprite=material.type.."/"..material.name, number=material.amount,
+        local index = table_add{type="sprite-button", style="slot_button", sprite=material.type.."/"..material.name, number=material.amount,
           tooltip=material_translations[material.type..","..material.name], mouse_button_filter={"left"}}.index
         material_button_ids[#material_button_ids+1] = index
       end

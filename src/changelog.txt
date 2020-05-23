@@ -15,6 +15,7 @@ Date: ????
     - Removed crafters as a searchable category and info screen, the utility offered by them was minimal
     - Transport drones recipes are now excluded from the Recipe Book
     - Recipes that have no ingredients are excluded from the Recipe Book
+    - Updated GUI styles for Factorio 0.18.27
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.3
 Date: 2020-04-12

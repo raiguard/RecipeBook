@@ -59,20 +59,18 @@ gui.add_handlers{
 function info_base_gui.open(player, player_table, category, name, source_data)
   -- gui structure
   local gui_data = gui.build(player.gui.screen, {
-    {type="frame", name="rb_info_window", style="dialog_frame", direction="vertical", handlers="info_base.window", save_as="window", children={
+    {type="frame", name="rb_info_window", style="standalone_inner_frame_in_outer_frame", direction="vertical", handlers="info_base.window", save_as="window", children={
       -- titlebar
-      {type="flow", style="rb_titlebar_flow", direction="horizontal", children={
-        {type="sprite-button", style="rb_frame_action_button", sprite="rb_nav_backward", hovered_sprite="rb_nav_backward_dark",
+      {type="flow", children={
+        {type="sprite-button", style="frame_action_button", sprite="rb_nav_backward", hovered_sprite="rb_nav_backward_dark",
           clicked_sprite="rb_nav_backward_dark", mouse_button_filter={"left"}, handlers="info_base.nav_backward_button", save_as="nav_backward_button"},
-        {type="sprite-button", style="rb_frame_action_button", sprite="rb_nav_forward", hovered_sprite="rb_nav_forward_dark",
+        {type="sprite-button", style="frame_action_button", sprite="rb_nav_forward", hovered_sprite="rb_nav_forward_dark",
           clicked_sprite="rb_nav_forward_dark", mouse_button_filter={"left"}, handlers="info_base.nav_forward_button", save_as="nav_forward_button"},
         {type="label", style="frame_title", style_mods={left_padding=6}, save_as="window_title"},
-        {type="empty-widget", style="rb_titlebar_draggable_space", save_as="drag_handle"},
-        -- {type="sprite-button", style="rb_frame_action_button", sprite="rb_nav_search", hovered_sprite="rb_nav_search_dark",
-        --   clicked_sprite="rb_nav_search_dark", mouse_button_filter={"left"}, handlers="info_base.search_button"},
+        {type="empty-widget", style="rb_titlebar_drag_handle", save_as="drag_handle"},
         {template="close_button", handlers="info_base.close_button"}
       }},
-      {type="frame", style="window_content_frame_packed", direction="vertical", children={
+      {type="frame", style="inside_shallow_frame", direction="vertical", children={
         -- toolbar
         {type="frame", style="subheader_frame", direction="horizontal", children={
           {type="sprite", style="rb_object_icon", save_as="object_icon"},

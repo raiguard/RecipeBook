@@ -61,25 +61,15 @@ data:extend{
 
 local styles = data.raw["gui-style"].default
 
--- BUTTON STYLES
-
--- slightly smaller close button that looks WAY better ;)
-styles.rb_frame_action_button = {
-  type = "button_style",
-  parent = "close_button",
-  size = 20,
-  top_margin = 2
-}
-
 -- EMPTY WIDGET STYLES
 
-styles.rb_titlebar_draggable_space = {
+styles.rb_titlebar_drag_handle = {
   type = "empty_widget_style",
-  parent = "draggable_space_header",
+  parent = "draggable_space",
   horizontally_stretchable = "on",
-  natural_height = 24,
-  minimal_width = 24,
-  right_margin = 6
+  height = 24,
+  left_margin = 4,
+  right_margin = 4
 }
 
 -- DROPDOWN STYLES
@@ -102,18 +92,9 @@ styles.rb_active_dropdown = {
 
 styles.rb_listbox_frame = {
   type = "frame_style",
-  padding = 0,
+  parent = "deep_frame_in_shallow_frame",
   width = 225,
   height = 168, -- six rows
-  graphical_set = { -- inset from a light frame, but keep the dark background
-    base = {
-      position = {85,0},
-      corner_size = 8,
-      draw_type = "outer",
-      center = {position={42,8}, size=1}
-    },
-    shadow = default_inner_shadow
-  },
   background_graphical_set = { -- rubber grid
     position = {282,17},
     corner_size = 8,
@@ -129,32 +110,6 @@ styles.rb_search_results_listbox_frame = {
   type = "frame_style",
   parent = "rb_listbox_frame",
   height = 196
-}
-
-styles.rb_icon_slot_table_frame = {
-  type = "frame_style",
-  padding = 0,
-  graphical_set = {
-    base = {
-      position = {85,0},
-      corner_size = 8,
-      draw_type = "outer",
-      center = {position={42,8}, size=1}
-    },
-    shadow = default_inner_shadow
-  },
-  background_graphical_set = {
-    base = {
-      position = {282, 17},
-      corner_size = 8,
-      overall_tiling_horizontal_padding = 4,
-      overall_tiling_horizontal_size = 32,
-      overall_tiling_horizontal_spacing = 8,
-      overall_tiling_vertical_padding = 4,
-      overall_tiling_vertical_size = 32,
-      overall_tiling_vertical_spacing = 8
-    }
-  }
 }
 
 styles.rb_blurry_frame =
@@ -255,13 +210,4 @@ styles.rb_icon_slot_table_scrollpane = {
   padding = 0,
   margin = 0,
   extra_padding_when_activated = 0
-}
-
--- TABLE STYLES
-
-styles.rb_icon_slot_table = {
-  type = "table_style",
-  parent = "slot_table",
-  horizontal_spacing = 0,
-  vertical_spacing = 0
 }

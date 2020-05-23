@@ -163,9 +163,9 @@ function recipe_gui.create(player, player_table, content_container, name)
   gui_data.technologies_frame.style.height = height
 
   -- register handlers for listboxes
-  gui.update_filters("recipe.material_listboxes", player.index, {gui_data.ingredients_listbox.index, gui_data.products_listbox.index})
-  gui.update_filters("recipe.crafters_listbox", player.index, {gui_data.crafters_listbox.index})
-  gui.update_filters("recipe.technologies_listbox", player.index, {gui_data.technologies_listbox.index})
+  gui.update_filters("recipe.material_listboxes", player.index, {gui_data.ingredients_listbox.index, gui_data.products_listbox.index}, "add")
+  gui.update_filters("recipe.crafters_listbox", player.index, {gui_data.crafters_listbox.index}, "add")
+  gui.update_filters("recipe.technologies_listbox", player.index, {gui_data.technologies_listbox.index}, "add")
 
   return gui_data
 end

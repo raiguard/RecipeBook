@@ -7,7 +7,7 @@ local string_find = string.find
 local string_sub = string.sub
 
 gui.add_templates{
-  close_button = {type="sprite-button", style="rb_frame_action_button", sprite="utility/close_white", hovered_sprite="utility/close_black",
+  close_button = {type="sprite-button", style="frame_action_button", sprite="utility/close_white", hovered_sprite="utility/close_black",
     clicked_sprite="utility/close_black", mouse_button_filter={"left"}},
   pushers = {
     horizontal = {type="empty-widget", style_mods={horizontally_stretchable=true}},
@@ -26,9 +26,9 @@ gui.add_templates{
     return
     {type="flow", direction="vertical", children={
       {type="label", style="rb_listbox_label", save_as=name.."_label"},
-      {type="frame", style="rb_icon_slot_table_frame", style_mods={maximal_height=160}, children={
-        {type="scroll-pane", style="rb_icon_slot_table_scrollpane", children={
-          {type="table", style="rb_icon_slot_table", style_mods={width=200}, column_count=5, save_as=name.."_table"}
+      {type="frame", style="slot_button_deep_frame", style_mods={maximal_height=160}, children={
+        {type="scroll-pane", style="only_inner_shadow_scroll_pane", children={
+          {type="table", style="slot_table", style_mods={width=200}, column_count=5, save_as=name.."_table"}
         }}
       }}
     }}
