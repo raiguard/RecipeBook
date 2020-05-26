@@ -1,20 +1,6 @@
-local function mipped_icon(name, position, filename, size, mipmap_count, mods)
-  local def = {
-    type = "sprite",
-    name = name,
-    filename = filename,
-    position = position,
-    size = size or 32,
-    mipmap_count = mipmap_count or 2,
-    flags = {"icon"}
-  }
-  if mods then
-    for k, v in pairs(mods) do
-      def[k] = v
-    end
-  end
-  return def
-end
+local data_util = require("__flib__.data_util")
+
+local frame_action_sheet = "__RecipeBook__/graphics/frame-action-icons.png"
 
 data:extend{
   -- custom inputs
@@ -41,22 +27,20 @@ data:extend{
     type = "shortcut",
     name = "rb-toggle-search",
     action = "lua",
-    icon = mipped_icon(nil, {0,0}, "__RecipeBook__/graphics/search-shortcut.png", 32, 2),
-    small_icon = mipped_icon(nil, {0,32}, "__RecipeBook__/graphics/search-shortcut.png", 24, 2),
-    disabled_icon = mipped_icon(nil, {48,0}, "__RecipeBook__/graphics/search-shortcut.png", 32, 2),
-    disabled_small_icon = mipped_icon(nil, {36,32}, "__RecipeBook__/graphics/search-shortcut.png", 24, 2),
+    icon = data_util.build_sprite(nil, {0,0}, "__RecipeBook__/graphics/search-shortcut.png", 32, 2),
+    small_icon = data_util.build_sprite(nil, {0,32}, "__RecipeBook__/graphics/search-shortcut.png", 24, 2),
+    disabled_icon = data_util.build_sprite(nil, {48,0}, "__RecipeBook__/graphics/search-shortcut.png", 32, 2),
+    disabled_small_icon = data_util.build_sprite(nil, {36,32}, "__RecipeBook__/graphics/search-shortcut.png", 24, 2),
     toggleable = true,
     associated_control_input = "rb-toggle-search"
   },
   -- sprites
-  mipped_icon("rb_nav_backward", {0,0}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_backward_dark", {48,0}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_forward", {0,32}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_forward_dark", {48,32}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_open_info", {0,64}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_open_info_dark", {48,64}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_search", {0,96}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2),
-  mipped_icon("rb_nav_search_dark", {48,96}, "__RecipeBook__/graphics/gui-nav-icons.png", 32, 2)
+  data_util.build_sprite("rb_nav_backward_dark", {0,0}, frame_action_sheet, 32),
+  data_util.build_sprite("rb_nav_backward", {32,0}, frame_action_sheet, 32),
+  data_util.build_sprite("rb_nav_forward_dark", {0,32}, frame_action_sheet, 32),
+  data_util.build_sprite("rb_nav_forward", {32,32}, frame_action_sheet, 32),
+  data_util.build_sprite("rb_nav_open_info_dark", {0,64}, frame_action_sheet, 32),
+  data_util.build_sprite("rb_nav_open_info", {32,64}, frame_action_sheet, 32),
 }
 
 local styles = data.raw["gui-style"].default
