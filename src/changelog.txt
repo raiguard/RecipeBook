@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.0
-Date: ????
+Date: 2020-05-26
   Features:
     - Added keyboard shortcuts for changing categories in the search GUI
     - The shortcut button properly toggles the search GUI open/closed, instead of just opening it
