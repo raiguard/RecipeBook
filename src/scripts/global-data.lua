@@ -10,10 +10,7 @@ function global_data.init()
 
   global_data.build_recipe_book()
 
-  for _, force in pairs(game.forces) do
-    global_data.check_force_recipes(force)
-    global_data.check_force_technologies(force)
-  end
+  global_data.check_forces()
 end
 
 function global_data.build_recipe_book()
@@ -284,6 +281,13 @@ function global_data.check_force_technologies(force)
         technology_data.researched_forces[force_index] = true
       end
     end
+  end
+end
+
+function global_data.check_forces()
+  for _, force in pairs(game.forces) do
+    global_data.check_force_recipes(force)
+    global_data.check_force_technologies(force)
   end
 end
 
