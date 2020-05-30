@@ -9,7 +9,14 @@ return {
     -- transport drones
     ["fluid-depot"] = true,
     ["transport-drone-request"] = true,
-    ["transport-fluid-request"] = true
+    ["transport-fluid-request"] = true,
+    -- deep storage unit
+    ["deep-storage-item"] = true,
+    ["deep-storage-fluid"] = true,
+    ["deep-storage-item-big"] = true,
+    ["deep-storage-fluid-big"] = true,
+    ["deep-storage-item-mk2/3"] = true,
+    ["deep-storage-fluid-mk2/3"] = true
   },
   category_by_index = category_by_index,
   category_to_index = {material=1, recipe=2},
