@@ -4,6 +4,13 @@ local constants = require("scripts.constants")
 
 local table_remove = table.remove
 
+local debug_log
+if __DebugAdapter then
+  debug_log = __DebugAdapter.print
+else
+  debug_log = function() return end
+end
+
 function global_data.init()
   global.players = {}
   global.searching_players = {}
@@ -198,12 +205,12 @@ function global_data.build_recipe_book()
       if t.dictionary == "material" then
         local data = materials[t.internal]
         if #data.ingredient_in == 0 and #data.product_of == 0 then
-          log("Removing material ["..t.internal.."], which is not used in any recipes")
+          debug_log("Removing material ["..t.internal.."], which is not used in any recipes")
           materials[t.internal] = nil
           table_remove(translations, i)
         elseif #data.unlocked_by == 0 then
           -- set unlocked by default
-          log("Material ["..t.internal.."] has no technologies to unlock it, setting to unlocked by default")
+          debug_log("Material ["..t.internal.."] has no technologies to unlock it, setting to unlocked by default")
           data.available_to_forces = nil
           data.available_to_all_forces = true
         end

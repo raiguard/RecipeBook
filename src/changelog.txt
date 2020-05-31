@@ -3,6 +3,7 @@ Version: 1.3.3
 Date: ????
   Changes:
     - Deep Storage Unit (DSU) recipes are now hidden from the Recipe Book
+    - The log is no longer spammed with recipe book data unless the debug adapter is hooked
   Bugfixes:
     - Fixed a crash when two players were searching at the same time
 ---------------------------------------------------------------------------------------------------
