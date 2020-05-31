@@ -11,9 +11,10 @@ local function handler(e)
     deregister = false
     translation.iterate_batch(e)
   end
-  if #global.searching_players > 0 then
+  local num_searching_players = table_size(global.searching_players)
+  if num_searching_players > 0 then
     deregister = false
-    search.iterate()
+    search.iterate(num_searching_players)
   end
   if deregister then
     event.on_tick(nil)
@@ -21,8 +22,9 @@ local function handler(e)
 end
 
 function on_tick.update()
-  if global.__flib and global.__flib.translation.translating_players_count > 0
-    or #global.searching_players > 0
+  if
+    global.__flib and global.__flib.translation.translating_players_count > 0
+    or table_size(global.searching_players) > 0
   then
     event.on_tick(handler)
   else

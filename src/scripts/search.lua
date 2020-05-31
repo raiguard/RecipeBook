@@ -3,26 +3,24 @@ local search = {}
 local constants = require("scripts.constants")
 local lookup_tables = require("scripts.lookup-tables")
 
-function search.iterate()
+function search.iterate(num_searching_players)
   local player_tables = global.players
   local players = global.searching_players
-  local num_searching_players = #players
-  local iterations = math.floor(200 / num_searching_players)
+  local iterations = math.max(math.floor(200 / num_searching_players), 1)
   local recipe_book = global.recipe_book
-  if iterations < 1 then iterations = 1 end
 
-  for searching_players_index = 1, num_searching_players do
+  for player_index, search_data in pairs(players) do
     -- player data
-    local player_index = players[searching_players_index]
     local player_table = player_tables[player_index]
-    local force_index = game.get_player(player_index).force.index
+    local show_hidden = player_table.settings.show_hidden
+    local show_unavailable = player_table.settings.show_unavailable
     -- gui data
     local gui_data = player_table.gui.search
     local category = gui_data.category
     local query = gui_data.query
     local skip_matching = query == ""
-    -- iteration data
-    local search_data = player_table.search
+    -- search data
+    local force_index = search_data.force_index
     local sort_data = search_data.sort
     local items = search_data.items
     local i = 0
@@ -33,9 +31,6 @@ function search.iterate()
     local translations = player_lookup_tables.translations
     -- object data
     local objects = recipe_book[category]
-    -- settings
-    local show_hidden = player_table.settings.show_hidden
-    local show_unavailable = player_table.settings.show_unavailable
 
     while i <= iterations do
       i = i + 1
@@ -115,8 +110,9 @@ function search.start(player_index, player_table, selected_index)
   gui_data.results_cover_frame.visible = true
   gui_data.results_cover_label.caption = {"rb-gui.searching"}
 
-  -- save iteration data
-  player_table.search = {
+  -- add iteration data
+  global.searching_players[player_index] = {
+    force_index = game.get_player(player_index).force.index,
     items = {},
     item_index = 1,
     next_index = 1,
@@ -132,14 +128,10 @@ function search.start(player_index, player_table, selected_index)
 
   -- set flags
   player_table.flags.searching = true
-  local player_insertion_index = #global.searching_players + 1
-  global.searching_players[player_insertion_index] = player_index
-  player_table.search.insertion_index = player_insertion_index
 end
 
 function search.cancel(player_index, player_table)
-  table.remove(global.searching_players, player_table.search.insertion_index)
-  player_table.search = nil
+  global.searching_players[player_index] = nil
   player_table.flags.searching = false
 end
 

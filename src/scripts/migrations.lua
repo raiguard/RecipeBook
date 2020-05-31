@@ -52,5 +52,16 @@ return {
       player_table.flags.searching = false
       player_table.flags.translating = false
     end
+  end,
+  ["1.3.3"] = function()
+    -- reset all searching data to allow new format
+    local searching_players = global.searching_players
+    local players = global.players
+    for i = 1, #searching_players do
+      local player_table = players[searching_players[i]]
+      player_table.search = nil
+      player_table.flags.searching = false
+    end
+    global.searching_players = {}
   end
 }

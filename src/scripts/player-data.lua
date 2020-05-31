@@ -6,6 +6,7 @@ local constants = require("scripts.constants")
 local info_gui = require("scripts.gui.info-base")
 local on_tick = require("scripts.on-tick")
 local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
+local search = require("scripts.search")
 local search_gui = require("scripts.gui.search")
 
 function player_data.init(player, index)
@@ -61,6 +62,10 @@ function player_data.destroy_guis(player, player_table)
 end
 
 function player_data.refresh(player, player_table)
+  if player_table.flags.searching then
+    search.cancel(player.index, player_table)
+  end
+
   player_data.destroy_guis(player, player_table)
   player_data.update_settings(player, player_table)
 
