@@ -64,6 +64,8 @@ end
 function player_data.refresh(player, player_table)
   if player_table.flags.searching then
     search.cancel(player.index, player_table)
+  elseif player_table.flags.translating then
+    translation.cancel(player.index)
   end
 
   player_data.destroy_guis(player, player_table)

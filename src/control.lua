@@ -198,6 +198,10 @@ event.on_player_created(function(e)
 end)
 
 event.on_player_removed(function(e)
+  local player_table = global.players[e.player_index]
+  if player_table.flags.translating then
+    translation.cancel(e.player_index)
+  end
   global.players[e.player_index] = nil
   lookup_tables.destroy(e.player_index)
 end)
