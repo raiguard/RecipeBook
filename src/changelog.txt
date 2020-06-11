@@ -2,6 +2,7 @@
 Version: 1.3.4
 Date: ????
   Bugfixes:
+    - Fixed a crash when re-joining a multiplayer game for the second time after a mod configuration change
     - Fixed that loading certain scenarios would cause translations to be duplicated
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.3
