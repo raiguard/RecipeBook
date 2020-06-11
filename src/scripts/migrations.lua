@@ -63,5 +63,11 @@ return {
       player_table.flags.searching = false
     end
     global.searching_players = {}
+  end,
+  ["1.3.4"] = function()
+    -- reset all translate_on_join flags
+    for _, player_table in pairs(global.players) do
+      player_table.flags.translate_on_join = false
+    end
   end
 }

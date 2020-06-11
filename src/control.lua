@@ -209,6 +209,7 @@ end)
 event.on_player_joined_game(function(e)
   local player_table = global.players[e.player_index]
   if player_table.flags.translate_on_join then
+    player_table.flags.translate_on_join = false
     player_data.start_translations(e.player_index, player_table)
   end
 end)
