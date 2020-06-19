@@ -1,7 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.5
 Date: ????
-  Changes:
+  Features:
+    - Added /LtnManager command for diagnosing/fixing issues, use /help LtnManager to see possible options
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.4
 Date: 2020-06-11

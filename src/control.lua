@@ -22,6 +22,17 @@ local string_sub = string.sub
 -- TODO pumped from for offshore pumps
 
 -- -----------------------------------------------------------------------------
+-- COMMANDS
+
+commands.add_command("RecipeBook", {"rb-message.command-help"},
+  function(e)
+    if e.parameter == "refresh-player-data" then
+      player_data.refresh(game.get_player(e.player_index), global.players[e.player_index])
+    end
+  end
+)
+
+-- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 -- on_tick's handler is in scripts.on-tick
 
