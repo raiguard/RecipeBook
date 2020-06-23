@@ -1,0 +1,146 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.3.6
+Date: ????
+  Changes:
+---------------------------------------------------------------------------------------------------
+Version: 1.3.5
+Date: 2020-06-19
+  Features:
+    - Added /RecipeBook command for diagnosing/fixing issues, use /help RecipeBook to see possible options
+---------------------------------------------------------------------------------------------------
+Version: 1.3.4
+Date: 2020-06-11
+  Bugfixes:
+    - Fixed a crash when re-joining a multiplayer game for the second time after a mod configuration change
+    - Fixed that loading certain scenarios would cause translations to be duplicated
+---------------------------------------------------------------------------------------------------
+Version: 1.3.3
+Date: 2020-05-31
+  Changes:
+    - Deep Storage Unit (DSU) recipes are now hidden from the Recipe Book
+    - The log is no longer spammed with recipe book data unless the debug adapter is hooked
+  Bugfixes:
+    - Fixed a crash when two players were searching at the same time
+---------------------------------------------------------------------------------------------------
+Version: 1.3.2
+Date: 2020-05-26
+  Bugfixes:
+    - Fixed that object availability would not be updated when migrating
+---------------------------------------------------------------------------------------------------
+Version: 1.3.1
+Date: 2020-05-26
+  Bugfixes:
+    - Fixed a crash when joining a multiplayer game for not the first time
+---------------------------------------------------------------------------------------------------
+Version: 1.3.0
+Date: 2020-05-26
+  Features:
+    - Added keyboard shortcuts for changing categories in the search GUI
+    - The shortcut button properly toggles the search GUI open/closed, instead of just opening it
+    - Hidden objects are now indicated with an [H] moniker
+    - Unavailable (unresearched) objects are colored red
+    - Added an option to hide unavailable objects
+  Changes:
+    - Refactored mod structure to improve performance and simplicity
+    - Switched from RaiLuaLib to FLib
+    - Search is now spread out over multiple ticks to save performance and allow the addition of more complex features
+    - Changing search categories will no longer reset the textfield to blank
+    - Removed crafters as a searchable category and info screen, the utility offered by them was minimal
+    - Transport drones recipes are now excluded from the Recipe Book
+    - Recipes that have no ingredients are excluded from the Recipe Book
+    - Updated GUI styles for Factorio 0.18.27
+---------------------------------------------------------------------------------------------------
+Version: 1.2.3
+Date: 2020-04-12
+  Changes:
+    - Converted all strings to double quotes
+    - Removed search button from next to close button (it will come back as an ACTUAL search button later)
+    - Translations are no longer performed on every join. If you change languages, simply use the /retranslate-all-dictionaries command to retranslate your dictionaries
+  Bugfixes:
+    - Fixed crash when using RaiLuaLib 0.2.4
+---------------------------------------------------------------------------------------------------
+Version: 1.2.2
+Date: 2020-04-09
+  Changes:
+    - Updated to RaiLuaLib 0.2.3
+---------------------------------------------------------------------------------------------------
+Version: 1.2.1
+Date: 2020-04-03
+  Features:
+    - Added fuzzy search option
+  Changes:
+    - Marked Death Markers as incompatible, because it somehow causes this mod to desync in multiplayer
+  Bugfixes:
+    - Added an error catch for a common error that I cannot reproduce. It gives instructions on how to report the error, and prints several helpful things to a file.
+---------------------------------------------------------------------------------------------------
+Version: 1.2.0
+Date: 2020-04-01
+  Features:
+    - You can now open multiple recipe quick reference windows simultaneously
+    - Using the search hotkey while holding an item will open that item's material page, if one exists
+    - Fluid searching with the hotkey now supports infinity pipes
+  Changes:
+    - Recipe quick reference windows are now draggable
+    - Remote Interface:
+      - open_info_gui -> open_gui
+      - object_name -> object
+      - 'object' is now specified as a table when opening a material GUI, the first entry being the material type, and the second the name
+      - Recipe Quick Reference windows may be opened using the 'recipe-quick-reference` gui_type
+        - source_data is not supported when opening this GUI type
+  Bugfixes:
+    - Fixed that items and fluids with identical names would conflict
+
+---------------------------------------------------------------------------------------------------
+Version: 1.1.5
+Date: 2020-03-20
+  Changes:
+    - Materials that aren't used in any recipes are excluded from the Recipe Book
+    - Significantly optimized GUI construction and update logic (it is now over 4x faster!)
+    - Removed mod GUI button, it is replaced by a shortcut
+    - Replaced the chef hat book icon with a proper "search recipe book" icon
+    - Refactored search loop to make adding more features easier
+    - Removed lualib and made it a separate mod, RaiLuaLib, that this mod now depends on
+  Bugfixes:
+    - Fixed crash when a clicking an object with rich text in the name (Krastorio 2)
+    - Fixed GUI alignment issues caused by style changes in 0.18.13
+    - Fixed potential issues with conditionally registered handlers losing their correlations with custom mod events when configuration changes
+---------------------------------------------------------------------------------------------------
+Version: 1.1.4
+Date: 2020-03-08
+  Features:
+    - Added a function to the remote interface to return the current API version
+---------------------------------------------------------------------------------------------------
+Version: 1.1.3
+Date: 2020-02-15
+  Bugfixes:
+    - Fixed a crash when opening a material from the recipe page (bad pattern matching)
+---------------------------------------------------------------------------------------------------
+Version: 1.1.2
+Date: 2020-02-12
+  Bugfixes:
+    - Fixed incompatibilities with Quick Item Search
+---------------------------------------------------------------------------------------------------
+Version: 1.1.1
+Date: 2020-02-12
+  Changes:
+    - Recipe amounts and crafting times are now shown in a slightly bold font
+  Bugfixes:
+    - Fixed a crash when reading a product with a variable amount of materials
+---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 2020-02-11
+  Features:
+    - Added support for the /retranslate-all-dictionaries command, which will retranslate all of your dictionaries
+    - Added support for variable probability results in recipes
+    - Using the hotkey while hovering over a pipe, pump, storage tank, or fluid wagon will open its fluid's material page
+  Bugfixes:
+    - Fixed a crash when confirming the search textfield when the results listbox was empty
+    - Fixed a crash when a recipe's product didn't have an amount specified
+    - Fixed a crash when there was more than one player on the map in some cases
+    - Fixed the translation module doing extraneous translating
+    - Fixed the translation module would never stop translating if the previous translation finished before you restarted it
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 2020-02-09
+  Features:
+    - Initial release
