@@ -6,6 +6,6 @@
   "contact": "Discord: Raiguard#7402",
   "homepage": "https://github.com/raiguard/Factorio-RecipeBook",
   "factorio_version": "0.18",
-  "dependencies": ["base >= 0.18.27", "flib >= 0.1.0"],
+  "dependencies": ["base >= 0.18.33", "flib >= 0.1.4"],
   "description": "Search for information about recipes, materials, and crafting machines in a clean, easy-to-use interface. Similar to FNEI and What is it Really Used For."
 }
