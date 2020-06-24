@@ -148,7 +148,7 @@ function search_gui.open(player, player_table, options)
   local category = options.category or player_table.settings.default_category
   -- create GUI structure
   local gui_data = gui.build(player.gui.screen, {
-    {type="frame", name="rb_search_window", style="standalone_inner_frame_in_outer_frame", direction="vertical", save_as="window", children={
+    {type="frame", name="rb_search_window", direction="vertical", save_as="window", children={
       -- titlebar
       {type="flow", children={
         {type="label", style="frame_title", caption={"mod-name.RecipeBook"}},

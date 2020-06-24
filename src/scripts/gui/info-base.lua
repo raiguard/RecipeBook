@@ -59,7 +59,7 @@ gui.add_handlers{
 function info_base_gui.open(player, player_table, category, name, source_data)
   -- gui structure
   local gui_data = gui.build(player.gui.screen, {
-    {type="frame", name="rb_info_window", style="standalone_inner_frame_in_outer_frame", direction="vertical", handlers="info_base.window", save_as="window", children={
+    {type="frame", name="rb_info_window", direction="vertical", handlers="info_base.window", save_as="window", children={
       -- titlebar
       {type="flow", children={
         {type="sprite-button", style="frame_action_button", sprite="rb_nav_backward", hovered_sprite="rb_nav_backward_dark",

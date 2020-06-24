@@ -31,7 +31,7 @@ gui.add_handlers{recipe_quick_reference={
 function recipe_quick_reference_gui.open(player, player_table, recipe_name)
   -- build GUI structure
   local data, filters = gui.build(player.gui.screen, {
-    {type="frame", style="standalone_inner_frame_in_outer_frame", direction="vertical", save_as="window", children={
+    {type="frame", direction="vertical", save_as="window", children={
       -- titlebar
       {type="flow", children={
         {type="label", style="frame_title", caption={"rb-gui.recipe-upper"}},
