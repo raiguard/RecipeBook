@@ -50,7 +50,7 @@ function global_data.build_recipe_book()
       else
         hidden = prototype.has_flag("hidden")
       end
-      recipe_book.material[class..","..name] = {
+      recipe_book.material[class.."."..name] = {
         available_to_forces = {},
         hidden = hidden,
         ingredient_in = {},
@@ -61,7 +61,7 @@ function global_data.build_recipe_book()
         unlocked_by = {}
       }
       -- add to translation table
-      translation_data[#translation_data+1] = {dictionary="material", internal=class..","..name, localised=prototype.localised_name}
+      translation_data[#translation_data+1] = {dictionary="material", internal=class.."."..name, localised=prototype.localised_name}
     end
   end
 
@@ -107,7 +107,7 @@ function global_data.build_recipe_book()
       local ingredients = prototype.ingredients
       for i=1,#ingredients do
         local ingredient = ingredients[i]
-        local ingredient_data = recipe_book.material[ingredient.type..","..ingredient.name]
+        local ingredient_data = recipe_book.material[ingredient.type.."."..ingredient.name]
         if ingredient_data then
           ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
         end
@@ -116,7 +116,7 @@ function global_data.build_recipe_book()
       local products = prototype.products
       for i=1,#products do
         local product = products[i]
-        local product_data = recipe_book.material[product.type..","..product.name]
+        local product_data = recipe_book.material[product.type.."."..product.name]
         if product_data then
           product_data.product_of[#product_data.product_of+1] = name
         end
@@ -134,7 +134,7 @@ function global_data.build_recipe_book()
     local products = prototype.mineable_properties.products
     if products then
       for _, product in ipairs(products) do
-        local product_data = recipe_book.material[product.type..","..product.name]
+        local product_data = recipe_book.material[product.type.."."..product.name]
         if product_data then
           product_data.mined_from[#product_data.mined_from+1] = name
         end
@@ -156,7 +156,7 @@ function global_data.build_recipe_book()
               local product_name = product.name
               local product_type = product.type
               -- product
-              local product_data = recipe_book.material[product_type..","..product_name]
+              local product_data = recipe_book.material[product_type.."."..product_name]
               if product_data then
                 -- check if we've already been added here
                 local add = true
