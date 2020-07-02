@@ -39,6 +39,20 @@ end)
 
 gui.register_handlers()
 
+-- INTERACTION
+
+event.register({defines.events.on_lua_shortcut, "rb-toggle-gui"}, function(e)
+  if e.input_name or e.prototype_name == "rb-toggle-gui" then
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    if player_table.flags.can_open_gui then
+      base_gui.toggle(player, player_table)
+    else
+      player.print{"rb-message.cannot-open-gui"}
+    end
+  end
+end)
+
 -- PLAYER
 
 event.on_player_created(function(e)

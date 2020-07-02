@@ -4,6 +4,7 @@ function player_data.init(player_index)
   local data = {
     flags = {
       can_open_gui = false,
+      gui_open = false,
       translate_on_join = false,
       tried_to_open_gui = false
     },

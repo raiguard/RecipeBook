@@ -22,7 +22,7 @@ gui.add_templates{
 
 function base_gui.create(player, player_table)
   local elems = gui.build(player.gui.screen, {
-    {type="frame", direction="vertical", save_as="window", children={
+    {type="frame", direction="vertical", elem_mods={visible=false}, save_as="window", children={
       {type="flow", save_as="titlebar_flow", children={
         {template="frame_action_button"},
         {template="frame_action_button"},
@@ -71,6 +71,40 @@ function base_gui.create(player, player_table)
 
   elems.window.force_auto_center()
   elems.titlebar_flow.drag_target = elems.window
+
+  player_table.gui.base = elems
+end
+
+function base_gui.destroy(player, player_table)
+
+end
+
+function base_gui.open(player, player_table)
+  local window = player_table.gui.base.window
+  if window and window.valid then
+    window.visible = true
+  end
+  player_table.flags.gui_open = true
+  player.opened = window
+  player.set_shortcut_toggled("rb-toggle-gui", true)
+end
+
+function base_gui.close(player, player_table)
+  local window = player_table.gui.base.window
+  if window and window.valid then
+    window.visible = false
+  end
+  player_table.flags.gui_open = false
+  player.opened = nil
+  player.set_shortcut_toggled("rb-toggle-gui", false)
+end
+
+function base_gui.toggle(player, player_table)
+  if player_table.flags.gui_open then
+    base_gui.close(player, player_table)
+  else
+    base_gui.open(player, player_table)
+  end
 end
 
 return base_gui
