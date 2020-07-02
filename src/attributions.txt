@@ -1,3 +1,7 @@
+icons8.com
+URL: https://icons8.com
+License: Public Domain
+----------------------------------------------------------------------------------------------------
 Font Awesome 5 Free
 URL: https://fontawesome.com
 License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
