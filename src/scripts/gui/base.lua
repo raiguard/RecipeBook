@@ -48,6 +48,11 @@ gui.add_handlers{
         end
       end
     },
+    settings_button = {
+      on_gui_click = function(e)
+
+      end
+    },
     window = {
       on_gui_closed = function(e)
         local player_table = global.players[e.player_index]
@@ -72,6 +77,8 @@ function base_gui.create(player, player_table)
         {type="empty-widget", style="rb_drag_handle", elem_mods={ignored_by_interaction=true}},
         {template="frame_action_button", sprite="rb_pin_white", hovered_sprite="rb_pin_black", clicked_sprite="rb_pin_black", handlers="base.pin_button",
           save_as="pin_button"},
+        {template="frame_action_button", sprite="rb_settings_white", hovered_sprite="rb_settings_black", clicked_sprite="rb_settings_black",
+          elem_mods={enabled=false}, handlers="base.settings_button", save_as="settings_button"},
         {template="frame_action_button", sprite="utility/close_white", hovered_sprite="utility/close_black", clicked_sprite="utility/close_black",
           handlers="base.close_button"}
       }},
