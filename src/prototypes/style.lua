@@ -19,6 +19,15 @@ styles.rb_selected_frame_action_button = {
   }
 }
 
+styles.rb_list_box_item = {
+  type = "button_style",
+  parent = "list_box_item",
+  left_padding = 4,
+  right_padding = 4,
+  horizontally_squashable = "on",
+  horizontally_stretchable = "stretch_and_expand"
+}
+
 -- EMPTY-WIDGET STYLES
 
 styles.rb_drag_handle = {

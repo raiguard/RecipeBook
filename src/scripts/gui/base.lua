@@ -16,18 +16,32 @@ gui.add_templates{
     return {type="flow", direction="vertical", children={
       {type="label", style="bold_label", style_mods={bottom_margin=2}, caption=caption},
       {type="frame", style="deep_frame_in_shallow_frame", children={
-        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={width=400, height=(rows * 28)}}
+        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={width=400, height=(rows * 28)}, children=gui.templates.dummy_search_contents()}
       }}
     }}
   end,
   dummy_search_contents = function()
     local children = {}
-    for i, caption in ipairs{
+    local i = 0;
+    for _, caption in ipairs{
       "[item=iron-plate]  Iron plate (Item)",
       "[fluid=water]  Water (Fluid)",
-      "[recipe=advanced-oil-processing]  Advanced oil processing (Recipe)"
+      "[recipe=advanced-oil-processing]  Advanced oil processing",
+      "Loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongboi"
     } do
-      children[i] = {type="button", style="list_box_item", style_mods={horizontally_stretchable=true}, caption=caption}
+      for _ = 1, 10 do
+        i = i + 1
+        children[i] = {type="button", style="rb_list_box_item", caption=caption, tooltip=
+          "[recipe=advanced-oil-processing]  [font=default-bold][color=255, 230, 192]Advanced oil processing (Recipe)[/color][/font]\n"
+          .."[font=default-bold]Ingredients:[/font]\n"
+          .."[fluid=water]  50x Water\n"
+          .."[fluid=crude-oil]  100x Crude oil\n"
+          .."[font=default-bold]Products:[/font]\n"
+          .."[fluid=heavy-oil]  25x Heavy oil\n"
+          .."[fluid=light-oil]  45x Light oil\n"
+          .."[fluid=petroleum-gas]  55x Petroleum gas"
+        }
+      end
     end
     return children
   end
@@ -174,6 +188,10 @@ function base_gui.toggle(player, player_table)
   else
     base_gui.open(player, player_table)
   end
+end
+
+function base_gui.update_state(player, player_table, state_changes)
+
 end
 
 return base_gui
