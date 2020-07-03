@@ -14,11 +14,22 @@ gui.add_templates{
   --! DEBUGGING
   dummy_content_listbox = function(caption, rows)
     return {type="flow", direction="vertical", children={
-      {type="label", style="bold_label", caption=caption},
+      {type="label", style="bold_label", style_mods={bottom_margin=2}, caption=caption},
       {type="frame", style="deep_frame_in_shallow_frame", children={
-        {type="scroll-pane", style="list_box_scroll_pane", style_mods={width=400, height=(rows * 28)}}
+        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={width=400, height=(rows * 28)}}
       }}
     }}
+  end,
+  dummy_search_contents = function()
+    local children = {}
+    for i, caption in ipairs{
+      "[item=iron-plate]  Iron plate (Item)",
+      "[fluid=water]  Water (Fluid)",
+      "[recipe=advanced-oil-processing]  Advanced oil processing (Recipe)"
+    } do
+      children[i] = {type="button", style="list_box_item", style_mods={horizontally_stretchable=true}, caption=caption}
+    end
+    return children
   end
 }
 
@@ -34,15 +45,15 @@ gui.add_handlers{
         local player = game.get_player(e.player_index)
         local player_table = global.players[e.player_index]
         local gui_data = player_table.gui.base
-        if gui_data.pinned then
-          gui_data.pin_button.style = "frame_action_button"
-          gui_data.pinned = false
-          gui_data.window.force_auto_center()
-          player.opened = gui_data.window
+        if gui_data.window.pinned then
+          gui_data.titlebar.pin_button.style = "frame_action_button"
+          gui_data.window.pinned = false
+          gui_data.window.frame.force_auto_center()
+          player.opened = gui_data.window.frame
         else
-          gui_data.pin_button.style = "rb_selected_frame_action_button"
-          gui_data.pinned = true
-          gui_data.window.auto_center = false
+          gui_data.titlebar.pin_button.style = "rb_selected_frame_action_button"
+          gui_data.window.pinned = true
+          gui_data.window.frame.auto_center = false
           player.opened = nil
 
         end
@@ -56,7 +67,7 @@ gui.add_handlers{
     window = {
       on_gui_closed = function(e)
         local player_table = global.players[e.player_index]
-        if not player_table.gui.base.pinned then
+        if not player_table.gui.base.window.pinned then
           gui.handlers.base.close_button.on_gui_click(e)
         end
       end
@@ -66,8 +77,8 @@ gui.add_handlers{
 
 function base_gui.create(player, player_table)
   local elems = gui.build(player.gui.screen, {
-    {type="frame", direction="vertical", elem_mods={visible=false}, handlers="base.window", save_as="window", children={
-      {type="flow", save_as="titlebar_flow", children={
+    {type="frame", direction="vertical", elem_mods={visible=false}, handlers="base.window", save_as="window.frame", children={
+      {type="flow", save_as="titlebar.flow", children={
         {template="frame_action_button", sprite="rb_nav_backward_white", hovered_sprite="rb_nav_backward_black", clicked_sprite="rb_nav_backward_black",
           elem_mods={enabled=false}},
         {template="frame_action_button", sprite="rb_nav_forward_white", hovered_sprite="rb_nav_forward_black", clicked_sprite="rb_nav_forward_black",
@@ -75,14 +86,15 @@ function base_gui.create(player, player_table)
         {type="empty-widget"},
         {type="label", style="frame_title", caption={"mod-name.RecipeBook"}, elem_mods={ignored_by_interaction=true}},
         {type="empty-widget", style="rb_drag_handle", elem_mods={ignored_by_interaction=true}},
-        {template="frame_action_button", sprite="rb_pin_white", hovered_sprite="rb_pin_black", clicked_sprite="rb_pin_black", handlers="base.pin_button",
-          save_as="pin_button"},
-        {template="frame_action_button", sprite="rb_settings_white", hovered_sprite="rb_settings_black", clicked_sprite="rb_settings_black",
-          elem_mods={enabled=false}, handlers="base.settings_button", save_as="settings_button"},
+        {template="frame_action_button", tooltip={"rb-gui.keep-open"}, sprite="rb_pin_white", hovered_sprite="rb_pin_black", clicked_sprite="rb_pin_black",
+          handlers="base.pin_button", save_as="titlebar.pin_button"},
+        {template="frame_action_button", tooltip={"rb-gui.settings"}, sprite="rb_settings_white", hovered_sprite="rb_settings_black",
+          clicked_sprite="rb_settings_black", handlers="base.settings_button", save_as="titlebar.settings_button"},
         {template="frame_action_button", sprite="utility/close_white", hovered_sprite="utility/close_black", clicked_sprite="utility/close_black",
           handlers="base.close_button"}
       }},
       {type="flow", style_mods={horizontal_spacing=12}, children={
+        -- search pane
         {type="frame", style="inside_shallow_frame", direction="vertical", children={
           {type="frame", style="subheader_frame", children={
             {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
@@ -99,19 +111,21 @@ function base_gui.create(player, player_table)
               --   {template="pushers.horizontal"},
               --   {type="label", style="bold_label", style_mods={right_margin=4}, caption=">"},
               -- }},
-              {type="scroll-pane", style="list_box_scroll_pane", style_mods={horizontally_stretchable=true, vertically_stretchable=true}}
+              {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={horizontally_stretchable=true, vertically_stretchable=true},
+                children=gui.templates.dummy_search_contents()}
             }}
           }}
         }},
-        {type="frame", style="inside_shallow_frame", direction="vertical", children={
-          {type="frame", style="subheader_frame", children={
-            {type="label", style="subheader_caption_label", caption="[recipe=chemical-plant]  Chemical Plant"},
-            {template="pushers.horizontal"},
-            -- {template="tool_button"},
-            {template="tool_button", sprite="rb_favorite_black"}
-          }},
-          {type="flow", style_mods={padding=12, vertical_spacing=6}, direction="vertical", children={
-            gui.templates.dummy_content_listbox("Favorites", 6),
+        -- info pane
+        {type="frame", style="inside_shallow_frame", style_mods={height=486}, direction="vertical", children={
+          -- {type="frame", style="subheader_frame", children={
+          --   {type="label", style="subheader_caption_label", caption="[recipe=chemical-plant]  Chemical Plant"},
+          --   {template="pushers.horizontal"},
+          --   -- {template="tool_button"},
+          --   {template="tool_button", sprite="rb_favorite_black"}
+          -- }},
+          {type="scroll-pane", style="rb_info_scroll_pane", vertical_scroll_policy="auto-and-reserve-space", children={
+            gui.templates.dummy_content_listbox("Favorites", 7),
             {template="pushers.vertical"},
             gui.templates.dummy_content_listbox("History", 7)
           }}
@@ -120,10 +134,10 @@ function base_gui.create(player, player_table)
     }}
   })
 
-  elems.window.force_auto_center()
-  elems.titlebar_flow.drag_target = elems.window
+  elems.window.frame.force_auto_center()
+  elems.titlebar.flow.drag_target = elems.window.frame
 
-  elems.pinned = false
+  elems.window.pinned = false
 
   player_table.gui.base = elems
 end
@@ -133,7 +147,7 @@ function base_gui.destroy(player, player_table)
 end
 
 function base_gui.open(player, player_table)
-  local window = player_table.gui.base.window
+  local window = player_table.gui.base.window.frame
   if window and window.valid then
     window.visible = true
   end
@@ -145,7 +159,7 @@ function base_gui.open(player, player_table)
 end
 
 function base_gui.close(player, player_table)
-  local window = player_table.gui.base.window
+  local window = player_table.gui.base.window.frame
   if window and window.valid then
     window.visible = false
   end

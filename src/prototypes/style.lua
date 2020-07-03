@@ -47,3 +47,31 @@ styles.flib_vertical_pusher = {
 
 
 -- LABEL STYLES
+
+
+
+-- SCROLL PANE STYLES
+
+styles.rb_info_scroll_pane = {
+  type = "scroll_pane_style",
+  extra_padding_when_activated = 0,
+  padding = 0,
+  graphical_set = {
+    shadow = default_inner_shadow
+  },
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    padding = 12,
+    top_padding = 8,
+    right_padding = 0
+  }
+}
+
+styles.rb_list_box_scroll_pane = {
+  type = "scroll_pane_style",
+  parent = "list_box_scroll_pane",
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    vertical_spacing = 0
+  }
+}
