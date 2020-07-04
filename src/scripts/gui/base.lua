@@ -90,7 +90,7 @@ gui.add_handlers{
 }
 
 function base_gui.create(player, player_table)
-  local elems = gui.build(player.gui.screen, {
+  local data = gui.build(player.gui.screen, {
     {type="frame", direction="vertical", elem_mods={visible=false}, handlers="base.window", save_as="window.frame", children={
       {type="flow", save_as="titlebar.flow", children={
         {template="frame_action_button", sprite="rb_nav_backward_white", hovered_sprite="rb_nav_backward_black", clicked_sprite="rb_nav_backward_black",
@@ -148,12 +148,12 @@ function base_gui.create(player, player_table)
     }}
   })
 
-  elems.window.frame.force_auto_center()
-  elems.titlebar.flow.drag_target = elems.window.frame
+  data.window.frame.force_auto_center()
+  data.titlebar.flow.drag_target = data.window.frame
 
-  elems.window.pinned = false
+  data.window.pinned = false
 
-  player_table.gui.base = elems
+  player_table.gui.base = data
 end
 
 function base_gui.destroy(player, player_table)
