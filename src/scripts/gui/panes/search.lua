@@ -36,6 +36,10 @@ gui.add_handlers{
         local scroll = gui_data.results_scroll_pane
         local rb_data = global.recipe_book[category]
 
+        -- hide limit frame, show it again later if there's more than 50 results
+        local limit_frame = gui_data.limit_frame
+        limit_frame.visible = false
+
         -- don't show anything if there are zero or one letters in the query
         if string.len(query) < 2 then
           scroll.clear()
@@ -43,11 +47,7 @@ gui.add_handlers{
         end
 
         -- TODO: settings
-        local show_hidden = true
-
-        -- hide limit frame, show it again later if there's more than 50 results
-        local limit_frame = gui_data.limit_frame
-        limit_frame.visible = false
+        local show_hidden = false
 
         -- match queries and add or modify children
         local children = scroll.children
