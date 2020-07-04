@@ -27,7 +27,7 @@ styles.rb_list_box_item = {
   left_padding = 4,
   right_padding = 4,
   horizontally_squashable = "on",
-  horizontally_stretchable = "stretch_and_expand"
+  horizontally_stretchable = "on"
 }
 
 styles.rb_unavailable_list_box_item = {

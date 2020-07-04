@@ -4,9 +4,11 @@ local translation = require("__flib__.translation")
 
 local constants = require("constants")
 local on_tick = require("scripts.on-tick")
+local util = require("scripts.util")
 
 function player_data.init(player_index)
   local data = {
+    favorites = {},
     flags = {
       can_open_gui = false,
       gui_open = false,
@@ -14,7 +16,9 @@ function player_data.init(player_index)
       translate_on_join = false,
     },
     gui = {},
-    translations = constants.empty_translations_table
+    history = {},
+    settings = {},
+    translations = util.shallow_copy(constants.empty_translations_table)
   }
   global.players[player_index] = data
 end
@@ -51,6 +55,22 @@ end
 
 function player_data.remove(player_index)
   -- TODO
+end
+
+function player_data.add_to_history()
+
+end
+
+function player_data.clear_history()
+
+end
+
+function player_data.add_to_favorites()
+
+end
+
+function player_data.remove_from_favorites()
+
 end
 
 return player_data

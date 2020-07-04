@@ -24,14 +24,14 @@ gui.add_templates{
     local children = {}
     local i = 0;
     for _, caption in ipairs{
-      "[item=iron-plate]  Iron plate (Item)",
-      "[fluid=water]  Water (Fluid)",
+      "[H]  [item=iron-plate]  Iron plate (Item)",
+      "[fluid=water]  [H] Water (Fluid)",
       "[recipe=advanced-oil-processing]  Advanced oil processing",
       "Loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongboi"
     } do
       for _ = 1, 10 do
         i = i + 1
-        children[i] = {type="button", style="rb_unavailable_list_box_item", caption=caption, tooltip=
+        children[i] = {type="button", style="rb_list_box_item", caption=caption, tooltip=
           "[recipe=advanced-oil-processing]  [font=default-bold][color=255, 230, 192]Advanced oil processing (Recipe)[/color][/font]\n"
           .."[font=default-bold]Ingredients:[/font]\n"
           .."[fluid=water]  50x Water\n"
@@ -79,6 +79,9 @@ gui.add_handlers{
       end
     },
     window = {
+      on_gui_click = function(e)
+        game.print("clicked!")
+      end,
       on_gui_closed = function(e)
         local player_table = global.players[e.player_index]
         if not player_table.gui.base.window.pinned then
@@ -152,6 +155,10 @@ function base_gui.create(player, player_table)
   data.titlebar.flow.drag_target = data.window.frame
 
   data.window.pinned = false
+
+  data.state = {
+    page = "home"
+  }
 
   player_table.gui.base = data
 end
