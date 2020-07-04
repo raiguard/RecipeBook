@@ -25,7 +25,7 @@ constants.empty_translations_table = {
   technology = {}
 }
 
-constants.input_sanitizers = {
+constants.input_sanitisers = {
   ["%("] = "%%(",
   ["%)"] = "%%)",
   ["%.^[%*]"] = "%%.",
@@ -37,6 +37,13 @@ constants.input_sanitizers = {
   ["%]"] = "%%]",
   ["%^"] = "%%^",
   ["%$"] = "%%$"
+}
+
+constants.panes = {
+  "home",
+  "material",
+  "recipe",
+  "search"
 }
 
 constants.search_categories = {"material", "recipe"}

@@ -61,7 +61,16 @@ styles.flib_vertical_pusher = {
 
 -- FRAME STYLES
 
-
+styles.rb_search_results_subheader_frame = {
+  type = "frame_style",
+  parent = "subheader_frame",
+  height = 28,
+  horizontally_stretchable = "on",
+  horizontal_flow_style = {
+    type = "horizontal_flow_style",
+    horizontal_align = "center"
+  }
+}
 
 -- LABEL STYLES
 
@@ -87,6 +96,9 @@ styles.rb_info_scroll_pane = {
 styles.rb_list_box_scroll_pane = {
   type = "scroll_pane_style",
   parent = "list_box_scroll_pane",
+  graphical_set = {
+    shadow = default_inner_shadow
+  },
   vertical_flow_style = {
     type = "vertical_flow_style",
     vertical_spacing = 0

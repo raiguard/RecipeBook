@@ -4,6 +4,11 @@ local gui = require("__flib__.gui")
 
 local constants = require("constants")
 
+local panes = {}
+for _, name in ipairs(constants.panes) do
+  panes[name] = require("scripts.gui.panes."..name)
+end
+
 gui.add_templates{
   frame_action_button = {type="sprite-button", style="frame_action_button", mouse_button_filter={"left"}},
   pushers = {
@@ -62,7 +67,7 @@ gui.add_handlers{
       on_gui_click = function(e)
         local player = game.get_player(e.player_index)
         local player_table = global.players[e.player_index]
-        local gui_data = player_table.gui.base
+        local gui_data = player_table.gui.main.base
         if gui_data.window.pinned then
           gui_data.titlebar.pin_button.style = "frame_action_button"
           gui_data.window.pinned = false
@@ -73,7 +78,6 @@ gui.add_handlers{
           gui_data.window.pinned = true
           gui_data.window.frame.auto_center = false
           player.opened = nil
-
         end
       end
     },
@@ -83,12 +87,9 @@ gui.add_handlers{
       end
     },
     window = {
-      on_gui_click = function(e)
-        game.print("clicked!")
-      end,
       on_gui_closed = function(e)
         local player_table = global.players[e.player_index]
-        if not player_table.gui.base.window.pinned then
+        if not player_table.gui.main.base.window.pinned then
           gui.handlers.base.close_button.on_gui_click(e)
         end
       end
@@ -98,8 +99,8 @@ gui.add_handlers{
 
 function base_gui.create(player, player_table)
   local data = gui.build(player.gui.screen, {
-    {type="frame", direction="vertical", elem_mods={visible=false}, handlers="base.window", save_as="window.frame", children={
-      {type="flow", save_as="titlebar.flow", children={
+    {type="frame", direction="vertical", elem_mods={visible=false}, handlers="base.window", save_as="base.window.frame", children={
+      {type="flow", save_as="base.titlebar.flow", children={
         {template="frame_action_button", sprite="rb_nav_backward_white", hovered_sprite="rb_nav_backward_black", clicked_sprite="rb_nav_backward_black",
           elem_mods={enabled=false}},
         {template="frame_action_button", sprite="rb_nav_forward_white", hovered_sprite="rb_nav_forward_black", clicked_sprite="rb_nav_forward_black",
@@ -108,35 +109,15 @@ function base_gui.create(player, player_table)
         {type="label", style="frame_title", caption={"mod-name.RecipeBook"}, elem_mods={ignored_by_interaction=true}},
         {type="empty-widget", style="rb_drag_handle", elem_mods={ignored_by_interaction=true}},
         {template="frame_action_button", tooltip={"rb-gui.keep-open"}, sprite="rb_pin_white", hovered_sprite="rb_pin_black", clicked_sprite="rb_pin_black",
-          handlers="base.pin_button", save_as="titlebar.pin_button"},
+          handlers="base.pin_button", save_as="base.titlebar.pin_button"},
         {template="frame_action_button", tooltip={"rb-gui.settings"}, sprite="rb_settings_white", hovered_sprite="rb_settings_black",
-          clicked_sprite="rb_settings_black", handlers="base.settings_button", save_as="titlebar.settings_button"},
+          clicked_sprite="rb_settings_black", handlers="base.settings_button", save_as="base.titlebar.settings_button"},
         {template="frame_action_button", sprite="utility/close_white", hovered_sprite="utility/close_black", clicked_sprite="utility/close_black",
           handlers="base.close_button"}
       }},
       {type="flow", style_mods={horizontal_spacing=12}, children={
         -- search pane
-        {type="frame", style="inside_shallow_frame", direction="vertical", children={
-          {type="frame", style="subheader_frame", children={
-            {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
-            {template="pushers.horizontal"},
-            {type="drop-down", items=constants.search_categories, selected_index=2}
-          }},
-          {type="flow", style_mods={padding=12, top_padding=8, right_padding=0, vertical_spacing=10}, direction="vertical", children={
-            {type="textfield", style_mods={width=250, right_margin=12}},
-            {type="frame", style="deep_frame_in_shallow_frame", style_mods={width=250, height=392}, direction="vertical", children={
-              -- {type="frame", style="subheader_frame", style_mods={height=28, horizontally_stretchable=true}, children={
-              --   {type="label", style="bold_label", style_mods={left_margin=4}, caption="<"},
-              --   {template="pushers.horizontal"},
-              --   {type="label", style="bold_label", style_mods={left_margin=4}, caption="1-50  /  263"},
-              --   {template="pushers.horizontal"},
-              --   {type="label", style="bold_label", style_mods={right_margin=4}, caption=">"},
-              -- }},
-              {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={horizontally_stretchable=true, vertically_stretchable=true},
-                children=gui.templates.dummy_search_contents()}
-            }}
-          }}
-        }},
+        panes.search.base_template,
         -- info pane
         {type="frame", style="inside_shallow_frame", style_mods={height=486}, direction="vertical", children={
           -- {type="frame", style="subheader_frame", children={
@@ -155,16 +136,18 @@ function base_gui.create(player, player_table)
     }}
   })
 
-  data.window.frame.force_auto_center()
-  data.titlebar.flow.drag_target = data.window.frame
+  data.base.window.frame.force_auto_center()
+  data.base.titlebar.flow.drag_target = data.base.window.frame
 
-  data.window.pinned = false
+  data.base.window.pinned = false
+
+  data.search.category = "recipe"
 
   data.state = {
     page = "home"
   }
 
-  player_table.gui.base = data
+  player_table.gui.main = data
 end
 
 function base_gui.destroy(player, player_table)
@@ -172,19 +155,19 @@ function base_gui.destroy(player, player_table)
 end
 
 function base_gui.open(player, player_table)
-  local window = player_table.gui.base.window.frame
+  local window = player_table.gui.main.base.window.frame
   if window and window.valid then
     window.visible = true
   end
   player_table.flags.gui_open = true
-  if not player_table.gui.base.pinned then
+  if not player_table.gui.main.base.pinned then
     player.opened = window
   end
   player.set_shortcut_toggled("rb-toggle-gui", true)
 end
 
 function base_gui.close(player, player_table)
-  local window = player_table.gui.base.window.frame
+  local window = player_table.gui.main.base.window.frame
   if window and window.valid then
     window.visible = false
   end
