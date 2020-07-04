@@ -11,6 +11,20 @@ local player_data = require("scripts.player-data")
 local base_gui = require("scripts.gui.base")
 
 -- -----------------------------------------------------------------------------
+-- COMMANDS
+
+commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
+  if e.parameter == "refresh-player-data" then
+    -- TODO destroy GUIs
+    local player = game.get_player(e.player_index)
+    player.print{"rb-message.refreshing-player-data"}
+    player_data.refresh(player, global.players[e.player_index])
+  else
+    game.get_player(e.player_index).print{"rb-message.invalid-command"}
+  end
+end)
+
+-- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
 -- BOOTSTRAP

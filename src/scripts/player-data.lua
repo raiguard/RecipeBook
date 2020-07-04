@@ -29,6 +29,7 @@ function player_data.start_translations(player_index)
 end
 
 function player_data.refresh(player, player_table)
+  -- TODO destroy GUIs
   -- set flag
   player_table.flags.can_open_gui = false
 
