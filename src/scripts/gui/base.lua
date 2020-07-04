@@ -14,7 +14,11 @@ gui.add_templates{
   --! DEBUGGING
   dummy_content_listbox = function(caption, rows)
     return {type="flow", direction="vertical", children={
-      {type="label", style="bold_label", style_mods={bottom_margin=2}, caption=caption},
+      {type="flow", children={
+        {type="label", style="bold_label", style_mods={bottom_margin=2}, caption=caption},
+        {template="pushers.horizontal"},
+        {type="sprite-button", style="tool_button_red", style_mods={width=22, height=22, padding=0}, sprite="utility/trash"}
+      }},
       {type="frame", style="deep_frame_in_shallow_frame", children={
         {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={width=400, height=(rows * 28)}, children=gui.templates.dummy_search_contents()}
       }}
