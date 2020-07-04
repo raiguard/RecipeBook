@@ -31,7 +31,7 @@ gui.add_templates{
     } do
       for _ = 1, 10 do
         i = i + 1
-        children[i] = {type="button", style="rb_list_box_item", caption=caption, tooltip=
+        children[i] = {type="button", style="rb_unavailable_list_box_item", caption=caption, tooltip=
           "[recipe=advanced-oil-processing]  [font=default-bold][color=255, 230, 192]Advanced oil processing (Recipe)[/color][/font]\n"
           .."[font=default-bold]Ingredients:[/font]\n"
           .."[fluid=water]  50x Water\n"

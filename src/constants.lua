@@ -41,4 +41,7 @@ constants.input_sanitizers = {
 
 constants.search_categories = {"material", "recipe"}
 
+constants.unavailable_color_tbl = {255, 142, 142}
+constants.unavailable_color = "255, 142, 142"
+
 return constants

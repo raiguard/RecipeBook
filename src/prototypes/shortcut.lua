@@ -10,6 +10,6 @@ data:extend{
     disabled_icon = data_util.build_sprite(nil, {48,0}, "__RecipeBook__/graphics/shortcut.png", 32, 2),
     disabled_small_icon = data_util.build_sprite(nil, {36,32}, "__RecipeBook__/graphics/shortcut.png", 24, 2),
     toggleable = true,
-    -- associated_control_input = "rb-toggle-gui"
+    associated_control_input = "rb-toggle-gui"
   },
 }

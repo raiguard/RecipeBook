@@ -1,3 +1,5 @@
+local constants = require("constants")
+
 local styles = data.raw["gui-style"].default
 
 -- BUTTON STYLES
@@ -26,6 +28,12 @@ styles.rb_list_box_item = {
   right_padding = 4,
   horizontally_squashable = "on",
   horizontally_stretchable = "stretch_and_expand"
+}
+
+styles.rb_unavailable_list_box_item = {
+  type = "button_style",
+  parent = "rb_list_box_item",
+  default_font_color = constants.unavailable_color_tbl
 }
 
 -- EMPTY-WIDGET STYLES
