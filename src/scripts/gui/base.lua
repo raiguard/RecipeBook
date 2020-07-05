@@ -164,6 +164,8 @@ function base_gui.open(player, player_table)
     player.opened = window
   end
   player.set_shortcut_toggled("rb-toggle-gui", true)
+
+  player_table.gui.main.search.textfield.focus()
 end
 
 function base_gui.close(player, player_table)
