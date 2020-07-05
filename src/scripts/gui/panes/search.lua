@@ -48,6 +48,7 @@ gui.add_handlers{
 
         -- TODO: settings
         local show_hidden = false
+        local show_unavailable = false
 
         -- match queries and add or modify children
         local children = scroll.children
@@ -58,7 +59,8 @@ gui.add_handlers{
             -- check hidden status
             local result_data = rb_data[internal]
             local is_hidden = result_data.hidden
-            if show_hidden or not is_hidden then
+            local is_available = result_data.available_to_forces[force_index]
+            if (show_hidden or not is_hidden) and (show_unavailable or is_available) then
               -- increment index, break if more than 50 results
               i = i + 1
               if i == 51 then
@@ -66,14 +68,12 @@ gui.add_handlers{
                 break
               end
 
-              -- assemble caption and tooltip
+              -- assemble element components
+              local style = is_available and "rb_list_box_item" or "rb_unavailable_list_box_item"
               local caption = "["..category.."="..internal.."]  "..translation
               local tooltip = internal
 
               if is_hidden then caption = "[H]  "..caption end
-
-              -- check availability
-              local style = result_data.available_to_forces[force_index] and "rb_list_box_item" or "rb_unavailable_list_box_item"
 
               -- create or modify element
               local child = children[i]
