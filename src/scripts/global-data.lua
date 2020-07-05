@@ -7,6 +7,7 @@ function global_data.init()
   global.players = {}
 
   global_data.build_recipe_book()
+  global_data.check_forces()
 end
 
 function global_data.build_recipe_book()
@@ -24,7 +25,7 @@ function global_data.build_recipe_book()
     forces[force.index] = force.recipes
   end
 
-  -- iterate crafters
+  -- iterate machines
   local machine_prototypes = game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
     {filter="type", type="furnace"}
@@ -205,6 +206,81 @@ function global_data.build_recipe_book()
   -- apply to global
   global.recipe_book = recipe_book
   global.translation_data = translation_data
+end
+
+local function set_recipe_available(force_index, recipe_data, recipe_book, item_prototypes)
+  recipe_data.available_to_forces[force_index] = true
+  for _, product in ipairs(recipe_data.products) do
+    -- product
+    local product_data = recipe_book.material[product.type.."."..product.name]
+    if product_data and product_data.available_to_forces then
+      product_data.available_to_forces[force_index] = true
+    end
+    -- machine
+    if product.type == "item" then
+      local place_result = item_prototypes[product.name].place_result
+      if place_result then
+        local machine_data = recipe_book.machine[place_result.name]
+        if machine_data then
+          machine_data.available_to_forces[force_index] = true
+        end
+      end
+    end
+  end
+end
+
+function global_data.update_available_objects(technology)
+  local force_index = technology.force.index
+  local item_prototypes = game.item_prototypes
+  local recipe_book = global.recipe_book
+  -- technology
+  local technology_data = recipe_book.technology[technology.name]
+  if technology_data then
+    technology_data.researched_forces[force_index] = true
+  end
+  -- recipes
+  for _, effect in ipairs(technology.effects) do
+    if effect.type == "unlock-recipe" then
+      local recipe_data = recipe_book.recipe[effect.recipe]
+      if recipe_data and not recipe_data.available_to_forces[force_index] then
+        set_recipe_available(force_index, recipe_data, recipe_book, item_prototypes)
+      end
+    end
+  end
+end
+
+function global_data.check_force_recipes(force)
+  local item_prototypes = game.item_prototypes
+  local recipe_book = global.recipe_book
+  local force_index = force.index
+  for name, recipe in pairs(force.recipes) do
+    if recipe.enabled then
+      local recipe_data = recipe_book.recipe[name]
+      if recipe_data then
+        set_recipe_available(force_index, recipe_data, recipe_book, item_prototypes)
+      end
+    end
+  end
+end
+
+function global_data.check_force_technologies(force)
+  local force_index = force.index
+  local technologies = global.recipe_book.technology
+  for name, technology in pairs(force.technologies) do
+    if technology.enabled and technology.researched then
+      local technology_data = technologies[name]
+      if technology_data then
+        technology_data.researched_forces[force_index] = true
+      end
+    end
+  end
+end
+
+function global_data.check_forces()
+  for _, force in pairs(game.forces) do
+    global_data.check_force_recipes(force)
+    global_data.check_force_technologies(force)
+  end
 end
 
 return global_data

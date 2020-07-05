@@ -25,11 +25,11 @@ gui.add_templates{
         {type="sprite-button", style="tool_button_red", style_mods={width=22, height=22, padding=0}, sprite="utility/trash"}
       }},
       {type="frame", style="deep_frame_in_shallow_frame", children={
-        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={width=400, height=(rows * 28)}, children=gui.templates.dummy_search_contents()}
+        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={width=400, height=(rows * 28)}, children=gui.templates.dummy_listbox_contents()}
       }}
     }}
   end,
-  dummy_search_contents = function()
+  dummy_listbox_contents = function()
     local children = {}
     local i = 0;
     for _, caption in ipairs{
@@ -141,7 +141,7 @@ function base_gui.create(player, player_table)
 
   data.base.window.pinned = false
 
-  data.search.category = "recipe"
+  data.search.category = "material"
 
   data.state = {
     page = "home"
