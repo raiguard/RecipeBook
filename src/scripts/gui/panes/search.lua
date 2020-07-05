@@ -8,25 +8,20 @@ local string = string
 
 gui.add_handlers{
   search = {
+    category_drop_down = {
+      on_gui_selection_state_changed = function(e)
+        local player_table = global.players[e.player_index]
+        player_table.gui.main.search.category = constants.search_categories[e.element.selected_index]
+        gui.handlers.search.textfield.on_gui_text_changed(e)
+      end
+    },
     textfield = {
       on_gui_text_changed = function(e)
         local player = game.get_player(e.player_index)
         local force_index = player.force.index
         local player_table = global.players[e.player_index]
         local gui_data = player_table.gui.main.search
-        local query = string.lower(e.element.text)
-
-        -- fuzzy search
-        if player_table.settings.use_fuzzy_search then
-          query = string.gsub(query, ".", "%1.*")
-        end
-
-        -- input sanitization
-        for pattern, replacement in pairs(constants.input_sanitisers) do
-          query = string.gsub(query, pattern, replacement)
-        end
-
-        gui_data.query = query
+        local query = string.lower(gui_data.textfield.text)
 
         --! ---------------------------------------------------------------------------
         --! TODO: This is catastrophically bad. Don't do this. I need to fix this.
@@ -46,7 +41,19 @@ gui.add_handlers{
           return
         end
 
-        -- TODO: settings
+        -- fuzzy search
+        if player_table.settings.use_fuzzy_search then
+          query = string.gsub(query, ".", "%1.*")
+        end
+
+        -- input sanitization
+        for pattern, replacement in pairs(constants.input_sanitisers) do
+          query = string.gsub(query, pattern, replacement)
+        end
+
+        gui_data.query = query
+
+        -- settings
         local show_hidden = player_table.settings.show_hidden
         local show_unavailable = player_table.settings.show_unavailable
 
@@ -94,9 +101,9 @@ gui.add_handlers{
             children[j].destroy()
           end
         end
-      end
 
-      --! ---------------------------------------------------------------------------
+        --! ---------------------------------------------------------------------------
+      end
     }
   }
 }
@@ -105,7 +112,7 @@ search_pane.base_template = {type="frame", style="inside_shallow_frame", directi
   {type="frame", style="subheader_frame", children={
     {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
     {template="pushers.horizontal"},
-    {type="drop-down", items=constants.search_categories, selected_index=2, save_as="search.category_drop_down"}
+    {type="drop-down", items=constants.search_categories, selected_index=2, handlers="search.category_drop_down", save_as="search.category_drop_down"}
   }},
   {type="flow", style_mods={padding=12, top_padding=8, right_padding=0, vertical_spacing=10}, direction="vertical", children={
     {type="textfield", style_mods={width=250, right_margin=12}, handlers="search.textfield", save_as="search.textfield"},
