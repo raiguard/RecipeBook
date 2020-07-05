@@ -16,10 +16,10 @@ gui.add_handlers{
         local gui_data = player_table.gui.main.search
         local query = string.lower(e.element.text)
 
-        -- -- fuzzy search
-        -- if player_table.settings.use_fuzzy_search then
-        --   query = string.gsub(query, ".", "%1.*")
-        -- end
+        -- fuzzy search
+        if player_table.settings.use_fuzzy_search then
+          query = string.gsub(query, ".", "%1.*")
+        end
 
         -- input sanitization
         for pattern, replacement in pairs(constants.input_sanitisers) do
@@ -47,8 +47,8 @@ gui.add_handlers{
         end
 
         -- TODO: settings
-        local show_hidden = false
-        local show_unavailable = true
+        local show_hidden = player_table.settings.show_hidden
+        local show_unavailable = player_table.settings.show_unavailable
 
         -- match queries and add or modify children
         local children = scroll.children

@@ -24,7 +24,13 @@ function player_data.init(player_index)
 end
 
 function player_data.update_settings(player, player_table)
-  -- TODO
+  local mod_settings = player.mod_settings
+  player_table.settings = {
+    default_category = mod_settings["rb-default-search-category"].value,
+    show_hidden = mod_settings["rb-show-hidden-objects"].value,
+    show_unavailable = mod_settings["rb-show-unavailable-objects"].value,
+    use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value
+  }
 end
 
 function player_data.start_translations(player_index)

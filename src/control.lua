@@ -111,6 +111,16 @@ event.on_player_removed(function(e)
   player_data.remove(e.player_index)
 end)
 
+-- SETTINGS
+
+event.on_runtime_mod_setting_changed(function(e)
+  if string.sub(e.setting, 1, 3) == "rb-" then
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    player_data.update_settings(player, player_table)
+  end
+end)
+
 -- TRANSLATIONS
 
 event.on_string_translated(function(e)
