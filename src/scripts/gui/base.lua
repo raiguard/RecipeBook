@@ -115,7 +115,7 @@ function base_gui.create(player, player_table)
         {template="frame_action_button", sprite="utility/close_white", hovered_sprite="utility/close_black", clicked_sprite="utility/close_black",
           handlers="base.close_button"}
       }},
-      {type="flow", style_mods={horizontal_spacing=12}, children={
+      {type="flow", style="rb_main_frame_flow", children={
         -- search pane
         panes.search.base_template,
         -- info pane
@@ -141,7 +141,7 @@ function base_gui.create(player, player_table)
 
   data.base.window.pinned = false
 
-  data.search.category = "material"
+  data = panes.search.setup(player, player_table, data)
 
   data.state = {
     page = "home"

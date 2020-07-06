@@ -59,6 +59,13 @@ styles.flib_vertical_pusher = {
   vertically_stretchable = "on"
 }
 
+-- FLOW STYLES
+
+styles.rb_main_frame_flow = {
+  type = "horizontal_flow_style",
+  horizontal_spacing = 12
+}
+
 -- FRAME STYLES
 
 styles.rb_search_results_subheader_frame = {

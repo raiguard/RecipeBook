@@ -15,6 +15,15 @@ gui.add_handlers{
         gui.handlers.search.textfield.on_gui_text_changed(e)
       end
     },
+    result_button = {
+      on_gui_click = function(e)
+        local player = game.get_player(e.player_index)
+        local player_table = global.players[e.player_index]
+
+        local _, _, category, name = string.find(e.element.caption, "^.-%[(.-)=(.-)%].*$")
+        log(category.." | "..name)
+      end
+    },
     textfield = {
       on_gui_text_changed = function(e)
         local player = game.get_player(e.player_index)
@@ -89,7 +98,7 @@ gui.add_handlers{
                 child.caption = caption
                 child.tooltip = tooltip
               else
-                add{type="button", style=style, caption=caption, tooltip=tooltip}
+                add{type="button", name="rb_search_result_button__"..i, style=style, caption=caption, tooltip=tooltip}
               end
             end
           end
@@ -114,9 +123,9 @@ search_pane.base_template = {type="frame", style="inside_shallow_frame", directi
     {template="pushers.horizontal"},
     {type="drop-down", items=constants.search_categories, selected_index=2, handlers="search.category_drop_down", save_as="search.category_drop_down"}
   }},
-  {type="flow", style_mods={padding=12, top_padding=8, right_padding=0, vertical_spacing=10}, direction="vertical", children={
-    {type="textfield", style_mods={width=250, right_margin=12}, handlers="search.textfield", save_as="search.textfield"},
-    {type="frame", style="deep_frame_in_shallow_frame", style_mods={width=250, height=392}, direction="vertical", children={
+  {type="flow", style_mods={padding=12, top_padding=8, vertical_spacing=10}, direction="vertical", children={
+    {type="textfield", style_mods={width=250}, handlers="search.textfield", save_as="search.textfield"},
+    {type="frame", style="deep_frame_in_shallow_frame", style_mods={horizontally_stretchable=true, height=392}, direction="vertical", children={
       {type="frame", style="rb_search_results_subheader_frame", elem_mods={visible=false}, save_as="search.limit_frame", children={
         {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited"}}}
       }},
@@ -125,5 +134,13 @@ search_pane.base_template = {type="frame", style="inside_shallow_frame", directi
     }}
   }}
 }}
+
+function search_pane.setup(player, player_table, data)
+  data.search.category = "recipe"
+
+  gui.update_filters("search.result_button", player.index, {"rb_search_result_button"}, "add")
+
+  return data
+end
 
 return search_pane
