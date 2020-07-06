@@ -1,4 +1,4 @@
-local base_gui = {}
+local main_gui = {}
 
 local gui = require("__flib__.gui")
 
@@ -6,7 +6,7 @@ local constants = require("constants")
 
 local panes = {}
 for _, name in ipairs(constants.panes) do
-  panes[name] = require("scripts.gui.panes."..name)
+  panes[name] = require("scripts.gui.main.panes."..name)
 end
 
 gui.add_templates{
@@ -60,7 +60,7 @@ gui.add_handlers{
   base = {
     close_button = {
       on_gui_click = function(e)
-        base_gui.close(game.get_player(e.player_index), global.players[e.player_index])
+        main_gui.close(game.get_player(e.player_index), global.players[e.player_index])
       end
     },
     pin_button = {
@@ -97,7 +97,7 @@ gui.add_handlers{
   }
 }
 
-function base_gui.create(player, player_table)
+function main_gui.create(player, player_table)
   local data = gui.build(player.gui.screen, {
     {type="frame", direction="vertical", elem_mods={visible=false}, handlers="base.window", save_as="base.window.frame", children={
       {type="flow", save_as="base.titlebar.flow", children={
@@ -150,11 +150,11 @@ function base_gui.create(player, player_table)
   player_table.gui.main = data
 end
 
-function base_gui.destroy(player, player_table)
+function main_gui.destroy(player, player_table)
 
 end
 
-function base_gui.open(player, player_table, skip_focus)
+function main_gui.open(player, player_table, skip_focus)
   local window = player_table.gui.main.base.window.frame
   if window and window.valid then
     window.visible = true
@@ -170,7 +170,7 @@ function base_gui.open(player, player_table, skip_focus)
   end
 end
 
-function base_gui.close(player, player_table)
+function main_gui.close(player, player_table)
   local window = player_table.gui.main.base.window.frame
   if window and window.valid then
     window.visible = false
@@ -180,19 +180,19 @@ function base_gui.close(player, player_table)
   player.set_shortcut_toggled("rb-toggle-gui", false)
 end
 
-function base_gui.toggle(player, player_table)
+function main_gui.toggle(player, player_table)
   if player_table.flags.gui_open then
-    base_gui.close(player, player_table)
+    main_gui.close(player, player_table)
   else
-    base_gui.open(player, player_table)
+    main_gui.open(player, player_table)
   end
 end
 
-function base_gui.update_state(player, player_table, state_changes)
+function main_gui.update_state(player, player_table, state_changes)
 
 end
 
-function base_gui.open_page(player, player_table, class, name)
+function main_gui.open_page(player, player_table, class, name)
   player.print("OPEN PAGE: "..class.." | "..name)
 
   -- add to history
@@ -200,4 +200,4 @@ function base_gui.open_page(player, player_table, class, name)
   --
 end
 
-return base_gui
+return main_gui

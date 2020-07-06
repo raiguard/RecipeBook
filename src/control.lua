@@ -10,7 +10,7 @@ local migrations = require("scripts.migrations")
 local on_tick = require("scripts.on-tick")
 local player_data = require("scripts.player-data")
 
-local base_gui = require("scripts.gui.base")
+local main_gui = require("scripts.gui.main.base")
 
 -- -----------------------------------------------------------------------------
 -- COMMANDS
@@ -84,7 +84,7 @@ event.register({defines.events.on_lua_shortcut, "rb-toggle-gui"}, function(e)
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
     if player_table.flags.can_open_gui then
-      base_gui.toggle(player, player_table)
+      main_gui.toggle(player, player_table)
     else
       player.print{"rb-message.cannot-open-gui"}
       player_table.flags.show_message_after_translation = true
@@ -147,7 +147,7 @@ event.on_string_translated(function(e)
       player.print{'rb-message.can-open-gui'}
     end
     -- create GUI
-    base_gui.create(player, player_table)
+    main_gui.create(player, player_table)
     -- update flags
     player_table.flags.can_open_gui = true
     player_table.flags.translate_on_join = false -- not really needed, but is here just in case
@@ -177,6 +177,6 @@ event.register(constants.events.open_page, function(e)
   if e.obj_class == "home" then
     -- TODO
   else
-    base_gui.open_page(game.get_player(e.player_index), global.players[e.player_index], e.obj_class, e.obj_name)
+    main_gui.open_page(game.get_player(e.player_index), global.players[e.player_index], e.obj_class, e.obj_name)
   end
 end)
