@@ -117,11 +117,9 @@ search_pane.base_template = {type="frame", style="inside_shallow_frame", directi
   {type="flow", style_mods={padding=12, top_padding=8, right_padding=0, vertical_spacing=10}, direction="vertical", children={
     {type="textfield", style_mods={width=250, right_margin=12}, handlers="search.textfield", save_as="search.textfield"},
     {type="frame", style="deep_frame_in_shallow_frame", style_mods={width=250, height=392}, direction="vertical", children={
-      {type="frame", style="rb_search_results_subheader_frame", elem_mods={visible=false},
-        save_as="search.limit_frame", children={
-          {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited"}}},
-        }
-      },
+      {type="frame", style="rb_search_results_subheader_frame", elem_mods={visible=false}, save_as="search.limit_frame", children={
+        {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited"}}}
+      }},
       {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={horizontally_stretchable=true, vertically_stretchable=true},
         save_as="search.results_scroll_pane"}
     }}
