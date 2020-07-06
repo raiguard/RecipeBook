@@ -33,7 +33,7 @@ styles.rb_list_box_item = {
 styles.rb_unavailable_list_box_item = {
   type = "button_style",
   parent = "rb_list_box_item",
-  default_font_color = constants.unavailable_color_tbl
+  default_font_color = constants.colors.unavailable.tbl
 }
 
 -- EMPTY-WIDGET STYLES

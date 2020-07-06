@@ -87,9 +87,23 @@ gui.add_handlers{
               -- assemble element components
               local style = is_available and "rb_list_box_item" or "rb_unavailable_list_box_item"
               local caption = "["..result_data.sprite_class.."="..result_data.prototype_name.."]  "..translation
-              local tooltip = result_data.prototype_name
+              local tooltip =
+                "["..result_data.sprite_class.."="..result_data.prototype_name.."]  "..translation
+                .."\n[color="..constants.colors.info.str.."]"..result_data.sprite_class.."[/color]"
 
-              if is_hidden then caption = "[H]  "..caption end
+              if is_hidden then
+                caption = "(H)  "..caption
+                tooltip = tooltip.."  |  Hidden"
+              end
+              if not is_available then
+                tooltip = tooltip.."  |  [color="..constants.colors.unavailable.str.."]Unavailable[/color]"
+              end
+
+              if result_data.sprite_class == "recipe" then
+                -- TODO
+              else
+                -- TODO
+              end
 
               -- create or modify element
               local child = children[i]

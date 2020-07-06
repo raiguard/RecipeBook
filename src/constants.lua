@@ -16,6 +16,17 @@ constants.blacklisted_recipe_categories = {
   ["deep-storage-fluid-mk2/3"] = true
 }
 
+constants.colors = {
+  info = {
+    str = "128, 206, 240",
+    tbl = {128, 206, 240}
+  },
+  unavailable = {
+    str = "255, 142, 142",
+    tbl = {255, 142, 142}
+  }
+}
+
 constants.empty_translations_table = {
   machine = {},
   material = {},
@@ -47,8 +58,5 @@ constants.panes = {
 }
 
 constants.search_categories = {"material", "recipe"}
-
-constants.unavailable_color_tbl = {255, 142, 142}
-constants.unavailable_color = "255, 142, 142"
 
 return constants
