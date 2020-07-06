@@ -1,5 +1,6 @@
 local search_pane = {}
 
+local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
@@ -20,8 +21,8 @@ gui.add_handlers{
         local player = game.get_player(e.player_index)
         local player_table = global.players[e.player_index]
 
-        local _, _, category, name = string.find(e.element.caption, "^.-%[(.-)=(.-)%].*$")
-        log(category.." | "..name)
+        local _, _, class, name = string.find(e.element.caption, "^.-%[(.-)=(.-)%].*$")
+        event.raise(constants.events.open_page, {player_index=e.player_index, obj_class=class, obj_name=name})
       end
     },
     textfield = {

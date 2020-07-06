@@ -3,6 +3,8 @@ local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
 local translation = require("__flib__.translation")
 
+local constants = require("constants")
+
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local on_tick = require("scripts.on-tick")
@@ -154,5 +156,27 @@ event.on_string_translated(function(e)
     player.set_shortcut_available("rb-toggle-gui", true)
     -- -- update on_tick
     on_tick.update()
+  end
+end)
+
+-- -----------------------------------------------------------------------------
+-- REMOTE INTERFACE
+
+remote.add_interface("RecipeBook", {
+  open_page = function() return constants.events.open_page end,
+  version = function() return constants.interface_version end
+})
+
+-- HANDLERS
+
+event.register(constants.events.open_page, function(e)
+  if e.mod_name ~= "RecipeBook" then
+    -- TODO input validation
+  end
+
+  if e.obj_class == "home" then
+    -- TODO
+  else
+    base_gui.open_page(game.get_player(e.player_index), global.players[e.player_index], e.obj_class, e.obj_name)
   end
 end)

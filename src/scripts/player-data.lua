@@ -16,7 +16,10 @@ function player_data.init(player_index)
       translate_on_join = false,
     },
     gui = {},
-    history = {},
+    history = {
+      current = {},
+      global = {}
+    },
     settings = {},
     translations = util.shallow_copy(constants.empty_translations_table)
   }

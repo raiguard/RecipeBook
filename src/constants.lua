@@ -1,5 +1,7 @@
 local constants = {}
 
+local event = require("__flib__.event")
+
 local util = require("scripts.util")
 
 constants.blacklisted_recipe_categories = {
@@ -36,6 +38,10 @@ constants.empty_translations_table = {
   technology = {}
 }
 
+constants.events = {
+  open_page = event.generate_id()
+}
+
 constants.input_sanitisers = {
   ["%("] = "%%(",
   ["%)"] = "%%)",
@@ -49,6 +55,8 @@ constants.input_sanitisers = {
   ["%^"] = "%%^",
   ["%$"] = "%%$"
 }
+
+constants.interface_version = 3
 
 constants.panes = {
   "home",

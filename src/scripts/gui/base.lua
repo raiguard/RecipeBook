@@ -154,7 +154,7 @@ function base_gui.destroy(player, player_table)
 
 end
 
-function base_gui.open(player, player_table)
+function base_gui.open(player, player_table, skip_focus)
   local window = player_table.gui.main.base.window.frame
   if window and window.valid then
     window.visible = true
@@ -165,7 +165,9 @@ function base_gui.open(player, player_table)
   end
   player.set_shortcut_toggled("rb-toggle-gui", true)
 
-  player_table.gui.main.search.textfield.focus()
+  if not skip_focus then
+    player_table.gui.main.search.textfield.focus()
+  end
 end
 
 function base_gui.close(player, player_table)
@@ -188,6 +190,14 @@ end
 
 function base_gui.update_state(player, player_table, state_changes)
 
+end
+
+function base_gui.open_page(player, player_table, class, name)
+  player.print("OPEN PAGE: "..class.." | "..name)
+
+  -- add to history
+
+  --
 end
 
 return base_gui
