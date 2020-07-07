@@ -88,7 +88,11 @@ styles.rb_search_results_subheader_frame = {
 
 -- LABEL STYLES
 
-
+styles.rb_info_bar_label = {
+  type = "label_style",
+  parent = "subheader_caption_label",
+  left_padding = 4
+}
 
 -- SCROLL PANE STYLES
 

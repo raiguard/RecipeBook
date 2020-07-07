@@ -81,7 +81,17 @@ function main_gui.create(player, player_table)
         -- search pane
         panes.search.base_template,
         -- info pane
-        {type="frame", style="rb_main_info_frame", direction="vertical", children=panes.home.base_template}
+        {type="frame", style="rb_main_info_frame", direction="vertical", children={
+          -- info bar
+          {type="frame", style="subheader_frame", elem_mods={visible=false}, save_as="base.info_bar.frame", children={
+            {type="label", style="rb_info_bar_label", save_as="base.info_bar.label"},
+            {template="pushers.horizontal"},
+            {template="tool_button", sprite="rb_clipboard_black", tooltip={"rb-gui.open-quick-reference"}, save_as="base.info_bar.quick_reference_button"},
+            {template="tool_button", sprite="rb_favorite_black", tooltip={"rb-gui.add-to-favorites"}, save_as="base.info_bar.favorite_button"}
+          }},
+          -- content scroll pane
+          {type="scroll-pane", style="rb_main_info_scroll_pane", save_as="base.info_scroll_pane"}
+        }}
       }}
     }}
   })
@@ -142,12 +152,35 @@ function main_gui.update_state(player, player_table, state_changes)
 
 end
 
-function main_gui.open_page(player, player_table, class, name)
-  player.print("OPEN PAGE: "..class.." | "..name)
+function main_gui.open_page(player, player_table, obj_class, obj_name)
+  local gui_data = player_table.gui.main
+  local translations = player_table.translations
+  local int_class = obj_class == "recipe" and "recipe" or "material"
+  local int_name = obj_class == "recipe" and obj_name or obj_class.."."..obj_name
 
-  -- add to history
+  -- TODO add to history
 
-  --
+  -- update / toggle info bar
+  local info_bar = gui_data.base.info_bar
+  if obj_class == "home" then
+    info_bar.frame.visible = false
+  else
+    info_bar.frame.visible = true
+    info_bar.label.caption = "["..obj_class.."="..obj_name.."]  "..translations[int_class][int_name]
+
+    if obj_class == "recipe" then
+      info_bar.quick_reference_button.visible = true
+    else
+      info_bar.quick_reference_button.visible = false
+    end
+
+    -- TODO set button states
+  end
+
+  -- update pane information
+  panes[int_class].update(gui_data.base.info_scroll_pane, gui_data, translations)
+
+  -- update visible pane
 end
 
 return main_gui
