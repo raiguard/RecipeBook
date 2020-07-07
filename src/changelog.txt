@@ -1,7 +1,19 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.3.6
+Version: 2.0.0
 Date: ????
+  Features:
+    - Added the ability to "pin" the GUI to the screen, so it can exist alongside other windows
+    - Added the ability to "favorite" an object for easy access later
+    - Added browse-able search history, keeping track of the last 20 searches
   Changes:
+    - Completely rewrote the mod from scratch to improve code quality, efficiency, and structure
+    - Search and information are now combined into one window
+    - Information listboxes are significantly wider and are arranged in a single column
+    - Remote Interface:
+      - The remote interface has received significant changes, refer to the documentation for more information
+  Bugfixes:
+    - Fixed several crashes related to GUI buttons and multiplayer latency
+
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.5
 Date: 2020-06-19
