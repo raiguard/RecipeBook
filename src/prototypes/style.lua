@@ -66,6 +66,11 @@ styles.rb_main_frame_flow = {
   horizontal_spacing = 12
 }
 
+styles.rb_main_info_pane_flow = {
+  type = "vertical_flow_style",
+  vertical_spacing = 8
+}
+
 -- FRAME STYLES
 
 styles.rb_main_info_frame = {
@@ -120,6 +125,7 @@ styles.rb_list_box_scroll_pane = {
   },
   vertical_flow_style = {
     type = "vertical_flow_style",
-    vertical_spacing = 0
+    vertical_spacing = 0,
+    horizontally_stretchable = "on"
   }
 }

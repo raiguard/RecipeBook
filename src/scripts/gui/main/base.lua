@@ -11,6 +11,14 @@ end
 
 gui.add_templates{
   frame_action_button = {type="sprite-button", style="frame_action_button", mouse_button_filter={"left"}},
+  info_list_box = function(caption, rows, save_location)
+    return {type="flow", direction="vertical", children={
+      {type="label", style="bold_label", style_mods={bottom_margin=2}, caption=caption, save_as=save_location..".label"},
+      {type="frame", style="deep_frame_in_shallow_frame", save_as=save_location..".frame",  children={
+        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={height=(rows * 28)}, save_as=save_location..".scroll_pane"}
+      }}
+    }}
+  end,
   pushers = {
     horizontal = {type="empty-widget", style="flib_horizontal_pusher"},
     vertical = {type="empty-widget", style="flib_vertical_pusher"}
@@ -90,7 +98,14 @@ function main_gui.create(player, player_table)
             {template="tool_button", sprite="rb_favorite_black", tooltip={"rb-gui.add-to-favorites"}, save_as="base.info_bar.favorite_button"}
           }},
           -- content scroll pane
-          {type="scroll-pane", style="rb_main_info_scroll_pane", save_as="base.info_scroll_pane"}
+          {type="scroll-pane", style="rb_main_info_scroll_pane", children={
+            {type="flow", style="rb_main_info_pane_flow", direction="vertical", elem_mods={visible=false}, save_as="home.flow",
+              children=panes.home.build()},
+            {type="flow", style="rb_main_info_pane_flow", direction="vertical", elem_mods={visible=false}, save_as="material.flow",
+              children=panes.material.build()},
+            {type="flow", style="rb_main_info_pane_flow", direction="vertical", elem_mods={visible=false}, save_as="recipe.flow",
+              children=panes.recipe.build()}
+          }}
         }}
       }}
     }}
@@ -104,10 +119,12 @@ function main_gui.create(player, player_table)
   data = panes.search.setup(player, player_table, data)
 
   data.state = {
-    page = "home"
+    pane = "home"
   }
 
   player_table.gui.main = data
+
+  main_gui.open_page(player, player_table, "home")
 end
 
 function main_gui.destroy(player, player_table)
@@ -153,10 +170,11 @@ function main_gui.update_state(player, player_table, state_changes)
 end
 
 function main_gui.open_page(player, player_table, obj_class, obj_name)
+  obj_name = obj_name or ""
   local gui_data = player_table.gui.main
   local translations = player_table.translations
-  local int_class = obj_class == "recipe" and "recipe" or "material"
-  local int_name = obj_class == "recipe" and obj_name or obj_class.."."..obj_name
+  local int_class = (obj_class == "fluid" or obj_class == "item") and "material" or obj_class
+  local int_name = (obj_class == "fluid" or obj_class == "item") and obj_class.."."..obj_name or obj_name
 
   -- TODO add to history
 
@@ -178,9 +196,13 @@ function main_gui.open_page(player, player_table, obj_class, obj_name)
   end
 
   -- update pane information
-  panes[int_class].update(gui_data.base.info_scroll_pane, gui_data, translations)
+  panes[int_class].update(gui_data[int_class].flow, gui_data, translations)
 
   -- update visible pane
+  gui_data[gui_data.state.pane].flow.visible = false
+  gui_data[int_class].flow.visible = true
+
+  gui_data.state.pane = int_class
 end
 
 return main_gui
