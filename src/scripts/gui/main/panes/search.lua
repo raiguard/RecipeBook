@@ -132,30 +132,32 @@ gui.add_handlers{
   }
 }
 
-search_pane.base_template = {type="frame", style="inside_shallow_frame", direction="vertical", children={
-  {type="frame", style="subheader_frame", children={
-    {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
-    {template="pushers.horizontal"},
-    {type="drop-down", items=constants.search_categories, selected_index=2, handlers="search.category_drop_down", save_as="search.category_drop_down"}
-  }},
-  {type="flow", style_mods={padding=12, top_padding=8, vertical_spacing=10}, direction="vertical", children={
-    {type="textfield", style_mods={width=250}, handlers="search.textfield", save_as="search.textfield"},
-    {type="frame", style="deep_frame_in_shallow_frame", style_mods={horizontally_stretchable=true, height=392}, direction="vertical", children={
-      {type="frame", style="rb_search_results_subheader_frame", elem_mods={visible=false}, save_as="search.limit_frame", children={
-        {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited"}}}
-      }},
-      {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={horizontally_stretchable=true, vertically_stretchable=true},
-        save_as="search.results_scroll_pane"}
+function search_pane.build()
+  return {
+    {type="frame", style="subheader_frame", children={
+      {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
+      {template="pushers.horizontal"},
+      {type="drop-down", items=constants.search_categories, selected_index=2, handlers="search.category_drop_down", save_as="search.category_drop_down"}
+    }},
+    {type="flow", style_mods={padding=12, top_padding=8, vertical_spacing=10}, direction="vertical", children={
+      {type="textfield", style_mods={width=250}, handlers="search.textfield", save_as="search.textfield"},
+      {type="frame", style="deep_frame_in_shallow_frame", style_mods={horizontally_stretchable=true, height=420}, direction="vertical", children={
+        {type="frame", style="rb_search_results_subheader_frame", elem_mods={visible=false}, save_as="search.limit_frame", children={
+          {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited"}}}
+        }},
+        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={horizontally_stretchable=true, vertically_stretchable=true},
+          save_as="search.results_scroll_pane"}
+      }}
     }}
-  }}
-}}
+  }
+end
 
-function search_pane.setup(player, player_table, data)
-  data.search.category = "recipe"
+function search_pane.setup(player, player_table, gui_data)
+  gui_data.search.category = "recipe"
 
   gui.update_filters("search.result_button", player.index, {"rb_search_result_button"}, "add")
 
-  return data
+  return gui_data
 end
 
 return search_pane

@@ -68,7 +68,7 @@ gui.add_handlers{
 }
 
 function main_gui.create(player, player_table)
-  local data = gui.build(player.gui.screen, {
+  local gui_data = gui.build(player.gui.screen, {
     {type="frame", direction="vertical", elem_mods={visible=false}, handlers="base.window", save_as="base.window.frame", children={
       {type="flow", save_as="base.titlebar.flow", children={
         {template="frame_action_button", sprite="rb_nav_backward_white", hovered_sprite="rb_nav_backward_black", clicked_sprite="rb_nav_backward_black",
@@ -87,7 +87,7 @@ function main_gui.create(player, player_table)
       }},
       {type="flow", style="rb_main_frame_flow", children={
         -- search pane
-        panes.search.base_template,
+        {type="frame", style="inside_shallow_frame", direction="vertical", children=panes.search.build()},
         -- info pane
         {type="frame", style="rb_main_info_frame", direction="vertical", children={
           -- info bar
@@ -111,18 +111,18 @@ function main_gui.create(player, player_table)
     }}
   })
 
-  data.base.window.frame.force_auto_center()
-  data.base.titlebar.flow.drag_target = data.base.window.frame
+  gui_data.base.window.frame.force_auto_center()
+  gui_data.base.titlebar.flow.drag_target = gui_data.base.window.frame
 
-  data.base.window.pinned = false
+  gui_data.base.window.pinned = false
 
-  data = panes.search.setup(player, player_table, data)
+  gui_data = panes.search.setup(player, player_table, gui_data)
 
-  data.state = {
+  gui_data.state = {
     pane = "home"
   }
 
-  player_table.gui.main = data
+  player_table.gui.main = gui_data
 
   main_gui.open_page(player, player_table, "home")
 end
