@@ -23,8 +23,8 @@ home_pane.base_template = {
     {type="label", style="subheader_caption_label", caption="[recipe=chemical-plant]  Chemical Plant"},
     {template="pushers.horizontal"},
     -- {template="tool_button"},
-    {template="tool_button", sprite="rb_clipboard_black"},
-    {template="tool_button", sprite="rb_favorite_black"}
+    {template="tool_button", sprite="rb_clipboard_black", tooltip={"rb-gui.open-quick-reference"}},
+    {template="tool_button", sprite="rb_favorite_black", tooltip={"rb-gui.add-to-favorites"}}
   }},
   {type="scroll-pane", style="rb_main_info_scroll_pane", vertical_scroll_policy="auto-and-reserve-space", children={
     gui.templates.dummy_content_listbox("Favorites", 7),
