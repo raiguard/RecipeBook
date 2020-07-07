@@ -1,8 +1,18 @@
 local constants = {}
 
-local event = require("__flib__.event")
-
 local util = require("scripts.util")
+
+-- CONTROL-STAGE ONLY
+
+if script then
+  local event = require("__flib__.event")
+
+  constants.events = {
+    open_page = event.generate_id()
+  }
+end
+
+-- BOTH STAGES
 
 constants.blacklisted_recipe_categories = {
   -- transport drones
@@ -38,10 +48,6 @@ constants.empty_translations_table = {
   technology = {}
 }
 
-constants.events = {
-  open_page = event.generate_id()
-}
-
 constants.input_sanitisers = {
   ["%("] = "%%(",
   ["%)"] = "%%)",
@@ -58,7 +64,7 @@ constants.input_sanitisers = {
 
 constants.interface_version = 3
 
-constants.panes = {
+constants.main_panes = {
   "home",
   "material",
   "recipe",
