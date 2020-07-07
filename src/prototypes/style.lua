@@ -68,6 +68,13 @@ styles.rb_main_frame_flow = {
 
 -- FRAME STYLES
 
+styles.rb_main_info_frame = {
+  type = "frame_style",
+  parent = "inside_shallow_frame",
+  width = 400,
+  height = 486
+}
+
 styles.rb_search_results_subheader_frame = {
   type = "frame_style",
   parent = "subheader_frame",
@@ -85,7 +92,7 @@ styles.rb_search_results_subheader_frame = {
 
 -- SCROLL PANE STYLES
 
-styles.rb_info_scroll_pane = {
+styles.rb_main_info_scroll_pane = {
   type = "scroll_pane_style",
   extra_padding_when_activated = 0,
   padding = 0,
@@ -96,7 +103,8 @@ styles.rb_info_scroll_pane = {
     type = "vertical_flow_style",
     padding = 12,
     top_padding = 8,
-    right_padding = 0
+    horizontally_stretchable = "on",
+    vertically_stretchable = "on"
   }
 }
 

@@ -5,7 +5,7 @@ local gui = require("__flib__.gui")
 local constants = require("constants")
 
 local panes = {}
-for _, name in ipairs(constants.panes) do
+for _, name in ipairs(constants.main_panes) do
   panes[name] = require("scripts.gui.main.panes."..name)
 end
 
@@ -16,44 +16,6 @@ gui.add_templates{
     vertical = {type="empty-widget", style="flib_vertical_pusher"}
   },
   tool_button = {type="sprite-button", style="tool_button", mouse_button_filter={"left"}},
-  --! DEBUGGING
-  dummy_content_listbox = function(caption, rows)
-    return {type="flow", direction="vertical", children={
-      {type="flow", children={
-        {type="label", style="bold_label", style_mods={bottom_margin=2}, caption=caption},
-        {template="pushers.horizontal"},
-        {type="sprite-button", style="tool_button_red", style_mods={width=22, height=22, padding=0}, sprite="utility/trash"}
-      }},
-      {type="frame", style="deep_frame_in_shallow_frame", children={
-        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={width=400, height=(rows * 28)}, children=gui.templates.dummy_listbox_contents()}
-      }}
-    }}
-  end,
-  dummy_listbox_contents = function()
-    local children = {}
-    local i = 0;
-    for _, caption in ipairs{
-      "[H]  [item=iron-plate]  Iron plate (Item)",
-      "[fluid=water]  [H] Water (Fluid)",
-      "[recipe=advanced-oil-processing]  Advanced oil processing",
-      "Loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongboi"
-    } do
-      for _ = 1, 10 do
-        i = i + 1
-        children[i] = {type="button", style="rb_list_box_item", caption=caption, tooltip=
-          "[recipe=advanced-oil-processing]  [font=default-bold][color=255, 230, 192]Advanced oil processing (Recipe)[/color][/font]\n"
-          .."[font=default-bold]Ingredients:[/font]\n"
-          .."[fluid=water]  50x Water\n"
-          .."[fluid=crude-oil]  100x Crude oil\n"
-          .."[font=default-bold]Products:[/font]\n"
-          .."[fluid=heavy-oil]  25x Heavy oil\n"
-          .."[fluid=light-oil]  45x Light oil\n"
-          .."[fluid=petroleum-gas]  55x Petroleum gas"
-        }
-      end
-    end
-    return children
-  end
 }
 
 gui.add_handlers{
@@ -119,19 +81,7 @@ function main_gui.create(player, player_table)
         -- search pane
         panes.search.base_template,
         -- info pane
-        {type="frame", style="inside_shallow_frame", style_mods={height=486}, direction="vertical", children={
-          -- {type="frame", style="subheader_frame", children={
-          --   {type="label", style="subheader_caption_label", caption="[recipe=chemical-plant]  Chemical Plant"},
-          --   {template="pushers.horizontal"},
-          --   -- {template="tool_button"},
-          --   {template="tool_button", sprite="rb_favorite_black"}
-          -- }},
-          {type="scroll-pane", style="rb_info_scroll_pane", vertical_scroll_policy="auto-and-reserve-space", children={
-            gui.templates.dummy_content_listbox("Favorites", 7),
-            {template="pushers.vertical"},
-            gui.templates.dummy_content_listbox("History", 7)
-          }}
-        }}
+        {type="frame", style="rb_main_info_frame", direction="vertical", children=panes.home.base_template}
       }}
     }}
   })
