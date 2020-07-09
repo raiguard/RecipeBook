@@ -6,6 +6,8 @@ local constants = require("constants")
 local on_tick = require("scripts.on-tick")
 local util = require("scripts.util")
 
+local main_gui = require("scripts.gui.main.base")
+
 function player_data.init(player_index)
   local data = {
     favorites = {},
@@ -21,7 +23,7 @@ function player_data.init(player_index)
       global = {}
     },
     settings = {},
-    translations = util.shallow_copy(constants.empty_translations_table)
+    translations = nil -- assigned its initial value in player_data.refresh
   }
   global.players[player_index] = data
 end
@@ -42,7 +44,10 @@ function player_data.start_translations(player_index)
 end
 
 function player_data.refresh(player, player_table)
-  -- TODO destroy GUIs
+  -- destroy GUIs
+  main_gui.close(player, player_table)
+  main_gui.destroy(player, player_table)
+
   -- set flag
   player_table.flags.can_open_gui = false
 
@@ -54,7 +59,7 @@ function player_data.refresh(player, player_table)
   player_data.update_settings(player, player_table)
 
   -- run translations
-  player_table.translations = constants.empty_translations_table
+  player_table.translations = util.table.deepcopy(constants.empty_translations_table)
   if player.connected then
     player_data.start_translations(player.index)
   else

@@ -44,6 +44,7 @@ function util.format_crafter_item(name, obj_data, int_class, player_info, recipe
   return style, caption, tooltip, false
 end
 
+-- TODO time indicator
 function util.format_material_item(obj, obj_data, int_class, player_info)
   local translation = player_info.translations[int_class][obj_data.sprite_class.."."..obj_data.prototype_name]
   local is_hidden = obj_data.hidden

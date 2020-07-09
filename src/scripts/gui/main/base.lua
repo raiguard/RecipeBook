@@ -188,7 +188,17 @@ function main_gui.create(player, player_table)
 end
 
 function main_gui.destroy(player, player_table)
-
+  for _, name in ipairs{"base", "shared", "search"} do
+    gui.update_filters(name, player.index, nil, "remove")
+  end
+  local gui_data = player_table.gui.main
+  if gui_data then
+    local frame = gui_data.base.window.frame
+    if frame and frame.valid then
+      frame.destroy()
+    end
+  end
+  player_table.gui.main = nil
 end
 
 function main_gui.open(player, player_table, skip_focus)
@@ -208,9 +218,12 @@ function main_gui.open(player, player_table, skip_focus)
 end
 
 function main_gui.close(player, player_table)
-  local window = player_table.gui.main.base.window.frame
-  if window and window.valid then
-    window.visible = false
+  local gui_data = player_table.gui.main
+  if gui_data then
+    local frame = player_table.gui.main.base.window.frame
+    if frame and frame.valid then
+      frame.visible = false
+    end
   end
   player_table.flags.gui_open = false
   player.opened = nil

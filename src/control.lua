@@ -17,7 +17,6 @@ local main_gui = require("scripts.gui.main.base")
 
 commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
   if e.parameter == "refresh-player-data" then
-    -- TODO destroy GUIs
     local player = game.get_player(e.player_index)
     player.print{"rb-message.refreshing-player-data"}
     player_data.refresh(player, global.players[e.player_index])
@@ -33,6 +32,7 @@ end)
 
 event.on_init(function()
   gui.init()
+  gui.build_lookup_tables()
   translation.init()
 
   global_data.init()
@@ -40,8 +40,6 @@ event.on_init(function()
     player_data.init(i)
     player_data.refresh(player, global.players[i])
   end
-
-  gui.build_lookup_tables()
 end)
 
 event.on_load(function()
