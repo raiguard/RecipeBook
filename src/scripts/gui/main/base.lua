@@ -21,30 +21,24 @@ gui.add_templates{
         }}
       }}
     end,
-    update = function(names, int_class, formatter, list_box, options, player_info)
-      options = options or {
-        max_rows = 6,
-        show_count_in_label = true,
-        item_prefix = "rb_list_box_item__"
-      }
-
+    update = function(tbl, int_class, formatter, list_box, player_info, parent_data)
       local source_tbl = global.recipe_book[int_class]
 
       local scroll = list_box.scroll_pane
       local add = scroll.add
       local children = scroll.children
       local i = 0
-      for j = 1, #names do
-        local name = names[j]
-        local obj = source_tbl[name]
+      for j = 1, #tbl do
+        local obj = tbl[j]
+        local obj_data = source_tbl[type(obj) == "table" and obj.type.."."..obj.name or obj]
         -- TODO maybe handle this with a log?
-        if obj then
+        if obj_data then
           if
-            (player_info.show_hidden or not obj.hidden)
-            and (player_info.show_unavailable or obj.available_to_forces)
+            (player_info.show_hidden or not obj_data.hidden)
+            and (player_info.show_unavailable or obj_data.available_to_forces)
           then
             i = i + 1
-            local style, caption, tooltip, enabled = formatter(obj, int_class, player_info)
+            local style, caption, tooltip, enabled = formatter(obj, obj_data, int_class, player_info, parent_data)
             if enabled == nil then enabled = true end
             local item = children[i]
             if item then
@@ -53,7 +47,7 @@ gui.add_templates{
               item.tooltip = tooltip
               item.enabled = enabled
             else
-              add{type="button", name = "rb_"..int_class.."_item__"..i, style=style, caption=caption, tooltip=tooltip, enabled=enabled}
+              add{type="button", name="rb_"..int_class.."_item__"..i, style=style, caption=caption, tooltip=tooltip, enabled=enabled}
             end
           end
         end
@@ -66,7 +60,7 @@ gui.add_templates{
         list_box.flow.visible = false
       else
         list_box.flow.visible = true
-        scroll.style.height = math.min((28 * i), (28 * options.max_rows))
+        scroll.style.height = math.min((28 * i), (28 * 6))
       end
     end
   },
@@ -119,7 +113,7 @@ gui.add_handlers{
   shared = {
     list_box_item = {
       on_gui_click = function(e)
-        local _, _, class, name = string.find(e.element.caption, "^.-%[(.-)=(.-)%].*$")
+        local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%].*$")
         event.raise(constants.events.open_page, {player_index=e.player_index, obj_class=class, obj_name=name})
       end
     }
@@ -246,7 +240,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name)
     info_bar.frame.visible = false
   else
     info_bar.frame.visible = true
-    info_bar.label.caption = "["..obj_class.."="..obj_name.."]  "..translations.gui[int_class].." - "..translations[int_class][int_name]
+    info_bar.label.caption = "[img="..obj_class.."/"..obj_name.."]  "..translations.gui[int_class].." - "..translations[int_class][int_name]
 
     if obj_class == "recipe" then
       info_bar.quick_reference_button.visible = true

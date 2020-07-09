@@ -11,8 +11,15 @@ function recipe_page.build()
   }
 end
 
-function recipe_page.update(parent, gui_data, translations)
+function recipe_page.update(int_name, gui_data, player_info)
+  local obj_data = global.recipe_book.recipe[int_name]
 
+  local update_list_box = gui.templates.info_list_box.update
+
+  update_list_box(obj_data.ingredients, "material", util.format_material_item, gui_data.recipe.ingredients, player_info)
+  update_list_box(obj_data.products, "material", util.format_material_item, gui_data.recipe.products, player_info)
+  update_list_box(obj_data.made_in, "machine", util.format_crafter_item, gui_data.recipe.made_in, player_info, obj_data)
+  update_list_box(obj_data.unlocked_by, "technology", util.format_technology_item, gui_data.recipe.unlocked_by, player_info)
 end
 
 return recipe_page

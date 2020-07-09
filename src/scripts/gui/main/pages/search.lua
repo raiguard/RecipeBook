@@ -77,13 +77,13 @@ gui.add_handlers{
 
               -- assemble element components
               local style = is_available and "rb_list_box_item" or "rb_unavailable_list_box_item"
-              local caption = "["..result_data.sprite_class.."="..result_data.prototype_name.."]  "..translation
+              local caption = "[img="..result_data.sprite_class.."/"..result_data.prototype_name.."]  "..translation
               local tooltip =
-                "["..result_data.sprite_class.."="..result_data.prototype_name.."]  "..translation
+                "[img="..result_data.sprite_class.."/"..result_data.prototype_name.."]  "..translation
                 .."\n[color="..constants.colors.info.str.."]"..result_data.sprite_class.."[/color]"
 
               if is_hidden then
-                caption = "(H)  "..caption
+                caption = "[font=default-semibold](H)[/font]  "..caption
                 tooltip = tooltip.."  |  Hidden"
               end
               if not is_available then
@@ -127,7 +127,7 @@ function search_page.build()
     {type="frame", style="subheader_frame", children={
       {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
       {template="pushers.horizontal"},
-      {type="drop-down", items=constants.search_categories, selected_index=1, handlers="search.category_drop_down", save_as="search.category_drop_down"}
+      {type="drop-down", items=constants.search_categories, selected_index=2, handlers="search.category_drop_down", save_as="search.category_drop_down"}
     }},
     {type="flow", style_mods={padding=12, top_padding=8, vertical_spacing=10}, direction="vertical", children={
       {type="textfield", style_mods={width=250}, handlers="search.textfield", save_as="search.textfield"},
@@ -143,7 +143,7 @@ function search_page.build()
 end
 
 function search_page.setup(player, player_table, gui_data)
-  gui_data.search.category = "material"
+  gui_data.search.category = "recipe"
   return gui_data
 end
 
