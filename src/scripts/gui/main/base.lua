@@ -12,14 +12,64 @@ end
 
 gui.add_templates{
   frame_action_button = {type="sprite-button", style="frame_action_button", mouse_button_filter={"left"}},
-  info_list_box = function(caption, rows, save_location)
-    return {type="flow", direction="vertical", children={
-      {type="label", style="bold_label", style_mods={bottom_margin=2}, caption=caption, save_as=save_location..".label"},
-      {type="frame", style="deep_frame_in_shallow_frame", save_as=save_location..".frame",  children={
-        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={height=(rows * 28)}, save_as=save_location..".scroll_pane"}
+  info_list_box = {
+    build = function(caption, rows, save_location)
+      return {type="flow", direction="vertical", save_as=save_location..".flow", children={
+        {type="label", style="bold_label", style_mods={bottom_margin=2}, caption=caption, save_as=save_location..".label"},
+        {type="frame", style="deep_frame_in_shallow_frame", save_as=save_location..".frame",  children={
+          {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={height=(rows * 28)}, save_as=save_location..".scroll_pane"}
+        }}
       }}
-    }}
-  end,
+    end,
+    update = function(names, int_class, formatter, list_box, options, player_info)
+      options = options or {
+        max_rows = 6,
+        show_count_in_label = true,
+        item_prefix = "rb_list_box_item__"
+      }
+
+      local source_tbl = global.recipe_book[int_class]
+
+      local scroll = list_box.scroll_pane
+      local add = scroll.add
+      local children = scroll.children
+      local i = 0
+      for j = 1, #names do
+        local name = names[j]
+        local obj = source_tbl[name]
+        -- TODO maybe handle this with a log?
+        if obj then
+          if
+            (player_info.show_hidden or not obj.hidden)
+            and (player_info.show_unavailable or obj.available_to_forces)
+          then
+            i = i + 1
+            local style, caption, tooltip, enabled = formatter(obj, int_class, player_info)
+            if enabled == nil then enabled = true end
+            local item = children[i]
+            if item then
+              item.style = style
+              item.caption = caption
+              item.tooltip = tooltip
+              item.enabled = enabled
+            else
+              add{type="button", name = "rb_"..int_class.."_item__"..i, style=style, caption=caption, tooltip=tooltip, enabled=enabled}
+            end
+          end
+        end
+      end
+      for j = i + 1, #children do
+        children[j].destroy()
+      end
+
+      if i == 0 then
+        list_box.flow.visible = false
+      else
+        list_box.flow.visible = true
+        scroll.style.height = math.min((28 * i), (28 * options.max_rows))
+      end
+    end
+  },
   pushers = {
     horizontal = {type="empty-widget", style="flib_horizontal_pusher"},
     vertical = {type="empty-widget", style="flib_vertical_pusher"}
@@ -126,7 +176,7 @@ function main_gui.create(player, player_table)
 
   -- base setup
   gui_data.base.window.pinned = false
-  gui.update_filters("shared.list_box_item", player.index, {"rb_list_box_item"}, "add")
+  gui.update_filters("shared.list_box_item", player.index, {"rb_list_box_item", "rb_material_item", "rb_recipe_item"}, "add")
 
   -- page setup
   gui_data = pages.search.setup(player, player_table, gui_data)
@@ -181,10 +231,6 @@ function main_gui.toggle(player, player_table)
   end
 end
 
-function main_gui.update_state(player, player_table, state_changes)
-
-end
-
 function main_gui.open_page(player, player_table, obj_class, obj_name)
   obj_name = obj_name or ""
   local gui_data = player_table.gui.main
@@ -200,7 +246,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name)
     info_bar.frame.visible = false
   else
     info_bar.frame.visible = true
-    info_bar.label.caption = "["..obj_class.."="..obj_name.."]  "..translations[int_class][int_name]
+    info_bar.label.caption = "["..obj_class.."="..obj_name.."]  "..translations.gui[int_class].." - "..translations[int_class][int_name]
 
     if obj_class == "recipe" then
       info_bar.quick_reference_button.visible = true
@@ -212,13 +258,27 @@ function main_gui.open_page(player, player_table, obj_class, obj_name)
   end
 
   -- update page information
-  pages[int_class].update(gui_data[int_class].flow, gui_data, translations)
+  pages[int_class].update(int_name, gui_data, {
+    show_hidden = player_table.settings.show_hidden,
+    show_unavailable = player_table.settings.show_unavailable,
+    translations = player_table.translations,
+    force_index = player.force.index
+  })
 
   -- update visible page
   gui_data[gui_data.state.page].flow.visible = false
   gui_data[int_class].flow.visible = true
 
-  gui_data.state.page = int_class
+  -- update state
+  gui_data.state = {
+    page = int_class,
+    obj_class = obj_class,
+    obj_name = obj_name
+  }
+end
+
+function main_gui.update_page(player, player_table)
+
 end
 
 return main_gui

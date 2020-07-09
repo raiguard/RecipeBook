@@ -4,10 +4,10 @@ local gui = require("__flib__.gui")
 
 function recipe_page.build()
   return {
-    gui.templates.info_list_box({"rb-gui.ingredients"}, 1, "recipe.ingredients"),
-    gui.templates.info_list_box({"rb-gui.products"}, 1, "recipe.products"),
-    gui.templates.info_list_box({"rb-gui.made-in"}, 1, "recipe.made_in"),
-    gui.templates.info_list_box({"rb-gui.unlocked-by"}, 1, "recipe.unlocked_by")
+    gui.templates.info_list_box.build({"rb-gui.ingredients"}, 1, "recipe.ingredients"),
+    gui.templates.info_list_box.build({"rb-gui.products"}, 1, "recipe.products"),
+    gui.templates.info_list_box.build({"rb-gui.made-in"}, 1, "recipe.made_in"),
+    gui.templates.info_list_box.build({"rb-gui.unlocked-by"}, 1, "recipe.unlocked_by")
   }
 end
 

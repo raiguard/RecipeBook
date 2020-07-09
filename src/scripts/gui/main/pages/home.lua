@@ -4,9 +4,9 @@ local gui = require("__flib__.gui")
 
 function home_page.build()
   return {
-    gui.templates.info_list_box({"rb-gui.favorites"}, 7, "home.favorites"),
+    gui.templates.info_list_box.build({"rb-gui.favorites"}, 7, "home.favorites"),
     {template="pushers.vertical"},
-    gui.templates.info_list_box({"rb-gui.history"}, 7, "home.history")
+    gui.templates.info_list_box.build({"rb-gui.history"}, 7, "home.history")
   }
 end
 

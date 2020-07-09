@@ -1,7 +1,5 @@
 local constants = {}
 
-local util = require("scripts.util")
-
 -- CONTROL-STAGE ONLY
 
 if script then
@@ -40,9 +38,9 @@ constants.colors = {
 }
 
 constants.empty_translations_table = {
+  gui = {},
   machine = {},
   material = {},
-  other = {},
   recipe = {},
   resource = {},
   technology = {}
@@ -63,6 +61,11 @@ constants.input_sanitisers = {
 }
 
 constants.interface_version = 3
+
+constants.list_box_item_styles = {
+  available = "rb_list_box_item",
+  unavailable = "rb_unavailable_list_box_item"
+}
 
 constants.main_pages = {
   "home",

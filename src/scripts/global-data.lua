@@ -15,9 +15,13 @@ function global_data.build_recipe_book()
     machine = {},
     material = {},
     recipe = {},
+    resource = {},
     technology = {}
   }
-  local translation_data = {}
+  local translation_data = {
+    {dictionary="gui", internal="material", localised={"rb-gui.material"}},
+    {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}}
+  }
 
   -- forces
   local forces = {}
@@ -141,6 +145,9 @@ function global_data.build_recipe_book()
         end
       end
     end
+    recipe_book.resource[name] = {
+      prototype_name = name
+    }
     translation_data[#translation_data+1] = {dictionary="resource", internal=name, localised=prototype.localised_name}
   end
 
@@ -177,6 +184,7 @@ function global_data.build_recipe_book()
       end
       recipe_book.technology[name] = {
         hidden = prototype.hidden,
+        prototype_name = name,
         researched_forces = {}
       }
       translation_data[#translation_data+1] = {dictionary="technology", internal=prototype.name, localised=prototype.localised_name}

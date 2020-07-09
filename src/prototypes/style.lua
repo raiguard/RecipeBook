@@ -27,7 +27,9 @@ styles.rb_list_box_item = {
   left_padding = 4,
   right_padding = 4,
   horizontally_squashable = "on",
-  horizontally_stretchable = "on"
+  horizontally_stretchable = "on",
+  disabled_graphical_set = styles.list_box_item.default_graphical_set,
+  disabled_font_color = styles.list_box_item.default_font_color
 }
 
 styles.rb_unavailable_list_box_item = {

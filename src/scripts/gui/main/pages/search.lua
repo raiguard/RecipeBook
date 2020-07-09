@@ -127,7 +127,7 @@ function search_page.build()
     {type="frame", style="subheader_frame", children={
       {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
       {template="pushers.horizontal"},
-      {type="drop-down", items=constants.search_categories, selected_index=2, handlers="search.category_drop_down", save_as="search.category_drop_down"}
+      {type="drop-down", items=constants.search_categories, selected_index=1, handlers="search.category_drop_down", save_as="search.category_drop_down"}
     }},
     {type="flow", style_mods={padding=12, top_padding=8, vertical_spacing=10}, direction="vertical", children={
       {type="textfield", style_mods={width=250}, handlers="search.textfield", save_as="search.textfield"},
@@ -143,7 +143,7 @@ function search_page.build()
 end
 
 function search_page.setup(player, player_table, gui_data)
-  gui_data.search.category = "recipe"
+  gui_data.search.category = "material"
   return gui_data
 end
 
