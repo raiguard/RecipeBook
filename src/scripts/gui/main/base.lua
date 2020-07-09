@@ -1,5 +1,6 @@
 local main_gui = {}
 
+local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
@@ -64,6 +65,14 @@ gui.add_handlers{
         end
       end
     }
+  },
+  shared = {
+    list_box_item = {
+      on_gui_click = function(e)
+        local _, _, class, name = string.find(e.element.caption, "^.-%[(.-)=(.-)%].*$")
+        event.raise(constants.events.open_page, {player_index=e.player_index, obj_class=class, obj_name=name})
+      end
+    }
   }
 }
 
@@ -111,19 +120,26 @@ function main_gui.create(player, player_table)
     }}
   })
 
+  -- centering
   gui_data.base.window.frame.force_auto_center()
   gui_data.base.titlebar.flow.drag_target = gui_data.base.window.frame
 
+  -- base setup
   gui_data.base.window.pinned = false
+  gui.update_filters("shared.list_box_item", player.index, {"rb_list_box_item"}, "add")
 
+  -- pane setup
   gui_data = panes.search.setup(player, player_table, gui_data)
 
+  -- state setup
   gui_data.state = {
     pane = "home"
   }
 
+  -- save to global
   player_table.gui.main = gui_data
 
+  -- open home page
   main_gui.open_page(player, player_table, "home")
 end
 

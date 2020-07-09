@@ -1,6 +1,5 @@
 local search_pane = {}
 
-local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
@@ -14,15 +13,6 @@ gui.add_handlers{
         local player_table = global.players[e.player_index]
         player_table.gui.main.search.category = constants.search_categories[e.element.selected_index]
         gui.handlers.search.textfield.on_gui_text_changed(e)
-      end
-    },
-    result_button = {
-      on_gui_click = function(e)
-        local player = game.get_player(e.player_index)
-        local player_table = global.players[e.player_index]
-
-        local _, _, class, name = string.find(e.element.caption, "^.-%[(.-)=(.-)%].*$")
-        event.raise(constants.events.open_page, {player_index=e.player_index, obj_class=class, obj_name=name})
       end
     },
     textfield = {
@@ -113,7 +103,7 @@ gui.add_handlers{
                 child.caption = caption
                 child.tooltip = tooltip
               else
-                add{type="button", name="rb_search_result_button__"..i, style=style, caption=caption, tooltip=tooltip}
+                add{type="button", name="rb_list_box_item__"..i, style=style, caption=caption, tooltip=tooltip}
               end
             end
           end
@@ -154,9 +144,6 @@ end
 
 function search_pane.setup(player, player_table, gui_data)
   gui_data.search.category = "recipe"
-
-  gui.update_filters("search.result_button", player.index, {"rb_search_result_button"}, "add")
-
   return gui_data
 end
 
