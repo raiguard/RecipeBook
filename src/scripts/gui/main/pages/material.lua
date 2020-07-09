@@ -1,4 +1,4 @@
-local material_pane = {}
+local material_page = {}
 
 local gui = require("__flib__.gui")
 
@@ -6,7 +6,7 @@ local gui = require("__flib__.gui")
 
 -- }
 
-function material_pane.build()
+function material_page.build()
   return {
     gui.templates.info_list_box({"rb-gui.ingredient-in"}, 1, "material.ingredient_in"),
     gui.templates.info_list_box({"rb-gui.product-of"}, 1, "material.product_of"),
@@ -16,8 +16,8 @@ function material_pane.build()
   }
 end
 
-function material_pane.update(parent, gui_data, translations)
+function material_page.update(parent, gui_data, translations)
 
 end
 
-return material_pane
+return material_page

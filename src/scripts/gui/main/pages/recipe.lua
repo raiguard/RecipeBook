@@ -1,8 +1,8 @@
-local recipe_pane = {}
+local recipe_page = {}
 
 local gui = require("__flib__.gui")
 
-function recipe_pane.build()
+function recipe_page.build()
   return {
     gui.templates.info_list_box({"rb-gui.ingredients"}, 1, "recipe.ingredients"),
     gui.templates.info_list_box({"rb-gui.products"}, 1, "recipe.products"),
@@ -11,8 +11,8 @@ function recipe_pane.build()
   }
 end
 
-function recipe_pane.update(parent, gui_data, translations)
+function recipe_page.update(parent, gui_data, translations)
 
 end
 
-return recipe_pane
+return recipe_page

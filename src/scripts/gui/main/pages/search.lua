@@ -1,4 +1,4 @@
-local search_pane = {}
+local search_page = {}
 
 local gui = require("__flib__.gui")
 
@@ -122,7 +122,7 @@ gui.add_handlers{
   }
 }
 
-function search_pane.build()
+function search_page.build()
   return {
     {type="frame", style="subheader_frame", children={
       {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
@@ -142,9 +142,9 @@ function search_pane.build()
   }
 end
 
-function search_pane.setup(player, player_table, gui_data)
+function search_page.setup(player, player_table, gui_data)
   gui_data.search.category = "recipe"
   return gui_data
 end
 
-return search_pane
+return search_page

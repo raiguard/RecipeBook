@@ -5,9 +5,9 @@ local gui = require("__flib__.gui")
 
 local constants = require("constants")
 
-local panes = {}
-for _, name in ipairs(constants.main_panes) do
-  panes[name] = require("scripts.gui.main.panes."..name)
+local pages = {}
+for _, name in ipairs(constants.main_pages) do
+  pages[name] = require("scripts.gui.main.pages."..name)
 end
 
 gui.add_templates{
@@ -95,9 +95,9 @@ function main_gui.create(player, player_table)
           handlers="base.close_button"}
       }},
       {type="flow", style="rb_main_frame_flow", children={
-        -- search pane
-        {type="frame", style="inside_shallow_frame", direction="vertical", children=panes.search.build()},
-        -- info pane
+        -- search page
+        {type="frame", style="inside_shallow_frame", direction="vertical", children=pages.search.build()},
+        -- info page
         {type="frame", style="rb_main_info_frame", direction="vertical", children={
           -- info bar
           {type="frame", style="subheader_frame", elem_mods={visible=false}, save_as="base.info_bar.frame", children={
@@ -109,11 +109,11 @@ function main_gui.create(player, player_table)
           -- content scroll pane
           {type="scroll-pane", style="rb_main_info_scroll_pane", children={
             {type="flow", style="rb_main_info_pane_flow", direction="vertical", elem_mods={visible=false}, save_as="home.flow",
-              children=panes.home.build()},
+              children=pages.home.build()},
             {type="flow", style="rb_main_info_pane_flow", direction="vertical", elem_mods={visible=false}, save_as="material.flow",
-              children=panes.material.build()},
+              children=pages.material.build()},
             {type="flow", style="rb_main_info_pane_flow", direction="vertical", elem_mods={visible=false}, save_as="recipe.flow",
-              children=panes.recipe.build()}
+              children=pages.recipe.build()}
           }}
         }}
       }}
@@ -128,12 +128,12 @@ function main_gui.create(player, player_table)
   gui_data.base.window.pinned = false
   gui.update_filters("shared.list_box_item", player.index, {"rb_list_box_item"}, "add")
 
-  -- pane setup
-  gui_data = panes.search.setup(player, player_table, gui_data)
+  -- page setup
+  gui_data = pages.search.setup(player, player_table, gui_data)
 
   -- state setup
   gui_data.state = {
-    pane = "home"
+    page = "home"
   }
 
   -- save to global
@@ -211,14 +211,14 @@ function main_gui.open_page(player, player_table, obj_class, obj_name)
     -- TODO set button states
   end
 
-  -- update pane information
-  panes[int_class].update(gui_data[int_class].flow, gui_data, translations)
+  -- update page information
+  pages[int_class].update(gui_data[int_class].flow, gui_data, translations)
 
-  -- update visible pane
-  gui_data[gui_data.state.pane].flow.visible = false
+  -- update visible page
+  gui_data[gui_data.state.page].flow.visible = false
   gui_data[int_class].flow.visible = true
 
-  gui_data.state.pane = int_class
+  gui_data.state.page = int_class
 end
 
 return main_gui

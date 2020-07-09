@@ -1,8 +1,8 @@
-local home_pane = {}
+local home_page = {}
 
 local gui = require("__flib__.gui")
 
-function home_pane.build()
+function home_page.build()
   return {
     gui.templates.info_list_box({"rb-gui.favorites"}, 7, "home.favorites"),
     {template="pushers.vertical"},
@@ -10,8 +10,8 @@ function home_pane.build()
   }
 end
 
-function home_pane.update()
+function home_page.update()
 
 end
 
-return home_pane
+return home_page

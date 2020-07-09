@@ -64,7 +64,7 @@ constants.input_sanitisers = {
 
 constants.interface_version = 3
 
-constants.main_panes = {
+constants.main_pages = {
   "home",
   "material",
   "recipe",
