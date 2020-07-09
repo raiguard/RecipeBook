@@ -231,10 +231,15 @@ function main_gui.close(player, player_table)
 end
 
 function main_gui.toggle(player, player_table)
-  if player_table.flags.gui_open then
-    main_gui.close(player, player_table)
+  if player_table.flags.can_open_gui then
+    if player_table.flags.gui_open then
+      main_gui.close(player, player_table)
+    else
+      main_gui.open(player, player_table)
+    end
   else
-    main_gui.open(player, player_table)
+    player.print{"rb-message.cannot-open-gui"}
+    player_table.flags.show_message_after_translation = true
   end
 end
 

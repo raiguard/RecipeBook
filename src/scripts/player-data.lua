@@ -87,4 +87,17 @@ function player_data.remove_from_favorites()
 
 end
 
+function player_data.check_cursor_stack(player)
+    local cursor_stack = player.cursor_stack
+    if
+      cursor_stack
+      and cursor_stack.valid
+      and cursor_stack.valid_for_read
+      and global.recipe_book.material["item."..cursor_stack.name]
+    then
+      return cursor_stack.name
+    end
+    return false
+end
+
 return player_data

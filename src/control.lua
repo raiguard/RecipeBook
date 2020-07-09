@@ -77,17 +77,63 @@ gui.register_handlers()
 
 -- INTERACTION
 
-event.register({defines.events.on_lua_shortcut, "rb-toggle-gui"}, function(e)
-  if e.input_name or e.prototype_name == "rb-toggle-gui" then
+event.on_lua_shortcut(function(e)
+  if e.prototype_name == "rb-toggle-gui" then
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
-    if player_table.flags.can_open_gui then
-      main_gui.toggle(player, player_table)
+
+    -- check player's cursor stack for an item we can open
+    local item_to_open = player_data.check_cursor_stack(player)
+    if item_to_open then
+      main_gui.open_page(player, player_table, "item", item_to_open)
+      if not player_table.flags.gui_open then
+        main_gui.open(player, player_table)
+      end
     else
-      player.print{"rb-message.cannot-open-gui"}
-      player_table.flags.show_message_after_translation = true
+      main_gui.toggle(player, player_table)
     end
   end
+end)
+
+event.register("rb-toggle-gui", function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+
+  -- check player's cursor stack for an item we can open
+  -- TODO read from global instead of mod_settings
+  if player.mod_settings["rb-open-item-hotkey"].value then
+    local item_to_open = player_data.check_cursor_stack(player)
+    if item_to_open then
+      main_gui.open_page(player, player_table, "item", item_to_open)
+      if not player_table.flags.gui_open then
+        main_gui.open(player, player_table)
+      end
+      return
+    end
+  end
+
+  -- get player's currently selected entity to check for a fluid filter
+  local selected = player.selected
+  -- TODO read from global instead of mod_settings
+  if player.mod_settings["rb-open-fluid-hotkey"].value then
+    if selected and selected.valid and constants.open_fluid_types[selected.type] then
+      local fluidbox = selected.fluidbox
+      if fluidbox and fluidbox.valid then
+        local locked_fluid = fluidbox.get_locked_fluid(1)
+        if locked_fluid then
+          -- check recipe book to see if this fluid has a material page
+          if global.recipe_book.material["fluid."..locked_fluid] then
+            main_gui.open_page(player, player_table, "fluid", locked_fluid)
+            if not player_table.flags.gui_open then
+              main_gui.open(player, player_table)
+            end
+            return
+          end
+        end
+      end
+    end
+  end
+  main_gui.toggle(player, player_table)
 end)
 
 -- PLAYER

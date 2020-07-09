@@ -74,6 +74,16 @@ constants.main_pages = {
   "search"
 }
 
+constants.open_fluid_types = {
+  ["fluid-wagon"] = true,
+  ["infinity-pipe"] = true,
+  ["offshore-pump"] = true,
+  ["pipe-to-ground"] = true,
+  ["pipe"] = true,
+  ["pump"] = true,
+  ["storage-tank"] = true
+}
+
 constants.search_categories = {"material", "recipe"}
 
 return constants
