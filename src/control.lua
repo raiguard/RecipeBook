@@ -44,6 +44,7 @@ end)
 
 event.on_load(function()
   gui.build_lookup_tables()
+  on_tick.update()
 end)
 
 event.on_configuration_changed(function(e)

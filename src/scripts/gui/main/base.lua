@@ -78,6 +78,44 @@ gui.add_handlers{
         main_gui.close(game.get_player(e.player_index), global.players[e.player_index])
       end
     },
+    nav_button = {
+      backward = {
+        on_gui_click = function(e)
+          local player_table = global.players[e.player_index]
+          local session_history = player_table.history.session
+          -- latency protection
+          if session_history.position < #session_history then
+            session_history.position = session_history.position + 1
+            local back_obj = session_history[session_history.position]
+            main_gui.open_page(
+              game.get_player(e.player_index),
+              player_table,
+              back_obj.class,
+              back_obj.name,
+              true
+            )
+          end
+        end
+      },
+      forward = {
+        on_gui_click = function(e)
+          local player_table = global.players[e.player_index]
+          local session_history = player_table.history.session
+          -- latency protection
+          if session_history.position > 1 then
+            session_history.position = session_history.position - 1
+            local forward_object = session_history[session_history.position]
+            main_gui.open_page(
+              game.get_player(e.player_index),
+              player_table,
+              forward_object.class,
+              forward_object.name,
+              true
+            )
+          end
+        end
+      }
+    },
     pin_button = {
       on_gui_click = function(e)
         local player = game.get_player(e.player_index)
@@ -125,9 +163,9 @@ function main_gui.create(player, player_table)
     {type="frame", direction="vertical", elem_mods={visible=false}, handlers="base.window", save_as="base.window.frame", children={
       {type="flow", save_as="base.titlebar.flow", children={
         {template="frame_action_button", sprite="rb_nav_backward_white", hovered_sprite="rb_nav_backward_black", clicked_sprite="rb_nav_backward_black",
-          elem_mods={enabled=false}},
+          elem_mods={enabled=false}, handlers="base.nav_button.backward", save_as="base.titlebar.nav_backward_button"},
         {template="frame_action_button", sprite="rb_nav_forward_white", hovered_sprite="rb_nav_forward_black", clicked_sprite="rb_nav_forward_black",
-          elem_mods={enabled=false}},
+          elem_mods={enabled=false}, handlers="base.nav_button.forward", save_as="base.titlebar.nav_forward_button"},
         {type="empty-widget"},
         {type="label", style="frame_title", caption={"mod-name.RecipeBook"}, elem_mods={ignored_by_interaction=true}},
         {type="empty-widget", style="rb_drag_handle", elem_mods={ignored_by_interaction=true}},
@@ -243,14 +281,55 @@ function main_gui.toggle(player, player_table)
   end
 end
 
-function main_gui.open_page(player, player_table, obj_class, obj_name)
+function main_gui.open_page(player, player_table, obj_class, obj_name, nav_button)
   obj_name = obj_name or ""
   local gui_data = player_table.gui.main
   local translations = player_table.translations
   local int_class = (obj_class == "fluid" or obj_class == "item") and "material" or obj_class
   local int_name = (obj_class == "fluid" or obj_class == "item") and obj_class.."."..obj_name or obj_name
 
-  -- TODO add to history
+  -- update search history
+  local history = player_table.history
+  local session_history = history.session
+  if not nav_button then
+    -- global history
+    table.insert(history.global, 1, {int_class=int_class, int_name=int_name, class=obj_class, name=obj_name})
+
+    -- session history
+    if session_history.position > 1 then
+      for _=1,session_history.position - 1 do
+        table.remove(session_history, 1)
+      end
+      session_history.position = 1
+    elseif session_history.position == 0 then
+      session_history.position = 1
+    end
+    table.insert(session_history, 1, {int_class=int_class, int_name=int_name, class=obj_class, name=obj_name})
+  end
+
+  -- update nav buttons
+  local back_button = gui_data.base.titlebar.nav_backward_button
+  back_button.enabled = true
+  local back_obj = session_history[session_history.position + 1]
+  if back_obj then
+    if back_obj.int_class == "home" then
+      back_button.tooltip = {"rb-gui.back-to", {"rb-gui.home"}}
+    else
+      back_button.tooltip = {"rb-gui.back-to", string.lower(translations[back_obj.int_class][back_obj.int_name])}
+    end
+  else
+    back_button.enabled = false
+    back_button.tooltip = ""
+  end
+  local forward_button = gui_data.base.titlebar.nav_forward_button
+  if session_history.position > 1 then
+    forward_button.enabled = true
+    local forward_obj = session_history[session_history.position-1]
+    forward_button.tooltip = {"rb-gui.forward-to", string.lower(translations[forward_obj.int_class][forward_obj.int_name])}
+  else
+    forward_button.enabled = false
+    forward_button.tooltip = ""
+  end
 
   -- update / toggle info bar
   local info_bar = gui_data.base.info_bar

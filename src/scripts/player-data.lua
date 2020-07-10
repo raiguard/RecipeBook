@@ -19,8 +19,10 @@ function player_data.init(player_index)
     },
     gui = {},
     history = {
-      current = {},
-      global = {}
+      global = {},
+      session = {
+        position = 1
+      }
     },
     settings = {},
     translations = nil -- assigned its initial value in player_data.refresh
