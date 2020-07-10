@@ -61,6 +61,10 @@ gui.add_templates{
       else
         list_box.flow.visible = true
         scroll.style.height = math.min((28 * i), (28 * 6))
+
+        local caption = list_box.label.caption
+        caption[2] = i
+        list_box.label.caption = caption
       end
     end
   },
