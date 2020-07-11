@@ -26,6 +26,12 @@ constants.blacklisted_recipe_categories = {
   ["deep-storage-fluid-mk2/3"] = true
 }
 
+constants.class_to_font_glyph = {
+  material = "B",
+  recipe = "A"
+
+}
+
 constants.colors = {
   info = {
     str = "128, 206, 240",

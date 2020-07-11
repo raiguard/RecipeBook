@@ -2,6 +2,7 @@ local home_page = {}
 
 local gui = require("__flib__.gui")
 
+local constants = require("constants")
 local util = require("scripts.util")
 
 gui.add_templates{
@@ -28,7 +29,8 @@ gui.add_templates{
             player_info
           )
           -- TODO create a font with recipe and material icons
-          caption = "[font=default-semibold]("..string.sub(int_class, 1, 1)..")[/font]  "..caption
+          caption = "[font=RecipeBook]("..constants.class_to_font_glyph[int_class].."[/font]  "..caption
+          style = string.gsub(style, "rb_", "rb_adjusted_")
           local item = children[i]
           if item then
             item.style = style
