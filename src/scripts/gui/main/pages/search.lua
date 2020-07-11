@@ -24,7 +24,7 @@ gui.add_handlers{
         local query = string.lower(gui_data.textfield.text)
 
         --! ---------------------------------------------------------------------------
-        --! TODO: This is catastrophically bad. Don't do this. I need to fix this.
+        --! TODO: spread out over multiple ticks
 
         local category = gui_data.category
         local translations = player_table.translations[gui_data.category]

@@ -331,13 +331,31 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
   -- update search history
   local history = player_table.history
   local session_history = history.session
+  local global_history = history.global
   if not nav_button then
     -- global history
-    table.insert(history.global, 1, {int_class=int_class, int_name=int_name, class=obj_class, name=obj_name})
+    local combined_name = obj_class.."."..obj_name
+    if global_history[combined_name] then
+      for i = 1, #global_history do
+        local entry = global_history[i]
+        if entry.class.."."..entry.name == combined_name then
+          table.remove(global_history, i)
+          break
+        end
+      end
+    else
+      global_history[combined_name] = true
+    end
+    table.insert(global_history, 1, {int_class=int_class, int_name=int_name, class=obj_class, name=obj_name})
+    local last_entry = global_history[31]
+    if last_entry then
+      table.remove(global_history, 31)
+      global_history[last_entry.class.."."..last_entry.name] = nil
+    end
 
     -- session history
     if session_history.position > 1 then
-      for _=1,session_history.position - 1 do
+      for _ = 1,session_history.position - 1 do
         table.remove(session_history, 1)
       end
       session_history.position = 1
@@ -392,8 +410,6 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
       info_bar.favorite_button.style = "tool_button"
       info_bar.favorite_button.tooltip = {"rb-gui.add-to-favorites"}
     end
-
-    -- TODO set button states
   end
 
   -- update page information
