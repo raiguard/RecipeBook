@@ -21,6 +21,7 @@ end
 
 -- * ----------------------------------------------------------------------------------------------------
 -- * LISTBOX ITEM FORMATTERS
+-- * TODO move to a separate file (maybe)
 
 --[[
   PLAYER_DATA:
