@@ -54,51 +54,72 @@ local function get_should_show(item_data, player_data)
   end
 end
 
-local function caption_formatter(item_data, player_data, show_glyph)
-  local translations = player_data.translations[item_data.internal_class]
+local function caption_formatter(item_data, player_data, is_hidden, show_glyph)
+  local translations = player_data.translations
+  local translation_key = item_data.internal_class == "material" and item_data.sprite_class.."."..item_data.prototype_name or item_data.prototype_name
+  local translation = translations[item_data.internal_class][translation_key]
   local glyph = ""
   if show_glyph then
     local glyph_char = constants.class_to_font_glyph[item_data.internal_class] or constants.class_to_font_glyph[item_data.sprite_class]
     glyph = "[font=RecipeBook]"..glyph_char.."[/font]  "
   end
+  local hidden_string = is_hidden and "[font=default-semibold]("..translations.gui.hidden_abbrev..")[/font]  " or ""
   local amount_string = item_data.amount_string and item_data.amount_string.."  " or ""
-  local name = player_data.show_internal_names and item_data.prototype_name or translations[item_data.prototype_name]
-    or translations[item_data.sprite_class.."."..item_data.prototype_name]
+  local name = player_data.show_internal_names and item_data.prototype_name or translation
   return
     glyph
+    ..hidden_string
     .."[img="..item_data.sprite_class.."/"..item_data.prototype_name.."]  "
     ..amount_string
     ..name
 end
 
+local function get_base_tooltip(item_data, player_data, is_hidden, is_available)
+  local translations = player_data.translations
+  local translation_key = item_data.internal_class == "material" and item_data.sprite_class.."."..item_data.prototype_name or item_data.prototype_name
+  local translation = player_data.translations[item_data.internal_class][translation_key]
+  local name = player_data.show_internal_names and item_data.prototype_name or translation
+  local internal_name = player_data.show_internal_names and translation or item_data.prototype_name
+
+  local category_class = item_data.sprite_class == "entity" and item_data.internal_class or item_data.sprite_class
+
+  local hidden_string = is_hidden and "  |  "..translations.gui.hidden or ""
+  local unavailable_string = not is_available and "  |  [color="..constants.colors.unavailable.str.."]"..translations.gui.unavailable.."[/color]" or ""
+
+  return
+    "[img="..item_data.sprite_class.."/"..item_data.prototype_name.."]  [font=default-bold][color="..constants.colors.heading.str.."]"..name.."[/color][/font]"
+    .."\n[color="..constants.colors.green.str.."]"..internal_name.."[/color]"
+    .."\n[color="..constants.colors.info.str.."]"..translations.gui[category_class].."[/color]"..hidden_string..unavailable_string
+end
+
 local formatters = {
   machine = {
-    tooltip = function(item_data, player_data)
-      return "MACHINE TOOLTIP"
+    tooltip = function(item_data, player_data, is_hidden, is_available)
+      return get_base_tooltip(item_data, player_data, is_hidden, is_available)
     end,
     enabled = false
   },
   material = {
-    tooltip = function(item_data, player_data)
-      return "MATERIAL TOOLTIP"
+    tooltip = function(item_data, player_data, is_hidden, is_available)
+      return get_base_tooltip(item_data, player_data, is_hidden, is_available)
     end,
     enabled = true
   },
   recipe = {
-    tooltip = function(item_data, player_data)
-      return "RECIPE TOOLTIP"
+    tooltip = function(item_data, player_data, is_hidden, is_available)
+      return get_base_tooltip(item_data, player_data, is_hidden, is_available)
     end,
     enabled = true
   },
   resource = {
-    tooltip = function(item_data, player_data)
-      return "RESOURCE TOOLTIP"
+    tooltip = function(item_data, player_data, is_hidden, is_available)
+      return get_base_tooltip(item_data, player_data, is_hidden, is_available)
     end,
     enabled = false
   },
   technology = {
-    tooltip = function(item_data, player_data)
-      return "TECHNOLOGY TOOLTIP"
+    tooltip = function(item_data, player_data, is_hidden, is_available)
+      return get_base_tooltip(item_data, player_data, is_hidden, is_available)
     end,
     enabled = true
   }
@@ -106,15 +127,16 @@ local formatters = {
 
 function util.format_item(item_data, player_data, show_glyph)
   show_glyph = true
-  local should_show, _, is_available = get_should_show(item_data, player_data)
+  player_data.show_internal_names = true
+  local should_show, is_hidden, is_available = get_should_show(item_data, player_data)
   if should_show then
     -- format and return
     local formatter_subtable = formatters[item_data.internal_class]
     return
       true,
       is_available and "rb_list_box_item" or "rb_unavailable_list_box_item",
-      caption_formatter(item_data, player_data, show_glyph),
-      formatter_subtable.tooltip(item_data, player_data),
+      caption_formatter(item_data, player_data, is_hidden, show_glyph),
+      formatter_subtable.tooltip(item_data, player_data, is_hidden, is_available),
       formatter_subtable.enabled
   else
     return false

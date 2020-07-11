@@ -53,9 +53,10 @@ function home_page.build()
 end
 
 local test_objects = {
-  {"machine", "kr-crusher"},
+  {"machine", "crash-site-assembling-machine-1-repaired"},
+  {"material", "fluid.ammonia"},
   {"material", "item.matter-cube"},
-  {"recipe", "dirty-water-filtration-3"},
+  {"recipe", "kr-burn-heavy-oil"},
   {"resource", "stone"},
   {"technology", "kr-air-purification"}
 }

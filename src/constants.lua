@@ -36,6 +36,14 @@ constants.class_to_font_glyph = {
 }
 
 constants.colors = {
+  green = {
+    str = "210, 253, 145",
+    tbl = {210, 253, 145}
+  },
+  heading = {
+    str = "255, 230, 192",
+    tbl = {255, 230, 192}
+  },
   info = {
     str = "128, 206, 240",
     tbl = {128, 206, 240}

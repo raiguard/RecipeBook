@@ -19,8 +19,19 @@ function global_data.build_recipe_book()
     technology = {}
   }
   local translation_data = {
+    -- internal classes
+    {dictionary="gui", internal="fluid", localised={"rb-gui.fluid"}},
+    {dictionary="gui", internal="item", localised={"rb-gui.item"}},
+    {dictionary="gui", internal="machine", localised={"rb-gui.machine"}},
     {dictionary="gui", internal="material", localised={"rb-gui.material"}},
-    {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}}
+    {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}},
+    {dictionary="gui", internal="resource", localised={"rb-gui.resource"}},
+    {dictionary="gui", internal="technology", localised={"rb-gui.technology"}},
+    -- misc
+    {dictionary="gui", internal="character", localised={"entity-name.character"}},
+    {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
+    {dictionary="gui", internal="hidden_abbrev", localised={"rb-gui.hidden-abbrev"}},
+    {dictionary="gui", internal="unavailable", localised={"rb-gui.unavailable"}}
   }
 
   -- forces

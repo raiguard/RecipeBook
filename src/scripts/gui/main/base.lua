@@ -409,7 +409,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
     info_bar.frame.visible = false
   else
     info_bar.frame.visible = true
-    info_bar.label.caption = "[img="..obj_class.."/"..obj_name.."]  "..translations.gui[int_class].." - "..translations[int_class][int_name]
+    info_bar.label.caption = "[img="..obj_class.."/"..obj_name.."]  "..translations.gui[int_class].." - "..obj_name
 
     if obj_class == "recipe" then
       info_bar.quick_reference_button.visible = true
