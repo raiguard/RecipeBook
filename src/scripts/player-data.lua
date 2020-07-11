@@ -42,6 +42,9 @@ function player_data.update_settings(player, player_table)
     show_internal_names = false,
     show_glyphs = true
   }
+
+  -- purge memoizer cache
+  formatter.purge(player.index)
 end
 
 function player_data.start_translations(player_index)
@@ -50,10 +53,6 @@ function player_data.start_translations(player_index)
 end
 
 function player_data.refresh(player, player_table)
-  -- purge memoizer cache
-  -- TODO purge cache when the player changes any settings
-  formatter.purge(player.index)
-
   -- destroy GUIs
   main_gui.close(player, player_table)
   main_gui.destroy(player, player_table)
