@@ -130,9 +130,9 @@ function util.format_crafter_item(name, obj_data, player_info, recipe_data)
   local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[player_info.force_index]
 
   local style = is_available and constants.list_box_item_styles.available or constants.list_box_item_styles.unavailable
-  local caption = "[entity="..name.."]  ".."[font=default-semibold](" ..util.round(recipe_data.energy / obj_data.crafting_speed, 2).."s)[/font] "..name
+  local caption = "[entity="..name.."]  ".."[font=default-semibold](" ..util.round(recipe_data.energy / obj_data.crafting_speed, 2).."s)[/font] "..translation
   local tooltip =
-    "[entity="..name.."]  "..name
+    "[entity="..name.."]  "..translation
     .."\n[color="..constants.colors.info.str.."]Machine[/color]"
 
   if is_hidden then
@@ -155,12 +155,12 @@ function util.format_material_item(obj, obj_data, player_info)
   local style = is_available and constants.list_box_item_styles.available or constants.list_box_item_styles.unavailable
   local caption = "[img="..obj_data.sprite_class.."/"..obj.name.."]  "
   if obj.amount_string then
-    caption = caption.."[font=default-semibold]"..obj.amount_string.."[/font]  "..obj.name
+    caption = caption.."[font=default-semibold]"..obj.amount_string.."[/font]  "..translation
   else
-    caption = caption..obj.name
+    caption = caption..translation
   end
   local tooltip =
-    "[img="..obj_data.sprite_class.."/"..obj.name.."]  "..obj.name
+    "[img="..obj_data.sprite_class.."/"..obj.name.."]  "..translation
     .."\n[color="..constants.colors.info.str.."]"..obj_data.sprite_class.."[/color]"
 
   if is_hidden then
@@ -180,9 +180,9 @@ function util.format_recipe_item(name, obj_data, player_info)
   local is_hidden = obj_data.hidden
   local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[player_info.force_index]
   local style = is_available and constants.list_box_item_styles.available or constants.list_box_item_styles.unavailable
-  local caption = "[img="..obj_data.sprite_class.."/"..name.."]  "..name
+  local caption = "[img="..obj_data.sprite_class.."/"..name.."]  "..translation
   local tooltip =
-    "[img="..obj_data.sprite_class.."/"..name.."]  "..name
+    "[img="..obj_data.sprite_class.."/"..name.."]  "..translation
     .."\n[color="..constants.colors.info.str.."]"..obj_data.sprite_class.."[/color]"
 
   if is_hidden then
@@ -198,9 +198,9 @@ end
 
 function util.format_resource_item(name, obj_data, player_info)
   local translation = player_info.translations.resource[name]
-  local caption = "[entity="..name.."]  "..name
+  local caption = "[entity="..name.."]  "..translation
   local tooltip =
-    "[entity="..name.."]  "..name
+    "[entity="..name.."]  "..translation
     .."\n[color="..constants.colors.info.str.."]Resource[/color]"
 
   return constants.list_box_item_styles.available, caption, tooltip, false
@@ -211,9 +211,9 @@ function util.format_technology_item(name, obj_data, player_info)
   local is_hidden = obj_data.hidden
   local is_researched = obj_data.researched_forces[player_info.force_index]
   local style = is_researched and constants.list_box_item_styles.available or constants.list_box_item_styles.unavailable
-  local caption = "[technology="..name.."]  "..name
+  local caption = "[technology="..name.."]  "..translation
   local tooltip =
-    "[technology="..name.."]  "..name
+    "[technology="..name.."]  "..translation
     .."\n[color="..constants.colors.info.str.."]Technology[/color]"
 
   if is_hidden then
