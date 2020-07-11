@@ -15,12 +15,13 @@ local formatters = {}
 ]]
 
 local function get_properties(item_data, force_index)
-  return
-    item_data.hidden,
-    item_data.researched_forces
-      and item_data.researched_forces[force_index]
-      or item_data.available_to_all_forces
-      or item_data.available_to_forces[force_index]
+  local available
+  if item_data.researched_forces then
+    available = item_data.researched_forces[force_index] or false
+  else
+    available = item_data.available_to_all_forces or item_data.available_to_forces[force_index]
+  end
+  return item_data.hidden, available
 end
 
 local function get_should_show(item_data, player_data)

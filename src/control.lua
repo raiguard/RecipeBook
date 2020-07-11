@@ -171,7 +171,7 @@ end)
 
 event.on_string_translated(function(e)
   local names, finished = translation.process_result(e)
-  if e.translated and names then
+  if names then
     local player_table = global.players[e.player_index]
     local translations = player_table.translations
     for dictionary_name, internal_names in pairs(names) do

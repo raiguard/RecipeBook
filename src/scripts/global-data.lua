@@ -86,6 +86,7 @@ function global_data.build_recipe_book()
     end
   end
 
+  -- TODO this is slow
   -- iterate recipes
   local recipe_prototypes = game.recipe_prototypes
   for name, prototype in pairs(recipe_prototypes) do
