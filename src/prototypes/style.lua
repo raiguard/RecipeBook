@@ -52,19 +52,6 @@ styles.rb_unavailable_list_box_item = {
   disabled_font_color = constants.colors.unavailable.tbl
 }
 
--- "adjusted" for the material and recipe icon glyphs, to remove the extraneous left padding
-styles.rb_adjusted_list_box_item = {
-  type = "button_style",
-  parent = "rb_list_box_item",
-  left_padding = -8
-}
-
-styles.rb_adjusted_unavailable_list_box_item = {
-  type = "button_style",
-  parent = "rb_unavailable_list_box_item",
-  left_padding = -8
-}
-
 -- EMPTY-WIDGET STYLES
 
 styles.rb_drag_handle = {

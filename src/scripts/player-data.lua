@@ -36,7 +36,10 @@ function player_data.update_settings(player, player_table)
     default_category = mod_settings["rb-default-search-category"].value,
     show_hidden = mod_settings["rb-show-hidden-objects"].value,
     show_unavailable = mod_settings["rb-show-unavailable-objects"].value,
-    use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value
+    use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value,
+    -- TODO
+    show_internal_names = false,
+    show_glyphs = true
   }
 end
 

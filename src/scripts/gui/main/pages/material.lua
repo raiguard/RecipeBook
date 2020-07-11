@@ -15,25 +15,23 @@ function material_page.build()
   }
 end
 
-function material_page.update(int_name, gui_data, player_info)
+function material_page.update(int_name, gui_data, player_data)
   local obj_data = global.recipe_book.material[int_name]
 
   local update_list_box = gui.templates.info_list_box.update
 
-  update_list_box(obj_data.ingredient_in, "recipe", util.format_recipe_item, gui_data.material.ingredient_in, player_info)
-  update_list_box(obj_data.product_of, "recipe", util.format_recipe_item, gui_data.material.product_of, player_info)
+  update_list_box(obj_data.ingredient_in, "recipe", gui_data.material.ingredient_in, player_data)
+  update_list_box(obj_data.product_of, "recipe", gui_data.material.product_of, player_data)
   update_list_box(
     obj_data.mined_from,
     "resource",
-    util.format_resource_item,
     gui_data.material.mined_from,
-    player_info)
+    player_data)
   update_list_box(
     obj_data.unlocked_by,
     "technology",
-    util.format_technology_item,
     gui_data.material.unlocked_by,
-    player_info
+    player_data
   )
 end
 

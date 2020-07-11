@@ -4,6 +4,7 @@ local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
+local util = require("scripts.util")
 
 local pages = {}
 for _, name in ipairs(constants.main_pages) do
@@ -21,13 +22,8 @@ gui.add_templates{
         }}
       }}
     end,
-    update = function(tbl, int_class, formatter, list_box, player_data, parent_data)
+    update = function(tbl, int_class, list_box, player_data)
       local recipe_book = global.recipe_book[int_class]
-
-      -- player data
-      local show_hidden = player_data.show_hidden
-      local show_unavailable = player_data.show_unavailable
-      local force_index = player_data.force_index
 
       -- scroll pane
       local scroll = list_box.scroll_pane
@@ -39,28 +35,26 @@ gui.add_templates{
       for j = 1, #tbl do
         -- get object information
         local obj = tbl[j]
-        local obj_data = recipe_book[int_class == "material" and obj.type.."."..obj.name or obj]
-        if obj_data then
-          -- check hidden and available status
-          local is_hidden = obj_data.hidden
-          local is_available = obj_data.researched_forces
-            and obj_data.researched_forces[force_index]
-            or obj_data.available_to_all_forces
-            or obj_data.available_to_forces[force_index]
-          if (show_hidden or not is_hidden) and (show_unavailable or is_available) then
-            i = i + 1
-            -- update or add item
-            local style, caption, tooltip, enabled = formatter(obj, obj_data, player_data, parent_data)
-            if enabled == nil then enabled = true end
-            local item = children[i]
-            if item then
-              item.style = style
-              item.caption = caption
-              item.tooltip = tooltip
-              item.enabled = enabled
-            else
-              add{type="button", name="rb_"..int_class.."_item__"..i, style=style, caption=caption, tooltip=tooltip, enabled=enabled}
-            end
+        local obj_data
+        if int_class == "material" then
+          obj_data = recipe_book[int_class == "material" and obj.type.."."..obj.name or obj]
+          obj_data.amount_string = obj.amount_string
+        else
+          obj_data = recipe_book[obj]
+        end
+        local should_add, style, caption, tooltip, enabled = util.format_item(obj_data, player_data)
+
+        if should_add then
+          i = i + 1
+          -- update or add item
+          local item = children[i]
+          if item then
+            item.style = style
+            item.caption = caption
+            item.tooltip = tooltip
+            item.enabled = enabled
+          else
+            add{type="button", name="rb_"..int_class.."_item__"..i, style=style, caption=caption, tooltip=tooltip, enabled=enabled}
           end
         end
       end
@@ -342,6 +336,18 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
   local int_class = (obj_class == "fluid" or obj_class == "item") and "material" or obj_class
   local int_name = (obj_class == "fluid" or obj_class == "item") and obj_class.."."..obj_name or obj_name
 
+  -- assemble various player data to be passed later
+  local player_data = {
+    favorites = player_table.favorites,
+    force_index = player.force.index,
+    history = player_table.history.global,
+    show_glyphs = player_table.settings.show_glyphs,
+    show_hidden = player_table.settings.show_hidden,
+    show_internal_names = player_table.settings.show_internal_names,
+    show_unavailable = player_table.settings.show_unavailable,
+    translations = player_table.translations
+  }
+
   -- update search history
   local history = player_table.history
   local session_history = history.session
@@ -409,7 +415,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
     info_bar.frame.visible = false
   else
     info_bar.frame.visible = true
-    info_bar.label.caption = "[img="..obj_class.."/"..obj_name.."]  "..translations.gui[int_class].." - "..obj_name
+    info_bar.label.caption = "[img="..obj_class.."/"..obj_name.."]  "..translations[int_class][int_name]
 
     if obj_class == "recipe" then
       info_bar.quick_reference_button.visible = true
@@ -427,14 +433,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
   end
 
   -- update page information
-  pages[int_class].update(int_name, gui_data, {
-    show_hidden = player_table.settings.show_hidden,
-    show_unavailable = player_table.settings.show_unavailable,
-    translations = player_table.translations,
-    force_index = player.force.index,
-    favorites = player_table.favorites,
-    history = player_table.history.global
-  })
+  pages[int_class].update(int_name, gui_data, player_data)
 
   -- update visible page
   gui_data[gui_data.state.int_class].flow.visible = false

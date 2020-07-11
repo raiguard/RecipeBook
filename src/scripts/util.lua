@@ -54,17 +54,17 @@ local function get_should_show(item_data, player_data)
   end
 end
 
-local function caption_formatter(item_data, player_data, is_hidden, show_glyph)
+local function caption_formatter(item_data, player_data, is_hidden)
   local translations = player_data.translations
   local translation_key = item_data.internal_class == "material" and item_data.sprite_class.."."..item_data.prototype_name or item_data.prototype_name
   local translation = translations[item_data.internal_class][translation_key]
   local glyph = ""
-  if show_glyph then
+  if player_data.show_glyphs then
     local glyph_char = constants.class_to_font_glyph[item_data.internal_class] or constants.class_to_font_glyph[item_data.sprite_class]
     glyph = "[font=RecipeBook]"..glyph_char.."[/font]  "
   end
   local hidden_string = is_hidden and "[font=default-semibold]("..translations.gui.hidden_abbrev..")[/font]  " or ""
-  local amount_string = item_data.amount_string and item_data.amount_string.."  " or ""
+  local amount_string = item_data.amount_string and "[font=default-semibold]"..item_data.amount_string.."[/font]  " or ""
   local name = player_data.show_internal_names and item_data.prototype_name or translation
   return
     glyph
@@ -125,9 +125,7 @@ local formatters = {
   }
 }
 
-function util.format_item(item_data, player_data, show_glyph)
-  show_glyph = true
-  player_data.show_internal_names = true
+function util.format_item(item_data, player_data)
   local should_show, is_hidden, is_available = get_should_show(item_data, player_data)
   if should_show then
     -- format and return
@@ -135,7 +133,7 @@ function util.format_item(item_data, player_data, show_glyph)
     return
       true,
       is_available and "rb_list_box_item" or "rb_unavailable_list_box_item",
-      caption_formatter(item_data, player_data, is_hidden, show_glyph),
+      caption_formatter(item_data, player_data, is_hidden),
       formatter_subtable.tooltip(item_data, player_data, is_hidden, is_available),
       formatter_subtable.enabled
   else
@@ -144,112 +142,5 @@ function util.format_item(item_data, player_data, show_glyph)
 end
 
 -- * ----------------------------------------------------------------------------------------------------
-
--- TODO hand-crafting indicator
-function util.format_crafter_item(name, obj_data, player_info, recipe_data)
-  local translation = player_info.translations.machine[name]
-  local is_hidden = obj_data.hidden
-  local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[player_info.force_index]
-
-  local style = is_available and constants.list_box_item_styles.available or constants.list_box_item_styles.unavailable
-  local caption = "[entity="..name.."]  ".."[font=default-semibold](" ..util.round(recipe_data.energy / obj_data.crafting_speed, 2).."s)[/font] "..translation
-  local tooltip =
-    "[entity="..name.."]  "..translation
-    .."\n[color="..constants.colors.info.str.."]Machine[/color]"
-
-  if is_hidden then
-    caption = "[font=default-semibold](H)[/font]  "..caption
-    tooltip = tooltip.."  |  Hidden"
-  end
-  if not is_available then
-    tooltip = tooltip.."  |  [color="..constants.colors.unavailable.str.."]Unavailable[/color]"
-  end
-
-  return style, caption, tooltip, false
-end
-
--- TODO time indicator
-function util.format_material_item(obj, obj_data, player_info)
-  local translation = player_info.translations.material[obj_data.sprite_class.."."..obj_data.prototype_name]
-  local is_hidden = obj_data.hidden
-  local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[player_info.force_index]
-
-  local style = is_available and constants.list_box_item_styles.available or constants.list_box_item_styles.unavailable
-  local caption = "[img="..obj_data.sprite_class.."/"..obj.name.."]  "
-  if obj.amount_string then
-    caption = caption.."[font=default-semibold]"..obj.amount_string.."[/font]  "..translation
-  else
-    caption = caption..translation
-  end
-  local tooltip =
-    "[img="..obj_data.sprite_class.."/"..obj.name.."]  "..translation
-    .."\n[color="..constants.colors.info.str.."]"..obj_data.sprite_class.."[/color]"
-
-  if is_hidden then
-    caption = "[font=default-semibold](H)[/font]  "..caption
-    tooltip = tooltip.."  |  Hidden"
-  end
-  if not is_available then
-    tooltip = tooltip.."  |  [color="..constants.colors.unavailable.str.."]Unavailable[/color]"
-  end
-
-  return style, caption, tooltip
-end
-
-function util.format_recipe_item(name, obj_data, player_info)
-  local translation = player_info.translations.recipe[name]
-  if not translation then translation = name end
-  local is_hidden = obj_data.hidden
-  local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[player_info.force_index]
-  local style = is_available and constants.list_box_item_styles.available or constants.list_box_item_styles.unavailable
-  local caption = "[img="..obj_data.sprite_class.."/"..name.."]  "..translation
-  local tooltip =
-    "[img="..obj_data.sprite_class.."/"..name.."]  "..translation
-    .."\n[color="..constants.colors.info.str.."]"..obj_data.sprite_class.."[/color]"
-
-  if is_hidden then
-    caption = "[font=default-semibold](H)[/font]  "..caption
-    tooltip = tooltip.."  |  Hidden"
-  end
-  if not is_available then
-    tooltip = tooltip.."  |  [color="..constants.colors.unavailable.str.."]Unavailable[/color]"
-  end
-
-  return style, caption, tooltip
-end
-
-function util.format_resource_item(name, obj_data, player_info)
-  local translation = player_info.translations.resource[name]
-  local caption = "[entity="..name.."]  "..translation
-  local tooltip =
-    "[entity="..name.."]  "..translation
-    .."\n[color="..constants.colors.info.str.."]Resource[/color]"
-
-  return constants.list_box_item_styles.available, caption, tooltip, false
-end
-
-function util.format_technology_item(name, obj_data, player_info)
-  local translation = player_info.translations.technology[name]
-  local is_hidden = obj_data.hidden
-  local is_researched = obj_data.researched_forces[player_info.force_index]
-  local style = is_researched and constants.list_box_item_styles.available or constants.list_box_item_styles.unavailable
-  local caption = "[technology="..name.."]  "..translation
-  local tooltip =
-    "[technology="..name.."]  "..translation
-    .."\n[color="..constants.colors.info.str.."]Technology[/color]"
-
-  if is_hidden then
-    caption = "[font=default-semibold](H)[/font]  "..caption
-    tooltip = tooltip.."  |  Hidden"
-  end
-
-  if not is_researched then
-    tooltip = tooltip.."  |  [color="..constants.colors.unavailable.str.."]Unresearched[/color]"
-  end
-
-  tooltip = tooltip.."\nClick to view on technology screen."
-
-  return style, caption, tooltip
-end
 
 return util
