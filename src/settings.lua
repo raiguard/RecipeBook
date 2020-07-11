@@ -41,5 +41,19 @@ data:extend{
     default_value = "material",
     allowed_values = {"material", "recipe"},
     order = "f"
+  },
+  {
+    type = "bool-setting",
+    name = "rb-show-internal-names",
+    setting_type = "runtime-per-user",
+    default_value = false,
+    order = "ga"
+  },
+  {
+    type = "bool-setting",
+    name = "rb-show-glyphs",
+    setting_type = "runtime-per-user",
+    default_value = true,
+    order = "gb"
   }
 }

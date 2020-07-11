@@ -38,9 +38,8 @@ function player_data.update_settings(player, player_table)
     show_hidden = mod_settings["rb-show-hidden-objects"].value,
     show_unavailable = mod_settings["rb-show-unavailable-objects"].value,
     use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value,
-    -- TODO
-    show_internal_names = false,
-    show_glyphs = true
+    show_internal_names = mod_settings["rb-show-internal-names"].value,
+    show_glyphs = mod_settings["rb-show-glyphs"].value
   }
 
   -- purge memoizer cache
