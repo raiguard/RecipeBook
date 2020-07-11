@@ -5,6 +5,9 @@ Date: ????
     - Added the ability to "pin" the GUI to the screen, so it can exist alongside other windows
     - Added the ability to "favorite" an object for easy access later
     - Added browse-able search history, keeping track of the last 20 searches
+    - Added setting to display internal prototype names instead of translations
+    - Added object type glyphs
+    - The GUI will remain open when clicking on a technology
   Changes:
     - Completely rewrote the mod from scratch to improve code quality, efficiency, and structure
     - Search and information are now combined into one window

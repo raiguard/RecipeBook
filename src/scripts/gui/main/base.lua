@@ -191,7 +191,7 @@ gui.add_handlers{
     window = {
       on_gui_closed = function(e)
         local player_table = global.players[e.player_index]
-        if not player_table.gui.main.base.window.pinned then
+        if not player_table.gui.main.base.window.pinned and not player_table.flags.technology_gui_open then
           gui.handlers.base.close_button.on_gui_click(e)
         end
       end
@@ -201,7 +201,14 @@ gui.add_handlers{
     list_box_item = {
       on_gui_click = function(e)
         local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%].*$")
-        event.raise(constants.events.open_page, {player_index=e.player_index, obj_class=class, obj_name=name})
+        if class == "technology" then
+          local player = game.get_player(e.player_index)
+          local player_table = global.players[e.player_index]
+          player_table.flags.technology_gui_open = true
+          player.open_technology_gui(name)
+        else
+          event.raise(constants.events.open_page, {player_index=e.player_index, obj_class=class, obj_name=name})
+        end
       end
     }
   }
@@ -259,7 +266,7 @@ function main_gui.create(player, player_table)
 
   -- base setup
   gui_data.base.window.pinned = false
-  gui.update_filters("shared.list_box_item", player.index, {"rb_list_box_item", "rb_material_item", "rb_recipe_item"}, "add")
+  gui.update_filters("shared.list_box_item", player.index, {"rb_list_box_item", "rb_material_item", "rb_recipe_item", "rb_technology_item"}, "add")
 
   -- page setup
   gui_data = pages.search.setup(player, player_table, gui_data)

@@ -15,8 +15,9 @@ function player_data.init(player_index)
     flags = {
       can_open_gui = false,
       gui_open = false,
+      technology_gui_open = false,
       show_message_after_translation = false,
-      translate_on_join = false,
+      translate_on_join = false
     },
     gui = {},
     history = {

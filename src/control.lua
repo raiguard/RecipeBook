@@ -75,6 +75,19 @@ end)
 
 gui.register_handlers()
 
+event.on_gui_closed(function(e)
+  if not gui.dispatch_handlers(e) and e.gui_type == defines.gui_type.research then
+    local player_table = global.players[e.player_index]
+    if player_table.flags.technology_gui_open then
+      player_table.flags.technology_gui_open = false
+      local window_data = player_table.gui.main.base.window
+      if not window_data.pinned then
+        game.get_player(e.player_index).opened = window_data.frame
+      end
+    end
+  end
+end)
+
 -- INTERACTION
 
 event.on_lua_shortcut(function(e)
