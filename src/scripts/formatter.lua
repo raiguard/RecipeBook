@@ -4,6 +4,8 @@ local memoize = require("lib.memoize")
 
 local constants = require("constants")
 
+local formatters = {}
+
 --[[
   PLAYER_DATA:
     force_index
@@ -74,7 +76,7 @@ local function get_base_tooltip(item_data, player_data, is_hidden, is_available)
     .."\n[color="..constants.colors.info.str.."]"..translations.gui[category_class].."[/color]"..hidden_string..unavailable_string
 end
 
-local formatters = {
+local tooltip_formatters = {
   machine = {
     tooltip = function(item_data, player_data, is_hidden, is_available)
       return get_base_tooltip(item_data, player_data, is_hidden, is_available)
@@ -107,11 +109,11 @@ local formatters = {
   }
 }
 
-function formatter.format_item(item_data, player_data)
+local function format_item(item_data, player_data)
   local should_show, is_hidden, is_available = get_should_show(item_data, player_data)
   if should_show then
     -- format and return
-    local formatter_subtable = formatters[item_data.internal_class]
+    local formatter_subtable = tooltip_formatters[item_data.internal_class]
     return
       true,
       is_available and "rb_list_box_item" or "rb_unavailable_list_box_item",
@@ -127,5 +129,21 @@ function formatter.format_item(item_data, player_data)
       false
   end
 end
+
+function formatter.format(item_data, player_data)
+  local player_index = player_data.player_index
+  if not formatters[player_index] then
+    -- add initial values
+    formatters[player_index] = {data=player_data, func=memoize(format_item)}
+  end
+  local player_formatter = formatters[player_index]
+  return player_formatter.func(item_data, player_formatter.data)
+end
+
+function formatter.purge(player_index)
+  formatters[player_index] = nil
+end
+
+setmetatable(formatter, { __call = function(_, ...) return formatter.format(...) end })
 
 return formatter

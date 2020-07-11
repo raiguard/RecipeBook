@@ -4,6 +4,7 @@ local translation = require("__flib__.translation")
 local util = require("__core__.lualib.util")
 
 local constants = require("constants")
+local formatter = require("scripts.formatter")
 local on_tick = require("scripts.on-tick")
 
 local main_gui = require("scripts.gui.main.base")
@@ -49,6 +50,9 @@ function player_data.start_translations(player_index)
 end
 
 function player_data.refresh(player, player_table)
+  -- purge memoizer cache
+  formatter.purge(player.index)
+
   -- destroy GUIs
   main_gui.close(player, player_table)
   main_gui.destroy(player, player_table)

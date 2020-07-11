@@ -4,7 +4,7 @@ local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
-local formatter = require("lib.formatter")
+local formatter = require("scripts.formatter")
 
 local pages = {}
 for _, name in ipairs(constants.main_pages) do
@@ -42,7 +42,7 @@ gui.add_templates{
         else
           obj_data = recipe_book[obj]
         end
-        local should_add, style, caption, tooltip, enabled = formatter.format_item(obj_data, player_data)
+        local should_add, style, caption, tooltip, enabled = formatter(obj_data, player_data)
 
         if should_add then
           i = i + 1
@@ -338,14 +338,21 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
 
   -- assemble various player data to be passed later
   local player_data = {
-    favorites = player_table.favorites,
     force_index = player.force.index,
-    history = player_table.history.global,
+    player_index = player.index,
     show_glyphs = player_table.settings.show_glyphs,
     show_hidden = player_table.settings.show_hidden,
     show_internal_names = player_table.settings.show_internal_names,
     show_unavailable = player_table.settings.show_unavailable,
     translations = player_table.translations
+  }
+
+  -- extra data for the home page
+  -- this cannot be kept in player_data due to memoization. if it were,
+  -- the cache would be invalidated whenever the player did anything
+  local home_data = {
+    favorites = player_table.favorites,
+    history = player_table.history.global
   }
 
   -- update search history
@@ -433,7 +440,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
   end
 
   -- update page information
-  pages[int_class].update(int_name, gui_data, player_data)
+  pages[int_class].update(int_name, gui_data, player_data, home_data)
 
   -- update visible page
   gui_data[gui_data.state.int_class].flow.visible = false

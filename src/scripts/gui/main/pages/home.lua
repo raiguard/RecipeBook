@@ -2,14 +2,13 @@ local home_page = {}
 
 local gui = require("__flib__.gui")
 
-local constants = require("constants")
-local formatter = require("lib.formatter")
+local formatter = require("scripts.formatter")
 
 gui.add_templates{
   home = {
-    list_box_updater = function(tbl_name, gui_data, player_data)
+    list_box_updater = function(tbl_name, gui_data, player_data, home_data)
       local recipe_book = global.recipe_book
-      local tbl = player_data[tbl_name]
+      local tbl = home_data[tbl_name]
 
       -- list box
       local list_box = gui_data.home[tbl_name]
@@ -24,7 +23,7 @@ gui.add_templates{
         local entry = tbl[j]
         if entry.int_class ~= "home" then
           local obj_data = recipe_book[entry.int_class][entry.int_name]
-          local should_add, style, caption, tooltip = formatter.format_item(obj_data, player_data)
+          local should_add, style, caption, tooltip = formatter(obj_data, player_data)
 
           if should_add then
             i = i + 1
@@ -66,19 +65,10 @@ local test_objects = {
   {"technology", "kr-air-purification"}
 }
 
-function home_page.update(_, gui_data, player_data)
+function home_page.update(_, gui_data, player_data, home_data)
   local update = gui.templates.home.list_box_updater
-  update("favorites", gui_data, player_data)
-  update("history", gui_data, player_data)
-  -- local scroll = gui_data.home.favorites.scroll_pane
-  -- scroll.clear()
-  -- for _, data in ipairs(test_objects) do
-  --   local item_data = global.recipe_book[data[1]][data[2]]
-  --   local should_add, style, caption, tooltip, enabled = util.format_item(item_data, player_data)
-  --   if should_add then
-  --     scroll.add{type="button", style=style, caption=caption, tooltip=tooltip, enabled=enabled}
-  --   end
-  -- end
+  update("favorites", gui_data, player_data, home_data)
+  update("history", gui_data, player_data, home_data)
 end
 
 return home_page

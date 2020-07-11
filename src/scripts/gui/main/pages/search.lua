@@ -3,7 +3,7 @@ local search_page = {}
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
-local formatter = require("lib.formatter")
+local formatter = require("scripts.formatter")
 
 local string = string
 
@@ -56,9 +56,11 @@ gui.add_handlers{
         -- settings and player data
         local player_data = {
           force_index = player.force.index,
-          show_hidden = player_table.settings.show_hidden,
-          show_unavailable = player_table.settings.show_unavailable,
+          player_index = player.index,
           show_glyphs = player_table.settings.show_glyphs,
+          show_hidden = player_table.settings.show_hidden,
+          show_internal_names = player_table.settings.show_internal_names,
+          show_unavailable = player_table.settings.show_unavailable,
           translations = player_table.translations
         }
 
@@ -69,7 +71,7 @@ gui.add_handlers{
         for internal, translation in pairs(translations) do
           if string.find(string.lower(translation), query) then
             local obj_data = rb_data[internal]
-            local should_add, style, caption, tooltip = formatter.format_item(obj_data, player_data)
+            local should_add, style, caption, tooltip = formatter(obj_data, player_data)
             if should_add then
               i = i + 1
               -- create or modify element
@@ -80,6 +82,11 @@ gui.add_handlers{
                 child.tooltip = tooltip
               else
                 add{type="button", name="rb_list_box_item__"..i, style=style, caption=caption, tooltip=tooltip}
+              end
+
+              if i == 50 then
+                limit_frame.visible = true
+                break
               end
             end
           end

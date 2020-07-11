@@ -4,7 +4,6 @@ local migration = require("__flib__.migration")
 local translation = require("__flib__.translation")
 
 local constants = require("constants")
-
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local on_tick = require("scripts.on-tick")
