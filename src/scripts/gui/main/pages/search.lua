@@ -3,6 +3,7 @@ local search_page = {}
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
+local util = require("scripts.util")
 
 local string = string
 
@@ -23,6 +24,11 @@ gui.add_handlers{
         local gui_data = player_table.gui.main.search
         local query = string.lower(gui_data.textfield.text)
 
+        local player_info = {
+          force_index = force_index,
+          translations = player_table.translations
+        }
+
         --! ---------------------------------------------------------------------------
         --! TODO: spread out over multiple ticks
 
@@ -30,6 +36,7 @@ gui.add_handlers{
         local translations = player_table.translations[gui_data.category]
         local scroll = gui_data.results_scroll_pane
         local rb_data = global.recipe_book[category]
+        local formatter = util["format_"..category.."_item"]
 
         -- hide limit frame, show it again later if there's more than 50 results
         local limit_frame = gui_data.limit_frame
@@ -64,39 +71,19 @@ gui.add_handlers{
         for internal, translation in pairs(translations) do
           if string.find(string.lower(translation), query) then
             -- check hidden status
-            local result_data = rb_data[internal]
-            local is_hidden = result_data.hidden
-            local is_available = result_data.available_to_all_forces or result_data.available_to_forces[force_index]
+            local obj_data = rb_data[internal]
+            local is_hidden = obj_data.hidden
+            local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[force_index]
             if (show_hidden or not is_hidden) and (show_unavailable or is_available) then
-              -- increment index, break if more than 50 results
               i = i + 1
-              if i == 51 then
-                limit_frame.visible = true
-                break
-              end
-
-              -- assemble element components
-              local style = is_available and "rb_list_box_item" or "rb_unavailable_list_box_item"
-              local caption = "[img="..result_data.sprite_class.."/"..result_data.prototype_name.."]  "..translation
-              local tooltip =
-                "[img="..result_data.sprite_class.."/"..result_data.prototype_name.."]  "..translation
-                .."\n[color="..constants.colors.info.str.."]"..result_data.sprite_class.."[/color]"
-
-              if is_hidden then
-                caption = "[font=default-semibold](H)[/font]  "..caption
-                tooltip = tooltip.."  |  Hidden"
-              end
-              if not is_available then
-                tooltip = tooltip.."  |  [color="..constants.colors.unavailable.str.."]Unavailable[/color]"
-              end
-
-              if result_data.sprite_class == "recipe" then
-                -- TODO
-              else
-                -- TODO
-              end
-
               -- create or modify element
+              -- TODO optimize formatters to be passed the results of is_hidden and is_available from parent function and just not be sucky in general
+              local style, caption, tooltip = formatter(
+                category == "material" and {name=obj_data.prototype_name} or internal,
+                obj_data,
+                category,
+                player_info
+              )
               local child = children[i]
               if child then
                 child.style = style
