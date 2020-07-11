@@ -425,7 +425,10 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
     info_bar.frame.visible = false
   else
     info_bar.frame.visible = true
-    info_bar.label.caption = "[img="..obj_class.."/"..obj_name.."]  "..translations[int_class][int_name]
+
+    local _, _, caption, tooltip = formatter(global.recipe_book[int_class][int_name], player_data)
+    info_bar.label.caption = caption
+    info_bar.label.tooltip = tooltip
 
     if obj_class == "recipe" then
       info_bar.quick_reference_button.visible = true
