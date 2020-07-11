@@ -51,6 +51,7 @@ end
 
 function player_data.refresh(player, player_table)
   -- purge memoizer cache
+  -- TODO purge cache when the player changes any settings
   formatter.purge(player.index)
 
   -- destroy GUIs

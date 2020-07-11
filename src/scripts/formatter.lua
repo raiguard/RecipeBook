@@ -6,14 +6,6 @@ local constants = require("constants")
 
 local formatters = {}
 
---[[
-  PLAYER_DATA:
-    force_index
-    show_hidden
-    show_unavailable
-    translations
-]]
-
 local function get_properties(item_data, force_index)
   local available
   if item_data.researched_forces then

@@ -28,11 +28,11 @@ constants.blacklisted_recipe_categories = {
 
 constants.class_to_font_glyph = {
   fluid = "B",
-  item = "B",
-  machine = "Z",
-  recipe = "A",
-  resource = "Z",
-  technology = "Z"
+  item = "C",
+  machine = "D",
+  recipe = "E",
+  resource = "F",
+  technology = "A"
 }
 
 constants.colors = {

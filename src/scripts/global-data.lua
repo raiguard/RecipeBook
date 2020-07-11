@@ -2,6 +2,12 @@ local global_data = {}
 
 local constants = require("constants")
 
+-- from http://lua-users.org/wiki/SimpleRound
+local function round(num, decimals)
+  local mult = 10^(decimals or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
 function global_data.init()
   global.flags = {}
   global.players = {}
@@ -130,7 +136,10 @@ function global_data.build_recipe_book()
       local category = prototype.category
       for machine_name, machine_data in pairs(recipe_book.machine) do
         if machine_data.categories[category] then
-          data.made_in[#data.made_in+1] = machine_name
+          data.made_in[#data.made_in+1] = {
+            name = machine_name,
+            amount_string = "("..round(prototype.energy / machine_data.crafting_speed, 2).."s)"
+          }
         end
       end
       -- material: ingredient in

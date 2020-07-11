@@ -37,7 +37,10 @@ gui.add_templates{
         local obj = tbl[j]
         local obj_data
         if int_class == "material" then
-          obj_data = recipe_book[int_class == "material" and obj.type.."."..obj.name or obj]
+          obj_data = recipe_book[obj.type.."."..obj.name]
+          obj_data.amount_string = obj.amount_string
+        elseif int_class == "machine" then
+          obj_data = recipe_book[obj.name]
           obj_data.amount_string = obj.amount_string
         else
           obj_data = recipe_book[obj]
