@@ -35,11 +35,15 @@ function global_data.build_recipe_book()
     {filter="type", type="furnace"}
   }
   for name, prototype in pairs(machine_prototypes) do
+    -- TODO pre-process crafting speed and store in recipe
     recipe_book.machine[name] = {
       available_to_forces = {},
       categories = prototype.crafting_categories,
       crafting_speed = prototype.crafting_speed,
-      hidden = prototype.has_flag("hidden")
+      hidden = prototype.has_flag("hidden"),
+      internal_class = "machine",
+      prototype_name = name,
+      sprite_class = "entity"
     }
     translation_data[#translation_data+1] = {dictionary="machine", internal=name, localised=prototype.localised_name}
   end
@@ -59,6 +63,7 @@ function global_data.build_recipe_book()
         available_to_forces = {},
         hidden = hidden,
         ingredient_in = {},
+        internal_class = "material",
         mined_from = {},
         product_of = {},
         prototype_name = name,
@@ -79,6 +84,7 @@ function global_data.build_recipe_book()
         energy = prototype.energy,
         hand_craftable = prototype.category == "crafting",
         hidden = prototype.hidden,
+        internal_class = "recipe",
         made_in = {},
         prototype_name = name,
         sprite_class = "recipe",
@@ -87,7 +93,8 @@ function global_data.build_recipe_book()
       -- ingredients / products
       for _, mode in ipairs{"ingredients", "products"} do
         local materials = prototype[mode]
-        for i=1,#materials do
+        local output = {}
+        for i = 1, #materials do
           local material = materials[i]
           -- build amount string, to display probability, [min/max] amount - includes the "x"
           local amount = material.amount
@@ -97,9 +104,15 @@ function global_data.build_recipe_book()
             amount_string = tostring(probability * 100).."% "..amount_string
           end
           material.amount_string = amount_string
+          -- save only the essentials
+          output[i] = {
+            type = material.type,
+            name = material.name,
+            amount_string = material.amount_string
+          }
         end
         -- add to data
-        data[mode] = materials
+        data[mode] = output
       end
       -- made in
       local category = prototype.category
@@ -146,7 +159,10 @@ function global_data.build_recipe_book()
       end
     end
     recipe_book.resource[name] = {
-      prototype_name = name
+      available_to_all_forces = true,
+      internal_class = "resource",
+      prototype_name = name,
+      sprite_class = "entity"
     }
     translation_data[#translation_data+1] = {dictionary="resource", internal=name, localised=prototype.localised_name}
   end
@@ -184,8 +200,10 @@ function global_data.build_recipe_book()
       end
       recipe_book.technology[name] = {
         hidden = prototype.hidden,
+        internal_class = "technology",
         prototype_name = name,
-        researched_forces = {}
+        researched_forces = {},
+        sprite_class = "technology"
       }
       translation_data[#translation_data+1] = {dictionary="technology", internal=prototype.name, localised=prototype.localised_name}
     end

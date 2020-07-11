@@ -52,10 +52,27 @@ function home_page.build()
   }
 end
 
+local test_objects = {
+  {"machine", "kr-crusher"},
+  {"material", "item.matter-cube"},
+  {"recipe", "dirty-water-filtration-3"},
+  {"resource", "stone"},
+  {"technology", "kr-air-purification"}
+}
+
 function home_page.update(_, gui_data, player_info)
-  local update = gui.templates.home.list_box_updater
-  update("favorites", gui_data, player_info)
-  update("history", gui_data, player_info)
+  -- local update = gui.templates.home.list_box_updater
+  -- update("favorites", gui_data, player_info)
+  -- update("history", gui_data, player_info)
+  local scroll = gui_data.home.favorites.scroll_pane
+  scroll.clear()
+  for _, data in ipairs(test_objects) do
+    local item_data = global.recipe_book[data[1]][data[2]]
+    local should_add, style, caption, tooltip, enabled = util.format_item(item_data, player_info)
+    if should_add then
+      scroll.add{type="button", style=style, caption=caption, tooltip=tooltip, enabled=enabled}
+    end
+  end
 end
 
 return home_page
