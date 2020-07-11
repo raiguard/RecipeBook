@@ -82,6 +82,35 @@ gui.add_handlers{
         main_gui.close(game.get_player(e.player_index), global.players[e.player_index])
       end
     },
+    favorite_button = {
+      on_gui_click = function(e)
+        local player_table = global.players[e.player_index]
+        local favorites = player_table.favorites
+        local gui_data = player_table.gui.main
+        local state = gui_data.state
+        local index_name = state.class.."."..state.name
+        if favorites[index_name] then
+          for i = 1, #favorites do
+            local obj = favorites[i]
+            if obj.class.."."..obj.name == index_name then
+              table.remove(favorites, i)
+              break
+            end
+          end
+          favorites[index_name] = nil
+        else
+          favorites[index_name] = true
+          table.insert(favorites, 1, state)
+        end
+        main_gui.open_page(
+          game.get_player(e.player_index),
+          player_table,
+          state.class,
+          state.name,
+          true
+        )
+      end
+    },
     nav_button = {
       backward = {
         on_gui_click = function(e)
@@ -138,6 +167,11 @@ gui.add_handlers{
         end
       end
     },
+    quick_reference_button = {
+      on_gui_click = function(e)
+
+      end
+    },
     settings_button = {
       on_gui_click = function(e)
 
@@ -189,8 +223,10 @@ function main_gui.create(player, player_table)
           {type="frame", style="subheader_frame", elem_mods={visible=false}, save_as="base.info_bar.frame", children={
             {type="label", style="rb_info_bar_label", save_as="base.info_bar.label"},
             {template="pushers.horizontal"},
-            {template="tool_button", sprite="rb_clipboard_black", tooltip={"rb-gui.open-quick-reference"}, save_as="base.info_bar.quick_reference_button"},
-            {template="tool_button", sprite="rb_favorite_black", tooltip={"rb-gui.add-to-favorites"}, save_as="base.info_bar.favorite_button"}
+            {template="tool_button", sprite="rb_clipboard_black", tooltip={"rb-gui.open-quick-reference"}, handlers="base.quick_reference_button",
+              save_as="base.info_bar.quick_reference_button"},
+            {template="tool_button", sprite="rb_favorite_black", tooltip={"rb-gui.add-to-favorites"}, handlers="base.favorite_button",
+              save_as="base.info_bar.favorite_button"}
           }},
           -- content scroll pane
           {type="scroll-pane", style="rb_main_info_scroll_pane", children={
@@ -219,7 +255,7 @@ function main_gui.create(player, player_table)
 
   -- state setup
   gui_data.state = {
-    page = "home"
+    int_class = "home"
   }
 
   -- save to global
@@ -349,6 +385,14 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
       info_bar.quick_reference_button.visible = false
     end
 
+    if player_table.favorites[obj_class.."."..obj_name] then
+      info_bar.favorite_button.style = "rb_selected_tool_button"
+      info_bar.favorite_button.tooltip = {"rb-gui.remove-from-favorites"}
+    else
+      info_bar.favorite_button.style = "tool_button"
+      info_bar.favorite_button.tooltip = {"rb-gui.add-to-favorites"}
+    end
+
     -- TODO set button states
   end
 
@@ -363,19 +407,16 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
   })
 
   -- update visible page
-  gui_data[gui_data.state.page].flow.visible = false
+  gui_data[gui_data.state.int_class].flow.visible = false
   gui_data[int_class].flow.visible = true
 
   -- update state
   gui_data.state = {
-    page = int_class,
-    obj_class = obj_class,
-    obj_name = obj_name
+    int_class = int_class,
+    int_name = int_name,
+    class = obj_class,
+    name = obj_name
   }
-end
-
-function main_gui.update_page(player, player_table)
-
 end
 
 return main_gui

@@ -47,7 +47,7 @@ function home_page.build()
   return {
     gui.templates.info_list_box.build({"rb-gui.favorites"}, 7, "home.favorites"),
     {template="pushers.vertical"},
-    gui.templates.info_list_box.build({"rb-gui.history"}, 7, "home.history")
+    gui.templates.info_list_box.build({"rb-gui.history"}, 8, "home.history")
   }
 end
 

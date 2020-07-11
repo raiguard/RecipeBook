@@ -21,6 +21,19 @@ styles.rb_selected_frame_action_button = {
   }
 }
 
+local btn = styles.button
+
+styles.rb_selected_tool_button = {
+  type = "button_style",
+  parent = "tool_button",
+  default_font_color = btn.selected_font_color,
+  default_graphical_set = btn.selected_graphical_set,
+  hovered_font_color = btn.selected_hovered_font_color,
+  hovered_graphical_set = btn.selected_hovered_graphical_set,
+  clicked_font_color = btn.selected_clicked_font_color,
+  clicked_graphical_set = btn.selected_clicked_graphical_set
+}
+
 styles.rb_list_box_item = {
   type = "button_style",
   parent = "list_box_item",
