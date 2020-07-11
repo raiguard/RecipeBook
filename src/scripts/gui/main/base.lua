@@ -38,14 +38,12 @@ gui.add_templates{
         local obj_data
         if int_class == "material" then
           obj_data = recipe_book[obj.type.."."..obj.name]
-          obj_data.amount_string = obj.amount_string
         elseif int_class == "machine" then
           obj_data = recipe_book[obj.name]
-          obj_data.amount_string = obj.amount_string
         else
           obj_data = recipe_book[obj]
         end
-        local should_add, style, caption, tooltip, enabled = formatter(obj_data, player_data)
+        local should_add, style, caption, tooltip, enabled = formatter(obj_data, player_data, obj.amount_string)
 
         if should_add then
           i = i + 1
