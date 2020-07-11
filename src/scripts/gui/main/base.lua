@@ -4,7 +4,7 @@ local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
-local util = require("scripts.util")
+local formatter = require("lib.formatter")
 
 local pages = {}
 for _, name in ipairs(constants.main_pages) do
@@ -42,7 +42,7 @@ gui.add_templates{
         else
           obj_data = recipe_book[obj]
         end
-        local should_add, style, caption, tooltip, enabled = util.format_item(obj_data, player_data)
+        local should_add, style, caption, tooltip, enabled = formatter.format_item(obj_data, player_data)
 
         if should_add then
           i = i + 1

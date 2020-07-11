@@ -2,8 +2,6 @@ local material_page = {}
 
 local gui = require("__flib__.gui")
 
-local util = require("scripts.util")
-
 function material_page.build()
   local build_list_box = gui.templates.info_list_box.build
   return {

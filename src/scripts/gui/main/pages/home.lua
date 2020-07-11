@@ -3,7 +3,7 @@ local home_page = {}
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
-local util = require("scripts.util")
+local formatter = require("lib.formatter")
 
 gui.add_templates{
   home = {
@@ -24,7 +24,7 @@ gui.add_templates{
         local entry = tbl[j]
         if entry.int_class ~= "home" then
           local obj_data = recipe_book[entry.int_class][entry.int_name]
-          local should_add, style, caption, tooltip = util.format_item(obj_data, player_data)
+          local should_add, style, caption, tooltip = formatter.format_item(obj_data, player_data)
 
           if should_add then
             i = i + 1

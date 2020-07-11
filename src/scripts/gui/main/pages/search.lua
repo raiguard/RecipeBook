@@ -3,7 +3,7 @@ local search_page = {}
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
-local util = require("scripts.util")
+local formatter = require("lib.formatter")
 
 local string = string
 
@@ -69,7 +69,7 @@ gui.add_handlers{
         for internal, translation in pairs(translations) do
           if string.find(string.lower(translation), query) then
             local obj_data = rb_data[internal]
-            local should_add, style, caption, tooltip = util.format_item(obj_data, player_data)
+            local should_add, style, caption, tooltip = formatter.format_item(obj_data, player_data)
             if should_add then
               i = i + 1
               -- create or modify element

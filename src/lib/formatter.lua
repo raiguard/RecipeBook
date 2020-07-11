@@ -1,27 +1,8 @@
-local util = require("__core__.lualib.util")
+local formatter = {}
+
+local memoize = require("lib.memoize")
 
 local constants = require("constants")
-
--- ! TODO move to flib
-
-function util.shallow_copy(tbl)
-  local new_t = {}
-  for k, v in pairs(tbl) do
-    new_t[k] = v
-  end
-  return new_t
-end
-
--- because Lua doesn't have a math.round...
--- from http://lua-users.org/wiki/SimpleRound
-function util.round(num, numDecimalPlaces)
-  local mult = 10^(numDecimalPlaces or 0)
-  return math.floor(num * mult + 0.5) / mult
-end
-
--- * ----------------------------------------------------------------------------------------------------
--- * LISTBOX ITEM FORMATTERS
--- * TODO move to a separate file (maybe)
 
 --[[
   PLAYER_DATA:
@@ -126,7 +107,7 @@ local formatters = {
   }
 }
 
-function util.format_item(item_data, player_data)
+function formatter.format_item(item_data, player_data)
   local should_show, is_hidden, is_available = get_should_show(item_data, player_data)
   if should_show then
     -- format and return
@@ -138,10 +119,13 @@ function util.format_item(item_data, player_data)
       formatter_subtable.tooltip(item_data, player_data, is_hidden, is_available),
       formatter_subtable.enabled
   else
-    return false
+    return -- memoize does not work with nil values, so use placeholders
+      false,
+      false,
+      false,
+      false,
+      false
   end
 end
 
--- * ----------------------------------------------------------------------------------------------------
-
-return util
+return formatter

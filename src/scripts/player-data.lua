@@ -1,10 +1,10 @@
 local player_data = {}
 
 local translation = require("__flib__.translation")
+local util = require("__core__.lualib.util")
 
 local constants = require("constants")
 local on_tick = require("scripts.on-tick")
-local util = require("scripts.util")
 
 local main_gui = require("scripts.gui.main.base")
 
