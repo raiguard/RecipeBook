@@ -51,7 +51,12 @@ function util.format_material_item(obj, obj_data, int_class, player_info)
   local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[player_info.force_index]
 
   local style = is_available and constants.list_box_item_styles.available or constants.list_box_item_styles.unavailable
-  local caption = "[img="..obj_data.sprite_class.."/"..obj.name.."]  [font=default-semibold]"..obj.amount_string.."[/font]  "..translation
+  local caption = "[img="..obj_data.sprite_class.."/"..obj.name.."]  "
+  if obj.amount_string then
+    caption = caption.."[font=default-semibold]"..obj.amount_string.."[/font]  "..translation
+  else
+    caption = caption..translation
+  end
   local tooltip =
     "[img="..obj_data.sprite_class.."/"..obj.name.."]  "..translation
     .."\n[color="..constants.colors.info.str.."]"..obj_data.sprite_class.."[/color]"

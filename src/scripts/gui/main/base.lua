@@ -357,7 +357,9 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
     show_hidden = player_table.settings.show_hidden,
     show_unavailable = player_table.settings.show_unavailable,
     translations = player_table.translations,
-    force_index = player.force.index
+    force_index = player.force.index,
+    favorites = player_table.favorites,
+    history = player_table.history.global
   })
 
   -- update visible page
