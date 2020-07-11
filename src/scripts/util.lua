@@ -22,7 +22,7 @@ end
 -- listbox item formatters
 
 -- TODO hand-crafting indicator
-function util.format_crafter_item(name, obj_data, int_class, player_info, recipe_data)
+function util.format_crafter_item(name, obj_data, player_info, recipe_data)
   local translation = player_info.translations.machine[name]
   local is_hidden = obj_data.hidden
   local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[player_info.force_index]
@@ -45,8 +45,8 @@ function util.format_crafter_item(name, obj_data, int_class, player_info, recipe
 end
 
 -- TODO time indicator
-function util.format_material_item(obj, obj_data, int_class, player_info)
-  local translation = player_info.translations[int_class][obj_data.sprite_class.."."..obj_data.prototype_name]
+function util.format_material_item(obj, obj_data, player_info)
+  local translation = player_info.translations.material[obj_data.sprite_class.."."..obj_data.prototype_name]
   local is_hidden = obj_data.hidden
   local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[player_info.force_index]
 
@@ -72,8 +72,8 @@ function util.format_material_item(obj, obj_data, int_class, player_info)
   return style, caption, tooltip
 end
 
-function util.format_recipe_item(name, obj_data, int_class, player_info)
-  local translation = player_info.translations[int_class][name]
+function util.format_recipe_item(name, obj_data, player_info)
+  local translation = player_info.translations.recipe[name]
   if not translation then translation = name end
   local is_hidden = obj_data.hidden
   local is_available = obj_data.available_to_all_forces or obj_data.available_to_forces[player_info.force_index]
@@ -94,7 +94,7 @@ function util.format_recipe_item(name, obj_data, int_class, player_info)
   return style, caption, tooltip
 end
 
-function util.format_resource_item(name, obj_data, int_class, player_info)
+function util.format_resource_item(name, obj_data, player_info)
   local translation = player_info.translations.resource[name]
   local caption = "[entity="..name.."]  "..translation
   local tooltip =
@@ -104,7 +104,7 @@ function util.format_resource_item(name, obj_data, int_class, player_info)
   return constants.list_box_item_styles.available, caption, tooltip, false
 end
 
-function util.format_technology_item(name, obj_data, int_class, player_info)
+function util.format_technology_item(name, obj_data, player_info)
   local translation = player_info.translations.technology[name]
   local is_hidden = obj_data.hidden
   local is_researched = obj_data.researched_forces[player_info.force_index]

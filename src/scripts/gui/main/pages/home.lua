@@ -25,7 +25,6 @@ gui.add_templates{
           local style, caption, tooltip = util["format_"..data.int_class.."_item"](
             int_class == "material" and data or name,
             recipe_book[int_class][int_name],
-            int_class,
             player_info
           )
           -- TODO create a font with recipe and material icons

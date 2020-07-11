@@ -21,24 +21,36 @@ gui.add_templates{
         }}
       }}
     end,
-    update = function(tbl, int_class, formatter, list_box, player_info, parent_data)
-      local source_tbl = global.recipe_book[int_class]
+    update = function(tbl, int_class, formatter, list_box, player_data, parent_data)
+      local recipe_book = global.recipe_book[int_class]
 
+      -- player data
+      local show_hidden = player_data.show_hidden
+      local show_unavailable = player_data.show_unavailable
+      local force_index = player_data.force_index
+
+      -- scroll pane
       local scroll = list_box.scroll_pane
       local add = scroll.add
       local children = scroll.children
+
+      -- loop through input table
       local i = 0
       for j = 1, #tbl do
+        -- get object information
         local obj = tbl[j]
-        local obj_data = source_tbl[type(obj) == "table" and obj.type.."."..obj.name or obj]
-        -- TODO maybe handle this with a log?
+        local obj_data = recipe_book[int_class == "material" and obj.type.."."..obj.name or obj]
         if obj_data then
-          if
-            (player_info.show_hidden or not obj_data.hidden)
-            and (player_info.show_unavailable or obj_data.available_to_forces)
-          then
+          -- check hidden and available status
+          local is_hidden = obj_data.hidden
+          local is_available = obj_data.researched_forces
+            and obj_data.researched_forces[force_index]
+            or obj_data.available_to_all_forces
+            or obj_data.available_to_forces[force_index]
+          if (show_hidden or not is_hidden) and (show_unavailable or is_available) then
             i = i + 1
-            local style, caption, tooltip, enabled = formatter(obj, obj_data, int_class, player_info, parent_data)
+            -- update or add item
+            local style, caption, tooltip, enabled = formatter(obj, obj_data, player_data, parent_data)
             if enabled == nil then enabled = true end
             local item = children[i]
             if item then
@@ -52,10 +64,12 @@ gui.add_templates{
           end
         end
       end
+      -- destroy extraneous items
       for j = i + 1, #children do
         children[j].destroy()
       end
 
+      -- set listbox properties
       if i == 0 then
         list_box.flow.visible = false
       else

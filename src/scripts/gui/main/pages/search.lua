@@ -81,7 +81,6 @@ gui.add_handlers{
               local style, caption, tooltip = formatter(
                 category == "material" and {name=obj_data.prototype_name} or internal,
                 obj_data,
-                category,
                 player_info
               )
               local child = children[i]
