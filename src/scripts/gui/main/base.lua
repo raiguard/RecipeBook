@@ -220,7 +220,7 @@ function main_gui.create(player, player_table)
           elem_mods={enabled=false}, handlers="base.nav_button.backward", save_as="base.titlebar.nav_backward_button"},
         {template="frame_action_button", sprite="rb_nav_forward_white", hovered_sprite="rb_nav_forward_black", clicked_sprite="rb_nav_forward_black",
           elem_mods={enabled=false}, handlers="base.nav_button.forward", save_as="base.titlebar.nav_forward_button"},
-        {type="empty-widget"},
+        {type="empty-widget"}, -- spacer
         {type="label", style="frame_title", caption={"mod-name.RecipeBook"}, elem_mods={ignored_by_interaction=true}},
         {type="empty-widget", style="rb_drag_handle", elem_mods={ignored_by_interaction=true}},
         {template="frame_action_button", tooltip={"rb-gui.keep-open"}, sprite="rb_pin_white", hovered_sprite="rb_pin_black", clicked_sprite="rb_pin_black",
@@ -237,7 +237,7 @@ function main_gui.create(player, player_table)
         {type="frame", style="rb_main_info_frame", direction="vertical", children={
           -- info bar
           {type="frame", style="subheader_frame", elem_mods={visible=false}, save_as="base.info_bar.frame", children={
-            {type="label", style="rb_info_bar_label", save_as="base.info_bar.label"},
+            {type="label", style="rb_toolbar_label", save_as="base.info_bar.label"},
             {template="pushers.horizontal"},
             {template="tool_button", sprite="rb_clipboard_black", tooltip={"rb-gui.open-quick-reference"}, handlers="base.quick_reference_button",
               save_as="base.info_bar.quick_reference_button"},
@@ -467,17 +467,15 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
 end
 
 function main_gui.update_list_box_items(player, player_table)
-  if player_table.flags.gui_open then
-    gui.handlers.search.textfield.on_gui_text_changed{player_index=player.index}
-    local state = player_table.gui.main.state
-    main_gui.open_page(
-      player,
-      player_table,
-      state.class,
-      state.name,
-      true
-    )
-  end
+  gui.handlers.search.textfield.on_gui_text_changed{player_index=player.index}
+  local state = player_table.gui.main.state
+  main_gui.open_page(
+    player,
+    player_table,
+    state.class,
+    state.name,
+    true
+  )
 end
 
 return main_gui

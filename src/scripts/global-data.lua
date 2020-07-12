@@ -231,6 +231,7 @@ function global_data.build_recipe_book()
   end
 
   -- remove all materials that aren't used in recipes
+  -- TODO flag materials whose recipes are all hidden
   do
     local materials = recipe_book.material
     local translations = translation_data
