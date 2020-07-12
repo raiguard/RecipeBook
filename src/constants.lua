@@ -103,4 +103,6 @@ constants.open_fluid_types = {
 
 constants.search_categories = {"material", "recipe"}
 
+constants.search_results_limit = 150
+
 return constants

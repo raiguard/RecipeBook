@@ -84,7 +84,7 @@ gui.add_handlers{
                 add{type="button", name="rb_list_box_item__"..i, style=style, caption=caption, tooltip=tooltip}
               end
 
-              if i == 50 then
+              if i == constants.search_results_limit then
                 limit_frame.visible = true
                 break
               end
@@ -93,7 +93,7 @@ gui.add_handlers{
         end
 
         -- remove extraneous children, if any
-        if i < 50 then
+        if i < constants.search_results_limit then
           for j = i + 1, #scroll.children do
             children[j].destroy()
           end
@@ -116,7 +116,7 @@ function search_page.build()
       {type="textfield", style_mods={width=250}, handlers="search.textfield", save_as="search.textfield"},
       {type="frame", style="deep_frame_in_shallow_frame", style_mods={horizontally_stretchable=true, height=420}, direction="vertical", children={
         {type="frame", style="rb_search_results_subheader_frame", elem_mods={visible=false}, save_as="search.limit_frame", children={
-          {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited"}}}
+          {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited", constants.search_results_limit}}}
         }},
         {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={horizontally_stretchable=true, vertically_stretchable=true},
           save_as="search.results_scroll_pane"}
