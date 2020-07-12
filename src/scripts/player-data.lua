@@ -19,7 +19,9 @@ function player_data.init(player_index)
       show_message_after_translation = false,
       translate_on_join = false
     },
-    gui = {},
+    gui = {
+      quick_ref = {}
+    },
     history = {
       global = {},
       session = {
