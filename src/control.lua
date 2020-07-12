@@ -177,6 +177,7 @@ event.on_runtime_mod_setting_changed(function(e)
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
     player_data.update_settings(player, player_table)
+    main_gui.update_list_box_items(player, player_table)
   end
 end)
 
@@ -231,9 +232,5 @@ event.register(constants.events.open_page, function(e)
     -- TODO input validation
   end
 
-  if e.obj_class == "home" then
-    -- TODO
-  else
-    main_gui.open_page(game.get_player(e.player_index), global.players[e.player_index], e.obj_class, e.obj_name)
-  end
+  main_gui.open_page(game.get_player(e.player_index), global.players[e.player_index], e.obj_class, e.obj_name)
 end)

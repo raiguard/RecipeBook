@@ -199,13 +199,13 @@ gui.add_handlers{
     list_box_item = {
       on_gui_click = function(e)
         local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%].*$")
+        local player = game.get_player(e.player_index)
+        local player_table = global.players[e.player_index]
         if class == "technology" then
-          local player = game.get_player(e.player_index)
-          local player_table = global.players[e.player_index]
           player_table.flags.technology_gui_open = true
           player.open_technology_gui(name)
         else
-          event.raise(constants.events.open_page, {player_index=e.player_index, obj_class=class, obj_name=name})
+          main_gui.open_page(player, player_table, class, name)
         end
       end
     }
@@ -464,6 +464,20 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
     class = obj_class,
     name = obj_name
   }
+end
+
+function main_gui.update_list_box_items(player, player_table)
+  if player_table.flags.gui_open then
+    gui.handlers.search.textfield.on_gui_text_changed{player_index=player.index}
+    local state = player_table.gui.main.state
+    main_gui.open_page(
+      player,
+      player_table,
+      state.class,
+      state.name,
+      true
+    )
+  end
 end
 
 return main_gui
