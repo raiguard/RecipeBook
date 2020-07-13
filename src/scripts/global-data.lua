@@ -52,7 +52,6 @@ function global_data.build_recipe_book()
     {filter="type", type="furnace"}
   }
   for name, prototype in pairs(machine_prototypes) do
-    -- TODO pre-process crafting speed and store in recipe
     recipe_book.machine[name] = {
       available_to_forces = {},
       categories = prototype.crafting_categories,
@@ -121,12 +120,12 @@ function global_data.build_recipe_book()
           if probability and probability < 1 then
             amount_string = tostring(probability * 100).."% "..amount_string
           end
-          material.amount_string = amount_string
           -- save only the essentials
           output[i] = {
             type = material.type,
             name = material.name,
-            amount_string = material.amount_string
+            amount_string = amount_string,
+            avg_amount_string = amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
           }
         end
         -- add to data

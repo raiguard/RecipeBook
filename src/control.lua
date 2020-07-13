@@ -185,6 +185,9 @@ end)
 
 -- TRANSLATIONS
 
+-- ! TEMPORARY
+local quick_ref_gui = require("scripts.gui.quick-ref.quick-ref")
+
 event.on_string_translated(function(e)
   local names, finished = translation.process_result(e)
   if names then
@@ -216,6 +219,8 @@ event.on_string_translated(function(e)
     player.set_shortcut_available("rb-toggle-gui", true)
     -- -- update on_tick
     on_tick.update()
+    -- ! TEMPORARY
+    quick_ref_gui.create(player, player_table, "wood-sawing-3")
   end
 end)
 

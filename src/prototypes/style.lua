@@ -106,12 +106,37 @@ styles.rb_search_results_subheader_frame = {
   }
 }
 
+styles.rb_slot_table_frame = {
+  type = "frame_style",
+  parent = "deep_frame_in_shallow_frame",
+  maximal_height = 200,
+  natural_height = 40
+}
+
 -- LABEL STYLES
 
 styles.rb_toolbar_label = {
   type = "label_style",
   parent = "subheader_caption_label",
-  left_padding = 4
+  left_padding = 4,
+  horizontally_squashable = "on"
+}
+
+styles.rb_slot_label = {
+  type = "label_style",
+  parent = "count_label",
+  height = 36,
+  width = 35,
+  vertical_align = "bottom",
+  horizontal_align = "right",
+  right_padding = 3
+}
+
+styles.rb_slot_label_top = {
+  type = "label_style",
+  parent = "rb_slot_label",
+  vertical_align = "top",
+  top_padding = 3
 }
 
 -- SCROLL PANE STYLES
@@ -142,5 +167,25 @@ styles.rb_list_box_scroll_pane = {
     type = "vertical_flow_style",
     vertical_spacing = 0,
     horizontally_stretchable = "on"
+  }
+}
+
+styles.rb_slot_table_scroll_pane = {
+  type = "scroll_pane_style",
+  extra_padding_when_activated = 0,
+  padding = 0,
+  minimal_width = 200,
+  horizontally_squashable = "off",
+  background_graphical_set = {
+    base = {
+      position = {282, 17},
+      corner_size = 8,
+      overall_tiling_horizontal_padding = 4,
+      overall_tiling_horizontal_size = 32,
+      overall_tiling_horizontal_spacing = 8,
+      overall_tiling_vertical_padding = 4,
+      overall_tiling_vertical_size = 32,
+      overall_tiling_vertical_spacing = 8
+    }
   }
 }

@@ -1,5 +1,6 @@
 local player_data = {}
 
+local gui = require("__flib__.gui")
 local translation = require("__flib__.translation")
 local util = require("__core__.lualib.util")
 
@@ -79,23 +80,8 @@ function player_data.refresh(player, player_table)
 end
 
 function player_data.remove(player_index)
-  -- TODO
-end
-
-function player_data.add_to_history()
-
-end
-
-function player_data.clear_history()
-
-end
-
-function player_data.add_to_favorites()
-
-end
-
-function player_data.remove_from_favorites()
-
+  gui.remove_player_filters(player_index)
+  global.players[player_index] = nil
 end
 
 function player_data.check_cursor_stack(player)
