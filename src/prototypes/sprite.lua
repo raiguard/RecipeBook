@@ -13,8 +13,8 @@ data:extend{
   data_util.build_sprite("rb_pin_white", {32, 64}, frame_action_icons, 32),
   data_util.build_sprite("rb_settings_black", {0, 96}, frame_action_icons, 32),
   data_util.build_sprite("rb_settings_white", {32, 96}, frame_action_icons, 32),
-  data_util.build_sprite("rb_expand_black", {0, 120}, frame_action_icons, 32),
-  data_util.build_sprite("rb_expand_white", {32, 120}, frame_action_icons, 32),
+  data_util.build_sprite("rb_expand_black", {0, 128}, frame_action_icons, 32),
+  data_util.build_sprite("rb_expand_white", {32, 128}, frame_action_icons, 32),
   -- tool icons
   data_util.build_sprite("rb_favorite_black", {0, 0}, tool_icons, 32, 2),
   data_util.build_sprite("rb_clipboard_black", {0, 32}, tool_icons, 32, 2)
