@@ -4,6 +4,7 @@ local migration = require("__flib__.migration")
 local translation = require("__flib__.translation")
 
 local constants = require("constants")
+local formatter = require("scripts.formatter")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local on_tick = require("scripts.on-tick")
@@ -43,6 +44,7 @@ end)
 
 event.on_load(function()
   gui.build_lookup_tables()
+  formatter.create_all_caches()
   on_tick.update()
 end)
 
@@ -156,6 +158,7 @@ event.on_player_created(function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
   player_data.refresh(player, player_table)
+  formatter.create_cache(e.player_index)
 end)
 
 event.on_player_joined_game(function(e)
@@ -220,7 +223,7 @@ event.on_string_translated(function(e)
     -- -- update on_tick
     on_tick.update()
     -- ! TEMPORARY
-    quick_ref_gui.create(player, player_table, "wood-sawing-3")
+    quick_ref_gui.create(player, player_table, "uranium-processing")
   end
 end)
 

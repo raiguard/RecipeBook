@@ -1,17 +1,15 @@
 local formatter = {}
 
-local memoize = require("lib.memoize")
-
 local constants = require("constants")
 
-local formatters = {}
+local caches = {}
 
 local function get_properties(obj_data, force_index)
   local available
   if obj_data.researched_forces then
     available = obj_data.researched_forces[force_index] or false
   else
-    available = obj_data.available_to_all_forces or obj_data.available_to_forces[force_index]
+    available = obj_data.available_to_all_forces or obj_data.available_to_forces[force_index] or false
   end
   return obj_data.hidden, available
 end
@@ -114,29 +112,42 @@ local function format_item(obj_data, player_data, amount_string)
       formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_available),
       formatter_subtable.enabled
   else
-    return -- memoize does not work with nil values, so use placeholders
-      false,
-      false,
-      false,
-      false,
-      false
+    return false
   end
 end
 
 function formatter.format(obj_data, player_data, amount_string)
   local player_index = player_data.player_index
-  if not formatters[player_index] then
-    -- add initial values
-    formatters[player_index] = {data=player_data, func=memoize(format_item)}
+  local cache = caches[player_index]
+  local _, is_available = get_properties(obj_data, player_data.force_index)
+  local cache_key = obj_data.sprite_class.."."..obj_data.prototype_name.."."..(amount_string or "false").."."..tostring(is_available)
+  local cached_return = cache[cache_key]
+  if cached_return then
+    return table.unpack(cached_return)
+  else
+    local should_show, style, caption, tooltip, enabled = format_item(obj_data, player_data, amount_string)
+    cache[cache_key] = { should_show, style, caption, tooltip, enabled }
+    return should_show, style, caption, tooltip, enabled
   end
-  local player_formatter = formatters[player_index]
-  return player_formatter.func(obj_data, player_formatter.data, amount_string or false)
 end
 
-function formatter.purge(player_index)
-  formatters[player_index] = nil
+function formatter.create_cache(player_index)
+  caches[player_index] = {}
 end
 
+function formatter.create_all_caches()
+  for i in pairs(global.players) do
+    caches[i] = {}
+  end
+end
+
+formatter.purge_cache = formatter.create_cache
+
+function formatter.destroy_cache(player_index)
+  caches[player_index] = nil
+end
+
+-- when calling the module directly, call formatter.format
 setmetatable(formatter, { __call = function(_, ...) return formatter.format(...) end })
 
 return formatter

@@ -47,7 +47,7 @@ function player_data.update_settings(player, player_table)
   }
 
   -- purge memoizer cache
-  formatter.purge(player.index)
+  formatter.purge_cache(player.index)
 end
 
 function player_data.start_translations(player_index)
