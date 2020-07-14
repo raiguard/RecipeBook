@@ -129,7 +129,13 @@ gui.add_handlers{
           local session_history = player_table.history.session
           -- latency protection
           if session_history.position < #session_history then
-            session_history.position = session_history.position + 1
+            if e.button == defines.mouse_button_type.left then
+              -- go back one
+              session_history.position = session_history.position + 1
+            else
+              -- go all the way back
+              session_history.position = #session_history
+            end
             local back_obj = session_history[session_history.position]
             main_gui.open_page(
               game.get_player(e.player_index),
@@ -228,7 +234,7 @@ function main_gui.create(player, player_table)
     {type="frame", direction="vertical", elem_mods={visible=false}, handlers="base.window", save_as="base.window.frame", children={
       {type="flow", save_as="base.titlebar.flow", children={
         {template="frame_action_button", sprite="rb_nav_backward_white", hovered_sprite="rb_nav_backward_black", clicked_sprite="rb_nav_backward_black",
-          elem_mods={enabled=false}, handlers="base.nav_button.backward", save_as="base.titlebar.nav_backward_button"},
+          mouse_button_filter={"left", "right"}, elem_mods={enabled=false}, handlers="base.nav_button.backward", save_as="base.titlebar.nav_backward_button"},
         {template="frame_action_button", sprite="rb_nav_forward_white", hovered_sprite="rb_nav_forward_black", clicked_sprite="rb_nav_forward_black",
           elem_mods={enabled=false}, handlers="base.nav_button.forward", save_as="base.titlebar.nav_forward_button"},
         {type="empty-widget"}, -- spacer
