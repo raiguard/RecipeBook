@@ -114,6 +114,7 @@ styles.rb_search_results_frame = {
   type = "frame_style",
   parent = "deep_frame_in_shallow_frame",
   height = 420,
+  width = 250,
   horizontally_stretchable = "on"
 }
 
