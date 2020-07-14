@@ -1,12 +1,11 @@
 local main_gui = {}
 
-local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
 
-local quick_ref_gui = require("scripts.gui.quick-ref.quick-ref")
+local quick_ref_gui = require("scripts.gui.quick-ref")
 
 local pages = {}
 for _, name in ipairs(constants.main_pages) do

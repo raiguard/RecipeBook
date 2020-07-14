@@ -9,7 +9,7 @@ local formatter = require("scripts.formatter")
 local on_tick = require("scripts.on-tick")
 
 local main_gui = require("scripts.gui.main.base")
-local quick_ref_gui = require("scripts.gui.quick-ref.quick-ref")
+local quick_ref_gui = require("scripts.gui.quick-ref")
 
 function player_data.init(player_index)
   local data = {
