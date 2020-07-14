@@ -12,6 +12,7 @@ function settings_gui.create(player, player_table)
       {type="frame", style="inside_deep_frame_for_tabs", children={
         {type="tabbed-pane", children={
           {type="tab-and-content", tab={type="tab", caption="General"}, content={type="empty-widget", style_mods={width=300, height=400}}},
+          {type="tab-and-content", tab={type="tab", caption="Category"}, content={type="empty-widget", style_mods={width=300, height=400}}},
           {type="tab-and-content", tab={type="tab", caption="About"}, content={type="empty-widget", style_mods={width=300, height=400}}}
         }}
       }},
@@ -26,10 +27,13 @@ function settings_gui.create(player, player_table)
   gui_data.window.force_auto_center()
   gui_data.titlebar_flow.drag_target = gui_data.window
   gui_data.footer_drag_handle.drag_target = gui_data.window
+
+  player_table.gui.settings = gui_data
 end
 
 function settings_gui.destroy(player, player_table)
-
+  player_table.gui.settings.window.destroy()
+  player_table.gui.settings = nil
 end
 
 return settings_gui

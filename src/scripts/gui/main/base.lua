@@ -6,6 +6,7 @@ local constants = require("constants")
 local formatter = require("scripts.formatter")
 
 local quick_ref_gui = require("scripts.gui.quick-ref")
+local settings_gui = require("scripts.gui.settings")
 
 local pages = {}
 for _, name in ipairs(constants.main_pages) do
@@ -199,7 +200,19 @@ gui.add_handlers{
     },
     settings_button = {
       on_gui_click = function(e)
-
+        local player = game.get_player(e.player_index)
+        local player_table = global.players[e.player_index]
+        local gui_data = player_table.gui.main
+        -- TODO open and close instead of create and destroy
+        if player_table.flags.settings_gui_open then
+          player_table.flags.settings_gui_open = false
+          gui_data.base.titlebar.settings_button.style = "frame_action_button"
+          settings_gui.destroy(player, player_table)
+        else
+          player_table.flags.settings_gui_open = true
+          gui_data.base.titlebar.settings_button.style = "rb_selected_frame_action_button"
+          settings_gui.create(player, player_table)
+        end
       end
     },
     window = {

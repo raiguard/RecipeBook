@@ -150,7 +150,7 @@ end
 
 function quick_ref_gui.destroy_all(player, player_table)
   for name in pairs(player_table.gui.quick_ref) do
-    quick_ref_gui.close(player, player_table, name)
+    quick_ref_gui.destroy(player, player_table, name)
   end
 end
 

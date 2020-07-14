@@ -18,6 +18,7 @@ function player_data.init(player_index)
       can_open_gui = false,
       gui_open = false,
       technology_gui_open = false,
+      settings_gui_open = false,
       show_message_after_translation = false,
       translate_on_join = false
     },
@@ -58,6 +59,7 @@ end
 
 function player_data.refresh(player, player_table)
   -- destroy GUIs
+  -- TODO destroy settings GUI
   main_gui.close(player, player_table)
   main_gui.destroy(player, player_table)
   quick_ref_gui.destroy_all(player, player_table)
