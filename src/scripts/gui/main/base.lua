@@ -6,6 +6,8 @@ local gui = require("__flib__.gui")
 local constants = require("constants")
 local formatter = require("scripts.formatter")
 
+local quick_ref_gui = require("scripts.gui.quick-ref.quick-ref")
+
 local pages = {}
 for _, name in ipairs(constants.main_pages) do
   pages[name] = require("scripts.gui.main.pages."..name)
@@ -178,7 +180,16 @@ gui.add_handlers{
     },
     quick_reference_button = {
       on_gui_click = function(e)
-
+        local player = game.get_player(e.player_index)
+        local player_table = global.players[e.player_index]
+        local name = player_table.gui.main.state.name
+        if player_table.gui.quick_ref[name] then
+          quick_ref_gui.destroy(player, player_table, name)
+          player_table.gui.main.base.info_bar.quick_ref_button.style = "tool_button"
+        else
+          quick_ref_gui.create(player, player_table, name)
+          player_table.gui.main.base.info_bar.quick_ref_button.style = "rb_selected_tool_button"
+        end
       end
     },
     settings_button = {
@@ -240,7 +251,7 @@ function main_gui.create(player, player_table)
             {type="label", style="rb_toolbar_label", save_as="base.info_bar.label"},
             {template="pushers.horizontal"},
             {template="tool_button", sprite="rb_clipboard_black", tooltip={"rb-gui.open-quick-reference"}, handlers="base.quick_reference_button",
-              save_as="base.info_bar.quick_reference_button"},
+              save_as="base.info_bar.quick_ref_button"},
             {template="tool_button", sprite="rb_favorite_black", tooltip={"rb-gui.add-to-favorites"}, handlers="base.favorite_button",
               save_as="base.info_bar.favorite_button"}
           }},
@@ -436,9 +447,15 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
     info_bar.label.tooltip = tooltip
 
     if obj_class == "recipe" then
-      info_bar.quick_reference_button.visible = true
+      local quick_ref_button = info_bar.quick_ref_button
+      quick_ref_button.visible = true
+      if player_table.gui.quick_ref[obj_name] then
+        quick_ref_button.style = "rb_selected_tool_button"
+      else
+        quick_ref_button.style = "tool_button"
+      end
     else
-      info_bar.quick_reference_button.visible = false
+      info_bar.quick_ref_button.visible = false
     end
 
     if player_table.favorites[obj_class.."."..obj_name] then
@@ -476,6 +493,21 @@ function main_gui.update_list_box_items(player, player_table)
     state.name,
     true
   )
+end
+
+function main_gui.update_quick_ref_button(player_table)
+  local gui_data = player_table.gui.main
+  local state = gui_data.state
+  if state.class == "recipe" then
+    local quick_ref_button = gui_data.base.info_bar.quick_ref_button
+    -- check for the quick ref window
+    if player_table.gui.quick_ref[state.name] then
+      quick_ref_button.style = "rb_selected_tool_button"
+    else
+      quick_ref_button.style = "tool_button"
+    end
+  end
+
 end
 
 return main_gui

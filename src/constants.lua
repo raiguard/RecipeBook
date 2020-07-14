@@ -6,7 +6,8 @@ if script then
   local event = require("__flib__.event")
 
   constants.events = {
-    open_page = event.generate_id()
+    open_page = event.generate_id(),
+    update_quick_ref_button = event.generate_id()
   }
 end
 

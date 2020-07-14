@@ -188,9 +188,6 @@ end)
 
 -- TRANSLATIONS
 
--- ! TEMPORARY
-local quick_ref_gui = require("scripts.gui.quick-ref.quick-ref")
-
 event.on_string_translated(function(e)
   local names, finished = translation.process_result(e)
   if names then
@@ -222,8 +219,6 @@ event.on_string_translated(function(e)
     player.set_shortcut_available("rb-toggle-gui", true)
     -- -- update on_tick
     on_tick.update()
-    -- ! TEMPORARY
-    quick_ref_gui.create(player, player_table, "uranium-processing")
   end
 end)
 
@@ -242,5 +237,15 @@ event.register(constants.events.open_page, function(e)
     -- TODO input validation
   end
 
-  main_gui.open_page(game.get_player(e.player_index), global.players[e.player_index], e.obj_class, e.obj_name)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  main_gui.open_page(player, player_table, e.obj_class, e.obj_name)
+  if not player_table.flags.gui_open then
+    main_gui.open(player, player_table)
+  end
+end)
+
+event.register(constants.events.update_quick_ref_button, function(e)
+  local player_table = global.players[e.player_index]
+  main_gui.update_quick_ref_button(player_table)
 end)

@@ -9,6 +9,7 @@ local formatter = require("scripts.formatter")
 local on_tick = require("scripts.on-tick")
 
 local main_gui = require("scripts.gui.main.base")
+local quick_ref_gui = require("scripts.gui.quick-ref.quick-ref")
 
 function player_data.init(player_index)
   local data = {
@@ -59,6 +60,7 @@ function player_data.refresh(player, player_table)
   -- destroy GUIs
   main_gui.close(player, player_table)
   main_gui.destroy(player, player_table)
+  quick_ref_gui.destroy_all(player, player_table)
 
   -- set flag
   player_table.flags.can_open_gui = false
