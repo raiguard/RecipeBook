@@ -112,14 +112,13 @@ function search_page.build()
       {template="pushers.horizontal"},
       {type="drop-down", items=constants.search_categories, selected_index=2, handlers="search.category_drop_down", save_as="search.category_drop_down"}
     }},
-    {type="flow", style_mods={padding=12, top_padding=8, vertical_spacing=10}, direction="vertical", children={
-      {type="textfield", style_mods={width=250}, handlers="search.textfield", save_as="search.textfield"},
-      {type="frame", style="deep_frame_in_shallow_frame", style_mods={horizontally_stretchable=true, height=420}, direction="vertical", children={
+    {type="flow", style="rb_search_content_flow", direction="vertical", children={
+      {type="textfield", style="rb_search_textfield", handlers="search.textfield", save_as="search.textfield"},
+      {type="frame", style="rb_search_results_frame", direction="vertical", children={
         {type="frame", style="rb_search_results_subheader_frame", elem_mods={visible=false}, save_as="search.limit_frame", children={
           {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited", constants.search_results_limit}}}
         }},
-        {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={horizontally_stretchable=true, vertically_stretchable=true},
-          save_as="search.results_scroll_pane"}
+        {type="scroll-pane", style="rb_search_results_scroll_pane", save_as="search.results_scroll_pane"}
       }}
     }}
   }

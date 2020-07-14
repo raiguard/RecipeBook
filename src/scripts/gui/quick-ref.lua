@@ -54,12 +54,12 @@ function quick_ref_gui.create(player, player_table, name)
         {template="frame_action_button", name="rb_quick_ref_close_button__"..name, sprite="utility/close_white", hovered_sprite="utility/close_black",
           clicked_sprite="utility/close_black", handlers="quick_ref.close_button"}
       }},
-      {type="frame", style="inside_shallow_frame", style_mods={width=224}, direction="vertical", children={
+      {type="frame", style="rb_quick_ref_content_pane", direction="vertical", children={
         {type="frame", style="subheader_frame", children={
           {type="label", style="rb_toolbar_label", save_as="toolbar_label"},
           {template="pushers.horizontal"}
         }},
-        {type="flow", style_mods={padding=12, right_padding=0, top_padding=6}, direction="vertical", children={
+        {type="flow", style="rb_quick_ref_content_flow", direction="vertical", children={
           gui.templates.quick_ref_panel("ingredients"),
           gui.templates.quick_ref_panel("products")
         }}

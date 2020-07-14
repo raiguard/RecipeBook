@@ -17,7 +17,7 @@ gui.add_templates{
   info_list_box = {
     build = function(caption, rows, save_location)
       return {type="flow", direction="vertical", save_as=save_location..".flow", children={
-        {type="label", style="bold_label", style_mods={bottom_margin=2}, caption=caption, save_as=save_location..".label"},
+        {type="label", style="rb_info_list_box_label", caption=caption, save_as=save_location..".label"},
         {type="frame", style="deep_frame_in_shallow_frame", save_as=save_location..".frame",  children={
           {type="scroll-pane", style="rb_list_box_scroll_pane", style_mods={height=(rows * 28)}, save_as=save_location..".scroll_pane"}
         }}
