@@ -54,12 +54,27 @@ styles.rb_unavailable_list_box_item = {
 
 -- EMPTY-WIDGET STYLES
 
-styles.rb_drag_handle = {
+styles.rb_titlebar_drag_handle = {
   type = "empty_widget_style",
   parent = "draggable_space",
   left_margin = 4,
   right_margin = 4,
   height = 24,
+  horizontally_stretchable = "on"
+}
+
+styles.rb_dialog_titlebar_drag_handle = {
+  type = "empty_widget_style",
+  parent = "rb_titlebar_drag_handle",
+  right_margin = 0
+}
+
+styles.rb_dialog_footer_drag_handle = {
+  type = "empty_widget_style",
+  parent = "draggable_space",
+  left_margin = 8,
+  right_margin = 8,
+  height = 32,
   horizontally_stretchable = "on"
 }
 

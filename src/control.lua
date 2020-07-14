@@ -188,6 +188,9 @@ end)
 
 -- TRANSLATIONS
 
+-- ! TEMPORARY
+local settings_gui = require("scripts.gui.settings")
+
 event.on_string_translated(function(e)
   local names, finished = translation.process_result(e)
   if names then
@@ -219,6 +222,8 @@ event.on_string_translated(function(e)
     player.set_shortcut_available("rb-toggle-gui", true)
     -- -- update on_tick
     on_tick.update()
+    -- ! TEMPORARY
+    settings_gui.create(player, player_table)
   end
 end)
 

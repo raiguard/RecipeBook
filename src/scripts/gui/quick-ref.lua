@@ -48,13 +48,13 @@ function quick_ref_gui.create(player, player_table, name)
     {type="frame", direction="vertical", save_as="window", children={
       {type="flow", save_as="titlebar.flow", children={
         {type="label", style="frame_title", caption={"rb-gui.recipe"}, elem_mods={ignored_by_interaction=true}},
-        {type="empty-widget", style="rb_drag_handle", elem_mods={ignored_by_interaction=true}},
+        {type="empty-widget", style="rb_titlebar_drag_handle", elem_mods={ignored_by_interaction=true}},
         {template="frame_action_button", name="rb_quick_ref_expand_button__"..name, tooltip={"rb-gui.view-details"}, sprite="rb_expand_white",
           hovered_sprite="rb_expand_black", clicked_sprite="rb_expand_black", handlers="quick_ref.open_info_button"},
         {template="frame_action_button", name="rb_quick_ref_close_button__"..name, sprite="utility/close_white", hovered_sprite="utility/close_black",
           clicked_sprite="utility/close_black", handlers="quick_ref.close_button"}
       }},
-      {type="frame", style="rb_quick_ref_content_pane", direction="vertical", children={
+      {type="frame", style="rb_quick_ref_content_frame", direction="vertical", children={
         {type="frame", style="subheader_frame", children={
           {type="label", style="rb_toolbar_label", save_as="toolbar_label"},
           {template="pushers.horizontal"}

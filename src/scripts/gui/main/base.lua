@@ -238,7 +238,7 @@ function main_gui.create(player, player_table)
           elem_mods={enabled=false}, handlers="base.nav_button.forward", save_as="base.titlebar.nav_forward_button"},
         {type="empty-widget"}, -- spacer
         {type="label", style="frame_title", caption={"mod-name.RecipeBook"}, elem_mods={ignored_by_interaction=true}},
-        {type="empty-widget", style="rb_drag_handle", elem_mods={ignored_by_interaction=true}},
+        {type="empty-widget", style="rb_titlebar_drag_handle", elem_mods={ignored_by_interaction=true}},
         {template="frame_action_button", tooltip={"rb-gui.keep-open"}, sprite="rb_pin_white", hovered_sprite="rb_pin_black", clicked_sprite="rb_pin_black",
           handlers="base.pin_button", save_as="base.titlebar.pin_button"},
         {template="frame_action_button", tooltip={"rb-gui.settings"}, sprite="rb_settings_white", hovered_sprite="rb_settings_black",
