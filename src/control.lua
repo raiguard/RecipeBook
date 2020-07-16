@@ -12,6 +12,8 @@ local player_data = require("scripts.player-data")
 
 local main_gui = require("scripts.gui.main.base")
 
+-- TODO rename "unavailable" to "unresearched"
+
 -- -----------------------------------------------------------------------------
 -- COMMANDS
 
@@ -115,7 +117,6 @@ event.register("rb-toggle-gui", function(e)
   local player_table = global.players[e.player_index]
 
   -- check player's cursor stack for an item we can open
-  -- TODO read from global instead of mod_settings
   if player_table.settings.open_item_hotkey then
     local item_to_open = player_data.check_cursor_stack(player)
     if item_to_open then
@@ -129,7 +130,6 @@ event.register("rb-toggle-gui", function(e)
 
   -- get player's currently selected entity to check for a fluid filter
   local selected = player.selected
-  -- TODO read from global instead of mod_settings
   if player_table.settings.open_fluid_hotkey then
     if selected and selected.valid and constants.open_fluid_types[selected.type] then
       local fluidbox = selected.fluidbox
