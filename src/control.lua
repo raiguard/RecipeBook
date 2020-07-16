@@ -116,7 +116,7 @@ event.register("rb-toggle-gui", function(e)
 
   -- check player's cursor stack for an item we can open
   -- TODO read from global instead of mod_settings
-  if player.mod_settings["rb-open-item-hotkey"].value then
+  if player_table.settings.open_item_hotkey then
     local item_to_open = player_data.check_cursor_stack(player)
     if item_to_open then
       main_gui.open_page(player, player_table, "item", item_to_open)
@@ -130,7 +130,7 @@ event.register("rb-toggle-gui", function(e)
   -- get player's currently selected entity to check for a fluid filter
   local selected = player.selected
   -- TODO read from global instead of mod_settings
-  if player.mod_settings["rb-open-fluid-hotkey"].value then
+  if player_table.settings.open_fluid_hotkey then
     if selected and selected.valid and constants.open_fluid_types[selected.type] then
       local fluidbox = selected.fluidbox
       if fluidbox and fluidbox.valid then
@@ -179,9 +179,12 @@ event.on_runtime_mod_setting_changed(function(e)
   if string.sub(e.setting, 1, 3) == "rb-" then
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
-    player_data.update_settings(player, player_table)
-    if player_table.flags.can_open_gui then
-      main_gui.update_list_box_items(player, player_table)
+    if not player_table.flags.updating_setting then
+      player_data.update_settings(player, player_table)
+      if player_table.flags.can_open_gui then
+        main_gui.update_list_box_items(player, player_table)
+        main_gui.update_settings(player_table)
+      end
     end
   end
 end)
@@ -252,4 +255,10 @@ end)
 event.register(constants.events.update_quick_ref_button, function(e)
   local player_table = global.players[e.player_index]
   main_gui.update_quick_ref_button(player_table)
+end)
+
+event.register(constants.events.update_list_box_items, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  main_gui.update_list_box_items(player, player_table)
 end)

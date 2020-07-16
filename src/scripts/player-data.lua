@@ -19,7 +19,8 @@ function player_data.init(player_index)
       gui_open = false,
       technology_gui_open = false,
       show_message_after_translation = false,
-      translate_on_join = false
+      translate_on_join = false,
+      updating_setting = false,
     },
     gui = {
       quick_ref = {}
@@ -38,14 +39,24 @@ end
 
 function player_data.update_settings(player, player_table)
   local mod_settings = player.mod_settings
-  player_table.settings = {
-    default_category = mod_settings["rb-default-search-category"].value,
+  local settings = {
+    open_item_hotkey = mod_settings["rb-open-item-hotkey"].value,
+    open_fluid_hotkey = mod_settings["rb-open-fluid-hotkey"].value,
     show_hidden = mod_settings["rb-show-hidden-objects"].value,
     show_unavailable = mod_settings["rb-show-unavailable-objects"].value,
-    use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value,
     show_internal_names = mod_settings["rb-show-internal-names"].value,
-    show_glyphs = mod_settings["rb-show-glyphs"].value
+    show_glyphs = mod_settings["rb-show-glyphs"].value,
+    use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value,
   }
+  local categories = player_table.settings.recipe_categories or {}
+  for name in pairs(game.recipe_category_prototypes) do
+    if categories[name] == nil then
+      categories[name] = constants.disabled_recipe_categories[name] and false or true
+    end
+  end
+  settings.recipe_categories = categories
+
+  player_table.settings = settings
 
   -- purge memoizer cache
   formatter.purge_cache(player.index)
@@ -81,6 +92,10 @@ function player_data.refresh(player, player_table)
     player_table.flags.translate_on_join = true
   end
 end
+
+-- function player_data.purge_cache(player_index)
+--   formatter.purge_cache(player_index)
+-- end
 
 function player_data.remove(player_index)
   gui.remove_player_filters(player_index)

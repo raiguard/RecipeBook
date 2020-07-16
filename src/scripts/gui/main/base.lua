@@ -292,7 +292,7 @@ function main_gui.create(player, player_table)
           {type="empty-widget", style="rb_dialog_titlebar_drag_handle", elem_mods={ignored_by_interaction=true}},
         }},
         {type="frame", style="inside_shallow_frame", children={
-          {type="scroll-pane", style="rb_naked_scroll_pane", direction="vertical", children=pages.settings.build()}
+          {type="scroll-pane", style="rb_naked_scroll_pane", direction="vertical", children=pages.settings.build(player_table.settings)}
         }}
       }}
     }}
@@ -309,6 +309,7 @@ function main_gui.create(player, player_table)
 
   -- page setup
   gui_data = pages.search.setup(player, player_table, gui_data)
+  pages.settings.setup(player)
 
   -- state setup
   gui_data.state = {
@@ -514,6 +515,9 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
 end
 
 function main_gui.update_list_box_items(player, player_table)
+  -- purge player's cache
+  formatter.purge_cache(player.index)
+  -- update all items
   gui.handlers.search.textfield.on_gui_text_changed{player_index=player.index}
   local state = player_table.gui.main.state
   main_gui.open_page(
@@ -537,7 +541,10 @@ function main_gui.update_quick_ref_button(player_table)
       quick_ref_button.style = "tool_button"
     end
   end
+end
 
+function main_gui.update_settings(player_table)
+  pages.settings.update(player_table.settings, player_table.gui.main.settings)
 end
 
 return main_gui

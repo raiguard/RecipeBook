@@ -1,28 +1,69 @@
 local settings_page = {}
 
-local constants = require("constants")
+local event = require("__flib__.event")
+local gui = require("__flib__.gui")
 
-function settings_page.build()
-  local output = {
-    {type="label", style="bold_label", caption={"rb-gui.general"}},
-    {type="checkbox", caption={"mod-setting-name.rb-open-item-hotkey"}, state=false},
-    {type="checkbox", caption={"mod-setting-name.rb-open-fluid-hotkey"}, state=false},
-    {type="checkbox", caption={"mod-setting-name.rb-show-hidden-objects"}, state=false},
-    {type="checkbox", caption={"mod-setting-name.rb-show-unavailable-objects"}, state=false},
-    {type="checkbox", caption={"mod-setting-name.rb-use-fuzzy-search"}, state=false},
-    {type="checkbox", caption={"mod-setting-name.rb-show-internal-names"}, state=false},
-    {type="checkbox", caption={"mod-setting-name.rb-show-glyphs"}, state=false},
-    {type="label", style="bold_label", caption={"rb-gui.categories"}, tooltip={"rb-gui.categories-tooltip"}}
+local constants = require("constants")
+local formatter = require("scripts.formatter")
+
+gui.add_handlers{
+  settings = {
+    checkbox = {
+      on_gui_checked_state_changed = function(e)
+        local player = game.get_player(e.player_index)
+        local player_table = global.players[e.player_index]
+        local checked_state = e.element.state
+        local _, _, setting_name = string.find(e.element.name, "^rb_setting__(.*)$")
+        if string.find(setting_name, "recipe_category") then
+          local _, _, category_name = string.find(setting_name, "^recipe_category_(.*)$")
+          player_table.settings.recipe_categories[category_name] = checked_state
+        else
+          -- set a flag to avoid iterating over all settings
+          player_table.flags.updating_setting = true
+          player.mod_settings[constants.setting_prototype_names[setting_name]] = {value=checked_state}
+          player_table.settings[setting_name] = checked_state
+          player_table.flags.updating_setting = false
+        end
+        event.raise(constants.events.update_list_box_items, {player_index=e.player_index})
+      end
+    }
   }
+}
+
+function settings_page.build(settings)
+  local output = {}
+
+  -- generic - auto-generated from constants
+  for category_name, elements in pairs(constants.settings) do
+    output[#output+1] = {type="label", style="bold_label", caption={"rb-gui."..category_name}}
+    for name, data in pairs(elements) do
+      output[#output+1] = {type="checkbox", name="rb_setting__"..name, caption={"mod-setting-name."..data.prototype_name},
+        tooltip=data.has_tooltip and {"mod-setting-description."..data.prototype_name} or nil, state=settings[name], save_as="settings."..name}
+    end
+  end
+
+  -- categories - auto-generated from recipe_category_prototypes
+  output[#output+1] = {type="label", style="bold_label", caption={"rb-gui.recipe-categories"}, tooltip={"rb-gui.recipe-categories-tooltip"}}
   for name in pairs(game.recipe_category_prototypes) do
-    output[#output+1] = {type="checkbox", caption=name, state=true}
+    output[#output+1] = {type="checkbox", name="rb_setting__recipe_category_"..name, caption=name, state=true, save_as="settings.recipe_category."..name}
   end
   return output
 end
 
-function settings_page.setup(player, player_table, gui_data)
-  gui_data.search.category = "recipe"
-  return gui_data
+function settings_page.setup(player)
+  gui.update_filters("settings.checkbox", player.index, {"rb_setting"}, "add")
+end
+
+function settings_page.update(player_settings, gui_data)
+  for _, names in pairs(constants.settings) do
+    for name in pairs(names) do
+      gui_data[name].state = player_settings[name]
+    end
+  end
+
+  for name in pairs(game.recipe_category_prototypes) do
+    gui_data.recipe_category[name] = player_settings.recipe_categories[name]
+  end
 end
 
 return settings_page

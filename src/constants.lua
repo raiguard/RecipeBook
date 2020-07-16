@@ -7,13 +7,14 @@ if script then
 
   constants.events = {
     open_page = event.generate_id(),
+    update_list_box_items = event.generate_id(),
     update_quick_ref_button = event.generate_id()
   }
 end
 
 -- BOTH STAGES
 
-constants.blacklisted_recipe_categories = {
+constants.disabled_recipe_categories = {
   -- transport drones
   ["fluid-depot"] = true,
   ["transport-drone-request"] = true,
@@ -105,6 +106,53 @@ constants.open_fluid_types = {
 
 constants.search_categories = {"material", "recipe"}
 
+constants.search_categories_lookup = {}
+for i, category in ipairs(constants.search_categories) do
+  constants.search_categories_lookup[category] = i
+end
+
 constants.search_results_limit = 150
+
+constants.settings = {
+  general = {
+    open_item_hotkey = {
+      prototype_name = "rb-open-item-hotkey",
+      has_tooltip = true
+    },
+    open_fluid_hotkey = {
+      prototype_name = "rb-open-fluid-hotkey",
+      has_tooltip = true
+    },
+    show_hidden = {
+      prototype_name = "rb-show-hidden-objects",
+      has_tooltip = false
+    },
+    show_unavailable = {
+      prototype_name = "rb-show-unavailable-objects",
+      has_tooltip = false
+    },
+    show_internal_names = {
+      prototype_name = "rb-show-internal-names",
+      has_tooltip = true
+    },
+    show_glyphs = {
+      prototype_name = "rb-show-glyphs",
+      has_tooltip = false
+    }
+  },
+  search = {
+    use_fuzzy_search = {
+      prototype_name = "rb-use-fuzzy-search",
+      has_tooltip = true
+    }
+  }
+}
+
+constants.setting_prototype_names = {}
+for _, t in pairs(constants.settings) do
+  for name, data in pairs(t) do
+    constants.setting_prototype_names[name] = data.prototype_name
+  end
+end
 
 return constants
