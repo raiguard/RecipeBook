@@ -12,7 +12,7 @@ function settings_page.build()
     {type="checkbox", caption={"mod-setting-name.rb-use-fuzzy-search"}, state=false},
     {type="checkbox", caption={"mod-setting-name.rb-show-internal-names"}, state=false},
     {type="checkbox", caption={"mod-setting-name.rb-show-glyphs"}, state=false},
-    {type="label", style="bold_label", caption={"rb-gui.categories"}}
+    {type="label", style="bold_label", caption={"rb-gui.categories"}, tooltip={"rb-gui.categories-tooltip"}}
   }
   for name in pairs(game.recipe_category_prototypes) do
     output[#output+1] = {type="checkbox", caption=name, state=true}
