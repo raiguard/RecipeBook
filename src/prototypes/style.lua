@@ -157,6 +157,13 @@ styles.rb_slot_table_frame = {
   natural_height = 40
 }
 
+styles.rb_settings_category_frame = {
+  type = "frame_style",
+  parent = "bordered_frame",
+  horizontally_stretchable = "on",
+  right_padding = 8
+}
+
 -- LABEL STYLES
 
 styles.rb_toolbar_label = {
@@ -223,6 +230,15 @@ styles.rb_search_results_scroll_pane = {
   type = "scroll_pane_style",
   parent = "rb_list_box_scroll_pane",
   vertically_stretchable = "on"
+}
+
+styles.rb_settings_content_scroll_pane = {
+  type = "scroll_pane_style",
+  parent = "rb_naked_scroll_pane",
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    padding = 4
+  }
 }
 
 styles.rb_slot_table_scroll_pane = {

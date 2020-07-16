@@ -35,19 +35,25 @@ function settings_page.build(settings)
 
   -- generic - auto-generated from constants
   for category_name, elements in pairs(constants.settings) do
-    output[#output+1] = {type="label", style="bold_label", caption={"rb-gui."..category_name}}
+    local category_output = {type="frame", style="rb_settings_category_frame", direction="vertical", children={
+      {type="label", style="caption_label", caption={"rb-gui."..category_name}}
+    }}
     for name, data in pairs(elements) do
-      output[#output+1] = {type="checkbox", name="rb_setting__"..name, caption={"mod-setting-name."..data.prototype_name},
+      category_output.children[#category_output.children+1] = {type="checkbox", name="rb_setting__"..name, caption={"mod-setting-name."..data.prototype_name},
         tooltip=data.has_tooltip and {"mod-setting-description."..data.prototype_name} or nil, state=settings[name], save_as="settings."..name}
     end
+    output[#output+1] = category_output
   end
 
   -- categories - auto-generated from recipe_category_prototypes
-  output[#output+1] = {type="label", style="bold_label", caption={"rb-gui.recipe-categories"}, tooltip={"rb-gui.recipe-categories-tooltip"}}
+  local recipe_categories_output = {type="frame", style="rb_settings_category_frame", direction="vertical", children={
+    {type="label", style="caption_label", caption={"rb-gui.recipe-categories"}, tooltip={"rb-gui.recipe-categories-tooltip"}}
+  }}
   for name in pairs(game.recipe_category_prototypes) do
-    output[#output+1] = {type="checkbox", name="rb_setting__recipe_category_"..name, caption=name, state=settings.recipe_categories[name],
-      save_as="settings.recipe_category."..name}
+    recipe_categories_output.children[#recipe_categories_output.children+1] = {type="checkbox", name="rb_setting__recipe_category_"..name, caption=name,
+      state=settings.recipe_categories[name], save_as="settings.recipe_category."..name}
   end
+  output[#output+1] = recipe_categories_output
   return output
 end
 

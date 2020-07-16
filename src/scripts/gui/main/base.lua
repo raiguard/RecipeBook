@@ -292,7 +292,7 @@ function main_gui.create(player, player_table)
           {type="empty-widget", style="rb_dialog_titlebar_drag_handle", elem_mods={ignored_by_interaction=true}},
         }},
         {type="frame", style="inside_shallow_frame", children={
-          {type="scroll-pane", style="rb_naked_scroll_pane", direction="vertical", children=pages.settings.build(player_table.settings)}
+          {type="scroll-pane", style="rb_settings_content_scroll_pane", direction="vertical", children=pages.settings.build(player_table.settings)}
         }}
       }}
     }}
