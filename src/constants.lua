@@ -15,6 +15,8 @@ end
 -- BOTH STAGES
 
 constants.disabled_recipe_categories = {
+  -- editor extensions
+  ["ee-testing-tools"] = true,
   -- deep storage unit
   ["deep-storage-item"] = true,
   ["deep-storage-fluid"] = true,
