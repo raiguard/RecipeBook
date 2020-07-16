@@ -45,7 +45,8 @@ function settings_page.build(settings)
   -- categories - auto-generated from recipe_category_prototypes
   output[#output+1] = {type="label", style="bold_label", caption={"rb-gui.recipe-categories"}, tooltip={"rb-gui.recipe-categories-tooltip"}}
   for name in pairs(game.recipe_category_prototypes) do
-    output[#output+1] = {type="checkbox", name="rb_setting__recipe_category_"..name, caption=name, state=true, save_as="settings.recipe_category."..name}
+    output[#output+1] = {type="checkbox", name="rb_setting__recipe_category_"..name, caption=name, state=settings.recipe_categories[name],
+      save_as="settings.recipe_category."..name}
   end
   return output
 end

@@ -15,17 +15,19 @@ end
 -- BOTH STAGES
 
 constants.disabled_recipe_categories = {
-  -- transport drones
-  ["fluid-depot"] = true,
-  ["transport-drone-request"] = true,
-  ["transport-fluid-request"] = true,
   -- deep storage unit
   ["deep-storage-item"] = true,
   ["deep-storage-fluid"] = true,
   ["deep-storage-item-big"] = true,
   ["deep-storage-fluid-big"] = true,
   ["deep-storage-item-mk2/3"] = true,
-  ["deep-storage-fluid-mk2/3"] = true
+  ["deep-storage-fluid-mk2/3"] = true,
+  -- mining drones
+  ["mining-depot"] = true,
+  -- transport drones
+  ["fuel-depot"] = true,
+  ["transport-drone-request"] = true,
+  ["transport-fluid-request"] = true
 }
 
 constants.class_to_font_glyph = {

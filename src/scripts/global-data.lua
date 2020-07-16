@@ -97,8 +97,8 @@ function global_data.build_recipe_book()
   for name, prototype in pairs(recipe_prototypes) do
     local data = {
       available_to_forces = {},
+      category = prototype.category,
       energy = prototype.energy,
-      hand_craftable = prototype.category == "crafting",
       hidden = prototype.hidden,
       internal_class = "recipe",
       made_in = {},

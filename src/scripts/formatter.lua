@@ -16,31 +16,36 @@ end
 
 local function get_should_show(obj_data, player_data)
   -- player data
-  local show_hidden = player_data.show_hidden
-  local show_unavailable = player_data.show_unavailable
   local force_index = player_data.force_index
+  local player_settings = player_data.settings
+  local show_hidden = player_settings.show_hidden
+  local show_unavailable = player_settings.show_unavailable
 
   -- check hidden and available status
   local is_hidden, is_available = get_properties(obj_data, force_index)
   if (show_hidden or not is_hidden) and (show_unavailable or is_available) then
-    return true, is_hidden, is_available
-  else
-    return false, is_hidden, is_available
+    -- for recipes - check category to see if it should be shown
+    local category = obj_data.category
+    if not category or player_settings.recipe_categories[category] then
+      return true, is_hidden, is_available
+    end
   end
+  return false, is_hidden, is_available
 end
 
 local function caption_formatter(obj_data, player_data, is_hidden, amount)
+  local player_settings = player_data.settings
   local translations = player_data.translations
   local translation_key = obj_data.internal_class == "material" and obj_data.sprite_class.."."..obj_data.prototype_name or obj_data.prototype_name
   local translation = translations[obj_data.internal_class][translation_key]
   local glyph = ""
-  if player_data.show_glyphs then
+  if player_settings.show_glyphs then
     local glyph_char = constants.class_to_font_glyph[obj_data.internal_class] or constants.class_to_font_glyph[obj_data.sprite_class]
     glyph = "[font=RecipeBook]"..glyph_char.."[/font]  "
   end
   local hidden_string = is_hidden and "[font=default-semibold]("..translations.gui.hidden_abbrev..")[/font]  " or ""
   local amount_string = amount and "[font=default-semibold]"..amount.."[/font]  " or ""
-  local name = player_data.show_internal_names and obj_data.prototype_name or translation
+  local name = player_settings.show_internal_names and obj_data.prototype_name or translation
   return
     glyph
     ..hidden_string
@@ -53,8 +58,9 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_available)
   local translations = player_data.translations
   local translation_key = obj_data.internal_class == "material" and obj_data.sprite_class.."."..obj_data.prototype_name or obj_data.prototype_name
   local translation = player_data.translations[obj_data.internal_class][translation_key]
-  local name = player_data.show_internal_names and obj_data.prototype_name or translation
-  local internal_name = player_data.show_internal_names and translation or obj_data.prototype_name
+  local show_internal_names = player_data.settings.show_internal_names
+  local name = show_internal_names and obj_data.prototype_name or translation
+  local internal_name = show_internal_names and translation or obj_data.prototype_name
 
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
 

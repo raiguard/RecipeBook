@@ -51,7 +51,7 @@ function player_data.update_settings(player, player_table)
   local categories = player_table.settings.recipe_categories or {}
   for name in pairs(game.recipe_category_prototypes) do
     if categories[name] == nil then
-      categories[name] = constants.disabled_recipe_categories[name] and false or true
+      categories[name] = not constants.disabled_recipe_categories[name]
     end
   end
   settings.recipe_categories = categories

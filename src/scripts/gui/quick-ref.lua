@@ -74,10 +74,7 @@ function quick_ref_gui.create(player, player_table, name)
   local player_data = {
     force_index = player.force.index,
     player_index = player.index,
-    show_glyphs = player_table.settings.show_glyphs,
-    show_hidden = player_table.settings.show_hidden,
-    show_internal_names = player_table.settings.show_internal_names,
-    show_unavailable = player_table.settings.show_unavailable,
+    settings = player_table.settings,
     translations = player_table.translations
   }
 
