@@ -191,22 +191,6 @@ styles.rb_info_list_box_label = {
 
 -- SCROLL PANE STYLES
 
-styles.rb_main_info_scroll_pane = {
-  type = "scroll_pane_style",
-  extra_padding_when_activated = 0,
-  padding = 0,
-  horizontally_stretchable = "on",
-  vertically_stretchable = "on",
-  graphical_set = {
-    shadow = default_inner_shadow
-  },
-  vertical_flow_style = {
-    type = "vertical_flow_style",
-    padding = 12,
-    top_padding = 8
-  }
-}
-
 styles.rb_list_box_scroll_pane = {
   type = "scroll_pane_style",
   parent = "list_box_scroll_pane",
@@ -217,6 +201,22 @@ styles.rb_list_box_scroll_pane = {
     type = "vertical_flow_style",
     vertical_spacing = 0,
     horizontally_stretchable = "on"
+  }
+}
+
+styles.rb_naked_scroll_pane = {
+  type = "scroll_pane_style",
+  extra_padding_when_activated = 0,
+  padding = 0,
+  -- horizontally_stretchable = "on",
+  vertically_stretchable = "on",
+  graphical_set = {
+    shadow = default_inner_shadow
+  },
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    padding = 12,
+    top_padding = 8
   }
 }
 

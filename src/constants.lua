@@ -89,7 +89,8 @@ constants.main_pages = {
   "home",
   "material",
   "recipe",
-  "search"
+  "search",
+  "settings"
 }
 
 constants.open_fluid_types = {
