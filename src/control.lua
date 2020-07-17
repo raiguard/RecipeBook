@@ -3,62 +3,51 @@ local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
 local translation = require("__flib__.translation")
 
-require("scripts.gui.common")
-
-local constants = require("scripts.constants")
+local constants = require("constants")
+local formatter = require("scripts.formatter")
 local global_data = require("scripts.global-data")
-local info_gui = require("scripts.gui.info-base")
-local lookup_tables = require("scripts.lookup-tables")
 local migrations = require("scripts.migrations")
 local on_tick = require("scripts.on-tick")
 local player_data = require("scripts.player-data")
-local recipe_quick_reference_gui = require("scripts.gui.recipe-quick-reference")
-local search_gui = require("scripts.gui.search")
 
-local string_sub = string.sub
+local main_gui = require("scripts.gui.main.base")
 
--- TODO pyanodon's causes EE items to not be removed
--- TODO rocket silos as crafters
--- TODO pumped from for offshore pumps
+-- TODO rename "unavailable" to "unresearched"
 
 -- -----------------------------------------------------------------------------
 -- COMMANDS
 
-commands.add_command("RecipeBook", {"rb-message.command-help"},
-  function(e)
-    if e.parameter == "refresh-player-data" then
-      player_data.refresh(game.get_player(e.player_index), global.players[e.player_index])
-    end
+commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
+  if e.parameter == "refresh-player-data" then
+    local player = game.get_player(e.player_index)
+    player.print{"rb-message.refreshing-player-data"}
+    player_data.refresh(player, global.players[e.player_index])
+  else
+    game.get_player(e.player_index).print{"rb-message.invalid-command"}
   end
-)
+end)
 
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
--- on_tick's handler is in scripts.on-tick
 
 -- BOOTSTRAP
 
 event.on_init(function()
   gui.init()
+  gui.build_lookup_tables()
   translation.init()
 
   global_data.init()
   for i, player in pairs(game.players) do
-    player_data.init(player, i)
+    player_data.init(i)
+    player_data.refresh(player, global.players[i])
   end
-
-  lookup_tables.generate()
-
-  gui.build_lookup_tables()
 end)
 
 event.on_load(function()
-  lookup_tables.generate()
-  if global.__flib then
-    on_tick.update()
-  end
-
   gui.build_lookup_tables()
+  formatter.create_all_caches()
+  on_tick.update()
 end)
 
 event.on_configuration_changed(function(e)
@@ -80,7 +69,7 @@ event.on_force_created(function(e)
   global_data.check_force_technologies(force)
 end)
 
--- TODO remove force data when deleted (needs a new event)
+-- TODO: remove force data when deleted (needs a new event)
 
 event.on_research_finished(function(e)
   global_data.update_available_objects(e.research)
@@ -90,148 +79,113 @@ end)
 
 gui.register_handlers()
 
-event.register("rb-results-nav-confirm", function(e)
-  local player_table = global.players[e.player_index]
-  local gui_data = player_table.gui.search
-  if not gui_data then return end
-  if gui_data.state == "select_category" then
-    search_gui.confirm_category(e)
-  elseif gui_data.state == "select_result" then
-    search_gui.confirm_result(e)
-  end
-end)
-
-event.register("rb-cycle-category", function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local gui_data = player_table.gui.search
-  if gui_data and gui_data.state == "select_category" then
-    search_gui.cycle_category(player, player_table)
+event.on_gui_closed(function(e)
+  if not gui.dispatch_handlers(e) and e.gui_type == defines.gui_type.research then
+    local player_table = global.players[e.player_index]
+    if player_table.flags.technology_gui_open then
+      player_table.flags.technology_gui_open = false
+      local window_data = player_table.gui.main.base.window
+      if not window_data.pinned then
+        game.get_player(e.player_index).opened = window_data.frame
+      end
+    end
   end
 end)
 
 -- INTERACTION
 
 event.on_lua_shortcut(function(e)
-  if e.prototype_name == "rb-toggle-search" then
-    -- read player's cursor stack to see if we should open the material GUI
+  if e.prototype_name == "rb-toggle-gui" then
     local player = game.get_player(e.player_index)
-    local cursor_stack = player.cursor_stack
-    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
-      -- the player is holding something, so open to its material GUI
-      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
+    local player_table = global.players[e.player_index]
+
+    -- check player's cursor stack for an item we can open
+    local item_to_open = player_data.check_cursor_stack(player)
+    if item_to_open then
+      main_gui.open_page(player, player_table, "item", item_to_open)
+      if not player_table.flags.gui_open then
+        main_gui.open(player, player_table)
+      end
     else
-      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search", toggle=true})
+      main_gui.toggle(player, player_table)
     end
   end
 end)
 
-event.register("rb-toggle-search", function(e)
+event.register("rb-toggle-gui", function(e)
   local player = game.get_player(e.player_index)
-  -- open held item, if it has a material page
-  if player.mod_settings["rb-open-item-hotkey"].value then
-    local cursor_stack = player.cursor_stack
-    if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.recipe_book.material["item,"..cursor_stack.name] then
-      event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"item", cursor_stack.name}})
+  local player_table = global.players[e.player_index]
+
+  -- check player's cursor stack for an item we can open
+  if player_table.settings.open_item_hotkey then
+    local item_to_open = player_data.check_cursor_stack(player)
+    if item_to_open then
+      main_gui.open_page(player, player_table, "item", item_to_open)
+      if not player_table.flags.gui_open then
+        main_gui.open(player, player_table)
+      end
       return
     end
   end
+
   -- get player's currently selected entity to check for a fluid filter
   local selected = player.selected
-  if player.mod_settings["rb-open-fluid-hotkey"].value then
+  if player_table.settings.open_fluid_hotkey then
     if selected and selected.valid and constants.open_fluid_types[selected.type] then
       local fluidbox = selected.fluidbox
       if fluidbox and fluidbox.valid then
         local locked_fluid = fluidbox.get_locked_fluid(1)
         if locked_fluid then
           -- check recipe book to see if this fluid has a material page
-          if global.recipe_book.material["fluid,"..locked_fluid] then
-            event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="material", object={"fluid", locked_fluid}})
+          if global.recipe_book.material["fluid."..locked_fluid] then
+            main_gui.open_page(player, player_table, "fluid", locked_fluid)
+            if not player_table.flags.gui_open then
+              main_gui.open(player, player_table)
+            end
             return
           end
         end
       end
     end
   end
-  event.raise(constants.open_gui_event, {player_index=e.player_index, gui_type="search"})
-end)
-
--- INTERFACE
-
-event.register(constants.open_gui_event, function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local gui_type = e.gui_type
-  -- protected open
-  if player_table.flags.can_open_gui then
-    -- check for existing GUI
-    if gui_type == "search" then
-      -- don"t do anything if it"s already open
-      if e.toggle then
-        search_gui.toggle(player, player_table)
-      elseif not player_table.gui.search then
-        search_gui.open(player, player_table)
-      end
-    elseif constants.category_to_index[gui_type] then
-      if gui_type == "material" then
-        if type(e.object) ~= "table" then
-          error("Invalid material object, it must be a table!")
-        end
-        e.object = e.object[1]..","..e.object[2]
-      end
-      info_gui.open_or_update(player, player_table, gui_type, e.object, e.source_data)
-    elseif gui_type == "recipe_quick_reference" then
-      if not player_table.gui.recipe_quick_reference[e.object] then
-        recipe_quick_reference_gui.open(player, player_table, e.object)
-      end
-    else
-      error("["..gui_type.."] is not a valid GUI type!")
-    end
-  else
-    -- set flag and tell the player that they cannot open it
-    player_table.flags.tried_to_open_gui = true
-    player.print{"rb-message.translation-not-finished"}
-  end
-end)
-
-event.register(constants.reopen_source_event, function(e)
-  local source_data = e.source_data
-  if source_data.mod_name == "RecipeBook" and source_data.gui_name == "search" then
-    search_gui.toggle(game.get_player(e.player_index), global.players[e.player_index], source_data)
-  end
+  main_gui.toggle(player, player_table)
 end)
 
 -- PLAYER
 
 event.on_player_created(function(e)
+  player_data.init(e.player_index)
   local player = game.get_player(e.player_index)
-  player_data.init(player, e.player_index)
-end)
-
-event.on_player_removed(function(e)
   local player_table = global.players[e.player_index]
-  if player_table.flags.translating then
-    translation.cancel(e.player_index)
-  end
-  global.players[e.player_index] = nil
-  lookup_tables.destroy(e.player_index)
+  player_data.refresh(player, player_table)
+  formatter.create_cache(e.player_index)
 end)
 
 event.on_player_joined_game(function(e)
   local player_table = global.players[e.player_index]
   if player_table.flags.translate_on_join then
     player_table.flags.translate_on_join = false
-    player_data.start_translations(e.player_index, player_table)
+    player_data.start_translations(e.player_index)
   end
+end)
+
+event.on_player_removed(function(e)
+  player_data.remove(e.player_index)
 end)
 
 -- SETTINGS
 
 event.on_runtime_mod_setting_changed(function(e)
-  if string_sub(e.setting, 1, 3) == "rb-" then
+  if string.sub(e.setting, 1, 3) == "rb-" then
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
-    player_data.update_settings(player, player_table)
+    if not player_table.flags.updating_setting then
+      player_data.update_settings(player, player_table)
+      if player_table.flags.can_open_gui then
+        main_gui.update_list_box_items(player, player_table)
+        main_gui.update_settings(player_table)
+      end
+    end
   end
 end)
 
@@ -239,8 +193,8 @@ end)
 
 event.on_string_translated(function(e)
   local names, finished = translation.process_result(e)
-  local player_table = global.players[e.player_index]
   if names then
+    local player_table = global.players[e.player_index]
     local translations = player_table.translations
     for dictionary_name, internal_names in pairs(names) do
       local dictionary = translations[dictionary_name]
@@ -248,43 +202,63 @@ event.on_string_translated(function(e)
         local internal_name = internal_names[i]
         local result = e.translated and e.result or internal_name
         dictionary[internal_name] = result
-        lookup_tables.add_lookup(player_table, dictionary_name, internal_name, result)
-        if not e.translated then
-          lookup_tables.add_translation(player_table, dictionary_name, result)
-        end
-      end
-      if e.translated then
-        lookup_tables.add_translation(player_table, dictionary_name, e.result)
       end
     end
   end
   if finished then
     local player = game.get_player(e.player_index)
-    player.set_shortcut_available("rb-toggle-search", true)
-    player_table.flags.can_open_gui = true
-    if player_table.flags.tried_to_open_gui then
-      player_table.flags.tried_to_open_gui = false
-      player.print{"rb-message.translation-finished"}
+    local player_table = global.players[e.player_index]
+    -- show message if needed
+    if player_table.flags.show_message_after_translation then
+      player.print{'rb-message.can-open-gui'}
     end
-    player_table.flags.translating = false
-    lookup_tables.transfer(e.player_index, player_table)
+    -- create GUI
+    main_gui.create(player, player_table)
+    -- update flags
+    player_table.flags.can_open_gui = true
+    player_table.flags.translate_on_join = false -- not really needed, but is here just in case
+    player_table.flags.show_message_after_translation = false
+    -- enable shortcut
+    player.set_shortcut_available("rb-toggle-gui", true)
+    -- -- update on_tick
+    on_tick.update()
   end
 end)
 
 -- -----------------------------------------------------------------------------
 -- REMOTE INTERFACE
--- documentation: https://github.com/raiguard/Factorio-RecipeBook/wiki/Remote-Interface-Documentation
+
+-- ! TEMPORARY
+local reopen_source_event = event.generate_id()
 
 remote.add_interface("RecipeBook", {
-  open_gui = function(player_index, gui_type, object, source_data)
-    -- error checking
-    if not object then error("Must provide an object!") end
-    if source_data and (not source_data.mod_name or not source_data.gui_name) then
-      error("Incomplete source_data table!")
-    end
-    -- raise internal mod event
-    event.raise(constants.open_gui_event, {player_index=player_index, gui_type=gui_type, object=object, source_data=source_data})
-  end,
-  reopen_source_event = function() return constants.reopen_source_event end,
-  version = function() return constants.interface_version end
+  open_page = function() return constants.events.open_page end,
+  version = function() return constants.interface_version end,
+  reopen_source_event = function() return reopen_source_event end
 })
+
+-- HANDLERS
+
+event.register(constants.events.open_page, function(e)
+  if e.mod_name ~= "RecipeBook" then
+    -- TODO input validation
+  end
+
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  main_gui.open_page(player, player_table, e.obj_class, e.obj_name)
+  if not player_table.flags.gui_open then
+    main_gui.open(player, player_table)
+  end
+end)
+
+event.register(constants.events.update_quick_ref_button, function(e)
+  local player_table = global.players[e.player_index]
+  main_gui.update_quick_ref_button(player_table)
+end)
+
+event.register(constants.events.update_list_box_items, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  main_gui.update_list_box_items(player, player_table)
+end)

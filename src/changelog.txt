@@ -1,7 +1,25 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.3.7
+Version: 2.0.0
 Date: ????
+  Features:
+    - Added the ability to "pin" the GUI to the screen, so it can exist alongside other windows
+    - Added the ability to "favorite" an object for easy access later
+    - Added browse-able search history, keeping track of the last 20 searches
+    - Added setting to display internal prototype names instead of translations
+    - Added object type glyphs
+    - Added settings for toggling specific recipe categories
+    - Added an in-game settings screen for on-the-fly changes
+    - The GUI will remain open when clicking on a technology
   Changes:
+    - Completely rewrote the mod from scratch to improve code quality, efficiency, and structure
+    - Search and information are now combined into one window
+    - Information listboxes are significantly wider and are arranged in a single column
+    - Absolutely all recipes are now included in the Recipe Book data
+    - Remote Interface:
+      - The remote interface has received significant changes, refer to the documentation for more information
+  Bugfixes:
+    - Fixed several crashes related to GUI buttons and multiplayer latency
+
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.6
 Date: 2020-06-24
@@ -12,7 +30,7 @@ Date: 2020-06-24
 Version: 1.3.5
 Date: 2020-06-19
   Features:
-    - Added /RecipeBook command for diagnosing/fixing issues, use /help RecipeBook to see possible options
+    - Added /RecipeBook command for diagnosing / fixing issues, use /help RecipeBook to see possible options
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.4
 Date: 2020-06-11

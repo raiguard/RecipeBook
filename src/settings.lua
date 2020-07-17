@@ -29,17 +29,23 @@ data:extend{
   },
   {
     type = "bool-setting",
+    name = "rb-show-internal-names",
+    setting_type = "runtime-per-user",
+    default_value = false,
+    order = "ea"
+  },
+  {
+    type = "bool-setting",
+    name = "rb-show-glyphs",
+    setting_type = "runtime-per-user",
+    default_value = true,
+    order = "eb"
+  },
+  {
+    type = "bool-setting",
     name = "rb-use-fuzzy-search",
     setting_type = "runtime-per-user",
     default_value = false,
-    order = "e"
-  },
-  {
-    type = "string-setting",
-    name = "rb-default-search-category",
-    setting_type = "runtime-per-user",
-    default_value = "material",
-    allowed_values = {"material", "recipe"},
     order = "f"
   }
 }

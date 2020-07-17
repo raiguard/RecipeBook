@@ -1,6 +1,9 @@
 local gui = require("__flib__.gui")
 local translation = require("__flib__.translation")
 
+local global_data = require("scripts.global-data")
+local player_data = require("scripts.player-data")
+
 return {
   ["1.1.0"] = function()
     -- update active_translations_count to properly reflect the active translations
@@ -68,6 +71,18 @@ return {
     -- reset all translate_on_join flags
     for _, player_table in pairs(global.players) do
       player_table.flags.translate_on_join = false
+    end
+  end,
+  ["2.0.0"] = function()
+    -- NUKE EVERYTHING
+    global = {}
+
+    -- re-init
+    gui.init()
+    translation.init()
+    global_data.init()
+    for i in pairs(game.players) do
+      player_data.init(i)
     end
   end
 }

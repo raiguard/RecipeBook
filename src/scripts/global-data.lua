@@ -1,28 +1,43 @@
 local global_data = {}
 
-local constants = require("scripts.constants")
+local constants = require("constants")
 
-local table_remove = table.remove
+-- from http://lua-users.org/wiki/SimpleRound
+local function round(num, decimals)
+  local mult = 10^(decimals or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
 
 function global_data.init()
+  global.flags = {}
   global.players = {}
-  global.searching_players = {}
 
   global_data.build_recipe_book()
-
   global_data.check_forces()
 end
 
 function global_data.build_recipe_book()
-  -- table skeletons
   local recipe_book = {
-    crafter = {},
+    machine = {},
     material = {},
     recipe = {},
+    resource = {},
     technology = {}
   }
   local translation_data = {
-    {dictionary="other", internal="character", localised={"entity-name.character"}}
+    -- internal classes
+    {dictionary="gui", internal="fluid", localised={"rb-gui.fluid"}},
+    {dictionary="gui", internal="item", localised={"rb-gui.item"}},
+    {dictionary="gui", internal="machine", localised={"rb-gui.machine"}},
+    {dictionary="gui", internal="material", localised={"rb-gui.material"}},
+    {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}},
+    {dictionary="gui", internal="resource", localised={"rb-gui.resource"}},
+    {dictionary="gui", internal="technology", localised={"rb-gui.technology"}},
+    -- misc
+    {dictionary="gui", internal="character", localised={"entity-name.character"}},
+    {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
+    {dictionary="gui", internal="hidden_abbrev", localised={"rb-gui.hidden-abbrev"}},
+    {dictionary="gui", internal="unavailable", localised={"rb-gui.unavailable"}}
   }
 
   -- forces
@@ -31,19 +46,22 @@ function global_data.build_recipe_book()
     forces[force.index] = force.recipes
   end
 
-  -- iterate crafters
-  local crafter_prototypes = game.get_filtered_entity_prototypes{
+  -- iterate machines
+  local machine_prototypes = game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
     {filter="type", type="furnace"}
   }
-  for name, prototype in pairs(crafter_prototypes) do
-    recipe_book.crafter[name] = {
+  for name, prototype in pairs(machine_prototypes) do
+    recipe_book.machine[name] = {
       available_to_forces = {},
       categories = prototype.crafting_categories,
       crafting_speed = prototype.crafting_speed,
-      hidden = prototype.has_flag("hidden")
+      hidden = prototype.has_flag("hidden"),
+      internal_class = "machine",
+      prototype_name = name,
+      sprite_class = "entity"
     }
-    translation_data[#translation_data+1] = {dictionary="crafter", internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary="machine", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate materials
@@ -57,10 +75,11 @@ function global_data.build_recipe_book()
       else
         hidden = prototype.has_flag("hidden")
       end
-      recipe_book.material[class..","..name] = {
+      recipe_book.material[class.."."..name] = {
         available_to_forces = {},
         hidden = hidden,
         ingredient_in = {},
+        internal_class = "material",
         mined_from = {},
         product_of = {},
         prototype_name = name,
@@ -68,71 +87,81 @@ function global_data.build_recipe_book()
         unlocked_by = {}
       }
       -- add to translation table
-      translation_data[#translation_data+1] = {dictionary="material", internal=class..","..name, localised=prototype.localised_name}
+      translation_data[#translation_data+1] = {dictionary="material", internal=class.."."..name, localised=prototype.localised_name}
     end
   end
 
+  -- TODO this is slow
   -- iterate recipes
   local recipe_prototypes = game.recipe_prototypes
   for name, prototype in pairs(recipe_prototypes) do
-    if #prototype.ingredients > 0 and not constants.blacklisted_recipe_categories[prototype.category] then
-      local data = {
-        available_to_forces = {},
-        energy = prototype.energy,
-        hand_craftable = prototype.category == "crafting",
-        hidden = prototype.hidden,
-        made_in = {},
-        prototype_name = name,
-        sprite_class = "recipe",
-        unlocked_by = {}
-      }
-      -- ingredients / products
-      for _, mode in ipairs{"ingredients", "products"} do
-        local materials = prototype[mode]
-        for i=1,#materials do
-          local material = materials[i]
-          -- build amount string, to display probability, [min/max] amount - includes the "x"
-          local amount = material.amount
-          local amount_string = amount and (tostring(amount).."x") or (material.amount_min.."-"..material.amount_max.."x")
-          local probability = material.probability
-          if probability and probability < 1 then
-            amount_string = tostring(probability * 100).."% "..amount_string
-          end
-          material.amount_string = amount_string
+    local data = {
+      available_to_forces = {},
+      category = prototype.category,
+      energy = prototype.energy,
+      hidden = prototype.hidden,
+      internal_class = "recipe",
+      made_in = {},
+      prototype_name = name,
+      sprite_class = "recipe",
+      unlocked_by = {}
+    }
+    -- ingredients / products
+    for _, mode in ipairs{"ingredients", "products"} do
+      local materials = prototype[mode]
+      local output = {}
+      for i = 1, #materials do
+        local material = materials[i]
+        -- build amount string, to display probability, [min/max] amount - includes the "x"
+        local amount = material.amount
+        local amount_string = amount and (tostring(amount).."x") or (material.amount_min.."-"..material.amount_max.."x")
+        local probability = material.probability
+        if probability and probability < 1 then
+          amount_string = tostring(probability * 100).."% "..amount_string
         end
-        -- add to data
-        data[mode] = materials
+        -- save only the essentials
+        output[i] = {
+          type = material.type,
+          name = material.name,
+          amount_string = amount_string,
+          avg_amount_string = amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
+        }
       end
-      -- made in
-      local category = prototype.category
-      for crafter_name, crafter_data in pairs(recipe_book.crafter) do
-        if crafter_data.categories[category] then
-          data.made_in[#data.made_in+1] = crafter_name
-        end
-      end
-      -- material: ingredient in
-      local ingredients = prototype.ingredients
-      for i=1,#ingredients do
-        local ingredient = ingredients[i]
-        local ingredient_data = recipe_book.material[ingredient.type..","..ingredient.name]
-        if ingredient_data then
-          ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
-        end
-      end
-      -- material: product of
-      local products = prototype.products
-      for i=1,#products do
-        local product = products[i]
-        local product_data = recipe_book.material[product.type..","..product.name]
-        if product_data then
-          product_data.product_of[#product_data.product_of+1] = name
-        end
-      end
-      -- insert into recipe book
-      recipe_book.recipe[name] = data
-      -- translation data
-      translation_data[#translation_data+1] = {dictionary="recipe", internal=name, localised=prototype.localised_name}
+      -- add to data
+      data[mode] = output
     end
+    -- made in
+    local category = prototype.category
+    for machine_name, machine_data in pairs(recipe_book.machine) do
+      if machine_data.categories[category] then
+        data.made_in[#data.made_in+1] = {
+          name = machine_name,
+          amount_string = "("..round(prototype.energy / machine_data.crafting_speed, 2).."s)"
+        }
+      end
+    end
+    -- material: ingredient in
+    local ingredients = prototype.ingredients
+    for i=1,#ingredients do
+      local ingredient = ingredients[i]
+      local ingredient_data = recipe_book.material[ingredient.type.."."..ingredient.name]
+      if ingredient_data then
+        ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
+      end
+    end
+    -- material: product of
+    local products = prototype.products
+    for i=1,#products do
+      local product = products[i]
+      local product_data = recipe_book.material[product.type.."."..product.name]
+      if product_data then
+        product_data.product_of[#product_data.product_of+1] = name
+      end
+    end
+    -- insert into recipe book
+    recipe_book.recipe[name] = data
+    -- translation data
+    translation_data[#translation_data+1] = {dictionary="recipe", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate resources
@@ -141,12 +170,18 @@ function global_data.build_recipe_book()
     local products = prototype.mineable_properties.products
     if products then
       for _, product in ipairs(products) do
-        local product_data = recipe_book.material[product.type..","..product.name]
+        local product_data = recipe_book.material[product.type.."."..product.name]
         if product_data then
           product_data.mined_from[#product_data.mined_from+1] = name
         end
       end
     end
+    recipe_book.resource[name] = {
+      available_to_all_forces = true,
+      internal_class = "resource",
+      prototype_name = name,
+      sprite_class = "entity"
+    }
     translation_data[#translation_data+1] = {dictionary="resource", internal=name, localised=prototype.localised_name}
   end
 
@@ -163,7 +198,7 @@ function global_data.build_recipe_book()
               local product_name = product.name
               local product_type = product.type
               -- product
-              local product_data = recipe_book.material[product_type..","..product_name]
+              local product_data = recipe_book.material[product_type.."."..product_name]
               if product_data then
                 -- check if we've already been added here
                 local add = true
@@ -183,13 +218,17 @@ function global_data.build_recipe_book()
       end
       recipe_book.technology[name] = {
         hidden = prototype.hidden,
-        researched_forces = {}
+        internal_class = "technology",
+        prototype_name = name,
+        researched_forces = {},
+        sprite_class = "technology"
       }
       translation_data[#translation_data+1] = {dictionary="technology", internal=prototype.name, localised=prototype.localised_name}
     end
   end
 
   -- remove all materials that aren't used in recipes
+  -- TODO flag materials whose recipes are all hidden
   do
     local materials = recipe_book.material
     local translations = translation_data
@@ -199,7 +238,7 @@ function global_data.build_recipe_book()
         local data = materials[t.internal]
         if #data.ingredient_in == 0 and #data.product_of == 0 then
           materials[t.internal] = nil
-          table_remove(translations, i)
+          table.remove(translations, i)
         elseif #data.unlocked_by == 0 then
           -- set unlocked by default
           data.available_to_forces = nil
@@ -218,17 +257,17 @@ local function set_recipe_available(force_index, recipe_data, recipe_book, item_
   recipe_data.available_to_forces[force_index] = true
   for _, product in ipairs(recipe_data.products) do
     -- product
-    local product_data = recipe_book.material[product.type..","..product.name]
+    local product_data = recipe_book.material[product.type.."."..product.name]
     if product_data and product_data.available_to_forces then
       product_data.available_to_forces[force_index] = true
     end
-    -- crafter
+    -- machine
     if product.type == "item" then
       local place_result = item_prototypes[product.name].place_result
       if place_result then
-        local crafter_data = recipe_book.crafter[place_result.name]
-        if crafter_data then
-          crafter_data.available_to_forces[force_index] = true
+        local machine_data = recipe_book.machine[place_result.name]
+        if machine_data then
+          machine_data.available_to_forces[force_index] = true
         end
       end
     end
