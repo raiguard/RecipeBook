@@ -83,6 +83,7 @@ function global_data.build_recipe_book()
         mined_from = {},
         product_of = {},
         prototype_name = name,
+        recipe_categories = {},
         sprite_class = class,
         unlocked_by = {}
       }
@@ -146,6 +147,7 @@ function global_data.build_recipe_book()
       local ingredient = ingredients[i]
       local ingredient_data = recipe_book.material[ingredient.type.."."..ingredient.name]
       if ingredient_data then
+        ingredient_data.recipe_categories[data.category] = true
         ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
       end
     end
@@ -155,6 +157,7 @@ function global_data.build_recipe_book()
       local product = products[i]
       local product_data = recipe_book.material[product.type.."."..product.name]
       if product_data then
+        product_data.recipe_categories[data.category] = true
         product_data.product_of[#product_data.product_of+1] = name
       end
     end

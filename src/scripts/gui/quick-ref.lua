@@ -98,12 +98,13 @@ function quick_ref_gui.create(player, player_table, name)
     for _, obj in ipairs(recipe_data[type]) do
       local obj_data = material_data[obj.type.."."..obj.name]
       local should_show, style, _, tooltip = formatter(obj_data, player_data, obj.amount_string)
-      local button_style = string.find(style, "unavailable") and "flib_slot_button_red" or "flib_slot_button_default"
-      tooltip = string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
-
-      local shown_string = obj.avg_amount_string and "~"..obj.avg_amount_string or string.gsub(obj.amount_string, "^.-(%d+)x$", "%1")
       if should_show then
         i = i + 1
+
+        local button_style = string.find(style, "unavailable") and "flib_slot_button_red" or "flib_slot_button_default"
+        tooltip = string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
+        local shown_string = obj.avg_amount_string and "~"..obj.avg_amount_string or string.gsub(obj.amount_string, "^.-(%d+)x$", "%1")
+
         local button = table_add{
           type = "sprite-button",
           name = "rb_quick_ref_material_button__"..i,
