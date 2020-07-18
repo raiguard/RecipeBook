@@ -379,6 +379,7 @@ function main_gui.toggle(player, player_table)
   end
 end
 
+-- TODO when a setting changes and the active page shouldn't be shown any longer, the history should be reset and the home page shown
 function main_gui.open_page(player, player_table, obj_class, obj_name, nav_button)
   obj_name = obj_name or ""
   local gui_data = player_table.gui.main
