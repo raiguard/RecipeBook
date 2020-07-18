@@ -82,7 +82,7 @@ function quick_ref_gui.create(player, player_table, name)
   local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data)
 
   -- remove glyph from caption, since it's implied
-  if player_data.show_glyphs then
+  if player_data.settings.show_glyphs then
     label_caption = string.gsub(label_caption, "^.-nt%]  ", "")
   end
 
