@@ -38,6 +38,7 @@ function player_data.init(player_index)
 end
 
 function player_data.update_settings(player, player_table)
+  -- static settings (stored as actual mod settings)
   local mod_settings = player.mod_settings
   local settings = {
     open_item_hotkey = mod_settings["rb-open-item-hotkey"].value,
@@ -48,6 +49,7 @@ function player_data.update_settings(player, player_table)
     show_glyphs = mod_settings["rb-show-glyphs"].value,
     use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value,
   }
+  -- dynamic settings (stored only on save game)
   local categories = player_table.settings.recipe_categories or {}
   for name in pairs(game.recipe_category_prototypes) do
     if categories[name] == nil then
@@ -69,7 +71,6 @@ end
 
 function player_data.refresh(player, player_table)
   -- destroy GUIs
-  -- TODO destroy settings GUI
   main_gui.close(player, player_table)
   main_gui.destroy(player, player_table)
   quick_ref_gui.destroy_all(player, player_table)
@@ -92,10 +93,6 @@ function player_data.refresh(player, player_table)
     player_table.flags.translate_on_join = true
   end
 end
-
--- function player_data.purge_cache(player_index)
---   formatter.purge_cache(player_index)
--- end
 
 function player_data.remove(player_index)
   gui.remove_player_filters(player_index)

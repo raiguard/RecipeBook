@@ -61,6 +61,28 @@ event.on_configuration_changed(function(e)
   end
 end)
 
+-- CUSTOM
+
+event.register(constants.events.open_page, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  main_gui.open_page(player, player_table, e.obj_class, e.obj_name)
+  if not player_table.flags.gui_open then
+    main_gui.open(player, player_table)
+  end
+end)
+
+event.register(constants.events.update_list_box_items, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  main_gui.update_list_box_items(player, player_table)
+end)
+
+event.register(constants.events.update_quick_ref_button, function(e)
+  local player_table = global.players[e.player_index]
+  main_gui.update_quick_ref_button(player_table)
+end)
+
 -- FORCE
 
 event.on_force_created(function(e)
@@ -220,7 +242,7 @@ event.on_string_translated(function(e)
     player_table.flags.show_message_after_translation = false
     -- enable shortcut
     player.set_shortcut_available("rb-toggle-gui", true)
-    -- -- update on_tick
+    -- update on_tick
     on_tick.update()
   end
 end)
@@ -228,37 +250,26 @@ end)
 -- -----------------------------------------------------------------------------
 -- REMOTE INTERFACE
 
--- ! TEMPORARY
-local reopen_source_event = event.generate_id()
-
 remote.add_interface("RecipeBook", {
-  open_page = function() return constants.events.open_page end,
-  version = function() return constants.interface_version end,
-  reopen_source_event = function() return reopen_source_event end
+  check_obj_valid = function(class, name)
+    if not class then return false, "Did not provide a class" end
+    local int_class = constants.interface_classes[class]
+    if not int_class then
+      return false, "Did not provide a valid class"
+    end
+    if not name then return false, "Did not provide a name" end
+    local int_name = (int_class == "material") and class.."."..name or name
+    local data = global.recipe_book[int_class][int_name]
+    if not data then return false, "Did not provide a valid object" end
+
+    return true
+  end,
+  open_page = function(player_index, class, name)
+    local valid, message = remote.call("RecipeBook", "check_obj_valid", class, name)
+    if not valid then
+      error("Mod calling remote interface "..string.lower(message))
+    end
+    event.raise(constants.events.open_page, {player_index=player_index, obj_class=class, obj_name=name})
+  end,
+  version = function() return constants.interface_version end
 })
-
--- HANDLERS
-
-event.register(constants.events.open_page, function(e)
-  if e.mod_name ~= "RecipeBook" then
-    -- TODO input validation
-  end
-
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  main_gui.open_page(player, player_table, e.obj_class, e.obj_name)
-  if not player_table.flags.gui_open then
-    main_gui.open(player, player_table)
-  end
-end)
-
-event.register(constants.events.update_quick_ref_button, function(e)
-  local player_table = global.players[e.player_index]
-  main_gui.update_quick_ref_button(player_table)
-end)
-
-event.register(constants.events.update_list_box_items, function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  main_gui.update_list_box_items(player, player_table)
-end)

@@ -83,6 +83,12 @@ constants.input_sanitisers = {
   ["%$"] = "%%$"
 }
 
+constants.interface_classes = {
+  fluid = "material",
+  item = "material",
+  recipe = "recipe"
+}
+
 constants.interface_version = 3
 
 constants.list_box_item_styles = {
