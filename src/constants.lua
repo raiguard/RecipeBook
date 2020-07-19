@@ -54,7 +54,7 @@ constants.colors = {
     str = "128, 206, 240",
     tbl = {128, 206, 240}
   },
-  unavailable = {
+  unresearched = {
     str = "255, 142, 142",
     tbl = {255, 142, 142}
   }
@@ -93,7 +93,7 @@ constants.interface_version = 3
 
 constants.list_box_item_styles = {
   available = "rb_list_box_item",
-  unavailable = "rb_unavailable_list_box_item"
+  unresearched = "rb_unresearched_list_box_item"
 }
 
 constants.main_pages = {
@@ -137,8 +137,8 @@ constants.settings = {
       prototype_name = "rb-show-hidden-objects",
       has_tooltip = false
     },
-    show_unavailable = {
-      prototype_name = "rb-show-unavailable-objects",
+    show_unresearched = {
+      prototype_name = "rb-show-unresearched-objects",
       has_tooltip = false
     },
     show_internal_names = {

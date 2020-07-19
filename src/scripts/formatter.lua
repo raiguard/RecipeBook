@@ -5,13 +5,13 @@ local constants = require("constants")
 local caches = {}
 
 local function get_properties(obj_data, force_index)
-  local available
+  local researched
   if obj_data.researched_forces then
-    available = obj_data.researched_forces[force_index] or false
+    researched = obj_data.researched_forces[force_index] or false
   else
-    available = obj_data.available_to_all_forces or obj_data.available_to_forces[force_index] or false
+    researched = obj_data.available_to_all_forces or obj_data.available_to_forces[force_index] or false
   end
-  return obj_data.hidden, available
+  return obj_data.hidden, researched
 end
 
 local function get_should_show(obj_data, player_data)
@@ -19,26 +19,26 @@ local function get_should_show(obj_data, player_data)
   local force_index = player_data.force_index
   local player_settings = player_data.settings
   local show_hidden = player_settings.show_hidden
-  local show_unavailable = player_settings.show_unavailable
+  local show_unresearched = player_settings.show_unresearched
 
-  -- check hidden and available status
-  local is_hidden, is_available = get_properties(obj_data, force_index)
-  if (show_hidden or not is_hidden) and (show_unavailable or is_available) then
+  -- check hidden and researched status
+  local is_hidden, is_researched = get_properties(obj_data, force_index)
+  if (show_hidden or not is_hidden) and (show_unresearched or is_researched) then
     -- for recipes - check category to see if it should be shown
     local category = obj_data.category
     local categories = obj_data.recipe_categories
     if category and player_settings.recipe_categories[category] then
-      return true, is_hidden, is_available
+      return true, is_hidden, is_researched
     elseif categories then
       local category_settings = player_settings.recipe_categories
       for category_name in pairs(categories) do
         if category_settings[category_name] then
-          return true, is_hidden, is_available
+          return true, is_hidden, is_researched
         end
       end
     end
   end
-  return false, is_hidden, is_available
+  return false, is_hidden, is_researched
 end
 
 local function caption_formatter(obj_data, player_data, is_hidden, amount)
@@ -62,7 +62,7 @@ local function caption_formatter(obj_data, player_data, is_hidden, amount)
     ..name
 end
 
-local function get_base_tooltip(obj_data, player_data, is_hidden, is_available)
+local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   local translations = player_data.translations
   local translation_key = obj_data.internal_class == "material" and obj_data.sprite_class.."."..obj_data.prototype_name or obj_data.prototype_name
   local translation = player_data.translations[obj_data.internal_class][translation_key]
@@ -73,57 +73,57 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_available)
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
 
   local hidden_string = is_hidden and "  |  "..translations.gui.hidden or ""
-  local unavailable_string = not is_available and "  |  [color="..constants.colors.unavailable.str.."]"..translations.gui.unavailable.."[/color]" or ""
+  local unresearched_string = not is_researched and "  |  [color="..constants.colors.unresearched.str.."]"..translations.gui.unresearched.."[/color]" or ""
 
   return
     "[img="..obj_data.sprite_class.."/"..obj_data.prototype_name.."]  [font=default-bold][color="..constants.colors.heading.str.."]"..name.."[/color][/font]"
     .."\n[color="..constants.colors.green.str.."]"..internal_name.."[/color]"
-    .."\n[color="..constants.colors.info.str.."]"..translations.gui[category_class].."[/color]"..hidden_string..unavailable_string
+    .."\n[color="..constants.colors.info.str.."]"..translations.gui[category_class].."[/color]"..hidden_string..unresearched_string
 end
 
 local tooltip_formatters = {
   machine = {
-    tooltip = function(obj_data, player_data, is_hidden, is_available)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_available)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
     enabled = false
   },
   material = {
-    tooltip = function(obj_data, player_data, is_hidden, is_available)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_available)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
     enabled = true
   },
   recipe = {
-    tooltip = function(obj_data, player_data, is_hidden, is_available)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_available)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
     enabled = true
   },
   resource = {
-    tooltip = function(obj_data, player_data, is_hidden, is_available)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_available)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
     enabled = false
   },
   technology = {
-    tooltip = function(obj_data, player_data, is_hidden, is_available)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_available)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
     enabled = true
   }
 }
 
 local function format_item(obj_data, player_data, amount_string)
-  local should_show, is_hidden, is_available = get_should_show(obj_data, player_data)
+  local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data)
   if should_show then
     -- format and return
     local formatter_subtable = tooltip_formatters[obj_data.internal_class]
     return
       true,
-      is_available and "rb_list_box_item" or "rb_unavailable_list_box_item",
+      is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
       caption_formatter(obj_data, player_data, is_hidden, amount_string),
-      formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_available),
+      formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched),
       formatter_subtable.enabled
   else
     return false
@@ -133,8 +133,8 @@ end
 function formatter.format(obj_data, player_data, amount_string)
   local player_index = player_data.player_index
   local cache = caches[player_index]
-  local _, is_available = get_properties(obj_data, player_data.force_index)
-  local cache_key = obj_data.sprite_class.."."..obj_data.prototype_name.."."..(amount_string or "false").."."..tostring(is_available)
+  local _, is_researched = get_properties(obj_data, player_data.force_index)
+  local cache_key = obj_data.sprite_class.."."..obj_data.prototype_name.."."..(amount_string or "false").."."..tostring(is_researched)
   local cached_return = cache[cache_key]
   if cached_return then
     return table.unpack(cached_return)

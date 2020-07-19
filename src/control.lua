@@ -12,8 +12,6 @@ local player_data = require("scripts.player-data")
 
 local main_gui = require("scripts.gui.main.base")
 
--- TODO rename "unavailable" to "unresearched"
-
 -- -----------------------------------------------------------------------------
 -- COMMANDS
 

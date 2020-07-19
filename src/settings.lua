@@ -22,7 +22,7 @@ data:extend{
   },
   {
     type = "bool-setting",
-    name = "rb-show-unavailable-objects",
+    name = "rb-show-unresearched-objects",
     setting_type = "runtime-per-user",
     default_value = true,
     order = "d"

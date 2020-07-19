@@ -37,7 +37,7 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="character", localised={"entity-name.character"}},
     {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
     {dictionary="gui", internal="hidden_abbrev", localised={"rb-gui.hidden-abbrev"}},
-    {dictionary="gui", internal="unavailable", localised={"rb-gui.unavailable"}}
+    {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}}
   }
 
   -- forces

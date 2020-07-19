@@ -45,11 +45,11 @@ styles.rb_list_box_item = {
   disabled_font_color = styles.list_box_item.default_font_color
 }
 
-styles.rb_unavailable_list_box_item = {
+styles.rb_unresearched_list_box_item = {
   type = "button_style",
   parent = "rb_list_box_item",
-  default_font_color = constants.colors.unavailable.tbl,
-  disabled_font_color = constants.colors.unavailable.tbl
+  default_font_color = constants.colors.unresearched.tbl,
+  disabled_font_color = constants.colors.unresearched.tbl
 }
 
 -- EMPTY-WIDGET STYLES

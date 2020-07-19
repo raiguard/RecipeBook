@@ -44,7 +44,7 @@ function player_data.update_settings(player, player_table)
     open_item_hotkey = mod_settings["rb-open-item-hotkey"].value,
     open_fluid_hotkey = mod_settings["rb-open-fluid-hotkey"].value,
     show_hidden = mod_settings["rb-show-hidden-objects"].value,
-    show_unavailable = mod_settings["rb-show-unavailable-objects"].value,
+    show_unresearched = mod_settings["rb-show-unresearched-objects"].value,
     show_internal_names = mod_settings["rb-show-internal-names"].value,
     show_glyphs = mod_settings["rb-show-glyphs"].value,
     use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value,
