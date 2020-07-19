@@ -257,7 +257,6 @@ end)
 -- REMOTE INTERFACE
 
 remote.add_interface("RecipeBook", {
-  -- ! FIXME crashes if the GUI is not yet available
   check_obj_valid = function(class, name)
     if not class then return false, "Did not provide a class" end
     local int_class = constants.interface_classes[class]

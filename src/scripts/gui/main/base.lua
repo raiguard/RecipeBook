@@ -112,6 +112,7 @@ gui.add_handlers{
           favorites[index_name] = true
           table.insert(favorites, 1, state)
         end
+        -- TODO don't do this!
         main_gui.open_page(
           game.get_player(e.player_index),
           player_table,

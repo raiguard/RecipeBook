@@ -36,6 +36,8 @@ local function get_should_show(obj_data, player_data)
           return true, is_hidden, is_researched
         end
       end
+    else
+      return true, is_hidden, is_researched
     end
   end
   return false, is_hidden, is_researched
