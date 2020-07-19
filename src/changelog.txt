@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.0
-Date: ????
+Date: 2020-07-19
   Features:
     - Added the ability to "pin" the GUI to the screen, so it can exist alongside other windows
     - Added the ability to "favorite" an object for easy access later
