@@ -64,9 +64,11 @@ end)
 event.register(constants.events.open_page, function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
-  main_gui.open_page(player, player_table, e.obj_class, e.obj_name)
-  if not player_table.flags.gui_open then
-    main_gui.open(player, player_table)
+  if main_gui.check_can_open(player, player_table) then
+    main_gui.open_page(player, player_table, e.obj_class, e.obj_name)
+    if not player_table.flags.gui_open then
+      main_gui.open(player, player_table)
+    end
   end
 end)
 
@@ -119,15 +121,18 @@ event.on_lua_shortcut(function(e)
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
 
-    -- check player's cursor stack for an item we can open
-    local item_to_open = player_data.check_cursor_stack(player)
-    if item_to_open then
-      main_gui.open_page(player, player_table, "item", item_to_open)
-      if not player_table.flags.gui_open then
-        main_gui.open(player, player_table)
+    -- only bother if we actually can open the GUI
+    if main_gui.check_can_open(player, player_table) then
+      -- check player's cursor stack for an item we can open
+      local item_to_open = player_data.check_cursor_stack(player)
+      if item_to_open then
+        main_gui.open_page(player, player_table, "item", item_to_open)
+        if not player_table.flags.gui_open then
+          main_gui.open(player, player_table)
+        end
+      else
+        main_gui.toggle(player, player_table)
       end
-    else
-      main_gui.toggle(player, player_table)
     end
   end
 end)
@@ -136,39 +141,42 @@ event.register("rb-toggle-gui", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
-  -- check player's cursor stack for an item we can open
-  if player_table.settings.open_item_hotkey then
-    local item_to_open = player_data.check_cursor_stack(player)
-    if item_to_open then
-      main_gui.open_page(player, player_table, "item", item_to_open)
-      if not player_table.flags.gui_open then
-        main_gui.open(player, player_table)
+  -- only bother if we actually can open the GUI
+  if main_gui.check_can_open(player, player_table) then
+    -- check player's cursor stack for an item we can open
+    if player_table.settings.open_item_hotkey then
+      local item_to_open = player_data.check_cursor_stack(player)
+      if item_to_open then
+        main_gui.open_page(player, player_table, "item", item_to_open)
+        if not player_table.flags.gui_open then
+          main_gui.open(player, player_table)
+        end
+        return
       end
-      return
     end
-  end
 
-  -- get player's currently selected entity to check for a fluid filter
-  local selected = player.selected
-  if player_table.settings.open_fluid_hotkey then
-    if selected and selected.valid and constants.open_fluid_types[selected.type] then
-      local fluidbox = selected.fluidbox
-      if fluidbox and fluidbox.valid then
-        local locked_fluid = fluidbox.get_locked_fluid(1)
-        if locked_fluid then
-          -- check recipe book to see if this fluid has a material page
-          if global.recipe_book.material["fluid."..locked_fluid] then
-            main_gui.open_page(player, player_table, "fluid", locked_fluid)
-            if not player_table.flags.gui_open then
-              main_gui.open(player, player_table)
+    -- get player's currently selected entity to check for a fluid filter
+    local selected = player.selected
+    if player_table.settings.open_fluid_hotkey then
+      if selected and selected.valid and constants.open_fluid_types[selected.type] then
+        local fluidbox = selected.fluidbox
+        if fluidbox and fluidbox.valid then
+          local locked_fluid = fluidbox.get_locked_fluid(1)
+          if locked_fluid then
+            -- check recipe book to see if this fluid has a material page
+            if global.recipe_book.material["fluid."..locked_fluid] then
+              main_gui.open_page(player, player_table, "fluid", locked_fluid)
+              if not player_table.flags.gui_open then
+                main_gui.open(player, player_table)
+              end
+              return
             end
-            return
           end
         end
       end
     end
+    main_gui.toggle(player, player_table)
   end
-  main_gui.toggle(player, player_table)
 end)
 
 -- PLAYER
@@ -249,6 +257,7 @@ end)
 -- REMOTE INTERFACE
 
 remote.add_interface("RecipeBook", {
+  -- ! FIXME crashes if the GUI is not yet available
   check_obj_valid = function(class, name)
     if not class then return false, "Did not provide a class" end
     local int_class = constants.interface_classes[class]
