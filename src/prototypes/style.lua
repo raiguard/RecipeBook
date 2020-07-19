@@ -78,14 +78,12 @@ styles.rb_dialog_footer_drag_handle = {
   horizontally_stretchable = "on"
 }
 
---! TODO move to flib
-
-styles.flib_horizontal_pusher = {
+styles.rb_horizontal_pusher = {
   type = "empty_widget_style",
   horizontally_stretchable = "on"
 }
 
-styles.flib_vertical_pusher = {
+styles.rb_vertical_pusher = {
   type = "empty_widget_style",
   vertically_stretchable = "on"
 }

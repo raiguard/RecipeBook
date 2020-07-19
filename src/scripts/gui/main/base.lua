@@ -79,8 +79,8 @@ gui.add_templates{
     end
   },
   pushers = {
-    horizontal = {type="empty-widget", style="flib_horizontal_pusher"},
-    vertical = {type="empty-widget", style="flib_vertical_pusher"}
+    horizontal = {type="empty-widget", style="rb_horizontal_pusher"},
+    vertical = {type="empty-widget", style="rb_vertical_pusher"}
   },
   tool_button = {type="sprite-button", style="tool_button", mouse_button_filter={"left"}},
 }
@@ -379,7 +379,6 @@ function main_gui.toggle(player, player_table)
   end
 end
 
--- TODO when a setting changes and the active page shouldn't be shown any longer, the history should be reset and the home page shown
 function main_gui.open_page(player, player_table, obj_class, obj_name, nav_button)
   obj_name = obj_name or ""
   local gui_data = player_table.gui.main
@@ -471,7 +470,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
   else
     info_bar.frame.visible = true
 
-    local _, _, caption, tooltip = formatter(global.recipe_book[int_class][int_name], player_data)
+    local _, _, caption, tooltip = formatter(global.recipe_book[int_class][int_name], player_data, nil, true)
     info_bar.label.caption = caption
     info_bar.label.tooltip = tooltip
 
