@@ -47,6 +47,7 @@ function global_data.build_recipe_book()
   end
 
   -- iterate machines
+  -- TODO rocket silos as crafters
   local machine_prototypes = game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
     {filter="type", type="furnace"}
@@ -92,8 +93,8 @@ function global_data.build_recipe_book()
     end
   end
 
-  -- TODO this is slow
   -- iterate recipes
+  -- TODO rocket silo products
   local recipe_prototypes = game.recipe_prototypes
   for name, prototype in pairs(recipe_prototypes) do
     local data = {
