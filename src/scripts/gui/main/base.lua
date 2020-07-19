@@ -344,7 +344,7 @@ function main_gui.open(player, player_table, skip_focus)
     window.visible = true
   end
   player_table.flags.gui_open = true
-  if not player_table.gui.main.base.pinned then
+  if not player_table.gui.main.base.window.pinned then
     player.opened = window
   end
   player.set_shortcut_toggled("rb-toggle-gui", true)
