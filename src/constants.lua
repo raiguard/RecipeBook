@@ -117,8 +117,10 @@ constants.open_fluid_types = {
 constants.search_categories = {"material", "recipe"}
 
 constants.search_categories_lookup = {}
+constants.search_categories_localised = {}
 for i, category in ipairs(constants.search_categories) do
   constants.search_categories_lookup[category] = i
+  constants.search_categories_localised[i] = {"rb-gui."..category.."-lowercase"}
 end
 
 constants.search_results_limit = 150

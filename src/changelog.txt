@@ -9,14 +9,17 @@ Date: ????
     - Added object type glyphs
     - Added settings for toggling specific recipe categories
     - Added an in-game settings screen for on-the-fly changes
-    - The GUI will remain open when clicking on a technology
+    - Added German translation by LuziferSenpai
   Changes:
     - Completely rewrote the mod from scratch to improve code quality, efficiency, and structure
     - Search and information are now combined into one window
     - Information listboxes are significantly wider and are arranged in a single column
     - Absolutely all recipes are now included in the Recipe Book data
+    - The GUI will remain open when clicking on a technology
     - Remote Interface:
-      - The remote interface has received significant changes, refer to the documentation for more information
+      - Added check_obj_valid function
+      - Renamed open_gui to open_page and changed argument formatting (see docs)
+      - Removed tie-ins to the back button and associated events (reopen_source_event)
   Bugfixes:
     - Fixed several crashes related to GUI buttons and multiplayer latency
 
