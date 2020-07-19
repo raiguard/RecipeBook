@@ -350,6 +350,7 @@ function main_gui.open(player, player_table, skip_focus)
 
   if not skip_focus then
     player_table.gui.main.search.textfield.focus()
+    player_table.gui.main.search.textfield.select_all()
   end
 end
 
