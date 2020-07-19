@@ -27,8 +27,10 @@ local function get_should_show(obj_data, player_data)
     -- for recipes - check category to see if it should be shown
     local category = obj_data.category
     local categories = obj_data.recipe_categories
-    if category and player_settings.recipe_categories[category] then
-      return true, is_hidden, is_researched
+    if category then
+      if player_settings.recipe_categories[category] then
+        return true, is_hidden, is_researched
+      end
     elseif categories then
       local category_settings = player_settings.recipe_categories
       for category_name in pairs(categories) do
