@@ -257,7 +257,7 @@ end)
 -- REMOTE INTERFACE
 
 remote.add_interface("RecipeBook", {
-  check_obj_valid = function(class, name)
+  open_page = function(player_index, class, name)
     if not class then return false, "Did not provide a class" end
     local int_class = constants.interface_classes[class]
     if not int_class then
@@ -268,14 +268,9 @@ remote.add_interface("RecipeBook", {
     local data = global.recipe_book[int_class][int_name]
     if not data then return false, "Did not provide a valid object" end
 
-    return true
-  end,
-  open_page = function(player_index, class, name)
-    local valid, message = remote.call("RecipeBook", "check_obj_valid", class, name)
-    if not valid then
-      error("Mod calling remote interface "..string.lower(message))
-    end
     event.raise(constants.events.open_page, {player_index=player_index, obj_class=class, obj_name=name})
+
+    return true
   end,
   version = function() return constants.interface_version end
 })

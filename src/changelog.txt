@@ -2,6 +2,8 @@
 Version: 2.0.1
 Date: ????
   Changes:
+    - Remote interface:
+      - Consolidated check_obj_valid into open_page, having it separate wasn't really necessary
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.0
 Date: 2020-07-19

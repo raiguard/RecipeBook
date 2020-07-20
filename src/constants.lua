@@ -89,7 +89,7 @@ constants.interface_classes = {
   recipe = "recipe"
 }
 
-constants.interface_version = 3
+constants.interface_version = 4
 
 constants.list_box_item_styles = {
   available = "rb_list_box_item",
