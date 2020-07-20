@@ -108,18 +108,16 @@ gui.add_handlers{
             end
           end
           favorites[index_name] = nil
+
+          e.element.style = "tool_button"
+          e.element.tooltip = {"rb-gui.add-to-favorites"}
         else
           favorites[index_name] = true
           table.insert(favorites, 1, state)
+
+          e.element.style = "rb_selected_tool_button"
+          e.element.tooltip = {"rb-gui.remove-from-favorites"}
         end
-        -- TODO don't do this!
-        main_gui.open_page(
-          game.get_player(e.player_index),
-          player_table,
-          state.class,
-          state.name,
-          true
-        )
       end
     },
     nav_button = {

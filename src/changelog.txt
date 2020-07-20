@@ -2,6 +2,7 @@
 Version: 2.0.1
 Date: ????
   Changes:
+    - Improved performance of "add to favorites" button
     - Remote interface:
       - Consolidated check_obj_valid into open_page, having it separate wasn't really necessary
 ---------------------------------------------------------------------------------------------------
