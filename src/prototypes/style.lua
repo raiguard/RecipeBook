@@ -4,6 +4,8 @@ local styles = data.raw["gui-style"].default
 
 -- BUTTON STYLES
 
+-- TODO remove these, they are in flib
+
 styles.rb_selected_frame_action_button = {
   type = "button_style",
   parent = "frame_action_button",
@@ -34,6 +36,8 @@ styles.rb_selected_tool_button = {
   clicked_graphical_set = btn.selected_clicked_graphical_set
 }
 
+-- -----
+
 styles.rb_list_box_item = {
   type = "button_style",
   parent = "list_box_item",
@@ -53,6 +57,8 @@ styles.rb_unresearched_list_box_item = {
 }
 
 -- EMPTY-WIDGET STYLES
+
+-- TODO remove these, they are in flib
 
 styles.rb_titlebar_drag_handle = {
   type = "empty_widget_style",
