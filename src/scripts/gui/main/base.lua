@@ -230,6 +230,21 @@ gui.add_handlers{
         if class == "technology" then
           player_table.flags.technology_gui_open = true
           player.open_technology_gui(name)
+        elseif class == "entity" then
+          local recipe_name = player_table.gui.main.state.name
+          local cursor_stack = player.cursor_stack
+          player.clean_cursor()
+          if cursor_stack and cursor_stack.valid then
+            cursor_stack.set_stack{name="rb-machine-blueprint", count=1}
+            cursor_stack.set_blueprint_entities{
+              {
+                entity_number = 1,
+                name = name,
+                position = {0, 0},
+                recipe = recipe_name
+              }
+            }
+          end
         else
           main_gui.open_page(player, player_table, class, name)
         end
@@ -304,7 +319,13 @@ function main_gui.create(player, player_table)
 
   -- base setup
   gui_data.base.window.pinned = false
-  gui.update_filters("shared.list_box_item", player.index, {"rb_list_box_item", "rb_material_item", "rb_recipe_item", "rb_technology_item"}, "add")
+  gui.update_filters("shared.list_box_item", player.index, {
+    "rb_list_box_item",
+    "rb_machine_item",
+    "rb_material_item",
+    "rb_recipe_item",
+    "rb_technology_item"
+  }, "add")
 
   -- page setup
   gui_data = pages.search.setup(player, player_table, gui_data)

@@ -90,9 +90,9 @@ end
 local tooltip_formatters = {
   machine = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched).."\n"..player_data.translations.gui.click_to_get_blueprint
     end,
-    enabled = false
+    enabled = true
   },
   material = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)

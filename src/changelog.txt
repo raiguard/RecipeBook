@@ -1,7 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.2
 Date: ????
-  Changes:
+  Features:
+    - Clicking a machine on the recipe screen will give you a blueprint of that machine with the recipe set
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.1
 Date: 2020-07-20
