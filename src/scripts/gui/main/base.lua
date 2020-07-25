@@ -224,7 +224,7 @@ gui.add_handlers{
   shared = {
     list_box_item = {
       on_gui_click = function(e)
-        local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%].*$")
+        local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%]  .*$")
         local player = game.get_player(e.player_index)
         local player_table = global.players[e.player_index]
         if class == "technology" then
@@ -340,7 +340,7 @@ function main_gui.create(player, player_table)
   player_table.gui.main = gui_data
 
   -- open home page
-  main_gui.open_page(player, player_table, "home", nil, true)
+  main_gui.open_page(player, player_table, "home")
 end
 
 function main_gui.destroy(player, player_table)

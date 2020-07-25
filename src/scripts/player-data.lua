@@ -82,6 +82,14 @@ function player_data.refresh(player, player_table)
   player.set_shortcut_toggled("rb-toggle-gui", false)
   player.set_shortcut_available("rb-toggle-gui", false)
 
+  -- destroy histories
+  player_table.history = {
+    global = {},
+    session = {
+      position = 1
+    }
+  },
+
   -- update settings
   player_data.update_settings(player, player_table)
 
