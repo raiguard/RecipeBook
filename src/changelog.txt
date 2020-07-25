@@ -5,6 +5,7 @@ Date: ????
     - Fixed that the search history would not be purged on configuration change, leading to crashes with non-existent items
     - Reverted the session history "fix" from v2.0.2 that was actually being caused by the above issue, and didn't actually fix anything
     - Fixed a crash with the listbox item clicked regex when an item name has brackets in it
+    - Fixed a crash when attempting to get a machine blueprint for a crafter that had the "non-blueprintable" flag set
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.2
 Date: 2020-07-25

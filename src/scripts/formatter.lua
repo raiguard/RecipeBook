@@ -90,12 +90,11 @@ end
 local formatters = {
   machine = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)
-      local blueprint_text = obj_data.hidden
-        and "[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
-        or player_data.translations.gui.click_to_get_blueprint
+      local blueprint_text = obj_data.blueprintable and player_data.translations.gui.click_to_get_blueprint
+        or "[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched).."\n"..blueprint_text
     end,
-    enabled = function(obj_data) return not obj_data.hidden end
+    enabled = function(obj_data) return obj_data.blueprintable end
   },
   material = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)

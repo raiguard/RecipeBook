@@ -55,11 +55,13 @@ function global_data.build_recipe_book()
     {filter="type", type="furnace"}
   }
   for name, prototype in pairs(machine_prototypes) do
+    local is_hidden = prototype.has_flag("hidden")
     recipe_book.machine[name] = {
       available_to_forces = {},
+      blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       categories = prototype.crafting_categories,
       crafting_speed = prototype.crafting_speed,
-      hidden = prototype.has_flag("hidden"),
+      hidden = is_hidden,
       internal_class = "machine",
       prototype_name = name,
       sprite_class = "entity"
