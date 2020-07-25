@@ -340,7 +340,7 @@ function main_gui.create(player, player_table)
   player_table.gui.main = gui_data
 
   -- open home page
-  main_gui.open_page(player, player_table, "home")
+  main_gui.open_page(player, player_table, "home", nil, true)
 end
 
 function main_gui.destroy(player, player_table)
@@ -405,7 +405,7 @@ function main_gui.check_can_open(player, player_table)
   end
 end
 
-function main_gui.open_page(player, player_table, obj_class, obj_name, nav_button)
+function main_gui.open_page(player, player_table, obj_class, obj_name, skip_history)
   obj_name = obj_name or ""
   local gui_data = player_table.gui.main
   local translations = player_table.translations
@@ -432,7 +432,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, nav_butto
   local history = player_table.history
   local session_history = history.session
   local global_history = history.global
-  if not nav_button then
+  if not skip_history then
     -- global history
     local combined_name = obj_class.."."..obj_name
     if global_history[combined_name] then
