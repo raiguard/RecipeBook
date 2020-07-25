@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.2
-Date: ????
+Date: 2020-07-25
   Features:
     - Clicking a machine on the recipe screen will give you a blueprint of that machine with the recipe set
     - Right-clicking the search textfield will clear it
