@@ -42,6 +42,10 @@ constants.class_to_font_glyph = {
 }
 
 constants.colors = {
+  error = {
+    str = "255, 90, 90",
+    tbl = {255, 90, 90}
+  },
   green = {
     str = "210, 253, 145",
     tbl = {210, 253, 145}

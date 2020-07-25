@@ -34,6 +34,7 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="resource", localised={"rb-gui.resource"}},
     {dictionary="gui", internal="technology", localised={"rb-gui.technology"}},
     -- misc
+    {dictionary="gui", internal="blueprint_not_available", localised={"rb-gui.blueprint-not-available"}},
     {dictionary="gui", internal="character", localised={"entity-name.character"}},
     {dictionary="gui", internal="click_to_get_blueprint", localised={"rb-gui.click-to-get-blueprint"}},
     {dictionary="gui", internal="hidden_abbrev", localised={"rb-gui.hidden-abbrev"}},

@@ -87,36 +87,39 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     .."\n[color="..constants.colors.info.str.."]"..translations.gui[category_class].."[/color]"..hidden_string..unresearched_string
 end
 
-local tooltip_formatters = {
+local formatters = {
   machine = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched).."\n"..player_data.translations.gui.click_to_get_blueprint
+      local blueprint_text = obj_data.hidden
+        and "[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
+        or player_data.translations.gui.click_to_get_blueprint
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched).."\n"..blueprint_text
     end,
-    enabled = true
+    enabled = function(obj_data) return not obj_data.hidden end
   },
   material = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
-    enabled = true
+    enabled = function() return true end
   },
   recipe = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
-    enabled = true
+    enabled = function() return true end
   },
   resource = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
-    enabled = false
+    enabled = function() return false end
   },
   technology = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
-    enabled = true
+    enabled = function() return true end
   }
 }
 
@@ -124,13 +127,13 @@ local function format_item(obj_data, player_data, amount_string, is_info_label)
   local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data)
   if is_info_label or should_show then
     -- format and return
-    local formatter_subtable = tooltip_formatters[obj_data.internal_class]
+    local formatter_subtable = formatters[obj_data.internal_class]
     return
       true,
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
       caption_formatter(obj_data, player_data, is_hidden, amount_string, is_info_label),
       formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched),
-      formatter_subtable.enabled
+      formatter_subtable.enabled(obj_data, player_data, is_hidden, is_researched)
   else
     return false
   end
