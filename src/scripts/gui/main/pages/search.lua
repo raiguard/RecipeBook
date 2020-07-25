@@ -111,7 +111,7 @@ function search_page.build()
         save_as="search.category_drop_down"}
     }},
     {type="flow", style="rb_search_content_flow", direction="vertical", children={
-      {type="textfield", style="rb_search_textfield", handlers="search.textfield", save_as="search.textfield"},
+      {type="textfield", style="rb_search_textfield", clear_and_focus_on_right_click=true, handlers="search.textfield", save_as="search.textfield"},
       {type="frame", style="rb_search_results_frame", direction="vertical", children={
         {type="frame", style="rb_search_results_subheader_frame", elem_mods={visible=false}, save_as="search.limit_frame", children={
           {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited", constants.search_results_limit}}}
