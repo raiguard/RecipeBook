@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.3
-Date: ????
+Date: 2020-07-25
   Bugfixes:
     - Fixed that the search history would not be purged on configuration change, leading to crashes with non-existent items
     - Reverted the session history "fix" from v2.0.2 that was actually being caused by the above issue, and didn't actually fix anything
