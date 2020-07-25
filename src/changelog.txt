@@ -6,6 +6,7 @@ Date: ????
     - Reverted the session history "fix" from v2.0.2 that was actually being caused by the above issue, and didn't actually fix anything
     - Fixed a crash with the listbox item clicked regex when an item name has brackets in it
     - Fixed a crash when attempting to get a machine blueprint for a crafter that had the "non-blueprintable" flag set
+    - Fixed that temporary machine blueprints of machines with a side that was an even number of tiles would be placed one tile off from where the preview was
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.2
 Date: 2020-07-25

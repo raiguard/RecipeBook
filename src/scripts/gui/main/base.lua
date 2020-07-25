@@ -12,6 +12,13 @@ for _, name in ipairs(constants.main_pages) do
   pages[name] = require("scripts.gui.main.pages."..name)
 end
 
+-- get the width and height of an area
+local function area_dimensions(area)
+  local width = math.abs(area.left_top.x - area.right_bottom.x)
+  local height = math.abs(area.left_top.y - area.right_bottom.y)
+  return width, height
+end
+
 gui.add_templates{
   frame_action_button = {type="sprite-button", style="frame_action_button", mouse_button_filter={"left"}},
   info_list_box = {
@@ -235,12 +242,17 @@ gui.add_handlers{
           local cursor_stack = player.cursor_stack
           player.clean_cursor()
           if cursor_stack and cursor_stack.valid then
+            -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
+            local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
             cursor_stack.set_stack{name="rb-machine-blueprint", count=1}
             cursor_stack.set_blueprint_entities{
               {
                 entity_number = 1,
                 name = name,
-                position = {0, 0},
+                position = {
+                  math.ceil(width) % 2 == 0 and -0.5 or 0,
+                  math.ceil(height) % 2 == 0 and -0.5 or 0
+                },
                 recipe = recipe_name
               }
             }
