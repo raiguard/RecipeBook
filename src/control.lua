@@ -56,6 +56,8 @@ event.on_configuration_changed(function(e)
     for i, player in pairs(game.players) do
       player_data.refresh(player, global.players[i])
     end
+
+    gui.check_filter_validity()
   end
 end)
 
