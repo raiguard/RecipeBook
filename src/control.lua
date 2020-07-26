@@ -189,6 +189,10 @@ event.on_player_created(function(e)
   formatter.create_cache(e.player_index)
 end)
 
+event.on_player_removed(function(e)
+  player_data.remove(e.player_index)
+end)
+
 event.on_player_joined_game(function(e)
   local player_table = global.players[e.player_index]
   if player_table.flags.translate_on_join then
@@ -197,8 +201,10 @@ event.on_player_joined_game(function(e)
   end
 end)
 
-event.on_player_removed(function(e)
-  player_data.remove(e.player_index)
+event.on_player_left_game(function(e)
+  if translation.is_translating(e.player_index) then
+    translation.cancel(e.player_index)
+  end
 end)
 
 -- SETTINGS
