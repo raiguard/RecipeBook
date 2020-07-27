@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.4
-Date: ????
+Date: 2020-07-27
   Features:
     - Enabling "use internal names" will change search to use internal names as well
   Changes:
