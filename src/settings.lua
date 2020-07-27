@@ -29,23 +29,23 @@ data:extend{
   },
   {
     type = "bool-setting",
-    name = "rb-show-internal-names",
-    setting_type = "runtime-per-user",
-    default_value = false,
-    order = "ea"
-  },
-  {
-    type = "bool-setting",
     name = "rb-show-glyphs",
     setting_type = "runtime-per-user",
     default_value = true,
-    order = "eb"
+    order = "e"
   },
   {
     type = "bool-setting",
     name = "rb-use-fuzzy-search",
     setting_type = "runtime-per-user",
     default_value = false,
-    order = "f"
+    order = "fa"
+  },
+  {
+    type = "bool-setting",
+    name = "rb-use-internal-names",
+    setting_type = "runtime-per-user",
+    default_value = false,
+    order = "fb"
   }
 }

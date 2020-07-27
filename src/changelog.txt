@@ -1,6 +1,10 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.4
 Date: ????
+  Features:
+    - Enabling "use internal names" will change search to use internal names as well
+  Changes:
+    - Renamed "show internal names" to "use internal names" and moved to search settings
   Bugfixes:
     - Fixed a desync related to player.connnected being unreliable during on_configuration_changed in multiplayer
     - Fixed a potential crash if a GUI handler was removed between versions

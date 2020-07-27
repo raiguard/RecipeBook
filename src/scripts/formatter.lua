@@ -59,7 +59,7 @@ local function caption_formatter(obj_data, player_data, is_hidden, amount, is_in
   end
   local hidden_string = is_hidden and font_prefix.."("..translations.gui.hidden_abbrev..")"..font_suffix.."  " or ""
   local amount_string = amount and font_prefix..amount..font_suffix.."  " or ""
-  local name = player_settings.show_internal_names and obj_data.prototype_name or translation
+  local name = player_settings.use_internal_names and obj_data.prototype_name or translation
   return
     glyph
     ..hidden_string
@@ -72,9 +72,9 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   local translations = player_data.translations
   local translation_key = obj_data.internal_class == "material" and obj_data.sprite_class.."."..obj_data.prototype_name or obj_data.prototype_name
   local translation = player_data.translations[obj_data.internal_class][translation_key]
-  local show_internal_names = player_data.settings.show_internal_names
-  local name = show_internal_names and obj_data.prototype_name or translation
-  local internal_name = show_internal_names and translation or obj_data.prototype_name
+  local use_internal_names = player_data.settings.use_internal_names
+  local name = use_internal_names and obj_data.prototype_name or translation
+  local internal_name = use_internal_names and translation or obj_data.prototype_name
 
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
 

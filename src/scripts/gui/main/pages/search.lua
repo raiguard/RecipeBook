@@ -62,11 +62,12 @@ gui.add_handlers{
         }
 
         -- match queries and add or modify children
+        local match_internal = player_table.settings.use_internal_names
         local children = scroll.children
         local add = scroll.add
         local i = 0
         for internal, translation in pairs(translations) do
-          if string.find(string.lower(translation), query) then
+          if string.find(string.lower(match_internal and internal or translation), query) then
             local obj_data = rb_data[internal]
             local should_add, style, caption, tooltip = formatter(obj_data, player_data)
             if should_add then

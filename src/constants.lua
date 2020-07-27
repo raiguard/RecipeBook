@@ -147,10 +147,6 @@ constants.settings = {
       prototype_name = "rb-show-unresearched-objects",
       has_tooltip = false
     },
-    show_internal_names = {
-      prototype_name = "rb-show-internal-names",
-      has_tooltip = true
-    },
     show_glyphs = {
       prototype_name = "rb-show-glyphs",
       has_tooltip = false
@@ -159,6 +155,10 @@ constants.settings = {
   search = {
     use_fuzzy_search = {
       prototype_name = "rb-use-fuzzy-search",
+      has_tooltip = true
+    },
+    use_internal_names = {
+      prototype_name = "rb-use-internal-names",
       has_tooltip = true
     }
   }
