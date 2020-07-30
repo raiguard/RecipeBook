@@ -122,15 +122,15 @@ local formatters = {
   }
 }
 
-local function format_item(obj_data, player_data, amount_string, is_info_label)
+local function format_item(obj_data, player_data, amount_string, always_show)
   local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data)
-  if is_info_label or should_show then
+  if always_show or should_show then
     -- format and return
     local formatter_subtable = formatters[obj_data.internal_class]
     return
       true,
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
-      caption_formatter(obj_data, player_data, is_hidden, amount_string, is_info_label),
+      caption_formatter(obj_data, player_data, is_hidden, amount_string, always_show),
       formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched),
       formatter_subtable.enabled(obj_data, player_data, is_hidden, is_researched)
   else
@@ -138,7 +138,7 @@ local function format_item(obj_data, player_data, amount_string, is_info_label)
   end
 end
 
-function formatter.format(obj_data, player_data, amount_string, is_info_label)
+function formatter.format(obj_data, player_data, amount_string, always_show)
   local player_index = player_data.player_index
   local cache = caches[player_index]
   local _, is_researched = get_properties(obj_data, player_data.force_index)
@@ -146,12 +146,12 @@ function formatter.format(obj_data, player_data, amount_string, is_info_label)
   .."."..obj_data.prototype_name
   .."."..(amount_string or "false")
   .."."..tostring(is_researched)
-  .."."..tostring(is_info_label)
+  .."."..tostring(always_show)
   local cached_return = cache[cache_key]
   if cached_return then
     return table.unpack(cached_return)
   else
-    local should_show, style, caption, tooltip, enabled = format_item(obj_data, player_data, amount_string, is_info_label)
+    local should_show, style, caption, tooltip, enabled = format_item(obj_data, player_data, amount_string, always_show)
     cache[cache_key] = { should_show, style, caption, tooltip, enabled }
     return should_show, style, caption, tooltip, enabled
   end

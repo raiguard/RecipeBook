@@ -30,7 +30,7 @@ gui.add_templates{
         }}
       }}
     end,
-    update = function(tbl, int_class, list_box, player_data)
+    update = function(tbl, int_class, list_box, player_data, always_show)
       local recipe_book = global.recipe_book[int_class]
 
       -- scroll pane
@@ -51,7 +51,7 @@ gui.add_templates{
         else
           obj_data = recipe_book[obj]
         end
-        local should_add, style, caption, tooltip, enabled = formatter(obj_data, player_data, obj.amount_string)
+        local should_add, style, caption, tooltip, enabled = formatter(obj_data, player_data, obj.amount_string, always_show)
 
         if should_add then
           i = i + 1

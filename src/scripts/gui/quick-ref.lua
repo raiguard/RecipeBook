@@ -79,7 +79,7 @@ function quick_ref_gui.create(player, player_table, name)
   }
 
   local recipe_data = global.recipe_book.recipe[name]
-  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data)
+  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, nil, true)
 
   -- remove glyph from caption, since it's implied
   if player_data.settings.show_glyphs then
@@ -97,35 +97,33 @@ function quick_ref_gui.create(player, player_table, name)
     local i = 0
     for _, obj in ipairs(recipe_data[type]) do
       local obj_data = material_data[obj.type.."."..obj.name]
-      local should_show, style, _, tooltip = formatter(obj_data, player_data, obj.amount_string)
-      if should_show then
-        i = i + 1
+      local _, style, _, tooltip = formatter(obj_data, player_data, obj.amount_string, true)
+      i = i + 1
 
-        local button_style = string.find(style, "unresearched") and "flib_slot_button_red" or "flib_slot_button_default"
-        tooltip = string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
-        local shown_string = obj.avg_amount_string and "~"..obj.avg_amount_string or string.gsub(obj.amount_string, "^.-(%d+)x$", "%1")
+      local button_style = string.find(style, "unresearched") and "flib_slot_button_red" or "flib_slot_button_default"
+      tooltip = string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
+      local shown_string = obj.avg_amount_string and "~"..obj.avg_amount_string or string.gsub(obj.amount_string, "^.-(%d+)x$", "%1")
 
-        local button = table_add{
-          type = "sprite-button",
-          name = "rb_quick_ref_material_button__"..i,
-          style = button_style,
-          sprite = obj.type.."/"..obj.name,
-          tooltip = tooltip,
-          -- number = shown_string
-        }
-        button.add{
-          type = "label",
-          style = "rb_slot_label",
-          caption = shown_string,
-          ignored_by_interaction = true
-        }
-        button.add{
-          type = "label",
-          style = "rb_slot_label_top",
-          caption = string.find(obj.amount_string, "%%") and "%" or "",
-          ignored_by_interaction = true
-        }
-      end
+      local button = table_add{
+        type = "sprite-button",
+        name = "rb_quick_ref_material_button__"..i,
+        style = button_style,
+        sprite = obj.type.."/"..obj.name,
+        tooltip = tooltip,
+        -- number = shown_string
+      }
+      button.add{
+        type = "label",
+        style = "rb_slot_label",
+        caption = shown_string,
+        ignored_by_interaction = true
+      }
+      button.add{
+        type = "label",
+        style = "rb_slot_label_top",
+        caption = string.find(obj.amount_string, "%%") and "%" or "",
+        ignored_by_interaction = true
+      }
       group.label.caption = {"rb-gui."..type, i}
     end
   end

@@ -141,11 +141,11 @@ constants.settings = {
     },
     show_hidden = {
       prototype_name = "rb-show-hidden-objects",
-      has_tooltip = false
+      has_tooltip = true
     },
     show_unresearched = {
       prototype_name = "rb-show-unresearched-objects",
-      has_tooltip = false
+      has_tooltip = true
     },
     show_glyphs = {
       prototype_name = "rb-show-glyphs",

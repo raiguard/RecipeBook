@@ -56,15 +56,6 @@ function home_page.build()
   }
 end
 
-local test_objects = {
-  {"machine", "crash-site-assembling-machine-1-repaired"},
-  {"material", "fluid.ammonia"},
-  {"material", "item.matter-cube"},
-  {"recipe", "kr-burn-heavy-oil"},
-  {"resource", "stone"},
-  {"technology", "kr-air-purification"}
-}
-
 function home_page.update(_, gui_data, player_data, home_data)
   local update = gui.templates.home.list_box_updater
   update("favorites", gui_data, player_data, home_data)
