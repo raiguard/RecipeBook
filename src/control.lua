@@ -50,14 +50,16 @@ end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
+    gui.check_filter_validity()
+    translation.init()
+    on_tick.update()
+
     global_data.build_recipe_book()
     global_data.check_forces()
 
     for i, player in pairs(game.players) do
       player_data.refresh(player, global.players[i])
     end
-
-    gui.check_filter_validity()
   end
 end)
 
