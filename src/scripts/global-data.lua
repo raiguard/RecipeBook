@@ -17,8 +17,22 @@ function global_data.init()
 end
 
 function global_data.build_recipe_book()
+  -- character prototype
+  local character_prototype = game.entity_prototypes["character"]
   local recipe_book = {
-    crafter = {},
+    crafter = {
+      -- manually insert character as first entry
+      character = {
+        available_to_all_forces = true,
+        blueprintable = false,
+        categories = character_prototype.crafting_categories,
+        crafting_speed = 1,
+        hidden = false,
+        internal_class = "crafter",
+        prototype_name = character_prototype.name,
+        sprite_class = "entity"
+      }
+    },
     material = {},
     recipe = {},
     resource = {},
@@ -39,7 +53,9 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="click_to_get_blueprint", localised={"rb-gui.click-to-get-blueprint"}},
     {dictionary="gui", internal="hidden_abbrev", localised={"rb-gui.hidden-abbrev"}},
     {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
-    {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}}
+    {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}},
+    -- character
+    {dictionary="crafter", internal="character", localised={"entity-name.character"}}
   }
 
   -- forces
