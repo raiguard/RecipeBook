@@ -45,19 +45,20 @@ local function get_should_show(obj_data, player_data)
   return false, is_hidden, is_researched
 end
 
-local function caption_formatter(obj_data, player_data, is_hidden, amount, is_info_label)
+local function caption_formatter(obj_data, player_data, is_hidden, amount)
   local player_settings = player_data.settings
   local translations = player_data.translations
   local translation_key = obj_data.internal_class == "material" and obj_data.sprite_class.."."..obj_data.prototype_name or obj_data.prototype_name
   local translation = translations[obj_data.internal_class][translation_key]
-  local font_prefix = is_info_label and "" or "[font=default-semibold]"
-  local font_suffix = is_info_label and "" or "[/font]"
+  local font_prefix = "[font=default-semibold]"
+  local font_suffix = "[/font]"
   local glyph = ""
   if player_settings.show_glyphs then
     local glyph_char = constants.class_to_font_glyph[obj_data.internal_class] or constants.class_to_font_glyph[obj_data.sprite_class]
     glyph = "[font=RecipeBook]"..glyph_char.."[/font]  "
   end
   local hidden_string = is_hidden and font_prefix.."("..translations.gui.hidden_abbrev..")"..font_suffix.."  " or ""
+  -- always use bold font when an amount string is present
   local amount_string = amount and font_prefix..amount..font_suffix.."  " or ""
   local name = player_settings.use_internal_names and obj_data.prototype_name or translation
   return
@@ -130,7 +131,7 @@ local function format_item(obj_data, player_data, amount_string, always_show)
     return
       true,
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
-      caption_formatter(obj_data, player_data, is_hidden, amount_string, always_show),
+      caption_formatter(obj_data, player_data, is_hidden, amount_string),
       formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched),
       formatter_subtable.enabled(obj_data, player_data, is_hidden, is_researched)
   else
