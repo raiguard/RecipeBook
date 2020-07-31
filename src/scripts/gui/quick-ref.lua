@@ -44,6 +44,8 @@ gui.add_handlers{
 }
 
 function quick_ref_gui.create(player, player_table, name)
+  local recipe_data = global.recipe_book.recipe[name]
+
   local gui_data, filters = gui.build(player.gui.screen, {
     {type="frame", direction="vertical", save_as="window", children={
       {type="flow", save_as="titlebar.flow", children={
@@ -60,6 +62,11 @@ function quick_ref_gui.create(player, player_table, name)
           {template="pushers.horizontal"}
         }},
         {type="flow", style="rb_quick_ref_content_flow", direction="vertical", children={
+          {type="frame", style="rb_quick_ref_crafting_time_frame", children={
+            {type="label", style="bold_label", caption={"rb-gui.crafting-time"}},
+            {template="pushers.horizontal"},
+            {type="label", caption=recipe_data.energy.."s"}
+          }},
           gui.templates.quick_ref_panel("ingredients"),
           gui.templates.quick_ref_panel("products")
         }}
@@ -78,7 +85,6 @@ function quick_ref_gui.create(player, player_table, name)
     translations = player_table.translations
   }
 
-  local recipe_data = global.recipe_book.recipe[name]
   local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, nil, true)
 
   -- remove glyph from caption, since it's implied

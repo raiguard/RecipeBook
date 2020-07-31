@@ -2,6 +2,7 @@
 Version: 2.0.5
 Date: ????
   Features:
+    - Added base crafting speed to recipe pages
     - Added character to "made in" list for recipes that are hand-craftable
   Changes:
     - All recipe ingredients and products will always be shown despite object visibility settings
