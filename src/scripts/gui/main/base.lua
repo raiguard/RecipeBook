@@ -46,7 +46,7 @@ gui.add_templates{
         local obj_data
         if int_class == "material" then
           obj_data = recipe_book[obj.type.."."..obj.name]
-        elseif int_class == "machine" then
+        elseif int_class == "crafter" then
           obj_data = recipe_book[obj.name]
         else
           obj_data = recipe_book[obj]
@@ -244,7 +244,7 @@ gui.add_handlers{
           if cursor_stack and cursor_stack.valid then
             -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
             local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
-            cursor_stack.set_stack{name="rb-machine-blueprint", count=1}
+            cursor_stack.set_stack{name="rb-crafter-blueprint", count=1}
             cursor_stack.set_blueprint_entities{
               {
                 entity_number = 1,
@@ -333,7 +333,7 @@ function main_gui.create(player, player_table)
   gui_data.base.window.pinned = false
   gui.update_filters("shared.list_box_item", player.index, {
     "rb_list_box_item",
-    "rb_machine_item",
+    "rb_crafter_item",
     "rb_material_item",
     "rb_recipe_item",
     "rb_technology_item"

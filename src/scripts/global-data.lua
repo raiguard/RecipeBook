@@ -18,7 +18,7 @@ end
 
 function global_data.build_recipe_book()
   local recipe_book = {
-    machine = {},
+    crafter = {},
     material = {},
     recipe = {},
     resource = {},
@@ -28,7 +28,7 @@ function global_data.build_recipe_book()
     -- internal classes
     {dictionary="gui", internal="fluid", localised={"rb-gui.fluid"}},
     {dictionary="gui", internal="item", localised={"rb-gui.item"}},
-    {dictionary="gui", internal="machine", localised={"rb-gui.machine"}},
+    {dictionary="gui", internal="crafter", localised={"rb-gui.crafter"}},
     {dictionary="gui", internal="material", localised={"rb-gui.material"}},
     {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}},
     {dictionary="gui", internal="resource", localised={"rb-gui.resource"}},
@@ -48,25 +48,25 @@ function global_data.build_recipe_book()
     forces[force.index] = force.recipes
   end
 
-  -- iterate machines
+  -- iterate crafters
   -- TODO rocket silos as crafters
-  local machine_prototypes = game.get_filtered_entity_prototypes{
+  local crafter_prototypes = game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
     {filter="type", type="furnace"}
   }
-  for name, prototype in pairs(machine_prototypes) do
+  for name, prototype in pairs(crafter_prototypes) do
     local is_hidden = prototype.has_flag("hidden")
-    recipe_book.machine[name] = {
+    recipe_book.crafter[name] = {
       available_to_forces = {},
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       categories = prototype.crafting_categories,
       crafting_speed = prototype.crafting_speed,
       hidden = is_hidden,
-      internal_class = "machine",
+      internal_class = "crafter",
       prototype_name = name,
       sprite_class = "entity"
     }
-    translation_data[#translation_data+1] = {dictionary="machine", internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary="crafter", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate materials
@@ -138,11 +138,11 @@ function global_data.build_recipe_book()
     end
     -- made in
     local category = prototype.category
-    for machine_name, machine_data in pairs(recipe_book.machine) do
-      if machine_data.categories[category] then
+    for crafter_name, crafter_data in pairs(recipe_book.crafter) do
+      if crafter_data.categories[category] then
         data.made_in[#data.made_in+1] = {
-          name = machine_name,
-          amount_string = "("..round(prototype.energy / machine_data.crafting_speed, 2).."s)"
+          name = crafter_name,
+          amount_string = "("..round(prototype.energy / crafter_data.crafting_speed, 2).."s)"
         }
       end
     end
@@ -268,13 +268,13 @@ local function set_recipe_available(force_index, recipe_data, recipe_book, item_
     if product_data and product_data.available_to_forces then
       product_data.available_to_forces[force_index] = true
     end
-    -- machine
+    -- crafter
     if product.type == "item" then
       local place_result = item_prototypes[product.name].place_result
       if place_result then
-        local machine_data = recipe_book.machine[place_result.name]
-        if machine_data then
-          machine_data.available_to_forces[force_index] = true
+        local crafter_data = recipe_book.crafter[place_result.name]
+        if crafter_data then
+          crafter_data.available_to_forces[force_index] = true
         end
       end
     end

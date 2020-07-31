@@ -88,7 +88,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
 end
 
 local formatters = {
-  machine = {
+  crafter = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched)
       local blueprint_text = obj_data.blueprintable and player_data.translations.gui.click_to_get_blueprint
         or "[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"

@@ -18,7 +18,7 @@ function recipe_page.update(int_name, gui_data, player_data)
 
   update_list_box(obj_data.ingredients, "material", gui_data.recipe.ingredients, player_data, true)
   update_list_box(obj_data.products, "material", gui_data.recipe.products, player_data, true)
-  update_list_box(obj_data.made_in, "machine", gui_data.recipe.made_in, player_data)
+  update_list_box(obj_data.made_in, "crafter", gui_data.recipe.made_in, player_data)
   update_list_box(obj_data.unlocked_by, "technology", gui_data.recipe.unlocked_by, player_data)
 end
 

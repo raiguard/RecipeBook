@@ -33,9 +33,9 @@ constants.disabled_recipe_categories = {
 }
 
 constants.class_to_font_glyph = {
+  crafter = "D",
   fluid = "B",
   item = "C",
-  machine = "D",
   recipe = "E",
   resource = "F",
   technology = "A"
@@ -66,7 +66,7 @@ constants.colors = {
 
 constants.empty_translations_table = {
   gui = {},
-  machine = {},
+  crafter = {},
   material = {},
   recipe = {},
   resource = {},
