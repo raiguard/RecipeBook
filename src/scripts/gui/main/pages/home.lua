@@ -6,6 +6,7 @@ local formatter = require("scripts.formatter")
 
 gui.add_templates{
   home = {
+    -- this is separate from the generic list box updater because the input format is different
     list_box_updater = function(tbl_name, gui_data, player_data, home_data)
       local recipe_book = global.recipe_book
       local tbl = home_data[tbl_name]
@@ -34,7 +35,7 @@ gui.add_templates{
               item.caption = caption
               item.tooltip = tooltip
             else
-              add{type="button", name="rb_"..entry.int_class.."_item__"..i, style=style, caption=caption, tooltip=tooltip}
+              add{type="button", name="rb_list_box_item__"..i, style=style, caption=caption, tooltip=tooltip}
             end
           end
         end
