@@ -83,7 +83,7 @@ function quick_ref_gui.create(player, player_table, name)
     translations = player_table.translations
   }
 
-  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, nil, true)
+  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, nil, true, true)
 
   -- remove glyph from caption, since it's implied
   if player_data.settings.show_glyphs then

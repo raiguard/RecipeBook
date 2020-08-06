@@ -47,14 +47,16 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}},
     {dictionary="gui", internal="resource", localised={"rb-gui.resource"}},
     {dictionary="gui", internal="technology", localised={"rb-gui.technology"}},
-    -- misc
-    {dictionary="gui", internal="blueprint_not_available", localised={"rb-gui.blueprint-not-available"}},
-    {dictionary="gui", internal="character", localised={"entity-name.character"}},
-    {dictionary="gui", internal="click_to_get_blueprint", localised={"rb-gui.click-to-get-blueprint"}},
+    -- captions
     {dictionary="gui", internal="hidden_abbrev", localised={"rb-gui.hidden-abbrev"}},
+    -- tooltips
+    {dictionary="gui", internal="blueprint_not_available", localised={"rb-gui.blueprint-not-available"}},
+    {dictionary="gui", internal="click_to_get_blueprint", localised={"rb-gui.click-to-get-blueprint"}},
+    {dictionary="gui", internal="click_to_view_technology", localised={"rb-gui.click-to-view-technology"}},
+    {dictionary="gui", internal="click_to_view", localised={"rb-gui.click-to-view"}},
     {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
     {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}},
-    -- character
+    -- character crafter
     {dictionary="crafter", internal="character", localised={"entity-name.character"}}
   }
 

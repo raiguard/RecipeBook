@@ -503,7 +503,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
   else
     info_bar.frame.visible = true
 
-    local _, _, caption, tooltip = formatter(global.recipe_book[int_class][int_name], player_data, nil, true)
+    local _, _, caption, tooltip = formatter(global.recipe_book[int_class][int_name], player_data, nil, true, true)
     info_bar.label.caption = caption
     info_bar.label.tooltip = tooltip
 

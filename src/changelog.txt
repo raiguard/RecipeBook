@@ -4,6 +4,7 @@ Date: ????
   Features:
     - Added base crafting speed to recipe pages
     - Added character to "made in" list for recipes that are hand-craftable
+    - Added brief interaction helps to all object tooltips
   Changes:
     - All recipe ingredients and products will always be shown despite object visibility settings
     - Renamed "machine" back to "crafter" as the reason for the name change is moot at this point

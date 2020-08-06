@@ -90,7 +90,7 @@ end
 
 local formatters = {
   crafter = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local blueprint_text = obj_data.blueprintable and player_data.translations.gui.click_to_get_blueprint
         or "[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched).."\n"..blueprint_text
@@ -98,32 +98,35 @@ local formatters = {
     enabled = function(obj_data) return obj_data.blueprintable end
   },
   material = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+      local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..interaction_help
     end,
     enabled = function() return true end
   },
   recipe = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+      local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..interaction_help
     end,
     enabled = function() return true end
   },
   resource = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
     enabled = function() return false end
   },
   technology = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+      local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view_technology)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..interaction_help
     end,
     enabled = function() return true end
   }
 }
 
-local function format_item(obj_data, player_data, amount_string, always_show)
+local function format_item(obj_data, player_data, amount_string, always_show, is_label)
   local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data)
   if always_show or should_show then
     -- format and return
@@ -132,14 +135,14 @@ local function format_item(obj_data, player_data, amount_string, always_show)
       true,
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
       caption_formatter(obj_data, player_data, is_hidden, amount_string),
-      formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched),
+      formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched, is_label),
       formatter_subtable.enabled(obj_data, player_data, is_hidden, is_researched)
   else
     return false
   end
 end
 
-function formatter.format(obj_data, player_data, amount_string, always_show)
+function formatter.format(obj_data, player_data, amount_string, always_show, is_label)
   local player_index = player_data.player_index
   local cache = caches[player_index]
   local _, is_researched = get_properties(obj_data, player_data.force_index)
@@ -148,11 +151,12 @@ function formatter.format(obj_data, player_data, amount_string, always_show)
   .."."..(amount_string or "false")
   .."."..tostring(is_researched)
   .."."..tostring(always_show)
+  .."."..tostring(is_label)
   local cached_return = cache[cache_key]
   if cached_return then
     return table.unpack(cached_return)
   else
-    local should_show, style, caption, tooltip, enabled = format_item(obj_data, player_data, amount_string, always_show)
+    local should_show, style, caption, tooltip, enabled = format_item(obj_data, player_data, amount_string, always_show, is_label)
     cache[cache_key] = { should_show, style, caption, tooltip, enabled }
     return should_show, style, caption, tooltip, enabled
   end
