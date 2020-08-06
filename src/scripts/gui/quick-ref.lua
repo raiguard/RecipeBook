@@ -7,12 +7,12 @@ local constants = require("constants")
 local formatter = require("scripts.formatter")
 
 gui.add_templates{
-  quick_ref_panel = function(name)
+  quick_ref_panel = function(name, children)
     return {type="flow", direction="vertical", children={
       {type="label", style="bold_label", save_as=name..".label"},
       {type="frame", style="rb_slot_table_frame", save_as=name..".frame", children={
         {type="scroll-pane", style="rb_slot_table_scroll_pane", save_as=name..".scroll_pane", children={
-          {type="table", style="slot_table", column_count=5, save_as=name..".table"}
+          {type="table", style="slot_table", column_count=5, save_as=name..".table", children=children}
         }}
       }}
     }}
@@ -62,12 +62,10 @@ function quick_ref_gui.create(player, player_table, name)
           {template="pushers.horizontal"}
         }},
         {type="flow", style="rb_quick_ref_content_flow", direction="vertical", children={
-          {type="frame", style="rb_quick_ref_crafting_time_frame", children={
-            {type="label", style="bold_label", caption={"rb-gui.crafting-time"}},
-            {template="pushers.horizontal"},
-            {type="label", caption=recipe_data.energy.."s"}
-          }},
-          gui.templates.quick_ref_panel("ingredients"),
+          gui.templates.quick_ref_panel("ingredients", {
+            {type="sprite-button", style="flib_slot_button_default", tooltip={"rb-gui.seconds-tooltip"}, sprite="quantity-time", number=recipe_data.energy,
+              enabled=false}
+          }),
           gui.templates.quick_ref_panel("products")
         }}
       }}
@@ -100,7 +98,7 @@ function quick_ref_gui.create(player, player_table, name)
   for _, type in ipairs{"ingredients", "products"} do
     local group = gui_data[type]
     local table_add = group.table.add
-    local i = 0
+    local i = type == "ingredients" and 1 or 0
     for _, obj in ipairs(recipe_data[type]) do
       local obj_data = material_data[obj.type.."."..obj.name]
       local _, style, _, tooltip = formatter(obj_data, player_data, obj.amount_string, true)
@@ -116,7 +114,6 @@ function quick_ref_gui.create(player, player_table, name)
         style = button_style,
         sprite = obj.type.."/"..obj.name,
         tooltip = tooltip,
-        -- number = shown_string
       }
       button.add{
         type = "label",
@@ -130,7 +127,7 @@ function quick_ref_gui.create(player, player_table, name)
         caption = string.find(obj.amount_string, "%%") and "%" or "",
         ignored_by_interaction = true
       }
-      group.label.caption = {"rb-gui."..type, i}
+      group.label.caption = {"rb-gui."..type, i - (type == "ingredients" and 1 or 0)}
     end
   end
 

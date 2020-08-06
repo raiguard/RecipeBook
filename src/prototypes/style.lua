@@ -123,13 +123,6 @@ styles.rb_search_content_flow = {
 
 -- FRAME STYLES
 
-styles.rb_crafting_time_frame = {
-  type = "frame_style",
-  parent = "bordered_frame",
-  bottom_margin = -4,
-  right_padding = 8
-}
-
 styles.rb_main_info_frame = {
   type = "frame_style",
   parent = "inside_shallow_frame",
@@ -153,13 +146,6 @@ styles.rb_search_results_subheader_frame = {
     type = "horizontal_flow_style",
     horizontal_align = "center"
   }
-}
-
-styles.rb_quick_ref_crafting_time_frame = {
-  type = "frame_style",
-  parent = "rb_crafting_time_frame",
-  bottom_margin = -2,
-  right_margin = 12
 }
 
 styles.rb_quick_ref_content_frame = {
