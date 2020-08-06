@@ -30,7 +30,8 @@ gui.add_templates{
         }}
       }}
     end,
-    update = function(tbl, int_class, list_box, player_data, always_show)
+    update = function(tbl, int_class, list_box, player_data, always_show, starting_index)
+      starting_index = starting_index or 0
       local recipe_book = global.recipe_book[int_class]
 
       -- scroll pane
@@ -39,7 +40,7 @@ gui.add_templates{
       local children = scroll.children
 
       -- loop through input table
-      local i = 0
+      local i = starting_index
       for j = 1, #tbl do
         -- get object information
         local obj = tbl[j]
@@ -63,7 +64,7 @@ gui.add_templates{
             item.tooltip = tooltip
             item.enabled = enabled
           else
-            add{type="button", name="rb_"..int_class.."_item__"..i, style=style, caption=caption, tooltip=tooltip, enabled=enabled}
+            add{type="button", name="rb_list_box_item__"..i, style=style, caption=caption, tooltip=tooltip, enabled=enabled}
           end
         end
       end
@@ -80,7 +81,7 @@ gui.add_templates{
         scroll.style.height = math.min((28 * i), (28 * 6))
 
         local caption = list_box.label.caption
-        caption[2] = i
+        caption[2] = i - starting_index
         list_box.label.caption = caption
       end
     end
@@ -331,13 +332,7 @@ function main_gui.create(player, player_table)
 
   -- base setup
   gui_data.base.window.pinned = false
-  gui.update_filters("shared.list_box_item", player.index, {
-    "rb_list_box_item",
-    "rb_crafter_item",
-    "rb_material_item",
-    "rb_recipe_item",
-    "rb_technology_item"
-  }, "add")
+  gui.update_filters("shared.list_box_item", player.index, {"rb_list_box_item"}, "add")
 
   -- page setup
   gui_data = pages.search.setup(player, player_table, gui_data)
