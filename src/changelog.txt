@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.1
 Date: ????
+  Changes:
+    - Updated to Factorio 1.0
   Bugfixes:
     - Fixed a crash due to improper checking of force availability data for crafters
 ---------------------------------------------------------------------------------------------------
