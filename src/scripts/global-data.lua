@@ -291,7 +291,7 @@ local function set_recipe_available(force_index, recipe_data, recipe_book, item_
       local place_result = item_prototypes[product.name].place_result
       if place_result then
         local crafter_data = recipe_book.crafter[place_result.name]
-        if crafter_data then
+        if crafter_data and crafter_data.available_to_forces then
           crafter_data.available_to_forces[force_index] = true
         end
       end
