@@ -100,7 +100,8 @@ local formatters = {
   material = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..interaction_help
+      local stack_size = obj_data.stack_size and "\n[font=default-semibold]"..player_data.translations.gui.stack_size.."[/font] "..obj_data.stack_size or ""
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..stack_size..interaction_help
     end,
     enabled = function() return true end
   },
