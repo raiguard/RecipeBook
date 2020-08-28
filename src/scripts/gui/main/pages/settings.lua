@@ -4,7 +4,6 @@ local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
-local formatter = require("scripts.formatter")
 
 gui.add_handlers{
   settings = {
