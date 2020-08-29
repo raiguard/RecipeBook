@@ -269,6 +269,16 @@ gui.add_handlers{
 function main_gui.create(player, player_table)
   local gui_data = gui.build(player.gui.screen, {
     {type="frame", style="outer_frame", elem_mods={visible=false}, handlers="base.window", save_as="base.window.frame", children={
+      -- hotbar
+      {type="frame", style="inner_frame_in_outer_frame", direction="vertical", children={
+        {type="flow", style_mods={height=28}, children={
+          {template="frame_action_button", sprite="rb_nav_backward_white"},
+          {type="empty-widget", style="flib_dialog_titlebar_drag_handle"}
+        }},
+        {type="frame", style="inside_shallow_frame", children={
+          {type="empty-widget", style_mods={width=150, vertically_stretchable=true}}
+        }}
+      }},
       -- main window
       {type="frame", style="inner_frame_in_outer_frame", direction="vertical", children={
         {type="flow", save_as="base.titlebar.flow", children={
