@@ -87,8 +87,8 @@ gui.add_templates{
     end
   },
   pushers = {
-    horizontal = {type="empty-widget", style="rb_horizontal_pusher"},
-    vertical = {type="empty-widget", style="rb_vertical_pusher"}
+    horizontal = {type="empty-widget", style="flib_horizontal_pusher"},
+    vertical = {type="empty-widget", style="flib_vertical_pusher"}
   },
   tool_button = {type="sprite-button", style="tool_button", mouse_button_filter={"left"}},
 }
@@ -123,7 +123,7 @@ gui.add_handlers{
           favorites[index_name] = true
           table.insert(favorites, 1, state)
 
-          e.element.style = "rb_selected_tool_button"
+          e.element.style = "flib_selected_tool_button"
           e.element.tooltip = {"rb-gui.remove-from-favorites"}
         end
       end
@@ -183,7 +183,7 @@ gui.add_handlers{
           gui_data.window.frame.force_auto_center()
           player.opened = gui_data.window.frame
         else
-          gui_data.titlebar.pin_button.style = "rb_selected_frame_action_button"
+          gui_data.titlebar.pin_button.style = "flib_selected_frame_action_button"
           gui_data.window.pinned = true
           gui_data.window.frame.auto_center = false
           player.opened = nil
@@ -200,7 +200,7 @@ gui.add_handlers{
           player_table.gui.main.base.info_bar.quick_ref_button.style = "tool_button"
         else
           quick_ref_gui.create(player, player_table, name)
-          player_table.gui.main.base.info_bar.quick_ref_button.style = "rb_selected_tool_button"
+          player_table.gui.main.base.info_bar.quick_ref_button.style = "flib_selected_tool_button"
         end
       end
     },
@@ -216,7 +216,7 @@ gui.add_handlers{
         else
           gui_data.settings.open = true
           gui_data.settings.window.visible = true
-          gui_data.base.titlebar.settings_button.style = "rb_selected_frame_action_button"
+          gui_data.base.titlebar.settings_button.style = "flib_selected_frame_action_button"
         end
       end
     },
@@ -278,7 +278,7 @@ function main_gui.create(player, player_table)
             elem_mods={enabled=false}, handlers="base.nav_button.forward", save_as="base.titlebar.nav_forward_button"},
           {type="empty-widget"}, -- spacer
           {type="label", style="frame_title", caption={"mod-name.RecipeBook"}, elem_mods={ignored_by_interaction=true}},
-          {type="empty-widget", style="rb_titlebar_drag_handle", elem_mods={ignored_by_interaction=true}},
+          {type="empty-widget", style="flib_titlebar_drag_handle", elem_mods={ignored_by_interaction=true}},
           {template="frame_action_button", tooltip={"rb-gui.keep-open"}, sprite="rb_pin_white", hovered_sprite="rb_pin_black", clicked_sprite="rb_pin_black",
             handlers="base.pin_button", save_as="base.titlebar.pin_button"},
           {template="frame_action_button", tooltip={"rb-gui.settings"}, sprite="rb_settings_white", hovered_sprite="rb_settings_black",
@@ -316,7 +316,7 @@ function main_gui.create(player, player_table)
       {type="frame", style="inner_frame_in_outer_frame", direction="vertical", elem_mods={visible=false}, save_as="settings.window", children={
         {type="flow", save_as="settings.titlebar_flow", children={
           {type="label", style="frame_title", caption={"gui-menu.settings"}, elem_mods={ignored_by_interaction=true}},
-          {type="empty-widget", style="rb_dialog_titlebar_drag_handle", elem_mods={ignored_by_interaction=true}},
+          {type="empty-widget", style="flib_dialog_titlebar_drag_handle", elem_mods={ignored_by_interaction=true}},
         }},
         {type="frame", style="inside_shallow_frame", children={
           {type="scroll-pane", style="rb_settings_content_scroll_pane", direction="vertical", children=pages.settings.build(player_table.settings)}
@@ -511,7 +511,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
       local quick_ref_button = info_bar.quick_ref_button
       quick_ref_button.visible = true
       if player_table.gui.quick_ref[obj_name] then
-        quick_ref_button.style = "rb_selected_tool_button"
+        quick_ref_button.style = "flib_selected_tool_button"
       else
         quick_ref_button.style = "tool_button"
       end
@@ -520,7 +520,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
     end
 
     if player_table.favorites[obj_class.."."..obj_name] then
-      info_bar.favorite_button.style = "rb_selected_tool_button"
+      info_bar.favorite_button.style = "flib_selected_tool_button"
       info_bar.favorite_button.tooltip = {"rb-gui.remove-from-favorites"}
     else
       info_bar.favorite_button.style = "tool_button"
@@ -566,7 +566,7 @@ function main_gui.update_quick_ref_button(player_table)
     local quick_ref_button = gui_data.base.info_bar.quick_ref_button
     -- check for the quick ref window
     if player_table.gui.quick_ref[state.name] then
-      quick_ref_button.style = "rb_selected_tool_button"
+      quick_ref_button.style = "flib_selected_tool_button"
     else
       quick_ref_button.style = "tool_button"
     end
