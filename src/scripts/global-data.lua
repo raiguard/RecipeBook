@@ -120,7 +120,7 @@ function global_data.build_recipe_book()
   -- iterate materials
   local fluid_prototypes = game.fluid_prototypes
   local item_prototypes = game.item_prototypes
-  local rocket_launch_products = {}
+  local rocket_launch_payloads = {}
   for class, t in pairs{fluid=fluid_prototypes, item=item_prototypes} do
     for name, prototype in pairs(t) do
       local hidden
@@ -131,17 +131,25 @@ function global_data.build_recipe_book()
       end
       local launch_products = class == "item" and prototype.rocket_launch_products or {}
       local default_categories = (#launch_products > 0 and table.shallow_copy(rocket_silo_categories)) or {}
-      -- add to rocket launch products
+      -- process rocket launch products
       if launch_products then
         for i = 1, #launch_products do
           local product = launch_products[i]
-          rocket_launch_products[product.type.."."..product.name] = true
+          -- add amount strings
           local amount_string = build_amount_string(product)
           launch_products[i] = {
             type = product.type,
             name = product.name,
             amount_string = amount_string
           }
+          -- add to rocket launch payloads table
+          local product_key = product.type.."."..product.name
+          local product_payloads = rocket_launch_payloads[product_key]
+          if product_payloads then
+            product_payloads[#product_payloads+1] = {type=class, name=name}
+          else
+            rocket_launch_payloads[product_key] = {{type=class, name=name}}
+          end
         end
       end
       -- add to recipe book
@@ -154,6 +162,7 @@ function global_data.build_recipe_book()
         product_of = {},
         prototype_name = name,
         recipe_categories = default_categories,
+        rocket_launch_payloads = {},
         rocket_launch_products = launch_products,
         sprite_class = class,
         stack_size = class == "item" and prototype.stack_size or nil,
@@ -162,6 +171,11 @@ function global_data.build_recipe_book()
       -- add to translation table
       translation_data[#translation_data+1] = {dictionary="material", internal=class.."."..name, localised=prototype.localised_name}
     end
+  end
+
+  -- add rocket launch payloads to their material tables
+  for product, payloads in pairs(rocket_launch_payloads) do
+    recipe_book.material[product].rocket_launch_payloads = table.array_copy(payloads)
   end
 
   -- iterate recipes
@@ -308,7 +322,7 @@ function global_data.build_recipe_book()
           #data.ingredient_in == 0
           and #data.product_of == 0
           and #data.rocket_launch_products == 0
-          and not rocket_launch_products[t.internal]
+          and not rocket_launch_payloads[t.internal]
         then
           materials[t.internal] = nil
           table.remove(translations, i)
