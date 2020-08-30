@@ -118,12 +118,10 @@ function global_data.build_recipe_book()
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       categories = prototype.crafting_categories,
       crafting_speed = prototype.crafting_speed,
-      -- TODO show this in the tooltip and make it open-able
       fixed_recipe = prototype.fixed_recipe,
       hidden = is_hidden,
       internal_class = "crafter",
       prototype_name = name,
-      -- TODO show this in the item
       rocket_parts_required = prototype.rocket_parts_required,
       sprite_class = "entity"
     }
