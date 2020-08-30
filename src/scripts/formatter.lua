@@ -4,6 +4,12 @@ local constants = require("constants")
 
 local caches = {}
 
+-- round
+local function round(num, decimals)
+  local mult = 10^(decimals or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
 local function get_properties(obj_data, force_index)
   local researched
   if obj_data.researched_forces then
@@ -131,7 +137,7 @@ local formatters = {
   },
   offshore_pump = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local pumping_speed_text = "\n[font=default-semibold]"..player_data.translations.gui.pumping_speed.."[/font] "..(obj_data.pumping_speed * 60)
+      local pumping_speed_text = "\n[font=default-semibold]"..player_data.translations.gui.pumping_speed.."[/font] "..round(obj_data.pumping_speed * 60, 1)
         ..player_data.translations.gui.per_second
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..pumping_speed_text
     end,
