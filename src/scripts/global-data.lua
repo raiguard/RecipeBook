@@ -83,8 +83,10 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="click_to_get_blueprint", localised={"rb-gui.click-to-get-blueprint"}},
     {dictionary="gui", internal="click_to_view_technology", localised={"rb-gui.click-to-view-technology"}},
     {dictionary="gui", internal="click_to_view", localised={"rb-gui.click-to-view"}},
+    {dictionary="gui", internal="fixed_recipe", localised={"rb-gui.fixed-recipe"}},
     {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
     {dictionary="gui", internal="rocket_parts_required", localised={"rb-gui.rocket-parts-required"}},
+    {dictionary="gui", internal="shift_click_to_view_fixed_recipe", localised={"rb-gui.shift-click-to-view-fixed-recipe"}},
     {dictionary="gui", internal="stack_size", localised={"rb-gui.stack-size"}},
     {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}},
     -- character crafter

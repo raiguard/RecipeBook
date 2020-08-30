@@ -96,9 +96,29 @@ local formatters = {
       local rocket_parts_text = obj_data.rocket_parts_required
         and "\n[font=default-semibold]"..player_data.translations.gui.rocket_parts_required.."[/font] "..obj_data.rocket_parts_required
         or ""
+
+      local fixed_recipe_text = ""
+      local fixed_recipe_view_text = ""
+      if obj_data.fixed_recipe then
+        local fixed_recipe_data = global.recipe_book.recipe[obj_data.fixed_recipe]
+        if fixed_recipe_data then
+          fixed_recipe_view_text = "\n"..player_data.translations.gui.shift_click_to_view_fixed_recipe
+          local _, style, label = formatter.format(fixed_recipe_data, player_data, nil, true)
+          -- remove glyph from label
+          label = string.gsub(label, "%[font=RecipeBook%].%[/font%]  ", "")
+          local color_prefix = ""
+          local color_suffix = ""
+          if style == "rb_unresearched_list_box_item" then
+            color_prefix = "[color="..constants.colors.unresearched.str.."]"
+            color_suffix = "[/color]"
+          end
+          fixed_recipe_text = "\n[font=default-semibold]"..player_data.translations.gui.fixed_recipe.."[/font]  "..color_prefix..label..color_suffix
+        end
+      end
+
       local blueprint_text = obj_data.blueprintable and "\n"..player_data.translations.gui.click_to_get_blueprint
         or "[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..blueprint_text
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..fixed_recipe_text..blueprint_text..fixed_recipe_view_text
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
   },

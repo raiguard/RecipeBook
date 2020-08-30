@@ -239,24 +239,31 @@ gui.add_handlers{
           player_table.flags.technology_gui_open = true
           player.open_technology_gui(name)
         elseif class == "entity" then
-          local recipe_name = player_table.gui.main.state.name
-          local cursor_stack = player.cursor_stack
-          player.clean_cursor()
-          if cursor_stack and cursor_stack.valid then
-            -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
-            local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
-            cursor_stack.set_stack{name="rb-crafter-blueprint", count=1}
-            cursor_stack.set_blueprint_entities{
-              {
-                entity_number = 1,
-                name = name,
-                position = {
-                  math.ceil(width) % 2 == 0 and -0.5 or 0,
-                  math.ceil(height) % 2 == 0 and -0.5 or 0
-                },
-                recipe = recipe_name
+          if e.shift then
+            local crafter_data = global.recipe_book.crafter[name]
+            if crafter_data and crafter_data.fixed_recipe then
+              main_gui.open_page(player, player_table, "recipe", crafter_data.fixed_recipe)
+            end
+          else
+            local recipe_name = player_table.gui.main.state.name
+            local cursor_stack = player.cursor_stack
+            player.clean_cursor()
+            if cursor_stack and cursor_stack.valid then
+              -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
+              local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
+              cursor_stack.set_stack{name="rb-crafter-blueprint", count=1}
+              cursor_stack.set_blueprint_entities{
+                {
+                  entity_number = 1,
+                  name = name,
+                  position = {
+                    math.ceil(width) % 2 == 0 and -0.5 or 0,
+                    math.ceil(height) % 2 == 0 and -0.5 or 0
+                  },
+                  recipe = recipe_name
+                }
               }
-            }
+            end
           end
         else
           main_gui.open_page(player, player_table, class, name)
