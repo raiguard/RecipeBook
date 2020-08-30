@@ -2,6 +2,21 @@ local global_data = {}
 
 local table = require("__flib__.table")
 
+local function unique_array(initial_value)
+  local hash = {}
+  if initial_value then
+    for i = 1, #initial_value do
+      hash[initial_value[i]] = true
+    end
+  end
+  return setmetatable(initial_value or {}, {__newindex = function(tbl, key, value)
+    if not hash[value] then
+      hash[value] = true
+      rawset(tbl, key, value)
+    end
+  end})
+end
+
 -- from http://lua-users.org/wiki/SimpleRound
 local function round(num, decimals)
   local mult = 10^(decimals or 0)
@@ -166,16 +181,11 @@ function global_data.build_recipe_book()
         rocket_launch_products = launch_products,
         sprite_class = class,
         stack_size = class == "item" and prototype.stack_size or nil,
-        unlocked_by = {}
+        unlocked_by = unique_array()
       }
       -- add to translation table
       translation_data[#translation_data+1] = {dictionary="material", internal=class.."."..name, localised=prototype.localised_name}
     end
-  end
-
-  -- add rocket launch payloads to their material tables
-  for product, payloads in pairs(rocket_launch_payloads) do
-    recipe_book.material[product].rocket_launch_payloads = table.array_copy(payloads)
   end
 
   -- iterate recipes
@@ -310,6 +320,20 @@ function global_data.build_recipe_book()
     end
   end
 
+  -- add rocket launch payloads to their material tables
+  for product, payloads in pairs(rocket_launch_payloads) do
+    local product_data = recipe_book.material[product]
+    product_data.rocket_launch_payloads = table.array_copy(payloads)
+    for i = 1, #payloads do
+      local payload = payloads[i]
+      local payload_data = recipe_book.material[payload.type.."."..payload.name]
+      local payload_unlocked_by = payload_data.unlocked_by
+      for j = 1, #payload_unlocked_by do
+        product_data.unlocked_by[#product_data.unlocked_by+1] = payload_unlocked_by[j]
+      end
+    end
+  end
+
   -- remove all materials that aren't used in recipes or rockets
   do
     local materials = recipe_book.material
@@ -322,7 +346,7 @@ function global_data.build_recipe_book()
           #data.ingredient_in == 0
           and #data.product_of == 0
           and #data.rocket_launch_products == 0
-          and not rocket_launch_payloads[t.internal]
+          and #data.rocket_launch_payloads == 0
         then
           materials[t.internal] = nil
           table.remove(translations, i)
