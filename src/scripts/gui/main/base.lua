@@ -273,19 +273,17 @@ gui.add_handlers{
   }
 }
 
+local function generate_placeholer_slots()
+  local buttons = {}
+  for i = 1, 11 do
+    buttons[i] = {type="sprite-button", style="rb_small_slot_button_default", sprite="item/iron-ore"}
+  end
+  return buttons
+end
+
 function main_gui.create(player, player_table)
   local gui_data = gui.build(player.gui.screen, {
     {type="frame", style="outer_frame", elem_mods={visible=false}, handlers="base.window", save_as="base.window.frame", children={
-      -- hotbar
-      {type="frame", style="inner_frame_in_outer_frame", direction="vertical", children={
-        {type="flow", style_mods={height=28}, children={
-          {template="frame_action_button", sprite="rb_nav_backward_white"},
-          {type="empty-widget", style="flib_dialog_titlebar_drag_handle"}
-        }},
-        {type="frame", style="inside_shallow_frame", children={
-          {type="empty-widget", style_mods={width=150, vertically_stretchable=true}}
-        }}
-      }},
       -- main window
       {type="frame", style="inner_frame_in_outer_frame", direction="vertical", children={
         {type="flow", save_as="base.titlebar.flow", children={
@@ -304,6 +302,19 @@ function main_gui.create(player, player_table)
             handlers="base.close_button"}
         }},
         {type="flow", style="rb_main_frame_flow", children={
+          -- hotbar
+          {type="frame", style="inside_shallow_frame", direction="vertical", children={
+            {type="flow", style="rb_quick_ref_content_flow", direction="vertical", children={
+              {type="label", style="rb_info_list_box_label", caption={"rb-gui.favorites"}},
+              {type="frame", style="deep_frame_in_shallow_frame", style_mods={width=64, vertically_stretchable=true}, children={
+                {type="table", style="slot_table", column_count=2, children=generate_placeholer_slots()}
+              }},
+              {type="label", style="rb_info_list_box_label", caption={"rb-gui.history"}},
+              {type="frame", style="deep_frame_in_shallow_frame", style_mods={width=64, vertically_stretchable=true, right_margin=12}, children={
+                {type="table", style="slot_table", column_count=2, children=generate_placeholer_slots()}
+              }}
+            }}
+          }},
           -- search page
           {type="frame", style="inside_shallow_frame", direction="vertical", children=pages.search.build()},
           -- info page

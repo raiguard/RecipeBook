@@ -2,7 +2,7 @@ local constants = require("constants")
 
 local styles = data.raw["gui-style"].default
 
--- -----
+-- BUTTON STYLES
 
 styles.rb_list_box_item = {
   type = "button_style",
@@ -14,6 +14,14 @@ styles.rb_list_box_item = {
   disabled_graphical_set = styles.list_box_item.default_graphical_set,
   disabled_font_color = styles.list_box_item.default_font_color
 }
+
+for _, color in ipairs{"default", "red"} do
+  styles["rb_small_slot_button_"..color] = {
+    type = "button_style",
+    parent = "flib_slot_button_"..color,
+    size = 32
+  }
+end
 
 styles.rb_unresearched_list_box_item = {
   type = "button_style",
