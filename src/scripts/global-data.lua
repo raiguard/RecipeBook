@@ -62,6 +62,7 @@ function global_data.build_recipe_book()
       }
     },
     material = {},
+    offshore_pump = {},
     recipe = {},
     resource = {},
     rocket_launch_product = {},
@@ -73,6 +74,7 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="item", localised={"rb-gui.item"}},
     {dictionary="gui", internal="crafter", localised={"rb-gui.crafter"}},
     {dictionary="gui", internal="material", localised={"rb-gui.material"}},
+    {dictionary="gui", internal="offshore_pump", localised={"rb-gui.offshore-pump"}},
     {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}},
     {dictionary="gui", internal="resource", localised={"rb-gui.resource"}},
     {dictionary="gui", internal="technology", localised={"rb-gui.technology"}},
@@ -85,6 +87,8 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="click_to_view", localised={"rb-gui.click-to-view"}},
     {dictionary="gui", internal="fixed_recipe", localised={"rb-gui.fixed-recipe"}},
     {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
+    {dictionary="gui", internal="per_second", localised={"rb-gui.per-second"}},
+    {dictionary="gui", internal="pumping_speed", localised={"rb-gui.pumping-speed"}},
     {dictionary="gui", internal="rocket_parts_required", localised={"rb-gui.rocket-parts-required"}},
     {dictionary="gui", internal="shift_click_to_view_fixed_recipe", localised={"rb-gui.shift-click-to-view-fixed-recipe"}},
     {dictionary="gui", internal="stack_size", localised={"rb-gui.stack-size"}},
@@ -181,6 +185,7 @@ function global_data.build_recipe_book()
         mined_from = {},
         product_of = {},
         prototype_name = name,
+        pumped_by = {},
         recipe_categories = default_categories,
         rocket_launch_payloads = {},
         rocket_launch_products = launch_products,
@@ -191,6 +196,30 @@ function global_data.build_recipe_book()
       -- add to translation table
       translation_data[#translation_data+1] = {dictionary="material", internal=class.."."..name, localised=prototype.localised_name}
     end
+  end
+
+  -- iterate offshore pumps
+  local offshore_pump_prototypes = game.get_filtered_entity_prototypes{
+    {filter="type", type="offshore-pump"}
+  }
+  for name, prototype in pairs(offshore_pump_prototypes) do
+    -- add to material
+    local fluid = prototype.fluid
+    local fluid_data = recipe_book.material["fluid."..fluid.name]
+    if fluid_data then
+      fluid_data.pumped_by[#fluid_data.pumped_by+1] = name
+    end
+    -- add to recipe book
+    recipe_book.offshore_pump[name] = {
+      available_to_all_forces = true,
+      fluid = prototype.fluid.name,
+      internal_class = "offshore_pump",
+      prototype_name = name,
+      pumping_speed = prototype.pumping_speed,
+      sprite_class = "entity"
+    }
+    -- add to translations table
+    translation_data[#translation_data+1] = {dictionary="offshore_pump", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate recipes

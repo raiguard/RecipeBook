@@ -3,7 +3,8 @@ Version: 2.2.0
 Date: ????
   Features:
     - Added stack size to item tooltips
-    - Added material rocket launch payloads and rocket launch products
+    - Added `pumped by` to material page, which lists offshore pumps that produce that fluid
+    - Added `rocket launch payloads` and `rocket launch products` to material page
     - Added rocket silos as crafters
       - Rocket silo crafters will display their required amount of rocket parts in their label and tooltip
     - Added fixed recipe to crafter tooltip if it has one

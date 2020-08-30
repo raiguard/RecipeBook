@@ -96,7 +96,6 @@ local formatters = {
       local rocket_parts_text = obj_data.rocket_parts_required
         and "\n[font=default-semibold]"..player_data.translations.gui.rocket_parts_required.."[/font] "..obj_data.rocket_parts_required
         or ""
-
       local fixed_recipe_text = ""
       local fixed_recipe_view_text = ""
       if obj_data.fixed_recipe then
@@ -129,6 +128,14 @@ local formatters = {
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..stack_size..interaction_help
     end,
     enabled = function() return true end
+  },
+  offshore_pump = {
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+      local pumping_speed_text = "\n[font=default-semibold]"..player_data.translations.gui.pumping_speed.."[/font] "..(obj_data.pumping_speed * 60)
+        ..player_data.translations.gui.per_second
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..pumping_speed_text
+    end,
+    enabled = function() return false end
   },
   recipe = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
