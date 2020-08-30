@@ -23,9 +23,6 @@ gui.add_handlers{
         local gui_data = player_table.gui.main.search
         local query = string.lower(gui_data.textfield.text)
 
-        -- * ---------------------------------------------------------------------------
-        -- * TODO: spread out over multiple ticks
-
         local category = gui_data.category
         local translations = player_table.translations[gui_data.category]
         local scroll = gui_data.results_scroll_pane

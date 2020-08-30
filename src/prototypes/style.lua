@@ -2,40 +2,6 @@ local constants = require("constants")
 
 local styles = data.raw["gui-style"].default
 
--- BUTTON STYLES
-
--- TODO remove these, they are in flib
-
-styles.rb_selected_frame_action_button = {
-  type = "button_style",
-  parent = "frame_action_button",
-  default_graphical_set = {
-    base = {position = {272, 169}, corner_size = 8},
-    shadow = {position = {440, 24}, corner_size = 8, draw_type = "outer"}
-  },
-  hovered_graphical_set = {
-    base = {position = {369, 17}, corner_size = 8},
-    shadow = default_dirt
-  },
-  clicked_graphical_set = {
-    base = {position = {352, 17}, corner_size = 8},
-    shadow = default_dirt
-  }
-}
-
-local btn = styles.button
-
-styles.rb_selected_tool_button = {
-  type = "button_style",
-  parent = "tool_button",
-  default_font_color = btn.selected_font_color,
-  default_graphical_set = btn.selected_graphical_set,
-  hovered_font_color = btn.selected_hovered_font_color,
-  hovered_graphical_set = btn.selected_hovered_graphical_set,
-  clicked_font_color = btn.selected_clicked_font_color,
-  clicked_graphical_set = btn.selected_clicked_graphical_set
-}
-
 -- -----
 
 styles.rb_list_box_item = {
@@ -54,44 +20,6 @@ styles.rb_unresearched_list_box_item = {
   parent = "rb_list_box_item",
   default_font_color = constants.colors.unresearched.tbl,
   disabled_font_color = constants.colors.unresearched.tbl
-}
-
--- EMPTY-WIDGET STYLES
-
--- TODO remove these, they are in flib
-
-styles.rb_titlebar_drag_handle = {
-  type = "empty_widget_style",
-  parent = "draggable_space",
-  left_margin = 4,
-  right_margin = 4,
-  height = 24,
-  horizontally_stretchable = "on"
-}
-
-styles.rb_dialog_titlebar_drag_handle = {
-  type = "empty_widget_style",
-  parent = "rb_titlebar_drag_handle",
-  right_margin = 0
-}
-
-styles.rb_dialog_footer_drag_handle = {
-  type = "empty_widget_style",
-  parent = "draggable_space",
-  left_margin = 8,
-  right_margin = 8,
-  height = 32,
-  horizontally_stretchable = "on"
-}
-
-styles.rb_horizontal_pusher = {
-  type = "empty_widget_style",
-  horizontally_stretchable = "on"
-}
-
-styles.rb_vertical_pusher = {
-  type = "empty_widget_style",
-  vertically_stretchable = "on"
 }
 
 -- FLOW STYLES

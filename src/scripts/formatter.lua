@@ -58,6 +58,7 @@ local function caption_formatter(obj_data, player_data, is_hidden, amount)
     glyph = "[font=RecipeBook]"..glyph_char.."[/font]  "
   end
   local hidden_string = is_hidden and font_prefix.."("..translations.gui.hidden_abbrev..")"..font_suffix.."  " or ""
+  local rocket_parts_string = obj_data.rocket_parts_required and font_prefix..obj_data.rocket_parts_required.."x"..font_suffix.."  " or ""
   -- always use bold font when an amount string is present
   local amount_string = amount and font_prefix..amount..font_suffix.."  " or ""
   local name = player_settings.use_internal_names and obj_data.prototype_name or translation
@@ -65,6 +66,7 @@ local function caption_formatter(obj_data, player_data, is_hidden, amount)
     glyph
     ..hidden_string
     .."[img="..obj_data.sprite_class.."/"..obj_data.prototype_name.."]  "
+    ..rocket_parts_string
     ..amount_string
     ..name
 end
@@ -91,9 +93,32 @@ end
 local formatters = {
   crafter = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local blueprint_text = obj_data.blueprintable and player_data.translations.gui.click_to_get_blueprint
+      local rocket_parts_text = obj_data.rocket_parts_required
+        and "\n[font=default-semibold]"..player_data.translations.gui.rocket_parts_required.."[/font] "..obj_data.rocket_parts_required
+        or ""
+
+      local fixed_recipe_text = ""
+      local fixed_recipe_view_text = ""
+      if obj_data.fixed_recipe then
+        local fixed_recipe_data = global.recipe_book.recipe[obj_data.fixed_recipe]
+        if fixed_recipe_data then
+          fixed_recipe_view_text = "\n"..player_data.translations.gui.shift_click_to_view_fixed_recipe
+          local _, style, label = formatter.format(fixed_recipe_data, player_data, nil, true)
+          -- remove glyph from label
+          label = string.gsub(label, "%[font=RecipeBook%].%[/font%]  ", "")
+          local color_prefix = ""
+          local color_suffix = ""
+          if style == "rb_unresearched_list_box_item" then
+            color_prefix = "[color="..constants.colors.unresearched.str.."]"
+            color_suffix = "[/color]"
+          end
+          fixed_recipe_text = "\n[font=default-semibold]"..player_data.translations.gui.fixed_recipe.."[/font]  "..color_prefix..label..color_suffix
+        end
+      end
+
+      local blueprint_text = obj_data.blueprintable and "\n"..player_data.translations.gui.click_to_get_blueprint
         or "[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched).."\n"..blueprint_text
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..fixed_recipe_text..blueprint_text..fixed_recipe_view_text
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
   },

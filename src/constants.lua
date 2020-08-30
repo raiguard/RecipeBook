@@ -14,22 +14,24 @@ end
 
 -- BOTH STAGES
 
+-- dictionary category -> affects research
+-- anything with `0` as the value will be ignored for research
 constants.disabled_recipe_categories = {
   -- editor extensions
-  ["ee-testing-tool"] = true,
+  ["ee-testing-tool"] = 1,
   -- deep storage unit
-  ["deep-storage-item"] = true,
-  ["deep-storage-fluid"] = true,
-  ["deep-storage-item-big"] = true,
-  ["deep-storage-fluid-big"] = true,
-  ["deep-storage-item-mk2/3"] = true,
-  ["deep-storage-fluid-mk2/3"] = true,
+  ["deep-storage-item"] = 0,
+  ["deep-storage-fluid"] = 0,
+  ["deep-storage-item-big"] = 0,
+  ["deep-storage-fluid-big"] = 0,
+  ["deep-storage-item-mk2/3"] = 0,
+  ["deep-storage-fluid-mk2/3"] = 0,
   -- mining drones
-  ["mining-depot"] = true,
+  ["mining-depot"] = 0,
   -- transport drones
-  ["fuel-depot"] = true,
-  ["transport-drone-request"] = true,
-  ["transport-fluid-request"] = true
+  ["fuel-depot"] = 0,
+  ["transport-drone-request"] = 0,
+  ["transport-fluid-request"] = 0
 }
 
 constants.class_to_font_glyph = {

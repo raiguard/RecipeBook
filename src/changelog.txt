@@ -3,7 +3,15 @@ Version: 2.1.2
 Date: ????
   Features:
     - Added stack size to item tooltips
+    - Added material rocket launch payloads and rocket launch products
+    - Added rocket silos as crafters
+      - Rocket silo crafters will display their required amount of rocket parts in their label and tooltip
+    - Added fixed recipe to crafter tooltip if it has one
+      - Shift + clicking a crafter with a fixed recipe will open that recipe's page
+    - Added `purge-memoizer-cache` argument to the `/RecipeBook` command
   Changes:
+    - Known "meta-recipes" (such as transport drones recipes used for requests) will no longer affect object availability
+      - If there is a mod whose meta-recipes are not excluded, please let me know so I can exclude it
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.1
 Date: 2020-08-15
