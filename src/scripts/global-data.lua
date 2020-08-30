@@ -2,6 +2,8 @@ local global_data = {}
 
 local table = require("__flib__.table")
 
+local constants = require("constants")
+
 local function unique_array(initial_value)
   local hash = {}
   if initial_value then
@@ -82,6 +84,7 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="click_to_view_technology", localised={"rb-gui.click-to-view-technology"}},
     {dictionary="gui", internal="click_to_view", localised={"rb-gui.click-to-view"}},
     {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
+    {dictionary="gui", internal="rocket_parts_required", localised={"rb-gui.rocket-parts-required"}},
     {dictionary="gui", internal="stack_size", localised={"rb-gui.stack-size"}},
     {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}},
     -- character crafter
@@ -375,6 +378,9 @@ local function unlock_launch_products(force_index, launch_products, recipe_book)
 end
 
 local function set_recipe_available(force_index, recipe_data, recipe_book, item_prototypes)
+  -- check if the category should be ignored for recipe availability
+  local disabled = constants.disabled_recipe_categories[recipe_data.category]
+  if disabled and disabled == 0 then return end
   recipe_data.available_to_forces[force_index] = true
   for _, product in ipairs(recipe_data.products) do
     -- product
