@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.2.0
-Date: ????
+Date: 2020-08-30
   Features:
     - Added stack size to item tooltips
     - Added `pumped by` to material page, which lists offshore pumps that produce that fluid
