@@ -364,6 +364,16 @@ function global_data.build_recipe_book()
   global.translation_data = translation_data
 end
 
+local function unlock_launch_products(force_index, launch_products, recipe_book)
+  for _, launch_product in ipairs(launch_products) do
+    local launch_product_data = recipe_book.material[launch_product.type.."."..launch_product.name]
+    if launch_product_data and launch_product_data.available_to_forces then
+      launch_product_data.available_to_forces[force_index] = true
+    end
+    unlock_launch_products(force_index, launch_product_data.rocket_launch_products, recipe_book)
+  end
+end
+
 local function set_recipe_available(force_index, recipe_data, recipe_book, item_prototypes)
   recipe_data.available_to_forces[force_index] = true
   for _, product in ipairs(recipe_data.products) do
@@ -382,6 +392,8 @@ local function set_recipe_available(force_index, recipe_data, recipe_book, item_
         end
       end
     end
+    -- rocket launch products
+    unlock_launch_products(force_index, product_data.rocket_launch_products, recipe_book)
   end
 end
 
