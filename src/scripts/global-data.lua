@@ -1,6 +1,6 @@
 local global_data = {}
 
-local constants = require("constants")
+local table = require("__flib__.table")
 
 -- from http://lua-users.org/wiki/SimpleRound
 local function round(num, decimals)
@@ -14,6 +14,17 @@ function global_data.init()
 
   global_data.build_recipe_book()
   global_data.check_forces()
+end
+
+-- build amount string, to display probability, [min/max] amount - includes the "x"
+local function build_amount_string(material)
+  local amount = material.amount
+  local amount_string = amount and (tostring(amount).."x") or (material.amount_min.."-"..material.amount_max.."x")
+  local probability = material.probability
+  if probability and probability < 1 then
+    amount_string = tostring(probability * 100).."% "..amount_string
+  end
+  return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
 end
 
 function global_data.build_recipe_book()
@@ -36,6 +47,7 @@ function global_data.build_recipe_book()
     material = {},
     recipe = {},
     resource = {},
+    rocket_launch_product = {},
     technology = {}
   }
   local translation_data = {
@@ -68,11 +80,13 @@ function global_data.build_recipe_book()
   end
 
   -- iterate crafters
-  -- TODO rocket silos as crafters
   local crafter_prototypes = game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
-    {filter="type", type="furnace"}
+    {filter="type", type="furnace"},
+    {filter="type", type="rocket-silo"}
   }
+  local fixed_recipes = {}
+  local rocket_silo_categories = {}
   for name, prototype in pairs(crafter_prototypes) do
     local is_hidden = prototype.has_flag("hidden")
     recipe_book.crafter[name] = {
@@ -80,17 +94,33 @@ function global_data.build_recipe_book()
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       categories = prototype.crafting_categories,
       crafting_speed = prototype.crafting_speed,
+      -- TODO show this in the tooltip and make it open-able
+      fixed_recipe = prototype.fixed_recipe,
       hidden = is_hidden,
       internal_class = "crafter",
       prototype_name = name,
+      -- TODO show this in the item
+      rocket_parts_required = prototype.rocket_parts_required,
       sprite_class = "entity"
     }
+    -- add fixed recipe to list
+    if prototype.fixed_recipe then
+      fixed_recipes[prototype.fixed_recipe] = true
+    end
+    -- add categories to rocket silo list
+    if prototype.rocket_parts_required then
+      for category in pairs(prototype.crafting_categories) do
+        rocket_silo_categories[category] = true
+      end
+    end
+    -- add to translations table
     translation_data[#translation_data+1] = {dictionary="crafter", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate materials
   local fluid_prototypes = game.fluid_prototypes
   local item_prototypes = game.item_prototypes
+  local rocket_launch_products = {}
   for class, t in pairs{fluid=fluid_prototypes, item=item_prototypes} do
     for name, prototype in pairs(t) do
       local hidden
@@ -99,6 +129,22 @@ function global_data.build_recipe_book()
       else
         hidden = prototype.has_flag("hidden")
       end
+      local launch_products = class == "item" and prototype.rocket_launch_products or {}
+      local default_categories = (#launch_products > 0 and table.shallow_copy(rocket_silo_categories)) or {}
+      -- add to rocket launch products
+      if launch_products then
+        for i = 1, #launch_products do
+          local product = launch_products[i]
+          rocket_launch_products[product.type.."."..product.name] = true
+          local amount_string = build_amount_string(product)
+          launch_products[i] = {
+            type = product.type,
+            name = product.name,
+            amount_string = amount_string
+          }
+        end
+      end
+      -- add to recipe book
       recipe_book.material[class.."."..name] = {
         available_to_forces = {},
         hidden = hidden,
@@ -107,7 +153,8 @@ function global_data.build_recipe_book()
         mined_from = {},
         product_of = {},
         prototype_name = name,
-        recipe_categories = {},
+        recipe_categories = default_categories,
+        rocket_launch_products = launch_products,
         sprite_class = class,
         stack_size = class == "item" and prototype.stack_size or nil,
         unlocked_by = {}
@@ -118,7 +165,6 @@ function global_data.build_recipe_book()
   end
 
   -- iterate recipes
-  -- TODO rocket silo products
   local recipe_prototypes = game.recipe_prototypes
   for name, prototype in pairs(recipe_prototypes) do
     local data = {
@@ -130,7 +176,8 @@ function global_data.build_recipe_book()
       made_in = {},
       prototype_name = name,
       sprite_class = "recipe",
-      unlocked_by = {}
+      unlocked_by = {},
+      used_as_fixed_recipe = fixed_recipes[name]
     }
     -- ingredients / products
     for _, mode in ipairs{"ingredients", "products"} do
@@ -138,19 +185,13 @@ function global_data.build_recipe_book()
       local output = {}
       for i = 1, #materials do
         local material = materials[i]
-        -- build amount string, to display probability, [min/max] amount - includes the "x"
-        local amount = material.amount
-        local amount_string = amount and (tostring(amount).."x") or (material.amount_min.."-"..material.amount_max.."x")
-        local probability = material.probability
-        if probability and probability < 1 then
-          amount_string = tostring(probability * 100).."% "..amount_string
-        end
+        local amount_string, avg_amount_string = build_amount_string(material)
         -- save only the essentials
         output[i] = {
           type = material.type,
           name = material.name,
           amount_string = amount_string,
-          avg_amount_string = amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
+          avg_amount_string = avg_amount_string
         }
       end
       -- add to data
@@ -255,7 +296,7 @@ function global_data.build_recipe_book()
     end
   end
 
-  -- remove all materials that aren't used in recipes
+  -- remove all materials that aren't used in recipes or rockets
   do
     local materials = recipe_book.material
     local translations = translation_data
@@ -263,7 +304,12 @@ function global_data.build_recipe_book()
       local t = translations[i]
       if t.dictionary == "material" then
         local data = materials[t.internal]
-        if #data.ingredient_in == 0 and #data.product_of == 0 then
+        if
+          #data.ingredient_in == 0
+          and #data.product_of == 0
+          and #data.rocket_launch_products == 0
+          and not rocket_launch_products[t.internal]
+        then
           materials[t.internal] = nil
           table.remove(translations, i)
         elseif #data.unlocked_by == 0 then
