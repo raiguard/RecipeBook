@@ -7,8 +7,10 @@ data:extend{
   -- frame action icons
   data_util.build_sprite("rb_nav_backward_black", {0, 0}, frame_action_icons, 32),
   data_util.build_sprite("rb_nav_backward_white", {32, 0}, frame_action_icons, 32),
+  data_util.build_sprite("rb_nav_backward_disabled", {64, 0}, frame_action_icons, 32),
   data_util.build_sprite("rb_nav_forward_black", {0, 32}, frame_action_icons, 32),
   data_util.build_sprite("rb_nav_forward_white", {32, 32}, frame_action_icons, 32),
+  data_util.build_sprite("rb_nav_forward_disabled", {64, 32}, frame_action_icons, 32),
   data_util.build_sprite("rb_pin_black", {0, 64}, frame_action_icons, 32),
   data_util.build_sprite("rb_pin_white", {32, 64}, frame_action_icons, 32),
   data_util.build_sprite("rb_settings_black", {0, 96}, frame_action_icons, 32),

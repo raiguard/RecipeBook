@@ -481,6 +481,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
 
   -- update nav buttons
   local back_button = gui_data.base.titlebar.nav_backward_button
+  back_button.sprite = "rb_nav_backward_white"
   back_button.enabled = true
   local back_obj = session_history[session_history.position + 1]
   if back_obj then
@@ -490,15 +491,18 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
       back_button.tooltip = {"rb-gui.back-to", string.lower(translations[back_obj.int_class][back_obj.int_name])}
     end
   else
+    back_button.sprite = "rb_nav_backward_disabled"
     back_button.enabled = false
     back_button.tooltip = ""
   end
   local forward_button = gui_data.base.titlebar.nav_forward_button
   if session_history.position > 1 then
+    forward_button.sprite = "rb_nav_forward_white"
     forward_button.enabled = true
     local forward_obj = session_history[session_history.position-1]
     forward_button.tooltip = {"rb-gui.forward-to", string.lower(translations[forward_obj.int_class][forward_obj.int_name])}
   else
+    forward_button.sprite = "rb_nav_forward_disabled"
     forward_button.enabled = false
     forward_button.tooltip = ""
   end
