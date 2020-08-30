@@ -117,7 +117,7 @@ local formatters = {
       end
 
       local blueprint_text = obj_data.blueprintable and "\n"..player_data.translations.gui.click_to_get_blueprint
-        or "[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
+        or "\n[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..fixed_recipe_text..blueprint_text..fixed_recipe_view_text
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
