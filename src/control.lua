@@ -20,6 +20,10 @@ commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
     local player = game.get_player(e.player_index)
     player.print{"rb-message.refreshing-player-data"}
     player_data.refresh(player, global.players[e.player_index])
+  elseif e.parameter == "purge-memoizer-cache" then
+    formatter.purge_cache(e.player_index)
+    local player = game.get_player(e.player_index)
+    player.print{"rb-message.memoizer-cache-purged"}
   else
     game.get_player(e.player_index).print{"rb-message.invalid-command"}
   end
