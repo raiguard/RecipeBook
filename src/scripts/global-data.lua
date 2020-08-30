@@ -1,6 +1,23 @@
 local global_data = {}
 
+local table = require("__flib__.table")
+
 local constants = require("constants")
+
+local function unique_array(initial_value)
+  local hash = {}
+  if initial_value then
+    for i = 1, #initial_value do
+      hash[initial_value[i]] = true
+    end
+  end
+  return setmetatable(initial_value or {}, {__newindex = function(tbl, key, value)
+    if not hash[value] then
+      hash[value] = true
+      rawset(tbl, key, value)
+    end
+  end})
+end
 
 -- from http://lua-users.org/wiki/SimpleRound
 local function round(num, decimals)
@@ -14,6 +31,17 @@ function global_data.init()
 
   global_data.build_recipe_book()
   global_data.check_forces()
+end
+
+-- build amount string, to display probability, [min/max] amount - includes the "x"
+local function build_amount_string(material)
+  local amount = material.amount
+  local amount_string = amount and (tostring(amount).."x") or (material.amount_min.."-"..material.amount_max.."x")
+  local probability = material.probability
+  if probability and probability < 1 then
+    amount_string = tostring(probability * 100).."% "..amount_string
+  end
+  return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
 end
 
 function global_data.build_recipe_book()
@@ -34,8 +62,10 @@ function global_data.build_recipe_book()
       }
     },
     material = {},
+    offshore_pump = {},
     recipe = {},
     resource = {},
+    rocket_launch_product = {},
     technology = {}
   }
   local translation_data = {
@@ -44,6 +74,7 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="item", localised={"rb-gui.item"}},
     {dictionary="gui", internal="crafter", localised={"rb-gui.crafter"}},
     {dictionary="gui", internal="material", localised={"rb-gui.material"}},
+    {dictionary="gui", internal="offshore_pump", localised={"rb-gui.offshore-pump"}},
     {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}},
     {dictionary="gui", internal="resource", localised={"rb-gui.resource"}},
     {dictionary="gui", internal="technology", localised={"rb-gui.technology"}},
@@ -54,7 +85,12 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="click_to_get_blueprint", localised={"rb-gui.click-to-get-blueprint"}},
     {dictionary="gui", internal="click_to_view_technology", localised={"rb-gui.click-to-view-technology"}},
     {dictionary="gui", internal="click_to_view", localised={"rb-gui.click-to-view"}},
+    {dictionary="gui", internal="fixed_recipe", localised={"rb-gui.fixed-recipe"}},
     {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
+    {dictionary="gui", internal="per_second", localised={"rb-gui.per-second"}},
+    {dictionary="gui", internal="pumping_speed", localised={"rb-gui.pumping-speed"}},
+    {dictionary="gui", internal="rocket_parts_required", localised={"rb-gui.rocket-parts-required"}},
+    {dictionary="gui", internal="shift_click_to_view_fixed_recipe", localised={"rb-gui.shift-click-to-view-fixed-recipe"}},
     {dictionary="gui", internal="stack_size", localised={"rb-gui.stack-size"}},
     {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}},
     -- character crafter
@@ -68,11 +104,13 @@ function global_data.build_recipe_book()
   end
 
   -- iterate crafters
-  -- TODO rocket silos as crafters
   local crafter_prototypes = game.get_filtered_entity_prototypes{
     {filter="type", type="assembling-machine"},
-    {filter="type", type="furnace"}
+    {filter="type", type="furnace"},
+    {filter="type", type="rocket-silo"}
   }
+  local fixed_recipes = {}
+  local rocket_silo_categories = {}
   for name, prototype in pairs(crafter_prototypes) do
     local is_hidden = prototype.has_flag("hidden")
     recipe_book.crafter[name] = {
@@ -80,17 +118,33 @@ function global_data.build_recipe_book()
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       categories = prototype.crafting_categories,
       crafting_speed = prototype.crafting_speed,
+      -- TODO show this in the tooltip and make it open-able
+      fixed_recipe = prototype.fixed_recipe,
       hidden = is_hidden,
       internal_class = "crafter",
       prototype_name = name,
+      -- TODO show this in the item
+      rocket_parts_required = prototype.rocket_parts_required,
       sprite_class = "entity"
     }
+    -- add fixed recipe to list
+    if prototype.fixed_recipe then
+      fixed_recipes[prototype.fixed_recipe] = true
+    end
+    -- add categories to rocket silo list
+    if prototype.rocket_parts_required then
+      for category in pairs(prototype.crafting_categories) do
+        rocket_silo_categories[category] = true
+      end
+    end
+    -- add to translations table
     translation_data[#translation_data+1] = {dictionary="crafter", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate materials
   local fluid_prototypes = game.fluid_prototypes
   local item_prototypes = game.item_prototypes
+  local rocket_launch_payloads = {}
   for class, t in pairs{fluid=fluid_prototypes, item=item_prototypes} do
     for name, prototype in pairs(t) do
       local hidden
@@ -99,6 +153,30 @@ function global_data.build_recipe_book()
       else
         hidden = prototype.has_flag("hidden")
       end
+      local launch_products = class == "item" and prototype.rocket_launch_products or {}
+      local default_categories = (#launch_products > 0 and table.shallow_copy(rocket_silo_categories)) or {}
+      -- process rocket launch products
+      if launch_products then
+        for i = 1, #launch_products do
+          local product = launch_products[i]
+          -- add amount strings
+          local amount_string = build_amount_string(product)
+          launch_products[i] = {
+            type = product.type,
+            name = product.name,
+            amount_string = amount_string
+          }
+          -- add to rocket launch payloads table
+          local product_key = product.type.."."..product.name
+          local product_payloads = rocket_launch_payloads[product_key]
+          if product_payloads then
+            product_payloads[#product_payloads+1] = {type=class, name=name}
+          else
+            rocket_launch_payloads[product_key] = {{type=class, name=name}}
+          end
+        end
+      end
+      -- add to recipe book
       recipe_book.material[class.."."..name] = {
         available_to_forces = {},
         hidden = hidden,
@@ -107,18 +185,44 @@ function global_data.build_recipe_book()
         mined_from = {},
         product_of = {},
         prototype_name = name,
-        recipe_categories = {},
+        pumped_by = {},
+        recipe_categories = default_categories,
+        rocket_launch_payloads = {},
+        rocket_launch_products = launch_products,
         sprite_class = class,
         stack_size = class == "item" and prototype.stack_size or nil,
-        unlocked_by = {}
+        unlocked_by = unique_array()
       }
       -- add to translation table
       translation_data[#translation_data+1] = {dictionary="material", internal=class.."."..name, localised=prototype.localised_name}
     end
   end
 
+  -- iterate offshore pumps
+  local offshore_pump_prototypes = game.get_filtered_entity_prototypes{
+    {filter="type", type="offshore-pump"}
+  }
+  for name, prototype in pairs(offshore_pump_prototypes) do
+    -- add to material
+    local fluid = prototype.fluid
+    local fluid_data = recipe_book.material["fluid."..fluid.name]
+    if fluid_data then
+      fluid_data.pumped_by[#fluid_data.pumped_by+1] = name
+    end
+    -- add to recipe book
+    recipe_book.offshore_pump[name] = {
+      available_to_all_forces = true,
+      fluid = prototype.fluid.name,
+      internal_class = "offshore_pump",
+      prototype_name = name,
+      pumping_speed = prototype.pumping_speed,
+      sprite_class = "entity"
+    }
+    -- add to translations table
+    translation_data[#translation_data+1] = {dictionary="offshore_pump", internal=name, localised=prototype.localised_name}
+  end
+
   -- iterate recipes
-  -- TODO rocket silo products
   local recipe_prototypes = game.recipe_prototypes
   for name, prototype in pairs(recipe_prototypes) do
     local data = {
@@ -130,7 +234,8 @@ function global_data.build_recipe_book()
       made_in = {},
       prototype_name = name,
       sprite_class = "recipe",
-      unlocked_by = {}
+      unlocked_by = {},
+      used_as_fixed_recipe = fixed_recipes[name]
     }
     -- ingredients / products
     for _, mode in ipairs{"ingredients", "products"} do
@@ -138,19 +243,13 @@ function global_data.build_recipe_book()
       local output = {}
       for i = 1, #materials do
         local material = materials[i]
-        -- build amount string, to display probability, [min/max] amount - includes the "x"
-        local amount = material.amount
-        local amount_string = amount and (tostring(amount).."x") or (material.amount_min.."-"..material.amount_max.."x")
-        local probability = material.probability
-        if probability and probability < 1 then
-          amount_string = tostring(probability * 100).."% "..amount_string
-        end
+        local amount_string, avg_amount_string = build_amount_string(material)
         -- save only the essentials
         output[i] = {
           type = material.type,
           name = material.name,
           amount_string = amount_string,
-          avg_amount_string = amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
+          avg_amount_string = avg_amount_string
         }
       end
       -- add to data
@@ -255,7 +354,21 @@ function global_data.build_recipe_book()
     end
   end
 
-  -- remove all materials that aren't used in recipes
+  -- add rocket launch payloads to their material tables
+  for product, payloads in pairs(rocket_launch_payloads) do
+    local product_data = recipe_book.material[product]
+    product_data.rocket_launch_payloads = table.array_copy(payloads)
+    for i = 1, #payloads do
+      local payload = payloads[i]
+      local payload_data = recipe_book.material[payload.type.."."..payload.name]
+      local payload_unlocked_by = payload_data.unlocked_by
+      for j = 1, #payload_unlocked_by do
+        product_data.unlocked_by[#product_data.unlocked_by+1] = payload_unlocked_by[j]
+      end
+    end
+  end
+
+  -- remove all materials that aren't used in recipes or rockets
   do
     local materials = recipe_book.material
     local translations = translation_data
@@ -263,7 +376,12 @@ function global_data.build_recipe_book()
       local t = translations[i]
       if t.dictionary == "material" then
         local data = materials[t.internal]
-        if #data.ingredient_in == 0 and #data.product_of == 0 then
+        if
+          #data.ingredient_in == 0
+          and #data.product_of == 0
+          and #data.rocket_launch_products == 0
+          and #data.rocket_launch_payloads == 0
+        then
           materials[t.internal] = nil
           table.remove(translations, i)
         elseif #data.unlocked_by == 0 then
@@ -280,7 +398,20 @@ function global_data.build_recipe_book()
   global.translation_data = translation_data
 end
 
+local function unlock_launch_products(force_index, launch_products, recipe_book)
+  for _, launch_product in ipairs(launch_products) do
+    local launch_product_data = recipe_book.material[launch_product.type.."."..launch_product.name]
+    if launch_product_data and launch_product_data.available_to_forces then
+      launch_product_data.available_to_forces[force_index] = true
+    end
+    unlock_launch_products(force_index, launch_product_data.rocket_launch_products, recipe_book)
+  end
+end
+
 local function set_recipe_available(force_index, recipe_data, recipe_book, item_prototypes)
+  -- check if the category should be ignored for recipe availability
+  local disabled = constants.disabled_recipe_categories[recipe_data.category]
+  if disabled and disabled == 0 then return end
   recipe_data.available_to_forces[force_index] = true
   for _, product in ipairs(recipe_data.products) do
     -- product
@@ -298,6 +429,8 @@ local function set_recipe_available(force_index, recipe_data, recipe_book, item_
         end
       end
     end
+    -- rocket launch products
+    unlock_launch_products(force_index, product_data.rocket_launch_products, recipe_book)
   end
 end
 

@@ -9,6 +9,7 @@ local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local on_tick = require("scripts.on-tick")
 local player_data = require("scripts.player-data")
+local remote_interface = require("scripts.remote-interface")
 
 local main_gui = require("scripts.gui.main.base")
 
@@ -20,6 +21,10 @@ commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
     local player = game.get_player(e.player_index)
     player.print{"rb-message.refreshing-player-data"}
     player_data.refresh(player, global.players[e.player_index])
+  elseif e.parameter == "purge-memoizer-cache" then
+    formatter.purge_cache(e.player_index)
+    local player = game.get_player(e.player_index)
+    player.print{"rb-message.memoizer-cache-purged"}
   else
     game.get_player(e.player_index).print{"rb-message.invalid-command"}
   end
@@ -267,21 +272,4 @@ end)
 -- -----------------------------------------------------------------------------
 -- REMOTE INTERFACE
 
-remote.add_interface("RecipeBook", {
-  open_page = function(player_index, class, name)
-    if not class then return false, "Did not provide a class" end
-    local int_class = constants.interface_classes[class]
-    if not int_class then
-      return false, "Did not provide a valid class"
-    end
-    if not name then return false, "Did not provide a name" end
-    local int_name = (int_class == "material") and class.."."..name or name
-    local data = global.recipe_book[int_class][int_name]
-    if not data then return false, "Did not provide a valid object" end
-
-    event.raise(constants.events.open_page, {player_index=player_index, obj_class=class, obj_name=name})
-
-    return true
-  end,
-  version = function() return constants.interface_version end
-})
+remote.add_interface("RecipeBook", remote_interface)
