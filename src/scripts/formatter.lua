@@ -4,10 +4,50 @@ local constants = require("constants")
 
 local caches = {}
 
+-- upvalues (for optimization)
+local class_to_font_glyph = constants.class_to_font_glyph
+local colors = constants.colors
+local concat = table.concat
+local floor = math.floor
+
 -- round
 local function round(num, decimals)
   local mult = 10^(decimals or 0)
-  return math.floor(num * mult + 0.5) / mult
+  return floor(num * mult + 0.5) / mult
+end
+
+-- string builder
+local function builder_add(self, str)
+  local arr = self.arr
+  arr[#arr+1] = str
+end
+local function builder_add_rich_text(self, key, value, inner, suffix)
+  local rich_text_arr = {"[", key, "=", key == "color" and colors[value].str or value, "]", inner, "[/", key, "]", suffix}
+  local arr = self.arr
+  local arr_len = #arr
+  for i = 1, #rich_text_arr do
+    arr[arr_len + i] = rich_text_arr[i]
+  end
+end
+local function builder_add_sprite(self, class, name, suffix)
+  local sprite_arr = {"[img=", class, "/", name, "]", suffix}
+  local arr = self.arr
+  local arr_len = #arr
+  for i = 1, #sprite_arr do
+    arr[arr_len + i] = sprite_arr[i]
+  end
+end
+local function builder_output(self)
+  return concat(self.arr)
+end
+local function create_builder()
+  return {
+    add = builder_add,
+    add_rich_text = builder_add_rich_text,
+    add_sprite = builder_add_sprite,
+    arr = {},
+    output = builder_output
+  }
 end
 
 local function get_properties(obj_data, force_index)
@@ -37,6 +77,7 @@ local function get_should_show(obj_data, player_data)
       if player_settings.recipe_categories[category] then
         return true, is_hidden, is_researched
       end
+    -- for materials - check if any of their categories are enabled
     elseif categories then
       local category_settings = player_settings.recipe_categories
       for category_name in pairs(categories) do
@@ -52,29 +93,45 @@ local function get_should_show(obj_data, player_data)
 end
 
 local function caption_formatter(obj_data, player_data, is_hidden, amount)
+  -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
-  local translation_key = obj_data.internal_class == "material" and obj_data.sprite_class.."."..obj_data.prototype_name or obj_data.prototype_name
-  local translation = translations[obj_data.internal_class][translation_key]
-  local font_prefix = "[font=default-semibold]"
-  local font_suffix = "[/font]"
-  local glyph = ""
+
+  -- object properties
+  local internal_class = obj_data.internal_class
+  local prototype_name = obj_data.prototype_name
+  local rocket_parts = obj_data.rocket_parts_required
+  local sprite_class = obj_data.sprite_class
+
+  -- key and translation
+  local translation_key = obj_data.internal_class == "material" and concat{sprite_class, ".", prototype_name} or prototype_name
+  local translation = translations[internal_class][translation_key]
+
+  -- build string
+  local builder = create_builder()
+  -- glyph
   if player_settings.show_glyphs then
-    local glyph_char = constants.class_to_font_glyph[obj_data.internal_class] or constants.class_to_font_glyph[obj_data.sprite_class]
-    glyph = "[font=RecipeBook]"..glyph_char.."[/font]  "
+    builder:add_rich_text("font", "RecipeBook", class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class], "  ")
   end
-  local hidden_string = is_hidden and font_prefix.."("..translations.gui.hidden_abbrev..")"..font_suffix.."  " or ""
-  local rocket_parts_string = obj_data.rocket_parts_required and font_prefix..obj_data.rocket_parts_required.."x"..font_suffix.."  " or ""
-  -- always use bold font when an amount string is present
-  local amount_string = amount and font_prefix..amount..font_suffix.."  " or ""
-  local name = player_settings.use_internal_names and obj_data.prototype_name or translation
-  return
-    glyph
-    ..hidden_string
-    .."[img="..obj_data.sprite_class.."/"..obj_data.prototype_name.."]  "
-    ..rocket_parts_string
-    ..amount_string
-    ..name
+  -- hidden
+  if is_hidden then
+    builder:add_rich_text("font", "default-semibold", translations.gui.hidden_abbrev, "  ")
+  end
+  -- icon
+  builder:add_sprite(sprite_class, prototype_name, "  ")
+  -- rocket parts
+  if rocket_parts then
+    builder:add_rich_text("font", "default-semibold", rocket_parts.."x", "  ")
+  end
+  -- amount string
+  if amount then
+    builder:add_rich_text("font", "default-semibold", amount, "  ")
+  end
+  -- name
+  builder:add(player_settings.use_internal_names and obj_data.prototype_name or translation)
+
+  -- output
+  return builder:output()
 end
 
 local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
@@ -83,17 +140,17 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   local translation = player_data.translations[obj_data.internal_class][translation_key]
   local use_internal_names = player_data.settings.use_internal_names
   local name = use_internal_names and obj_data.prototype_name or translation
-  local internal_name = player_data.settings.show_alternate_name and ("\n"..(use_internal_names and translation or obj_data.prototype_name)) or ""
+  local alternate_name = player_data.settings.show_alternate_name and ("\n"..(use_internal_names and translation or obj_data.prototype_name)) or ""
 
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
 
   local hidden_string = is_hidden and "  |  "..translations.gui.hidden or ""
-  local unresearched_string = not is_researched and "  |  [color="..constants.colors.unresearched.str.."]"..translations.gui.unresearched.."[/color]" or ""
+  local unresearched_string = not is_researched and "  |  [color="..colors.unresearched.str.."]"..translations.gui.unresearched.."[/color]" or ""
 
   return
-    "[img="..obj_data.sprite_class.."/"..obj_data.prototype_name.."]  [font=default-bold][color="..constants.colors.heading.str.."]"..name.."[/color][/font]"
-    .."[color="..constants.colors.green.str.."]"..internal_name.."[/color]"
-    .."\n[color="..constants.colors.info.str.."]"..translations.gui[category_class].."[/color]"..hidden_string..unresearched_string
+    "[img="..obj_data.sprite_class.."/"..obj_data.prototype_name.."]  [font=default-bold][color="..colors.heading.str.."]"..name.."[/color][/font]"
+    .."[color="..colors.green.str.."]"..alternate_name.."[/color]"
+    .."\n[color="..colors.info.str.."]"..translations.gui[category_class].."[/color]"..hidden_string..unresearched_string
 end
 
 local formatters = {
@@ -114,7 +171,7 @@ local formatters = {
           local color_prefix = ""
           local color_suffix = ""
           if style == "rb_unresearched_list_box_item" then
-            color_prefix = "[color="..constants.colors.unresearched.str.."]"
+            color_prefix = "[color="..colors.unresearched.str.."]"
             color_suffix = "[/color]"
           end
           fixed_recipe_text = "\n[font=default-semibold]"..player_data.translations.gui.fixed_recipe.."[/font]  "..color_prefix..label..color_suffix
@@ -124,12 +181,13 @@ local formatters = {
       local crafting_speed_string = "\n[font=default-semibold]"..player_data.translations.gui.crafting_speed.."[/font] "..round(obj_data.crafting_speed, 3)
 
       local categories_string = "\n[font=default-semibold]"..player_data.translations.gui.crafting_categories.."[/font]"
-      for category in pairs(obj_data.categories) do
-        categories_string = categories_string.."\n  "..category
+      local categories = obj_data.categories
+      for i = 1, #categories do
+        categories_string = categories_string.."\n  "..categories[i]
       end
 
       local blueprint_text = obj_data.blueprintable and "\n"..player_data.translations.gui.click_to_get_blueprint
-        or "\n[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
+        or "\n[color="..colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..fixed_recipe_text..crafting_speed_string..categories_string
         ..blueprint_text..fixed_recipe_view_text
     end,
@@ -174,7 +232,7 @@ local formatters = {
           local color_prefix = ""
           local color_suffix = ""
           if style == "rb_unresearched_list_box_item" then
-            color_prefix = "[color="..constants.colors.unresearched.str.."]"
+            color_prefix = "[color="..colors.unresearched.str.."]"
             color_suffix = "[/color]"
           end
           ingredients_string = ingredients_string.."\n  "..color_prefix..label..color_suffix
@@ -192,7 +250,7 @@ local formatters = {
           local color_prefix = ""
           local color_suffix = ""
           if style == "rb_unresearched_list_box_item" then
-            color_prefix = "[color="..constants.colors.unresearched.str.."]"
+            color_prefix = "[color="..colors.unresearched.str.."]"
             color_suffix = "[/color]"
           end
           products_string = products_string.."\n  "..color_prefix..label..color_suffix
