@@ -83,6 +83,7 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="per_second", localised={"rb-gui.per-second"}},
     {dictionary="gui", internal="products_tooltip", localised={"rb-gui.products-tooltip"}},
     {dictionary="gui", internal="pumping_speed", localised={"rb-gui.pumping-speed"}},
+    {dictionary="gui", internal="researching_speed", localised={"rb-gui.researching-speed"}},
     {dictionary="gui", internal="rocket_parts_required", localised={"rb-gui.rocket-parts-required"}},
     {dictionary="gui", internal="shift_click_to_view_fixed_recipe", localised={"rb-gui.shift-click-to-view-fixed-recipe"}},
     {dictionary="gui", internal="stack_size", localised={"rb-gui.stack-size"}},
@@ -230,6 +231,7 @@ function global_data.build_recipe_book()
       internal_class = "lab",
       inputs = prototype.lab_inputs,
       prototype_name = name,
+      researching_speed = prototype.researching_speed,
       sprite_class = "entity"
     }
     -- add to translations table
