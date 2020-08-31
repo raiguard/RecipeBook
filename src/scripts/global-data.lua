@@ -61,6 +61,7 @@ function global_data.build_recipe_book()
         sprite_class = "entity"
       }
     },
+    lab = {},
     material = {},
     offshore_pump = {},
     recipe = {},
@@ -70,9 +71,10 @@ function global_data.build_recipe_book()
   }
   local translation_data = {
     -- internal classes
+    {dictionary="gui", internal="crafter", localised={"rb-gui.crafter"}},
     {dictionary="gui", internal="fluid", localised={"rb-gui.fluid"}},
     {dictionary="gui", internal="item", localised={"rb-gui.item"}},
-    {dictionary="gui", internal="crafter", localised={"rb-gui.crafter"}},
+    {dictionary="gui", internal="lab", localised={"rb-gui.lab"}},
     {dictionary="gui", internal="material", localised={"rb-gui.material"}},
     {dictionary="gui", internal="offshore_pump", localised={"rb-gui.offshore-pump"}},
     {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}},
@@ -191,11 +193,38 @@ function global_data.build_recipe_book()
         rocket_launch_products = launch_products,
         sprite_class = class,
         stack_size = class == "item" and prototype.stack_size or nil,
-        unlocked_by = unique_array()
+        unlocked_by = unique_array(),
+        usable_in = {}
       }
-      -- add to translation table
+      -- add to translations table
       translation_data[#translation_data+1] = {dictionary="material", internal=class.."."..name, localised=prototype.localised_name}
     end
+  end
+
+  -- iterate labs
+  -- this has to be done after materials
+  local lab_prototypes = game.get_filtered_entity_prototypes{
+    {filter="type", type="lab"}
+  }
+  for name, prototype in pairs(lab_prototypes) do
+    -- add to materials
+    for _, item_name in ipairs(prototype.lab_inputs) do
+      local item_data = recipe_book.material["item."..item_name]
+      if item_data then
+        item_data.usable_in[#item_data.usable_in+1] = name
+      end
+    end
+    -- add to recipe book
+    recipe_book.lab[name] = {
+      available_to_forces = {},
+      hidden = prototype.has_flag("hidden"),
+      internal_class = "lab",
+      inputs = prototype.lab_inputs,
+      prototype_name = name,
+      sprite_class = "entity"
+    }
+    -- add to translations table
+    translation_data[#translation_data+1] = {dictionary="lab", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate offshore pumps
@@ -213,6 +242,7 @@ function global_data.build_recipe_book()
     recipe_book.offshore_pump[name] = {
       available_to_all_forces = true,
       fluid = prototype.fluid.name,
+      hidden = prototype.has_flag("hidden"),
       internal_class = "offshore_pump",
       prototype_name = name,
       pumping_speed = prototype.pumping_speed,
@@ -287,7 +317,7 @@ function global_data.build_recipe_book()
     end
     -- insert into recipe book
     recipe_book.recipe[name] = data
-    -- translation data
+    -- insert into translations table
     translation_data[#translation_data+1] = {dictionary="recipe", internal=name, localised=prototype.localised_name}
   end
 
@@ -303,12 +333,14 @@ function global_data.build_recipe_book()
         end
       end
     end
+    -- insert into recipe book
     recipe_book.resource[name] = {
       available_to_all_forces = true,
       internal_class = "resource",
       prototype_name = name,
       sprite_class = "entity"
     }
+    -- insert into translations table
     translation_data[#translation_data+1] = {dictionary="resource", internal=name, localised=prototype.localised_name}
   end
 
@@ -343,6 +375,7 @@ function global_data.build_recipe_book()
           end
         end
       end
+      -- insert into recipe book
       recipe_book.technology[name] = {
         hidden = prototype.hidden,
         internal_class = "technology",
@@ -350,6 +383,7 @@ function global_data.build_recipe_book()
         researched_forces = {},
         sprite_class = "technology"
       }
+      -- insert into translations table
       translation_data[#translation_data+1] = {dictionary="technology", internal=prototype.name, localised=prototype.localised_name}
     end
   end
@@ -419,13 +453,13 @@ local function set_recipe_available(force_index, recipe_data, recipe_book, item_
     if product_data and product_data.available_to_forces then
       product_data.available_to_forces[force_index] = true
     end
-    -- crafter
+    -- crafter / lab
     if product.type == "item" then
       local place_result = item_prototypes[product.name].place_result
       if place_result then
-        local crafter_data = recipe_book.crafter[place_result.name]
-        if crafter_data and crafter_data.available_to_forces then
-          crafter_data.available_to_forces[force_index] = true
+        local entity_data = recipe_book.crafter[place_result.name] or recipe_book.lab[place_result.name]
+        if entity_data and entity_data.available_to_forces then
+          entity_data.available_to_forces[force_index] = true
         end
       end
     end

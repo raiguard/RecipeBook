@@ -127,6 +127,12 @@ local formatters = {
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
   },
+  lab = {
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+    end,
+    enabled = function() return false end
+  },
   material = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view)

@@ -3,6 +3,7 @@ Version: 2.2.1
 Date: ????
   Features:
     - Recipe ingredients and products are shown in their tooltip
+    - Added `usable in` list to the material page, listing the labs that that science pack is usable in
   Changes:
 ---------------------------------------------------------------------------------------------------
 Version: 2.2.0
