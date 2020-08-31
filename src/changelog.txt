@@ -5,7 +5,6 @@ Date: ????
     - Added setting to disable the green "alternate name" in object tooltips
     - Added `usable in` list to the material page, listing the labs that that science pack is usable in
     - Added ingredients and products to recipe tooltips
-  Changes:
 ---------------------------------------------------------------------------------------------------
 Version: 2.2.0
 Date: 2020-08-30
