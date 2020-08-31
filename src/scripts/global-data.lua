@@ -48,19 +48,7 @@ function global_data.build_recipe_book()
   -- character prototype
   local character_prototype = game.entity_prototypes["character"]
   local recipe_book = {
-    crafter = {
-      -- manually insert character as first entry
-      character = {
-        available_to_all_forces = true,
-        blueprintable = false,
-        categories = character_prototype.crafting_categories,
-        crafting_speed = 1,
-        hidden = false,
-        internal_class = "crafter",
-        prototype_name = character_prototype.name,
-        sprite_class = "entity"
-      }
-    },
+    crafter = {},
     lab = {},
     material = {},
     offshore_pump = {},
@@ -97,15 +85,33 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="rocket_parts_required", localised={"rb-gui.rocket-parts-required"}},
     {dictionary="gui", internal="shift_click_to_view_fixed_recipe", localised={"rb-gui.shift-click-to-view-fixed-recipe"}},
     {dictionary="gui", internal="stack_size", localised={"rb-gui.stack-size"}},
-    {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}},
-    -- character crafter
-    {dictionary="crafter", internal="character", localised={"entity-name.character"}}
+    {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}}
   }
 
   -- forces
   local forces = {}
   for _, force in pairs(game.forces) do
     forces[force.index] = force.recipes
+  end
+
+  -- iterate characters (as crafters)
+  local character_prototypes = game.get_filtered_entity_prototypes{
+    {filter="type", type="character"}
+  }
+  for name, prototype in pairs(character_prototypes) do
+    -- add to recipe book
+    recipe_book.crafter[name] = {
+      available_to_all_forces = true,
+      blueprintable = false,
+      categories = prototype.crafting_categories,
+      crafting_speed = 1,
+      hidden = false,
+      internal_class = "crafter",
+      prototype_name = name,
+      sprite_class = "entity"
+    }
+    -- add to translations table
+    translation_data[#translation_data+1] = {dictionary="crafter", internal=name, localised=prototype.localised_name}
   end
 
   -- iterate crafters
@@ -117,6 +123,17 @@ function global_data.build_recipe_book()
   local fixed_recipes = {}
   local rocket_silo_categories = {}
   for name, prototype in pairs(crafter_prototypes) do
+    -- add fixed recipe to list
+    if prototype.fixed_recipe then
+      fixed_recipes[prototype.fixed_recipe] = true
+    end
+    -- add categories to rocket silo list
+    if prototype.rocket_parts_required then
+      for category in pairs(prototype.crafting_categories) do
+        rocket_silo_categories[category] = true
+      end
+    end
+    -- add to recipe book
     local is_hidden = prototype.has_flag("hidden")
     recipe_book.crafter[name] = {
       available_to_forces = {},
@@ -130,16 +147,6 @@ function global_data.build_recipe_book()
       rocket_parts_required = prototype.rocket_parts_required,
       sprite_class = "entity"
     }
-    -- add fixed recipe to list
-    if prototype.fixed_recipe then
-      fixed_recipes[prototype.fixed_recipe] = true
-    end
-    -- add categories to rocket silo list
-    if prototype.rocket_parts_required then
-      for category in pairs(prototype.crafting_categories) do
-        rocket_silo_categories[category] = true
-      end
-    end
     -- add to translations table
     translation_data[#translation_data+1] = {dictionary="crafter", internal=name, localised=prototype.localised_name}
   end
