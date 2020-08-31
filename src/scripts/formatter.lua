@@ -83,7 +83,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   local translation = player_data.translations[obj_data.internal_class][translation_key]
   local use_internal_names = player_data.settings.use_internal_names
   local name = use_internal_names and obj_data.prototype_name or translation
-  local internal_name = use_internal_names and translation or obj_data.prototype_name
+  local internal_name = player_data.settings.show_alternate_name and ("\n"..(use_internal_names and translation or obj_data.prototype_name)) or ""
 
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
 
@@ -92,7 +92,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
 
   return
     "[img="..obj_data.sprite_class.."/"..obj_data.prototype_name.."]  [font=default-bold][color="..constants.colors.heading.str.."]"..name.."[/color][/font]"
-    .."\n[color="..constants.colors.green.str.."]"..internal_name.."[/color]"
+    .."[color="..constants.colors.green.str.."]"..internal_name.."[/color]"
     .."\n[color="..constants.colors.info.str.."]"..translations.gui[category_class].."[/color]"..hidden_string..unresearched_string
 end
 
@@ -121,9 +121,15 @@ local formatters = {
         end
       end
 
+      local categories_string = "\n[font=default-semibold]"..player_data.translations.gui.crafting_categories.."[/font]"
+      for category in pairs(obj_data.categories) do
+        categories_string = categories_string.."\n  "..category
+      end
+
       local blueprint_text = obj_data.blueprintable and "\n"..player_data.translations.gui.click_to_get_blueprint
         or "\n[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..fixed_recipe_text..blueprint_text..fixed_recipe_view_text
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..fixed_recipe_text..categories_string..blueprint_text
+        ..fixed_recipe_view_text
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
   },

@@ -36,16 +36,23 @@ data:extend{
   },
   {
     type = "bool-setting",
+    name = "rb-show-alternate-name",
+    setting_type = "runtime-per-user",
+    default_value = false,
+    order = "f"
+  },
+  {
+    type = "bool-setting",
     name = "rb-use-fuzzy-search",
     setting_type = "runtime-per-user",
     default_value = false,
-    order = "fa"
+    order = "ga"
   },
   {
     type = "bool-setting",
     name = "rb-use-internal-names",
     setting_type = "runtime-per-user",
     default_value = false,
-    order = "fb"
+    order = "gb"
   }
 }

@@ -45,9 +45,10 @@ function player_data.update_settings(player, player_table)
     open_fluid_hotkey = mod_settings["rb-open-fluid-hotkey"].value,
     show_hidden = mod_settings["rb-show-hidden-objects"].value,
     show_unresearched = mod_settings["rb-show-unresearched-objects"].value,
-    use_internal_names = mod_settings["rb-use-internal-names"].value,
     show_glyphs = mod_settings["rb-show-glyphs"].value,
+    show_alternate_name = mod_settings["rb-show-alternate-name"].value,
     use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value,
+    use_internal_names = mod_settings["rb-use-internal-names"].value,
   }
   -- dynamic settings (stored only on save game)
   local categories = player_table.settings.recipe_categories or {}

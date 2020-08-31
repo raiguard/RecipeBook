@@ -84,6 +84,7 @@ function global_data.build_recipe_book()
     {dictionary="gui", internal="hidden_abbrev", localised={"rb-gui.hidden-abbrev"}},
     -- tooltips
     {dictionary="gui", internal="blueprint_not_available", localised={"rb-gui.blueprint-not-available"}},
+    {dictionary="gui", internal="crafting_categories", localised={"rb-gui.crafting-categories"}},
     {dictionary="gui", internal="click_to_get_blueprint", localised={"rb-gui.click-to-get-blueprint"}},
     {dictionary="gui", internal="click_to_view_technology", localised={"rb-gui.click-to-view-technology"}},
     {dictionary="gui", internal="click_to_view", localised={"rb-gui.click-to-view"}},

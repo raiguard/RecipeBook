@@ -156,6 +156,10 @@ constants.settings = {
     show_glyphs = {
       prototype_name = "rb-show-glyphs",
       has_tooltip = false
+    },
+    show_alternate_name = {
+      prototype_name = "rb-show-alternate-name",
+      has_tooltip = true
     }
   },
   search = {
