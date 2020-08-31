@@ -19,6 +19,14 @@ local function unique_array(initial_value)
   end})
 end
 
+local function convert_and_sort(tbl)
+  for key in pairs(tbl) do
+    tbl[#tbl+1] = key
+  end
+  table.sort(tbl)
+  return tbl
+end
+
 -- from http://lua-users.org/wiki/SimpleRound
 local function round(num, decimals)
   local mult = 10^(decimals or 0)
@@ -140,7 +148,7 @@ function global_data.build_recipe_book()
     recipe_book.crafter[name] = {
       available_to_forces = {},
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
-      categories = prototype.crafting_categories,
+      categories = convert_and_sort(prototype.crafting_categories),
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = prototype.fixed_recipe,
       hidden = is_hidden,
