@@ -121,6 +121,8 @@ local formatters = {
         end
       end
 
+      local crafting_speed_string = "\n[font=default-semibold]"..player_data.translations.gui.crafting_speed.."[/font] "..round(obj_data.crafting_speed, 3)
+
       local categories_string = "\n[font=default-semibold]"..player_data.translations.gui.crafting_categories.."[/font]"
       for category in pairs(obj_data.categories) do
         categories_string = categories_string.."\n  "..category
@@ -128,8 +130,8 @@ local formatters = {
 
       local blueprint_text = obj_data.blueprintable and "\n"..player_data.translations.gui.click_to_get_blueprint
         or "\n[color="..constants.colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..fixed_recipe_text..categories_string..blueprint_text
-        ..fixed_recipe_view_text
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..fixed_recipe_text..crafting_speed_string..categories_string
+        ..blueprint_text..fixed_recipe_view_text
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
   },
