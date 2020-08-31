@@ -145,8 +145,46 @@ local formatters = {
   },
   recipe = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+      local materials_data = global.recipe_book.material
+
+      -- ingredients
+      local ingredients_string = "\n[font=default-semibold]"..player_data.translations.gui.ingredients_tooltip.."[/font]"
+      local ingredients = obj_data.ingredients
+      for i = 1, #ingredients do
+        local ingredient = ingredients[i]
+        local ingredient_data = materials_data[ingredient.type.."."..ingredient.name]
+        if ingredient_data then
+          local _, style, label = formatter.format(ingredient_data, player_data, ingredient.amount_string, true)
+          local color_prefix = ""
+          local color_suffix = ""
+          if style == "rb_unresearched_list_box_item" then
+            color_prefix = "[color="..constants.colors.unresearched.str.."]"
+            color_suffix = "[/color]"
+          end
+          ingredients_string = ingredients_string.."\n  "..color_prefix..label..color_suffix
+        end
+      end
+
+      -- products
+      local products_string = "\n[font=default-semibold]"..player_data.translations.gui.products_tooltip.."[/font]"
+      local products = obj_data.products
+      for i = 1, #products do
+        local product = products[i]
+        local product_data = materials_data[product.type.."."..product.name]
+        if product_data then
+          local _, style, label = formatter.format(product_data, player_data, product.amount_string, true)
+          local color_prefix = ""
+          local color_suffix = ""
+          if style == "rb_unresearched_list_box_item" then
+            color_prefix = "[color="..constants.colors.unresearched.str.."]"
+            color_suffix = "[/color]"
+          end
+          products_string = products_string.."\n  "..color_prefix..label..color_suffix
+        end
+      end
+
       local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..interaction_help
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..ingredients_string..products_string..interaction_help
     end,
     enabled = function() return true end
   },
