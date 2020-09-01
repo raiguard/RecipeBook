@@ -80,7 +80,7 @@ local function get_should_show(obj_data, player_data)
   return false, is_hidden, is_researched
 end
 
-local function caption_formatter(obj_data, player_data, is_hidden, amount)
+local function get_caption(obj_data, player_data, is_hidden, amount)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
@@ -334,7 +334,7 @@ local function format_item(obj_data, player_data, amount_string, always_show, is
     return
       true,
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
-      caption_formatter(obj_data, player_data, is_hidden, amount_string),
+      get_caption(obj_data, player_data, is_hidden, amount_string),
       formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched, is_label),
       formatter_subtable.enabled(obj_data, player_data, is_hidden, is_researched)
   else
