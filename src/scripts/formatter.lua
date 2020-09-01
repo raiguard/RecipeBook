@@ -16,12 +16,12 @@ local function round(num, decimals)
   return floor(num * mult + 0.5) / mult
 end
 
-local function build_rich_text(key, value, inner, suffix)
-  return concat{"[", key, "=", key == "color" and colors[value].str or value, "]", inner, "[/", key, "]", suffix}
+local function build_rich_text(key, value, inner)
+  return "["..key.."="..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
 end
 
-local function build_sprite(class, name, suffix)
-  return concat{"[img=", class, "/", name, "]", suffix}
+local function build_sprite(class, name)
+  return "[img="..class.."/"..name.."]"
 end
 
 -- string builder
@@ -92,27 +92,27 @@ local function caption_formatter(obj_data, player_data, is_hidden, amount)
   local sprite_class = obj_data.sprite_class
 
   -- translation key
-  local translation_key = internal_class == "material" and concat{sprite_class, ".", prototype_name} or prototype_name
+  local translation_key = internal_class == "material" and sprite_class.."."..prototype_name or prototype_name
 
   -- build string
   local builder = create_builder()
   -- glyph
   if player_settings.show_glyphs then
-    builder:add(build_rich_text("font", "RecipeBook", class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class], "  "))
+    builder:add(build_rich_text("font", "RecipeBook", class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class]).."  ")
   end
   -- hidden
   if is_hidden then
-    builder:add(build_rich_text("font", "default-semibold", translations.gui.hidden_abbrev, "  "))
+    builder:add(build_rich_text("font", "default-semibold", translations.gui.hidden_abbrev).."  ")
   end
   -- icon
-  builder:add(build_sprite(sprite_class, prototype_name, "  "))
+  builder:add(build_sprite(sprite_class, prototype_name).."  ")
   -- rocket parts
   if rocket_parts then
-    builder:add(build_rich_text("font", "default-semibold", rocket_parts.."x", "  "))
+    builder:add(build_rich_text("font", "default-semibold", rocket_parts.."x").."  ")
   end
   -- amount string
   if amount then
-    builder:add(build_rich_text("font", "default-semibold", amount, "  "))
+    builder:add(build_rich_text("font", "default-semibold", amount).."  ")
   end
   -- name
   builder:add(player_settings.use_internal_names and obj_data.prototype_name or translations[internal_class][translation_key])
@@ -133,7 +133,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   local sprite_class = obj_data.sprite_class
 
   -- translation
-  local translation = translations[internal_class][internal_class == "material" and concat{sprite_class, ".", prototype_name} or prototype_name]
+  local translation = translations[internal_class][internal_class == "material" and sprite_class.."."..prototype_name or prototype_name]
 
   -- settings
   local show_alternate_name = player_settings.show_alternate_name
@@ -142,11 +142,11 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   -- build string
   local builder = create_builder()
   -- title
-  builder:add(build_sprite(sprite_class, prototype_name, "  "))
-  builder:add(build_rich_text("font", "default-bold", build_rich_text("color", "heading", use_internal_names and prototype_name or translation), "\n"))
+  builder:add(build_sprite(sprite_class, prototype_name).."  ")
+  builder:add(build_rich_text("font", "default-bold", build_rich_text("color", "heading", use_internal_names and prototype_name or translation)).."\n")
   -- alternate name
   if show_alternate_name then
-    builder:add(build_rich_text("color", "green", use_internal_names and translation or prototype_name, "\n"))
+    builder:add(build_rich_text("color", "green", use_internal_names and translation or prototype_name).."\n")
   end
   -- category class
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
@@ -178,7 +178,7 @@ local formatters = {
       local rocket_parts_required = obj_data.rocket_parts_required
       if rocket_parts_required then
         builder:add("\n")
-        builder:add(build_rich_text("font", "default-semibold", gui_translations.rocket_parts_required, " "))
+        builder:add(build_rich_text("font", "default-semibold", gui_translations.rocket_parts_required).." ")
         builder:add(rocket_parts_required)
       end
       -- fixed recipe
@@ -191,8 +191,7 @@ local formatters = {
           -- view text
           fixed_recipe_help_text = "\n"..gui_translations.shift_click_to_view_fixed_recipe
           -- fixed recipe
-          builder:add("\n")
-          builder:add(build_rich_text("font", "default-semibold", gui_translations.fixed_recipe, " "))
+          builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).." ")
           local _, style, label = formatter.format(fixed_recipe_data, player_data, nil, true)
           if style == "rb_unresearched_list_box_item" then
             builder:add(build_rich_text("color", "unavailable", label))
@@ -202,7 +201,7 @@ local formatters = {
         end
       end
       -- crafting speed
-      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_speed, " "))
+      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_speed).." ")
       builder:add(round(obj_data.crafting_speed, 2))
       -- crafting categories
       builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_categories))
@@ -229,9 +228,7 @@ local formatters = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- researching speed
-      builder:add("\n")
-      builder:add(build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed, " "))
-      builder:add(round(obj_data.researching_speed, 2))
+      builder:add("\n"..build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed).." "..round(obj_data.researching_speed, 2))
 
       return builder:output()
     end,
@@ -247,8 +244,7 @@ local formatters = {
       -- stack size
       local stack_size = obj_data.stack_size
       if stack_size then
-        builder:add("\n")
-        builder:add(build_rich_text("font", "default-semibold", gui_translations.stack_size, " "..stack_size))
+        builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.stack_size).." "..stack_size)
       end
       -- interaction help
       if not is_label then
@@ -267,7 +263,7 @@ local formatters = {
       -- build string
       local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- pumping speed
-      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.pumping_speed, " "))
+      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.pumping_speed).." ")
       builder:add(round(obj_data.pumping_speed * 60, 0)..gui_translations.per_second)
 
       return builder:output()
