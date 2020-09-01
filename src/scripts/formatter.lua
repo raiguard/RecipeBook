@@ -9,6 +9,7 @@ local class_to_font_glyph = constants.class_to_font_glyph
 local colors = constants.colors
 local concat = table.concat
 local floor = math.floor
+local unpack = table.unpack
 
 -- round
 local function round(num, decimals)
@@ -16,13 +17,12 @@ local function round(num, decimals)
   return floor(num * mult + 0.5) / mult
 end
 
--- for small strings, `..` is more performant than concat
 local function build_rich_text(key, value, inner, suffix)
-  suffix = suffix or ""
-  return "["..key.."="..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"..suffix
+  return concat{"[", key, "=", key == "color" and colors[value].str or value, "]", inner, "[/", key, "]", suffix}
 end
+
 local function build_sprite(class, name, suffix)
-  return "[img="..class.."/"..name.."]"..suffix
+  return concat{"[img=", class, "/", name, "]", suffix}
 end
 
 -- string builder
