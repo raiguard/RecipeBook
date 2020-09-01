@@ -175,65 +175,65 @@ local formatters = {
       local translations = player_data.translations
       local gui_translations = translations.gui
 
-      -- build string
-      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- rocket parts
+      -- object properties
+      local categories = obj_data.categories
       local rocket_parts_required = obj_data.rocket_parts_required
+      local fixed_recipe = obj_data.fixed_recipe
+
+      -- build string
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      -- rocket parts
+      local rocket_parts_str = ""
       if rocket_parts_required then
-        builder:add("\n")
-        builder:add(build_rich_text("font", "default-semibold", gui_translations.rocket_parts_required).." ")
-        builder:add(rocket_parts_required)
+        rocket_parts_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.rocket_parts_required).." "..rocket_parts_required
       end
       -- fixed recipe
-      local fixed_recipe = obj_data.fixed_recipe
-      local fixed_recipe_help_text
+      local fixed_recipe_str = ""
+      local fixed_recipe_help_str = ""
       if fixed_recipe then
         -- get fixed recipe data
         local fixed_recipe_data = global.recipe_book.recipe[obj_data.fixed_recipe]
         if fixed_recipe_data then
-          -- view text
-          fixed_recipe_help_text = "\n"..gui_translations.shift_click_to_view_fixed_recipe
+          local title_str = ("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).." ")
           -- fixed recipe
-          builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).." ")
           local _, style, label = formatter.format(fixed_recipe_data, player_data, nil, true)
           if style == "rb_unresearched_list_box_item" then
-            builder:add(build_rich_text("color", "unavailable", label))
+            fixed_recipe_str = title_str..build_rich_text("color", "unavailable", label)
           else
-            builder:add(label)
+            fixed_recipe_str = title_str..label
           end
+          -- help text
+          fixed_recipe_help_str = "\n"..gui_translations.shift_click_to_view_fixed_recipe
         end
       end
       -- crafting speed
-      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_speed).." ")
-      builder:add(round(obj_data.crafting_speed, 2))
+      local crafting_speed_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_speed).." "..round(obj_data.crafting_speed, 2)
       -- crafting categories
-      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_categories))
-      local categories = obj_data.categories
+      local crafting_categories_str_arr = {"\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_categories)}
       for i = 1, #categories do
-        builder:add("\n  "..categories[i])
+        crafting_categories_str_arr[#crafting_categories_str_arr+1] = "\n  "..categories[i]
       end
-      -- interaction help
+      local crafting_categories_str = concat(crafting_categories_str_arr)
+      -- blueprintable
+      local blueprintable_str = ""
       if obj_data.blueprintable then
-        builder:add("\n"..gui_translations.click_to_get_blueprint)
+        blueprintable_str = "\n"..gui_translations.click_to_get_blueprint
       else
-        builder:add("\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available))
-      end
-      -- fixed recipe help
-      if fixed_recipe_help_text then
-        builder:add(fixed_recipe_help_text)
+        blueprintable_str = "\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available)
       end
 
-      return builder:output()
+      return base_str..fixed_recipe_str..crafting_speed_str..crafting_categories_str..blueprintable_str..fixed_recipe_help_str
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
   },
   lab = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- researching speed
-      builder:add("\n"..build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed).." "..round(obj_data.researching_speed, 2))
+      local researching_speed_str = "\n"..build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed).." "
+        ..round(obj_data.researching_speed, 2)
 
-      return builder:output()
+      return base_str..researching_speed_str
     end,
     enabled = function() return false end
   },
@@ -242,19 +242,23 @@ local formatters = {
       -- locals
       local gui_translations = player_data.translations.gui
 
-      -- build string
-      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- stack size
+      -- object properties
       local stack_size = obj_data.stack_size
+
+      -- build string
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      -- stack size
+      local stack_size_str = ""
       if stack_size then
-        builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.stack_size).." "..stack_size)
+        stack_size_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.stack_size).." "..stack_size
       end
       -- interaction help
+      local interaction_help_str = ""
       if not is_label then
-        builder:add("\n"..gui_translations.click_to_view)
+        interaction_help_str = "\n"..gui_translations.click_to_view
       end
 
-      return builder:output()
+      return base_str..stack_size_str..interaction_help_str
     end,
     enabled = function() return true end
   },
@@ -264,12 +268,12 @@ local formatters = {
       local gui_translations = player_data.translations.gui
 
       -- build string
-      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- pumping speed
-      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.pumping_speed).." ")
-      builder:add(round(obj_data.pumping_speed * 60, 0)..gui_translations.per_second)
+      local pumping_speed_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.pumping_speed).." "..round(obj_data.pumping_speed * 60, 0)
+        ..gui_translations.per_second
 
-      return builder:output()
+      return base_str..pumping_speed_str
     end,
     enabled = function() return false end
   },
@@ -281,46 +285,52 @@ local formatters = {
       local gui_translations = translations.gui
 
       -- build string
-      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- ingredients and products
+      local ip_str_arr = {}
       for material_type in pairs(ingredients_products_keys) do
-        builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations[material_type.."_tooltip"]))
         local materials = obj_data[material_type]
-        for i = 1, #materials do
-          local material = materials[i]
-          local material_data = materials_data[material.type.."."..material.name]
-          if material_data then
-            builder:add("\n  ")
-            local _, style, label = formatter.format(material_data, player_data, material.amount_string, true)
-            if style == "rb_unresearched_list_box_item" then
-              builder:add(build_rich_text("color", "unresearched", label))
-            else
-              builder:add(label)
+        local materials_len = #materials
+        if materials_len > 0 then
+          ip_str_arr[#ip_str_arr+1] = "\n"..build_rich_text("font", "default-semibold", gui_translations[material_type.."_tooltip"])
+          for i = 1, #materials do
+            local material = materials[i]
+            local material_data = materials_data[material.type.."."..material.name]
+            if material_data then
+              local _, style, label = formatter.format(material_data, player_data, material.amount_string, true)
+              if style == "rb_unresearched_list_box_item" then
+                ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
+              else
+                ip_str_arr[#ip_str_arr+1] = "\n  "..label
+              end
             end
           end
         end
       end
+      local ip_str = concat(ip_str_arr)
       -- interaction help
+      local interaction_help_str = ""
       if not is_label then
-        builder:add("\n"..gui_translations.click_to_view)
+        interaction_help_str = "\n"..gui_translations.click_to_view
       end
 
-      return builder:output()
+      return base_str..ip_str..interaction_help_str
     end,
     enabled = function() return true end
   },
   resource = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
     enabled = function() return false end
   },
   technology = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- interaction help
-      builder:add("\n"..player_data.translations.gui.click_to_view_technology)
-      return builder:output()
+      local interaction_help_str = "\n"..player_data.translations.gui.click_to_view_technology
+
+      return base_str..interaction_help_str
     end,
     enabled = function() return true end
   }
