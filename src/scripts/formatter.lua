@@ -267,14 +267,18 @@ local formatters = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       -- locals
       local materials_data = global.recipe_book.material
-      local translations = player_data.translations
-      local gui_translations = translations.gui
+      local gui_translations = player_data.translations.gui
+      local player_settings = player_data.settings
 
       -- build string
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- ingredients and products
+
       local ip_str_arr = {}
-      if player_data.settings.show_detailed_recipe_tooltips then
+      if player_settings.show_detailed_recipe_tooltips then
+        -- crafting time
+        ip_str_arr[1] = "\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_time).." "..round(obj_data.energy, 2).." "
+          ..gui_translations.seconds_standalone
+        -- ingredients and products
         for material_type in pairs(ingredients_products_keys) do
           local materials = obj_data[material_type]
           local materials_len = #materials
