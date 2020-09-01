@@ -165,6 +165,8 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   return builder
 end
 
+local ingredients_products_keys = {ingredients=true, products=true}
+
 local formatters = {
   crafter = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
@@ -276,46 +278,37 @@ local formatters = {
   },
   recipe = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+      -- locals
       local materials_data = global.recipe_book.material
+      local translations = player_data.translations
+      local gui_translations = translations.gui
 
-      -- ingredients
-      local ingredients_string = "\n[font=default-semibold]"..player_data.translations.gui.ingredients_tooltip.."[/font]"
-      local ingredients = obj_data.ingredients
-      for i = 1, #ingredients do
-        local ingredient = ingredients[i]
-        local ingredient_data = materials_data[ingredient.type.."."..ingredient.name]
-        if ingredient_data then
-          local _, style, label = formatter.format(ingredient_data, player_data, ingredient.amount_string, true)
-          local color_prefix = ""
-          local color_suffix = ""
-          if style == "rb_unresearched_list_box_item" then
-            color_prefix = "[color="..colors.unresearched.str.."]"
-            color_suffix = "[/color]"
+      -- build string
+      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      -- ingredients and products
+      for material_type in pairs(ingredients_products_keys) do
+        builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.ingredients_tooltip))
+        local materials = obj_data[material_type]
+        for i = 1, #materials do
+          local material = materials[i]
+          local material_data = materials_data[material.type.."."..material.name]
+          if material_data then
+            builder:add("\n  ")
+            local _, style, label = formatter.format(material_data, player_data, material.amount_string, true)
+            if style == "rb_unresearched_list_box_item" then
+              builder:add(build_rich_text("color", "unresearched", label))
+            else
+              builder:add(label)
+            end
           end
-          ingredients_string = ingredients_string.."\n  "..color_prefix..label..color_suffix
         end
       end
-
-      -- products
-      local products_string = "\n[font=default-semibold]"..player_data.translations.gui.products_tooltip.."[/font]"
-      local products = obj_data.products
-      for i = 1, #products do
-        local product = products[i]
-        local product_data = materials_data[product.type.."."..product.name]
-        if product_data then
-          local _, style, label = formatter.format(product_data, player_data, product.amount_string, true)
-          local color_prefix = ""
-          local color_suffix = ""
-          if style == "rb_unresearched_list_box_item" then
-            color_prefix = "[color="..colors.unresearched.str.."]"
-            color_suffix = "[/color]"
-          end
-          products_string = products_string.."\n  "..color_prefix..label..color_suffix
-        end
+      -- interaction help
+      if not is_label then
+        builder:add("\n"..gui_translations.click_to_view)
       end
 
-      local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..ingredients_string..products_string..interaction_help
+      return builder:output()
     end,
     enabled = function() return true end
   },
