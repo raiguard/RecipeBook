@@ -320,8 +320,10 @@ local formatters = {
   },
   technology = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view_technology)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..interaction_help
+      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      -- interaction help
+      builder:add("\n"..player_data.translations.gui.click_to_view_technology)
+      return builder:output()
     end,
     enabled = function() return true end
   }
