@@ -210,7 +210,7 @@ local formatters = {
       for i = 1, #categories do
         builder:add("\n  "..categories[i])
       end
-      -- blueprint
+      -- interaction help
       if obj_data.blueprintable then
         builder:add("\n"..gui_translations.click_to_get_blueprint)
       else
@@ -239,9 +239,23 @@ local formatters = {
   },
   material = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view)
-      local stack_size = obj_data.stack_size and "\n[font=default-semibold]"..player_data.translations.gui.stack_size.."[/font] "..obj_data.stack_size or ""
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..stack_size..interaction_help
+      -- locals
+      local gui_translations = player_data.translations.gui
+
+      -- build string
+      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      -- stack size
+      local stack_size = obj_data.stack_size
+      if stack_size then
+        builder:add("\n")
+        builder:add(build_rich_text("font", "default-semibold", gui_translations.stack_size, " "..stack_size))
+      end
+      -- interaction help
+      if not is_label then
+        builder:add("\n"..gui_translations.click_to_view)
+      end
+
+      return builder:output()
     end,
     enabled = function() return true end
   },
