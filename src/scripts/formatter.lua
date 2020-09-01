@@ -10,7 +10,7 @@ local colors = constants.colors
 local concat = table.concat
 local floor = math.floor
 
--- round
+-- from http://lua-users.org/wiki/SimpleRound
 local function round(num, decimals)
   local mult = 10^(decimals or 0)
   return floor(num * mult + 0.5) / mult
