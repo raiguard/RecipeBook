@@ -148,7 +148,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   builder:add(build_rich_text("font", "default-bold", build_rich_text("color", "heading", use_internal_names and prototype_name or translation), "\n"))
   -- alternate name
   if show_alternate_name then
-    builder:add(build_rich_text("color", "green", use_internal_names and translation or prototype_name))
+    builder:add(build_rich_text("color", "green", use_internal_names and translation or prototype_name, "\n"))
   end
   -- category class
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
@@ -162,46 +162,66 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     builder:add("  |  "..build_rich_text("color", "unresearched", gui_translations.unresearched))
   end
 
-  return builder:output()
+  return builder
 end
 
 local formatters = {
   crafter = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local rocket_parts_text = obj_data.rocket_parts_required
-        and "\n[font=default-semibold]"..player_data.translations.gui.rocket_parts_required.."[/font] "..obj_data.rocket_parts_required
-        or ""
-      local fixed_recipe_text = ""
-      local fixed_recipe_view_text = ""
-      if obj_data.fixed_recipe then
+      -- locals
+      local translations = player_data.translations
+      local gui_translations = translations.gui
+
+      -- build string
+      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      -- rocket parts
+      local rocket_parts_required = obj_data.rocket_parts_required
+      if rocket_parts_required then
+        builder:add("\n")
+        builder:add(build_rich_text("font", "default-semibold", gui_translations.rocket_parts_required, " "))
+        builder:add(rocket_parts_required)
+      end
+      -- fixed recipe
+      local fixed_recipe = obj_data.fixed_recipe
+      local fixed_recipe_help_text
+      if fixed_recipe then
+        -- get fixed recipe data
         local fixed_recipe_data = global.recipe_book.recipe[obj_data.fixed_recipe]
         if fixed_recipe_data then
-          fixed_recipe_view_text = "\n"..player_data.translations.gui.shift_click_to_view_fixed_recipe
+          -- view text
+          fixed_recipe_help_text = "\n"..gui_translations.shift_click_to_view_fixed_recipe
+          -- fixed recipe
+          builder:add("\n")
+          builder:add(build_rich_text("font", "default-semibold", gui_translations.fixed_recipe, " "))
           local _, style, label = formatter.format(fixed_recipe_data, player_data, nil, true)
-          -- remove glyph from label
-          label = string.gsub(label, "%[font=RecipeBook%].%[/font%]  ", "")
-          local color_prefix = ""
-          local color_suffix = ""
           if style == "rb_unresearched_list_box_item" then
-            color_prefix = "[color="..colors.unresearched.str.."]"
-            color_suffix = "[/color]"
+            builder:add(build_rich_text("color", "unavailable", label))
+          else
+            builder:add(label)
           end
-          fixed_recipe_text = "\n[font=default-semibold]"..player_data.translations.gui.fixed_recipe.."[/font]  "..color_prefix..label..color_suffix
         end
       end
-
-      local crafting_speed_string = "\n[font=default-semibold]"..player_data.translations.gui.crafting_speed.."[/font] "..round(obj_data.crafting_speed, 3)
-
-      local categories_string = "\n[font=default-semibold]"..player_data.translations.gui.crafting_categories.."[/font]"
+      -- crafting speed
+      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_speed, " "))
+      builder:add(round(obj_data.crafting_speed, 2))
+      -- crafting categories
+      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_categories))
       local categories = obj_data.categories
       for i = 1, #categories do
-        categories_string = categories_string.."\n  "..categories[i]
+        builder:add("\n  "..categories[i])
+      end
+      -- blueprint
+      if obj_data.blueprintable then
+        builder:add("\n"..gui_translations.click_to_get_blueprint)
+      else
+        builder:add("\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available))
+      end
+      -- fixed recipe help
+      if fixed_recipe_help_text then
+        builder:add(fixed_recipe_help_text)
       end
 
-      local blueprint_text = obj_data.blueprintable and "\n"..player_data.translations.gui.click_to_get_blueprint
-        or "\n[color="..colors.error.str.."]"..player_data.translations.gui.blueprint_not_available.."[/color]"
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..rocket_parts_text..fixed_recipe_text..crafting_speed_string..categories_string
-        ..blueprint_text..fixed_recipe_view_text
+      return builder:output()
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
   },
@@ -209,7 +229,7 @@ local formatters = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local researching_speed_text = "\n[font=default-semibold]"..player_data.translations.gui.researching_speed.."[/font] "
         ..round(obj_data.researching_speed, 3)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..researching_speed_text
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..researching_speed_text
     end,
     enabled = function() return false end
   },
@@ -217,7 +237,7 @@ local formatters = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view)
       local stack_size = obj_data.stack_size and "\n[font=default-semibold]"..player_data.translations.gui.stack_size.."[/font] "..obj_data.stack_size or ""
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..stack_size..interaction_help
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..stack_size..interaction_help
     end,
     enabled = function() return true end
   },
@@ -225,7 +245,7 @@ local formatters = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local pumping_speed_text = "\n[font=default-semibold]"..player_data.translations.gui.pumping_speed.."[/font] "..round(obj_data.pumping_speed * 60, 1)
         ..player_data.translations.gui.per_second
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..pumping_speed_text
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..pumping_speed_text
     end,
     enabled = function() return false end
   },
@@ -270,20 +290,20 @@ local formatters = {
       end
 
       local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..ingredients_string..products_string..interaction_help
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..ingredients_string..products_string..interaction_help
     end,
     enabled = function() return true end
   },
   resource = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()
     end,
     enabled = function() return false end
   },
   technology = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local interaction_help = is_label and "" or ("\n"..player_data.translations.gui.click_to_view_technology)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)..interaction_help
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..interaction_help
     end,
     enabled = function() return true end
   }
