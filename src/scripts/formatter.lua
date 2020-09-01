@@ -9,7 +9,6 @@ local class_to_font_glyph = constants.class_to_font_glyph
 local colors = constants.colors
 local concat = table.concat
 local floor = math.floor
-local unpack = table.unpack
 
 -- round
 local function round(num, decimals)
@@ -131,7 +130,6 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   -- object properties
   local internal_class = obj_data.internal_class
   local prototype_name = obj_data.prototype_name
-  local rocket_parts = obj_data.rocket_parts_required
   local sprite_class = obj_data.sprite_class
 
   -- translation
