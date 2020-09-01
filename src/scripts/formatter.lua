@@ -9,6 +9,7 @@ local class_to_font_glyph = constants.class_to_font_glyph
 local colors = constants.colors
 local concat = table.concat
 local floor = math.floor
+local unpack = table.unpack
 
 -- from http://lua-users.org/wiki/SimpleRound
 local function round(num, decimals)
@@ -352,7 +353,7 @@ function formatter.format(obj_data, player_data, amount_string, always_show, is_
   .."."..tostring(is_label)
   local cached_return = cache[cache_key]
   if cached_return then
-    return table.unpack(cached_return)
+    return unpack(cached_return)
   else
     local should_show, style, caption, tooltip, enabled = format_item(obj_data, player_data, amount_string, always_show, is_label)
     cache[cache_key] = { should_show, style, caption, tooltip, enabled }
