@@ -274,20 +274,22 @@ local formatters = {
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- ingredients and products
       local ip_str_arr = {}
-      for material_type in pairs(ingredients_products_keys) do
-        local materials = obj_data[material_type]
-        local materials_len = #materials
-        if materials_len > 0 then
-          ip_str_arr[#ip_str_arr+1] = "\n"..build_rich_text("font", "default-semibold", gui_translations[material_type.."_tooltip"])
-          for i = 1, #materials do
-            local material = materials[i]
-            local material_data = materials_data[material.type.."."..material.name]
-            if material_data then
-              local _, style, label = formatter.format(material_data, player_data, material.amount_string, true)
-              if style == "rb_unresearched_list_box_item" then
-                ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
-              else
-                ip_str_arr[#ip_str_arr+1] = "\n  "..label
+      if player_data.settings.show_detailed_recipe_tooltips then
+        for material_type in pairs(ingredients_products_keys) do
+          local materials = obj_data[material_type]
+          local materials_len = #materials
+          if materials_len > 0 then
+            ip_str_arr[#ip_str_arr+1] = "\n"..build_rich_text("font", "default-semibold", gui_translations[material_type.."_tooltip"])
+            for i = 1, #materials do
+              local material = materials[i]
+              local material_data = materials_data[material.type.."."..material.name]
+              if material_data then
+                local _, style, label = formatter.format(material_data, player_data, material.amount_string, true)
+                if style == "rb_unresearched_list_box_item" then
+                  ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
+                else
+                  ip_str_arr[#ip_str_arr+1] = "\n  "..label
+                end
               end
             end
           end

@@ -144,7 +144,9 @@ constants.settings = {
     open_fluid_hotkey = {
       prototype_name = "rb-open-fluid-hotkey",
       has_tooltip = true
-    },
+    }
+  },
+  interface = {
     show_hidden = {
       prototype_name = "rb-show-hidden-objects",
       has_tooltip = true
@@ -160,7 +162,11 @@ constants.settings = {
     show_alternate_name = {
       prototype_name = "rb-show-alternate-name",
       has_tooltip = true
-    }
+    },
+    show_detailed_recipe_tooltips = {
+      prototype_name = "rb-show-detailed-recipe-tooltips",
+      has_tooltip = true
+    },
   },
   search = {
     use_fuzzy_search = {

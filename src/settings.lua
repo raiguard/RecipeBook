@@ -4,55 +4,62 @@ data:extend{
     name = "rb-open-item-hotkey",
     setting_type = "runtime-per-user",
     default_value = true,
-    order = "a"
+    order = "aa"
   },
   {
     type = "bool-setting",
     name = "rb-open-fluid-hotkey",
     setting_type = "runtime-per-user",
     default_value = true,
-    order = "b"
+    order = "ab"
   },
   {
     type = "bool-setting",
     name = "rb-show-hidden-objects",
     setting_type = "runtime-per-user",
     default_value = false,
-    order = "c"
+    order = "ba"
   },
   {
     type = "bool-setting",
     name = "rb-show-unresearched-objects",
     setting_type = "runtime-per-user",
     default_value = true,
-    order = "d"
+    order = "bb"
   },
   {
     type = "bool-setting",
     name = "rb-show-glyphs",
     setting_type = "runtime-per-user",
     default_value = true,
-    order = "e"
+    order = "bc"
   },
   {
     type = "bool-setting",
     name = "rb-show-alternate-name",
     setting_type = "runtime-per-user",
     default_value = false,
-    order = "f"
+    order = "bd"
+  },
+  {
+    type = "bool-setting",
+    name = "rb-show-detailed-recipe-tooltips",
+    setting_type = "runtime-per-user",
+    default_value = true,
+    order = "be"
   },
   {
     type = "bool-setting",
     name = "rb-use-fuzzy-search",
     setting_type = "runtime-per-user",
     default_value = false,
-    order = "ga"
+    order = "ca"
   },
   {
     type = "bool-setting",
     name = "rb-use-internal-names",
     setting_type = "runtime-per-user",
     default_value = false,
-    order = "gb"
+    order = "cb"
   }
 }

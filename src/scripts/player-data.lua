@@ -47,6 +47,7 @@ function player_data.update_settings(player, player_table)
     show_unresearched = mod_settings["rb-show-unresearched-objects"].value,
     show_glyphs = mod_settings["rb-show-glyphs"].value,
     show_alternate_name = mod_settings["rb-show-alternate-name"].value,
+    show_detailed_recipe_tooltips = mod_settings["rb-show-detailed-recipe-tooltips"].value,
     use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value,
     use_internal_names = mod_settings["rb-use-internal-names"].value,
   }
