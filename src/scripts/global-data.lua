@@ -310,9 +310,10 @@ function global_data.build_recipe_book()
     local category = prototype.category
     for crafter_name, crafter_data in pairs(recipe_book.crafter) do
       if crafter_data.categories[category] then
+        local rocket_parts_str = crafter_data.rocket_parts_required and crafter_data.rocket_parts_required.."x  " or ""
         data.made_in[#data.made_in+1] = {
           name = crafter_name,
-          amount_string = "("..round(prototype.energy / crafter_data.crafting_speed, 2).."s)"
+          amount_string = rocket_parts_str.."("..round(prototype.energy / crafter_data.crafting_speed, 2).."s)"
         }
       end
     end

@@ -74,7 +74,6 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
   -- object properties
   local internal_class = obj_data.internal_class
   local prototype_name = obj_data.prototype_name
-  local rocket_parts = obj_data.rocket_parts_required
   local sprite_class = obj_data.sprite_class
 
   -- translation key
@@ -92,11 +91,6 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
   end
   -- icon
   local icon_str = build_sprite(sprite_class, prototype_name).."  "
-  -- rocket parts
-  local rocket_parts_str = ""
-  if rocket_parts then
-    rocket_parts_str = build_rich_text("font", "default-semibold", rocket_parts.."x").."  "
-  end
   -- amount string
   local amount_str = ""
   if amount then
@@ -106,7 +100,7 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
   local name_str = player_settings.use_internal_names and obj_data.prototype_name or translations[internal_class][translation_key]
 
   -- output
-  return glyph_str..hidden_str..icon_str..rocket_parts_str..amount_str..name_str
+  return glyph_str..hidden_str..icon_str..amount_str..name_str
 end
 
 local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
