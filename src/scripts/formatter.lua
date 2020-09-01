@@ -174,7 +174,7 @@ local formatters = {
         -- get fixed recipe data
         local fixed_recipe_data = global.recipe_book.recipe[obj_data.fixed_recipe]
         if fixed_recipe_data then
-          local title_str = ("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).." ")
+          local title_str = ("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).."  ")
           -- fixed recipe
           local _, style, label = formatter.format(fixed_recipe_data, player_data, nil, true)
           if style == "rb_unresearched_list_box_item" then
@@ -266,9 +266,11 @@ local formatters = {
 
       -- build string
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-
+      -- crafting_category
+      local category_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.category).." "..obj_data.category
+      -- crafting time, ingredients and products
       local ip_str_arr = {}
-      if player_settings.show_detailed_recipe_tooltips then
+      if player_settings.show_detailed_recipe_tooltips and not is_label then
         -- crafting time
         ip_str_arr[1] = "\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_time).." "..round(obj_data.energy, 2).." "
           ..gui_translations.seconds_standalone
@@ -300,7 +302,7 @@ local formatters = {
         interaction_help_str = "\n"..gui_translations.click_to_view
       end
 
-      return base_str..ip_str..interaction_help_str
+      return base_str..category_str..ip_str..interaction_help_str
     end,
     enabled = function() return true end
   },
