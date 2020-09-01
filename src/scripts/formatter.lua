@@ -261,9 +261,16 @@ local formatters = {
   },
   offshore_pump = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local pumping_speed_text = "\n[font=default-semibold]"..player_data.translations.gui.pumping_speed.."[/font] "..round(obj_data.pumping_speed * 60, 1)
-        ..player_data.translations.gui.per_second
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..pumping_speed_text
+      -- locals
+      local gui_translations = player_data.translations.gui
+
+      -- build string
+      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      -- pumping speed
+      builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.pumping_speed, " "))
+      builder:add(round(obj_data.pumping_speed * 60, 0)..gui_translations.per_second)
+
+      return builder:output()
     end,
     enabled = function() return false end
   },
