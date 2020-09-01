@@ -16,26 +16,12 @@ local function round(num, decimals)
   return floor(num * mult + 0.5) / mult
 end
 
+-- string builders
 local function build_rich_text(key, value, inner)
   return "["..key.."="..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
 end
-
 local function build_sprite(class, name)
   return "[img="..class.."/"..name.."]"
-end
-
--- string builder
-local function builder_add(self, str)
-  self[#self+1] = str
-end
-local function builder_output(self)
-  return concat(self)
-end
-local function create_builder()
-  return {
-    add = builder_add,
-    output = builder_output
-  }
 end
 
 local function get_properties(obj_data, force_index)
