@@ -113,7 +113,7 @@ function global_data.build_recipe_book()
     recipe_book.crafter[name] = {
       available_to_all_forces = true,
       blueprintable = false,
-      categories = prototype.crafting_categories,
+      categories = convert_and_sort(prototype.crafting_categories),
       crafting_speed = 1,
       hidden = false,
       internal_class = "crafter",
