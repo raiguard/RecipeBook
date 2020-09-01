@@ -227,9 +227,13 @@ local formatters = {
   },
   lab = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local researching_speed_text = "\n[font=default-semibold]"..player_data.translations.gui.researching_speed.."[/font] "
-        ..round(obj_data.researching_speed, 3)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched):output()..researching_speed_text
+      local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      -- researching speed
+      builder:add("\n")
+      builder:add(build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed, " "))
+      builder:add(round(obj_data.researching_speed, 2))
+
+      return builder:output()
     end,
     enabled = function() return false end
   },
