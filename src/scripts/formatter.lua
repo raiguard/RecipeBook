@@ -9,6 +9,7 @@ local class_to_font_glyph = constants.class_to_font_glyph
 local colors = constants.colors
 local concat = table.concat
 local floor = math.floor
+local unpack = table.unpack
 
 -- round
 local function round(num, decimals)
@@ -16,36 +17,24 @@ local function round(num, decimals)
   return floor(num * mult + 0.5) / mult
 end
 
+local function build_rich_text(key, value, inner, suffix)
+  return concat{"[", key, "=", key == "color" and colors[value].str or value, "]", inner, "[/", key, "]", suffix}
+end
+
+local function build_sprite(class, name, suffix)
+  return concat{"[img=", class, "/", name, "]", suffix}
+end
+
 -- string builder
 local function builder_add(self, str)
-  local arr = self.arr
-  arr[#arr+1] = str
-end
-local function builder_add_rich_text(self, key, value, inner, suffix)
-  local rich_text_arr = {"[", key, "=", key == "color" and colors[value].str or value, "]", inner, "[/", key, "]", suffix}
-  local arr = self.arr
-  local arr_len = #arr
-  for i = 1, #rich_text_arr do
-    arr[arr_len + i] = rich_text_arr[i]
-  end
-end
-local function builder_add_sprite(self, class, name, suffix)
-  local sprite_arr = {"[img=", class, "/", name, "]", suffix}
-  local arr = self.arr
-  local arr_len = #arr
-  for i = 1, #sprite_arr do
-    arr[arr_len + i] = sprite_arr[i]
-  end
+  self[#self+1] = str
 end
 local function builder_output(self)
-  return concat(self.arr)
+  return concat(self)
 end
 local function create_builder()
   return {
     add = builder_add,
-    add_rich_text = builder_add_rich_text,
-    add_sprite = builder_add_sprite,
-    arr = {},
     output = builder_output
   }
 end
@@ -103,54 +92,77 @@ local function caption_formatter(obj_data, player_data, is_hidden, amount)
   local rocket_parts = obj_data.rocket_parts_required
   local sprite_class = obj_data.sprite_class
 
-  -- key and translation
-  local translation_key = obj_data.internal_class == "material" and concat{sprite_class, ".", prototype_name} or prototype_name
-  local translation = translations[internal_class][translation_key]
+  -- translation key
+  local translation_key = internal_class == "material" and concat{sprite_class, ".", prototype_name} or prototype_name
 
   -- build string
   local builder = create_builder()
   -- glyph
   if player_settings.show_glyphs then
-    builder:add_rich_text("font", "RecipeBook", class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class], "  ")
+    builder:add(build_rich_text("font", "RecipeBook", class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class], "  "))
   end
   -- hidden
   if is_hidden then
-    builder:add_rich_text("font", "default-semibold", translations.gui.hidden_abbrev, "  ")
+    builder:add(build_rich_text("font", "default-semibold", translations.gui.hidden_abbrev, "  "))
   end
   -- icon
-  builder:add_sprite(sprite_class, prototype_name, "  ")
+  builder:add(build_sprite(sprite_class, prototype_name, "  "))
   -- rocket parts
   if rocket_parts then
-    builder:add_rich_text("font", "default-semibold", rocket_parts.."x", "  ")
+    builder:add(build_rich_text("font", "default-semibold", rocket_parts.."x", "  "))
   end
   -- amount string
   if amount then
-    builder:add_rich_text("font", "default-semibold", amount, "  ")
+    builder:add(build_rich_text("font", "default-semibold", amount, "  "))
   end
   -- name
-  builder:add(player_settings.use_internal_names and obj_data.prototype_name or translation)
+  builder:add(player_settings.use_internal_names and obj_data.prototype_name or translations[internal_class][translation_key])
 
   -- output
   return builder:output()
 end
 
 local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+  -- locals
+  local player_settings = player_data.settings
   local translations = player_data.translations
-  local translation_key = obj_data.internal_class == "material" and obj_data.sprite_class.."."..obj_data.prototype_name or obj_data.prototype_name
-  local translation = player_data.translations[obj_data.internal_class][translation_key]
-  local use_internal_names = player_data.settings.use_internal_names
-  local name = use_internal_names and obj_data.prototype_name or translation
-  local alternate_name = player_data.settings.show_alternate_name and ("\n"..(use_internal_names and translation or obj_data.prototype_name)) or ""
+  local gui_translations = translations.gui
 
+  -- object properties
+  local internal_class = obj_data.internal_class
+  local prototype_name = obj_data.prototype_name
+  local rocket_parts = obj_data.rocket_parts_required
+  local sprite_class = obj_data.sprite_class
+
+  -- translation
+  local translation = translations[internal_class][internal_class == "material" and concat{sprite_class, ".", prototype_name} or prototype_name]
+
+  -- settings
+  local show_alternate_name = player_settings.show_alternate_name
+  local use_internal_names = player_settings.use_internal_names
+
+  -- build string
+  local builder = create_builder()
+  -- title
+  builder:add(build_sprite(sprite_class, prototype_name, "  "))
+  builder:add(build_rich_text("font", "default-bold", build_rich_text("color", "heading", use_internal_names and prototype_name or translation), "\n"))
+  -- alternate name
+  if show_alternate_name then
+    builder:add(build_rich_text("color", "green", use_internal_names and translation or prototype_name))
+  end
+  -- category class
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
+  builder:add(build_rich_text("color", "info", gui_translations[category_class]))
+  -- hidden
+  if is_hidden then
+    builder:add("  |  "..gui_translations.hidden)
+  end
+  -- unresearched
+  if not is_researched then
+    builder:add("  |  "..build_rich_text("color", "unresearched", gui_translations.unresearched))
+  end
 
-  local hidden_string = is_hidden and "  |  "..translations.gui.hidden or ""
-  local unresearched_string = not is_researched and "  |  [color="..colors.unresearched.str.."]"..translations.gui.unresearched.."[/color]" or ""
-
-  return
-    "[img="..obj_data.sprite_class.."/"..obj_data.prototype_name.."]  [font=default-bold][color="..colors.heading.str.."]"..name.."[/color][/font]"
-    .."[color="..colors.green.str.."]"..alternate_name.."[/color]"
-    .."\n[color="..colors.info.str.."]"..translations.gui[category_class].."[/color]"..hidden_string..unresearched_string
+  return builder:output()
 end
 
 local formatters = {
