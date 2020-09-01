@@ -208,7 +208,7 @@ local formatters = {
         blueprintable_str = "\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available)
       end
 
-      return base_str..fixed_recipe_str..crafting_speed_str..crafting_categories_str..blueprintable_str..fixed_recipe_help_str
+      return base_str..rocket_parts_str..fixed_recipe_str..crafting_speed_str..crafting_categories_str..blueprintable_str..fixed_recipe_help_str
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
   },
