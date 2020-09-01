@@ -287,7 +287,7 @@ local formatters = {
       local builder = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- ingredients and products
       for material_type in pairs(ingredients_products_keys) do
-        builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations.ingredients_tooltip))
+        builder:add("\n"..build_rich_text("font", "default-semibold", gui_translations[material_type.."_tooltip"]))
         local materials = obj_data[material_type]
         for i = 1, #materials do
           local material = materials[i]
