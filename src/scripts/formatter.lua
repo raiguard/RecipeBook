@@ -94,31 +94,33 @@ local function caption_formatter(obj_data, player_data, is_hidden, amount)
   -- translation key
   local translation_key = internal_class == "material" and sprite_class.."."..prototype_name or prototype_name
 
-  -- build string
-  local builder = create_builder()
   -- glyph
+  local glyph_str = ""
   if player_settings.show_glyphs then
-    builder:add(build_rich_text("font", "RecipeBook", class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class]).."  ")
+    glyph_str = build_rich_text("font", "RecipeBook", class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class]).."  "
   end
   -- hidden
+  local hidden_str = ""
   if is_hidden then
-    builder:add(build_rich_text("font", "default-semibold", translations.gui.hidden_abbrev).."  ")
+    hidden_str = build_rich_text("font", "default-semibold", translations.gui.hidden_abbrev).."  "
   end
   -- icon
-  builder:add(build_sprite(sprite_class, prototype_name).."  ")
+  local icon_str = build_sprite(sprite_class, prototype_name).."  "
   -- rocket parts
+  local rocket_parts_str = ""
   if rocket_parts then
-    builder:add(build_rich_text("font", "default-semibold", rocket_parts.."x").."  ")
+    rocket_parts_str = build_rich_text("font", "default-semibold", rocket_parts.."x").."  "
   end
   -- amount string
+  local amount_str = ""
   if amount then
-    builder:add(build_rich_text("font", "default-semibold", amount).."  ")
+    amount_str = build_rich_text("font", "default-semibold", amount).."  "
   end
   -- name
-  builder:add(player_settings.use_internal_names and obj_data.prototype_name or translations[internal_class][translation_key])
+  local name_str = player_settings.use_internal_names and obj_data.prototype_name or translations[internal_class][translation_key]
 
   -- output
-  return builder:output()
+  return glyph_str..hidden_str..icon_str..rocket_parts_str..amount_str..name_str
 end
 
 local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
