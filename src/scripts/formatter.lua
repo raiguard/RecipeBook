@@ -141,28 +141,29 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   local show_alternate_name = player_settings.show_alternate_name
   local use_internal_names = player_settings.use_internal_names
 
-  -- build string
-  local builder = create_builder()
   -- title
-  builder:add(build_sprite(sprite_class, prototype_name).."  ")
-  builder:add(build_rich_text("font", "default-bold", build_rich_text("color", "heading", use_internal_names and prototype_name or translation)).."\n")
+  local title_str = build_sprite(sprite_class, prototype_name).."  "
+    ..build_rich_text("font", "default-bold", build_rich_text("color", "heading", use_internal_names and prototype_name or translation)).."\n"
   -- alternate name
+  local alternate_name_str = ""
   if show_alternate_name then
-    builder:add(build_rich_text("color", "green", use_internal_names and translation or prototype_name).."\n")
+    alternate_name_str = build_rich_text("color", "green", use_internal_names and translation or prototype_name).."\n"
   end
   -- category class
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
-  builder:add(build_rich_text("color", "info", gui_translations[category_class]))
+  local category_class_str = build_rich_text("color", "info", gui_translations[category_class])
   -- hidden
+  local hidden_str = ""
   if is_hidden then
-    builder:add("  |  "..gui_translations.hidden)
+    hidden_str = "  |  "..gui_translations.hidden
   end
   -- unresearched
+  local unresearched_str = ""
   if not is_researched then
-    builder:add("  |  "..build_rich_text("color", "unresearched", gui_translations.unresearched))
+    unresearched_str = "  |  "..build_rich_text("color", "unresearched", gui_translations.unresearched)
   end
 
-  return builder
+  return title_str..alternate_name_str..category_class_str..hidden_str..unresearched_str
 end
 
 local ingredients_products_keys = {ingredients=true, products=true}
