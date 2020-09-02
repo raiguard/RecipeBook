@@ -179,7 +179,7 @@ local formatters = {
           -- fixed recipe
           local _, style, label = formatter.format(fixed_recipe_data, player_data, nil, true)
           if style == "rb_unresearched_list_box_item" then
-            fixed_recipe_str = title_str..build_rich_text("color", "unavailable", label)
+            fixed_recipe_str = title_str..build_rich_text("color", "unresearched", label)
           else
             fixed_recipe_str = title_str..label
           end
@@ -341,6 +341,7 @@ local function format_item(obj_data, player_data, amount_string, always_show, is
   end
 end
 
+-- get the corresponding data from the cache, or generate it (memoized)
 function formatter.format(obj_data, player_data, amount_string, always_show, is_label)
   local player_index = player_data.player_index
   local cache = caches[player_index]
@@ -356,7 +357,7 @@ function formatter.format(obj_data, player_data, amount_string, always_show, is_
     return unpack(cached_return)
   else
     local should_show, style, caption, tooltip, enabled = format_item(obj_data, player_data, amount_string, always_show, is_label)
-    cache[cache_key] = { should_show, style, caption, tooltip, enabled }
+    cache[cache_key] = {should_show, style, caption, tooltip, enabled}
     return should_show, style, caption, tooltip, enabled
   end
 end
