@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.3.0
-Date: ????
+Date: 2020-09-02
   Features:
     - Added setting to disable the "alternate name" in object tooltips
     - Added `usable in` list to the material page, listing the labs that that science pack is usable in
