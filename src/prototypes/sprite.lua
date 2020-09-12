@@ -1,4 +1,4 @@
-local data_util = require("__flib__.data_util")
+local data_util = require("__flib__.data-util")
 
 local frame_action_icons = "__RecipeBook__/graphics/frame-action-icons.png"
 local tool_icons = "__RecipeBook__/graphics/tool-icons.png"
