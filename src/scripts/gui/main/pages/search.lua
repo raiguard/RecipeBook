@@ -135,7 +135,7 @@ function search_page.build()
             {
               type = "label",
               style = "info_label",
-              caption = {"", "[img = info] ", {"rb-gui.results-limited", constants.search_results_limit}}
+              caption = {"", "[img=info] ", {"rb-gui.results-limited", constants.search_results_limit}}
             }
           }
         },

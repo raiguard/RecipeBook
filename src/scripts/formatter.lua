@@ -1,5 +1,7 @@
 local formatter = {}
 
+local math = require("__flib__.math")
+
 local constants = require("constants")
 
 local caches = {}
@@ -11,19 +13,12 @@ local concat = table.concat
 local floor = math.floor
 local unpack = table.unpack
 
--- TODO use flib math
--- from http://lua-users.org/wiki/SimpleRound
-local function round(num, decimals)
-  local mult = 10^(decimals or 0)
-  return floor(num * mult + 0.5) / mult
-end
-
 -- string builders
 local function build_rich_text(key, value, inner)
-  return "["..key.." = "..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
+  return "["..key.."="..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
 end
 local function build_sprite(class, name)
-  return "[img = "..class.."/"..name.."]"
+  return "[img="..class.."/"..name.."]"
 end
 
 local function get_properties(obj_data, force_index)
@@ -220,7 +215,7 @@ local formatters = {
         "\n"
         ..build_rich_text("font", "default-semibold", gui_translations.crafting_speed)
         .." "
-        ..round(obj_data.crafting_speed, 2)
+        ..math.round_to(obj_data.crafting_speed, 2)
       )
       -- crafting categories
       local crafting_categories_str_arr = {
@@ -259,7 +254,7 @@ local formatters = {
         "\n"
         ..build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed)
         .." "
-        ..round(obj_data.researching_speed, 2)
+        ..math.round_to(obj_data.researching_speed, 2)
       )
 
       return base_str..researching_speed_str
@@ -303,7 +298,7 @@ local formatters = {
         "\n"
         ..build_rich_text("font", "default-semibold", gui_translations.pumping_speed)
         .." "
-        ..round(obj_data.pumping_speed * 60, 0)
+        ..math.round_to(obj_data.pumping_speed * 60, 0)
         ..gui_translations.per_second
       )
 
@@ -334,7 +329,7 @@ local formatters = {
         ip_str_arr[1] = (
           "\n"
           ..build_rich_text("font", "default-semibold", gui_translations.crafting_time)
-          .." "..round(obj_data.energy, 2)
+          .." "..math.round_to(obj_data.energy, 2)
           .." "
           ..gui_translations.seconds_standalone
         )

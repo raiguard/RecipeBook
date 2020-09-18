@@ -249,7 +249,7 @@ gui.add_handlers{
   shared = {
     list_box_item = {
       on_gui_click = function(e)
-        local _, _, class, name = string.find(e.element.caption, "^.-%[img = (.-)/(.-)%]  .*$")
+        local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%]  .*$")
         local player = game.get_player(e.player_index)
         local player_table = global.players[e.player_index]
         if class == "technology" then

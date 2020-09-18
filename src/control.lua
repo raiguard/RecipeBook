@@ -50,14 +50,14 @@ end)
 event.on_load(function()
   gui.build_lookup_tables()
   formatter.create_all_caches()
-  on_tick.update()
+  on_tick.register()
 end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
     gui.check_filter_validity()
     translation.init()
-    on_tick.update()
+    on_tick.register()
 
     global_data.build_recipe_book()
     global_data.check_forces()
@@ -263,7 +263,7 @@ event.on_string_translated(function(e)
     -- enable shortcut
     player.set_shortcut_available("rb-toggle-gui", true)
     -- update on_tick
-    on_tick.update()
+    on_tick.register()
   end
 end)
 

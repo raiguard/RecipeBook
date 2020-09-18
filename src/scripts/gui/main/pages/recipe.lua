@@ -31,11 +31,11 @@ function recipe_page.update(int_name, gui_data, player_data)
   local update_list_box = gui.templates.info_list_box.update
 
   -- set time item
-  local time_item_prefix = player_data.settings.show_glyphs and "[font = RecipeBook]Z[/font]   " or ""
+  local time_item_prefix = player_data.settings.show_glyphs and "[font=RecipeBook]Z[/font]   " or ""
   local time_item = gui_data.recipe.ingredients.time_item
   time_item.caption = {
     "",
-    time_item_prefix.."[img = quantity-time]   [font = default-bold]",
+    time_item_prefix.."[img=quantity-time]   [font=default-bold]",
     {"rb-gui.seconds", obj_data.energy},
     "[/font]"
   }

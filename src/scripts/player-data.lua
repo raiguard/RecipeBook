@@ -68,7 +68,7 @@ end
 
 function player_data.start_translations(player_index)
   translation.add_requests(player_index, global.translation_data)
-  on_tick.update()
+  on_tick.register()
 end
 
 function player_data.refresh(player, player_table)
