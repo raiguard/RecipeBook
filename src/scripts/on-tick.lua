@@ -11,6 +11,7 @@ function on_tick.handler(e)
   end
 end
 
+-- TODO rename
 function on_tick.update()
   if global.__flib and translation.translating_players_count() > 0 then
     event.on_tick(on_tick.handler)

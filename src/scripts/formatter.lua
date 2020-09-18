@@ -11,6 +11,7 @@ local concat = table.concat
 local floor = math.floor
 local unpack = table.unpack
 
+-- TODO use flib math
 -- from http://lua-users.org/wiki/SimpleRound
 local function round(num, decimals)
   local mult = 10^(decimals or 0)
@@ -83,7 +84,11 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
   -- glyph
   local glyph_str = ""
   if player_settings.show_glyphs then
-    glyph_str = build_rich_text("font", "RecipeBook", class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class]).."  "
+    glyph_str = build_rich_text(
+      "font",
+      "RecipeBook",
+      class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class]
+    ).."  "
   end
   -- hidden
   local hidden_str = ""
@@ -98,7 +103,11 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
     amount_str = build_rich_text("font", "default-semibold", amount).."  "
   end
   -- name
-  local name_str = player_settings.use_internal_names and obj_data.prototype_name or translations[internal_class][translation_key]
+  local name_str = (
+    player_settings.use_internal_names
+    and obj_data.prototype_name
+    or translations[internal_class][translation_key]
+  )
 
   -- output
   return glyph_str..hidden_str..icon_str..amount_str..name_str
@@ -116,15 +125,29 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   local sprite_class = obj_data.sprite_class
 
   -- translation
-  local translation = translations[internal_class][internal_class == "material" and sprite_class.."."..prototype_name or prototype_name]
+  local translation = (
+    translations[internal_class][
+      internal_class == "material"
+      and sprite_class.."."..prototype_name
+      or prototype_name
+    ]
+  )
 
   -- settings
   local show_alternate_name = player_settings.show_alternate_name
   local use_internal_names = player_settings.use_internal_names
 
   -- title
-  local title_str = build_sprite(sprite_class, prototype_name).."  "
-    ..build_rich_text("font", "default-bold", build_rich_text("color", "heading", use_internal_names and prototype_name or translation)).."\n"
+  local title_str = (
+    build_sprite(sprite_class, prototype_name)
+    .."  "
+    ..build_rich_text(
+      "font",
+      "default-bold",
+      build_rich_text("color", "heading", use_internal_names and prototype_name or translation)
+    )
+    .."\n"
+  )
   -- alternate name
   local alternate_name_str = ""
   if show_alternate_name then
@@ -166,7 +189,12 @@ local formatters = {
       -- rocket parts
       local rocket_parts_str = ""
       if rocket_parts_required then
-        rocket_parts_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.rocket_parts_required).." "..rocket_parts_required
+        rocket_parts_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.rocket_parts_required)
+          .." "
+          ..rocket_parts_required
+        )
       end
       -- fixed recipe
       local fixed_recipe_str = ""
@@ -188,9 +216,17 @@ local formatters = {
         end
       end
       -- crafting speed
-      local crafting_speed_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_speed).." "..round(obj_data.crafting_speed, 2)
+      local crafting_speed_str = (
+        "\n"
+        ..build_rich_text("font", "default-semibold", gui_translations.crafting_speed)
+        .." "
+        ..round(obj_data.crafting_speed, 2)
+      )
       -- crafting categories
-      local crafting_categories_str_arr = {"\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_categories)}
+      local crafting_categories_str_arr = {
+        "\n"
+        ..build_rich_text("font", "default-semibold", gui_translations.crafting_categories)
+      }
       for i = 1, #categories do
         crafting_categories_str_arr[#crafting_categories_str_arr+1] = "\n  "..categories[i]
       end
@@ -203,7 +239,15 @@ local formatters = {
         blueprintable_str = "\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available)
       end
 
-      return base_str..rocket_parts_str..fixed_recipe_str..crafting_speed_str..crafting_categories_str..blueprintable_str..fixed_recipe_help_str
+      return (
+        base_str
+        ..rocket_parts_str
+        ..fixed_recipe_str
+        ..crafting_speed_str
+        ..crafting_categories_str
+        ..blueprintable_str
+        ..fixed_recipe_help_str
+      )
     end,
     enabled = function(obj_data) return obj_data.blueprintable end
   },
@@ -211,8 +255,12 @@ local formatters = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- researching speed
-      local researching_speed_str = "\n"..build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed).." "
+      local researching_speed_str = (
+        "\n"
+        ..build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed)
+        .." "
         ..round(obj_data.researching_speed, 2)
+      )
 
       return base_str..researching_speed_str
     end,
@@ -251,8 +299,13 @@ local formatters = {
       -- build string
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- pumping speed
-      local pumping_speed_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.pumping_speed).." "..round(obj_data.pumping_speed * 60, 0)
+      local pumping_speed_str = (
+        "\n"
+        ..build_rich_text("font", "default-semibold", gui_translations.pumping_speed)
+        .." "
+        ..round(obj_data.pumping_speed * 60, 0)
         ..gui_translations.per_second
+      )
 
       return base_str..pumping_speed_str
     end,
@@ -268,19 +321,32 @@ local formatters = {
       -- build string
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- crafting_category
-      local category_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.category).." "..obj_data.category
+      local category_str = (
+        "\n"
+        ..build_rich_text("font", "default-semibold", gui_translations.category)
+        .." "
+        ..obj_data.category
+      )
       -- crafting time, ingredients and products
       local ip_str_arr = {}
       if player_settings.show_detailed_recipe_tooltips and not is_label then
         -- crafting time
-        ip_str_arr[1] = "\n"..build_rich_text("font", "default-semibold", gui_translations.crafting_time).." "..round(obj_data.energy, 2).." "
+        ip_str_arr[1] = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.crafting_time)
+          .." "..round(obj_data.energy, 2)
+          .." "
           ..gui_translations.seconds_standalone
+        )
         -- ingredients and products
         for material_type in pairs(ingredients_products_keys) do
           local materials = obj_data[material_type]
           local materials_len = #materials
           if materials_len > 0 then
-            ip_str_arr[#ip_str_arr+1] = "\n"..build_rich_text("font", "default-semibold", gui_translations[material_type.."_tooltip"])
+            ip_str_arr[#ip_str_arr+1] = (
+              "\n"
+              ..build_rich_text("font", "default-semibold", gui_translations[material_type.."_tooltip"])
+            )
             for i = 1, #materials do
               local material = materials[i]
               local material_data = materials_data[material.type.."."..material.name]
@@ -356,7 +422,13 @@ function formatter.format(obj_data, player_data, amount_string, always_show, is_
   if cached_return then
     return unpack(cached_return)
   else
-    local should_show, style, caption, tooltip, enabled = format_item(obj_data, player_data, amount_string, always_show, is_label)
+    local should_show, style, caption, tooltip, enabled = format_item(
+      obj_data,
+      player_data,
+      amount_string,
+      always_show,
+      is_label
+    )
     cache[cache_key] = {should_show, style, caption, tooltip, enabled}
     return should_show, style, caption, tooltip, enabled
   end

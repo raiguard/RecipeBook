@@ -49,12 +49,25 @@ function quick_ref_gui.create(player, player_table, name)
   local gui_data, filters = gui.build(player.gui.screen, {
     {type = "frame", direction = "vertical", save_as = "window", children = {
       {type = "flow", save_as = "titlebar.flow", children = {
-        {type = "label", style = "frame_title", caption = {"rb-gui.recipe"}, elem_mods = {ignored_by_interaction = true}},
-        {type = "empty-widget", style = "flib_titlebar_drag_handle", elem_mods = {ignored_by_interaction = true}},
-        {template = "frame_action_button", name = "rb_quick_ref_expand_button__"..name, tooltip = {"rb-gui.view-details"}, sprite = "rb_expand_white",
-          hovered_sprite = "rb_expand_black", clicked_sprite = "rb_expand_black", handlers = "quick_ref.open_info_button"},
-        {template = "frame_action_button", name = "rb_quick_ref_close_button__"..name, sprite = "utility/close_white", hovered_sprite = "utility/close_black",
-          clicked_sprite = "utility/close_black", handlers = "quick_ref.close_button"}
+        {type = "label", style = "frame_title", caption = {"rb-gui.recipe"}, ignored_by_interaction = true},
+        {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
+        {
+          template = "frame_action_button",
+          name = "rb_quick_ref_expand_button__"..name,
+          tooltip = {"rb-gui.view-details"},
+          sprite = "rb_expand_white",
+          hovered_sprite = "rb_expand_black",
+          clicked_sprite = "rb_expand_black",
+          handlers = "quick_ref.open_info_button"
+        },
+        {
+          template = "frame_action_button",
+          name = "rb_quick_ref_close_button__"..name,
+          sprite = "utility/close_white",
+          hovered_sprite = "utility/close_black",
+          clicked_sprite = "utility/close_black",
+          handlers = "quick_ref.close_button"
+        }
       }},
       {type = "frame", style = "rb_quick_ref_content_frame", direction = "vertical", children = {
         {type = "frame", style = "subheader_frame", children = {
@@ -63,8 +76,14 @@ function quick_ref_gui.create(player, player_table, name)
         }},
         {type = "flow", style = "rb_quick_ref_content_flow", direction = "vertical", children = {
           gui.templates.quick_ref_panel("ingredients", {
-            {type = "sprite-button", style = "flib_slot_button_default", tooltip = {"rb-gui.seconds-tooltip"}, sprite = "quantity-time", number = recipe_data.energy,
-              enabled = false}
+            {
+              type = "sprite-button",
+              style = "flib_slot_button_default",
+              tooltip = {"rb-gui.seconds-tooltip"},
+              sprite = "quantity-time",
+              number = recipe_data.energy,
+              enabled = false
+            }
           }),
           gui.templates.quick_ref_panel("products")
         }}
@@ -106,7 +125,11 @@ function quick_ref_gui.create(player, player_table, name)
 
       local button_style = string.find(style, "unresearched") and "flib_slot_button_red" or "flib_slot_button_default"
       tooltip = string.gsub(tooltip, "^.-color = .-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
-      local shown_string = obj.avg_amount_string and "~"..obj.avg_amount_string or string.gsub(obj.amount_string, "^.-(%d+)x$", "%1")
+      local shown_string = (
+        obj.avg_amount_string
+        and "~"..obj.avg_amount_string
+        or string.gsub(obj.amount_string, "^.-(%d+)x$", "%1")
+      )
 
       local button = table_add{
         type = "sprite-button",

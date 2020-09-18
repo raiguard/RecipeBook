@@ -26,7 +26,12 @@ gui.add_templates{
       return {type = "flow", direction = "vertical", save_as = save_location..".flow", children = {
         {type = "label", style = "rb_info_list_box_label", caption = caption, save_as = save_location..".label"},
         {type = "frame", style = "deep_frame_in_shallow_frame", save_as = save_location..".frame",  children = {
-          {type = "scroll-pane", style = "rb_list_box_scroll_pane", style_mods = {height = (rows * 28)}, save_as = save_location..".scroll_pane"}
+          {
+            type = "scroll-pane",
+            style = "rb_list_box_scroll_pane",
+            style_mods = {height = (rows * 28)},
+            save_as = save_location..".scroll_pane"
+          }
         }}
       }}
     end,
@@ -52,7 +57,12 @@ gui.add_templates{
         else
           obj_data = recipe_book[obj]
         end
-        local should_add, style, caption, tooltip, enabled = formatter(obj_data, player_data, obj.amount_string, always_show)
+        local should_add, style, caption, tooltip, enabled = formatter(
+          obj_data,
+          player_data,
+          obj.amount_string,
+          always_show
+        )
 
         if should_add then
           i = i + 1
@@ -64,7 +74,14 @@ gui.add_templates{
             item.tooltip = tooltip
             item.enabled = enabled
           else
-            add{type = "button", name = "rb_list_box_item__"..i, style = style, caption = caption, tooltip = tooltip, enabled = enabled}
+            add{
+              type = "button",
+              name = "rb_list_box_item__"..i,
+              style = style,
+              caption = caption,
+              tooltip = tooltip,
+              enabled = enabled
+            }
           end
         end
       end
@@ -275,63 +292,147 @@ gui.add_handlers{
 
 function main_gui.create(player, player_table)
   local gui_data = gui.build(player.gui.screen, {
-    {type = "frame", style = "outer_frame", elem_mods = {visible = false}, handlers = "base.window", save_as = "base.window.frame", children = {
-      -- main window
-      {type = "frame", style = "inner_frame_in_outer_frame", direction = "vertical", children = {
-        {type = "flow", save_as = "base.titlebar.flow", children = {
-          {template = "frame_action_button", sprite = "rb_nav_backward_white", hovered_sprite = "rb_nav_backward_black", clicked_sprite = "rb_nav_backward_black",
-            mouse_button_filter = {"left", "right"}, elem_mods = {enabled = false}, handlers = "base.nav_button.backward", save_as = "base.titlebar.nav_backward_button"},
-          {template = "frame_action_button", sprite = "rb_nav_forward_white", hovered_sprite = "rb_nav_forward_black", clicked_sprite = "rb_nav_forward_black",
-            elem_mods = {enabled = false}, handlers = "base.nav_button.forward", save_as = "base.titlebar.nav_forward_button"},
-          {type = "empty-widget"}, -- spacer
-          {type = "label", style = "frame_title", caption = {"mod-name.RecipeBook"}, elem_mods = {ignored_by_interaction = true}},
-          {type = "empty-widget", style = "flib_titlebar_drag_handle", elem_mods = {ignored_by_interaction = true}},
-          {template = "frame_action_button", tooltip = {"rb-gui.keep-open"}, sprite = "rb_pin_white", hovered_sprite = "rb_pin_black", clicked_sprite = "rb_pin_black",
-            handlers = "base.pin_button", save_as = "base.titlebar.pin_button"},
-          {template = "frame_action_button", tooltip = {"rb-gui.settings"}, sprite = "rb_settings_white", hovered_sprite = "rb_settings_black",
-            clicked_sprite = "rb_settings_black", handlers = "base.settings_button", save_as = "base.titlebar.settings_button"},
-          {template = "frame_action_button", sprite = "utility/close_white", hovered_sprite = "utility/close_black", clicked_sprite = "utility/close_black",
-            handlers = "base.close_button"}
-        }},
-        {type = "flow", style = "rb_main_frame_flow", children = {
-          -- search page
-          {type = "frame", style = "inside_shallow_frame", direction = "vertical", children = pages.search.build()},
-          -- info page
-          {type = "frame", style = "rb_main_info_frame", direction = "vertical", children = {
-            -- info bar
-            {type = "frame", style = "subheader_frame", elem_mods = {visible = false}, save_as = "base.info_bar.frame", children = {
-              {type = "label", style = "rb_toolbar_label", save_as = "base.info_bar.label"},
-              {template = "pushers.horizontal"},
-              {template = "tool_button", sprite = "rb_clipboard_black", tooltip = {"rb-gui.open-quick-reference"}, handlers = "base.quick_reference_button",
-                save_as = "base.info_bar.quick_ref_button"},
-              {template = "tool_button", sprite = "rb_favorite_black", tooltip = {"rb-gui.add-to-favorites"}, handlers = "base.favorite_button",
-                save_as = "base.info_bar.favorite_button"}
-            }},
-            -- content scroll pane
-            {type = "scroll-pane", style = "rb_naked_scroll_pane", children = {
+    {
+      type = "frame",
+      style = "outer_frame",
+      elem_mods = {visible = false},
+      handlers = "base.window",
+      save_as = "base.window.frame",
+      children = {
+        -- main window
+        {type = "frame", style = "inner_frame_in_outer_frame", direction = "vertical", children = {
+          {type = "flow", save_as = "base.titlebar.flow", children = {
+            {
+              template = "frame_action_button",
+              sprite = "rb_nav_backward_white",
+              hovered_sprite = "rb_nav_backward_black",
+              clicked_sprite = "rb_nav_backward_black",
+              mouse_button_filter = {"left", "right"},
+              elem_mods = {enabled = false},
+              handlers = "base.nav_button.backward",
+              save_as = "base.titlebar.nav_backward_button"
+            },
+            {
+              template = "frame_action_button",
+              sprite = "rb_nav_forward_white",
+              hovered_sprite = "rb_nav_forward_black",
+              clicked_sprite = "rb_nav_forward_black",
+              elem_mods = {enabled = false},
+              handlers = "base.nav_button.forward",
+              save_as = "base.titlebar.nav_forward_button"
+            },
+            {type = "empty-widget"}, -- spacer
+            {type = "label", style = "frame_title", caption = {"mod-name.RecipeBook"}, ignored_by_interaction = true},
+            {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
+            {
+              template = "frame_action_button",
+              tooltip = {"rb-gui.keep-open"},
+              sprite = "rb_pin_white",
+              hovered_sprite = "rb_pin_black",
+              clicked_sprite = "rb_pin_black",
+              handlers = "base.pin_button",
+              save_as = "base.titlebar.pin_button"
+            },
+            {
+              template = "frame_action_button",
+              tooltip = {"rb-gui.settings"},
+              sprite = "rb_settings_white",
+              hovered_sprite = "rb_settings_black",
+              clicked_sprite = "rb_settings_black",
+              handlers = "base.settings_button",
+              save_as = "base.titlebar.settings_button"
+            },
+            {
+              template = "frame_action_button",
+              sprite = "utility/close_white",
+              hovered_sprite = "utility/close_black",
+              clicked_sprite = "utility/close_black",
+              handlers = "base.close_button"
+            }
+          }},
+          {type = "flow", style = "rb_main_frame_flow", children = {
+            -- search page
+            {type = "frame", style = "inside_shallow_frame", direction = "vertical", children = pages.search.build()},
+            -- info page
+            {type = "frame", style = "rb_main_info_frame", direction = "vertical", children = {
+              -- info bar
               {
-                type = "flow", style = "rb_main_info_pane_flow", direction = "vertical", elem_mods = {visible = false}, save_as = "home.flow",
-                children = pages.home.build()},
-              {
-                type = "flow", style = "rb_main_info_pane_flow", direction = "vertical", elem_mods = {visible = false}, save_as = "material.flow",
-                children = pages.material.build()},
-              {
-                type = "flow", style = "rb_main_info_pane_flow", direction = "vertical", elem_mods = {visible = false}, save_as = "recipe.flow",
-                children = pages.recipe.build()}
+                type = "frame",
+                style = "subheader_frame",
+                elem_mods = {visible = false},
+                save_as = "base.info_bar.frame",
+                children = {
+                  {type = "label", style = "rb_toolbar_label", save_as = "base.info_bar.label"},
+                  {template = "pushers.horizontal"},
+                  {
+                    template = "tool_button",
+                    sprite = "rb_clipboard_black",
+                    tooltip = {"rb-gui.open-quick-reference"},
+                    handlers = "base.quick_reference_button",
+                    save_as = "base.info_bar.quick_ref_button"
+                  },
+                  {
+                    template = "tool_button",
+                    sprite = "rb_favorite_black",
+                    tooltip = {"rb-gui.add-to-favorites"},
+                    handlers = "base.favorite_button",
+                    save_as = "base.info_bar.favorite_button"
+                  }
+                }
+              },
+              -- content scroll pane
+              {type = "scroll-pane", style = "rb_naked_scroll_pane", children = {
+                {
+                  type = "flow",
+                  style = "rb_main_info_pane_flow",
+                  direction = "vertical",
+                  elem_mods = {visible = false},
+                  save_as = "home.flow",
+                  children = pages.home.build()
+                },
+                {
+                  type = "flow",
+                  style = "rb_main_info_pane_flow",
+                  direction = "vertical",
+                  elem_mods = {visible = false},
+                  save_as = "material.flow",
+                  children = pages.material.build()
+                },
+                {
+                  type = "flow",
+                  style = "rb_main_info_pane_flow",
+                  direction = "vertical",
+                  elem_mods = {visible = false},
+                  save_as = "recipe.flow",
+                  children = pages.recipe.build()
+                }
+              }}
             }}
-          }}
-        }}
+          }
+        }
       }},
       -- settings window
-      {type = "frame", style = "inner_frame_in_outer_frame", direction = "vertical", elem_mods = {visible = false}, save_as = "settings.window", children = {
-        {type = "flow", save_as = "settings.titlebar_flow", children = {
-          {type = "label", style = "frame_title", caption = {"gui-menu.settings"}, elem_mods = {ignored_by_interaction = true}},
-          {type = "empty-widget", style = "flib_dialog_titlebar_drag_handle", elem_mods = {ignored_by_interaction = true}},
-        }},
-        {type = "frame", style = "inside_shallow_frame", children = {
-          {type = "scroll-pane", style = "rb_settings_content_scroll_pane", direction = "vertical", children = pages.settings.build(player_table.settings)}
-        }}
-      }}
+      {
+        type = "frame",
+        style = "inner_frame_in_outer_frame",
+        direction = "vertical",
+        elem_mods = {visible = false},
+        save_as = "settings.window",
+        children = {
+          {type = "flow", save_as = "settings.titlebar_flow", children = {
+            {type = "label", style = "frame_title", caption = {"gui-menu.settings"}, ignored_by_interaction = true},
+            {type = "empty-widget", style = "flib_dialog_titlebar_drag_handle", ignored_by_interaction = true},
+          }},
+          {type = "frame", style = "inside_shallow_frame", children = {
+            {
+              type = "scroll-pane",
+              style = "rb_settings_content_scroll_pane",
+              direction = "vertical",
+              children = pages.settings.build(player_table.settings)
+            }
+          }}
+        }
+      }
     }}
   })
 
@@ -472,7 +573,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
 
     -- session history
     if session_history.position > 1 then
-      for _ = 1,session_history.position - 1 do
+      for _ = 1, session_history.position - 1 do
         table.remove(session_history, 1)
       end
       session_history.position = 1
@@ -503,7 +604,10 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
     forward_button.sprite = "rb_nav_forward_white"
     forward_button.enabled = true
     local forward_obj = session_history[session_history.position-1]
-    forward_button.tooltip = {"rb-gui.forward-to", string.lower(translations[forward_obj.int_class][forward_obj.int_name])}
+    forward_button.tooltip = {
+      "rb-gui.forward-to",
+      string.lower(translations[forward_obj.int_class][forward_obj.int_name])
+    }
   else
     forward_button.sprite = "rb_nav_forward_disabled"
     forward_button.enabled = false

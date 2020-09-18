@@ -96,7 +96,11 @@ function global_data.build_recipe_book()
     {dictionary = "gui", internal = "researching_speed", localised = {"rb-gui.researching-speed"}},
     {dictionary = "gui", internal = "rocket_parts_required", localised = {"rb-gui.rocket-parts-required"}},
     {dictionary = "gui", internal = "seconds_standalone", localised = {"rb-gui.seconds-standalone"}},
-    {dictionary = "gui", internal = "shift_click_to_view_fixed_recipe", localised = {"rb-gui.shift-click-to-view-fixed-recipe"}},
+    {
+      dictionary = "gui",
+      internal = "shift_click_to_view_fixed_recipe",
+      localised = {"rb-gui.shift-click-to-view-fixed-recipe"}
+    },
     {dictionary = "gui", internal = "stack_size", localised = {"rb-gui.stack-size"}},
     {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
   }
@@ -124,7 +128,11 @@ function global_data.build_recipe_book()
       sprite_class = "entity"
     }
     -- add to translations table
-    translation_data[#translation_data+1] = {dictionary = "crafter", internal = name, localised = prototype.localised_name}
+    translation_data[#translation_data+1] = {
+      dictionary = "crafter",
+      internal = name,
+      localised = prototype.localised_name
+    }
   end
 
   -- iterate crafters
@@ -161,7 +169,11 @@ function global_data.build_recipe_book()
       sprite_class = "entity"
     }
     -- add to translations table
-    translation_data[#translation_data+1] = {dictionary = "crafter", internal = name, localised = prototype.localised_name}
+    translation_data[#translation_data+1] = {
+      dictionary = "crafter",
+      internal = name,
+      localised = prototype.localised_name
+    }
   end
 
   -- iterate materials
@@ -218,7 +230,11 @@ function global_data.build_recipe_book()
         usable_in = {}
       }
       -- add to translations table
-      translation_data[#translation_data+1] = {dictionary = "material", internal = class.."."..name, localised = prototype.localised_name}
+      translation_data[#translation_data+1] = {
+        dictionary = "material",
+        internal = class.."."..name,
+        localised = prototype.localised_name
+      }
     end
   end
 
@@ -271,7 +287,11 @@ function global_data.build_recipe_book()
       sprite_class = "entity"
     }
     -- add to translations table
-    translation_data[#translation_data+1] = {dictionary = "offshore_pump", internal = name, localised = prototype.localised_name}
+    translation_data[#translation_data+1] = {
+      dictionary = "offshore_pump",
+      internal = name,
+      localised = prototype.localised_name
+    }
   end
 
   -- iterate recipes
@@ -320,7 +340,7 @@ function global_data.build_recipe_book()
     end
     -- material: ingredient in
     local ingredients = prototype.ingredients
-    for i = 1,#ingredients do
+    for i = 1, #ingredients do
       local ingredient = ingredients[i]
       local ingredient_data = recipe_book.material[ingredient.type.."."..ingredient.name]
       if ingredient_data then
@@ -330,7 +350,7 @@ function global_data.build_recipe_book()
     end
     -- material: product of
     local products = prototype.products
-    for i = 1,#products do
+    for i = 1, #products do
       local product = products[i]
       local product_data = recipe_book.material[product.type.."."..product.name]
       if product_data then
@@ -341,7 +361,11 @@ function global_data.build_recipe_book()
     -- insert into recipe book
     recipe_book.recipe[name] = data
     -- insert into translations table
-    translation_data[#translation_data+1] = {dictionary = "recipe", internal = name, localised = prototype.localised_name}
+    translation_data[#translation_data+1] = {
+      dictionary = "recipe",
+      internal = name,
+      localised = prototype.localised_name
+    }
   end
 
   -- iterate resources
@@ -364,7 +388,11 @@ function global_data.build_recipe_book()
       sprite_class = "entity"
     }
     -- insert into translations table
-    translation_data[#translation_data+1] = {dictionary = "resource", internal = name, localised = prototype.localised_name}
+    translation_data[#translation_data+1] = {
+      dictionary = "resource",
+      internal = name,
+      localised = prototype.localised_name
+    }
   end
 
   -- iterate technologies
@@ -407,7 +435,11 @@ function global_data.build_recipe_book()
         sprite_class = "technology"
       }
       -- insert into translations table
-      translation_data[#translation_data+1] = {dictionary = "technology", internal = prototype.name, localised = prototype.localised_name}
+      translation_data[#translation_data+1] = {
+        dictionary = "technology",
+        internal = prototype.name,
+        localised = prototype.localised_name
+      }
     end
   end
 
