@@ -67,38 +67,38 @@ function global_data.build_recipe_book()
   }
   local translation_data = {
     -- internal classes
-    {dictionary="gui", internal="crafter", localised={"rb-gui.crafter"}},
-    {dictionary="gui", internal="fluid", localised={"rb-gui.fluid"}},
-    {dictionary="gui", internal="item", localised={"rb-gui.item"}},
-    {dictionary="gui", internal="lab", localised={"rb-gui.lab"}},
-    {dictionary="gui", internal="material", localised={"rb-gui.material"}},
-    {dictionary="gui", internal="offshore_pump", localised={"rb-gui.offshore-pump"}},
-    {dictionary="gui", internal="recipe", localised={"rb-gui.recipe"}},
-    {dictionary="gui", internal="resource", localised={"rb-gui.resource"}},
-    {dictionary="gui", internal="technology", localised={"rb-gui.technology"}},
+    {dictionary = "gui", internal = "crafter", localised = {"rb-gui.crafter"}},
+    {dictionary = "gui", internal = "fluid", localised = {"rb-gui.fluid"}},
+    {dictionary = "gui", internal = "item", localised = {"rb-gui.item"}},
+    {dictionary = "gui", internal = "lab", localised = {"rb-gui.lab"}},
+    {dictionary = "gui", internal = "material", localised = {"rb-gui.material"}},
+    {dictionary = "gui", internal = "offshore_pump", localised = {"rb-gui.offshore-pump"}},
+    {dictionary = "gui", internal = "recipe", localised = {"rb-gui.recipe"}},
+    {dictionary = "gui", internal = "resource", localised = {"rb-gui.resource"}},
+    {dictionary = "gui", internal = "technology", localised = {"rb-gui.technology"}},
     -- captions
-    {dictionary="gui", internal="hidden_abbrev", localised={"rb-gui.hidden-abbrev"}},
+    {dictionary = "gui", internal = "hidden_abbrev", localised = {"rb-gui.hidden-abbrev"}},
     -- tooltips
-    {dictionary="gui", internal="blueprint_not_available", localised={"rb-gui.blueprint-not-available"}},
-    {dictionary="gui", internal="category", localised={"rb-gui.category"}},
-    {dictionary="gui", internal="crafting_categories", localised={"rb-gui.crafting-categories"}},
-    {dictionary="gui", internal="crafting_speed", localised={"rb-gui.crafting-speed"}},
-    {dictionary="gui", internal="crafting_time", localised={"rb-gui.crafting-time"}},
-    {dictionary="gui", internal="click_to_get_blueprint", localised={"rb-gui.click-to-get-blueprint"}},
-    {dictionary="gui", internal="click_to_view_technology", localised={"rb-gui.click-to-view-technology"}},
-    {dictionary="gui", internal="click_to_view", localised={"rb-gui.click-to-view"}},
-    {dictionary="gui", internal="fixed_recipe", localised={"rb-gui.fixed-recipe"}},
-    {dictionary="gui", internal="hidden", localised={"rb-gui.hidden"}},
-    {dictionary="gui", internal="ingredients_tooltip", localised={"rb-gui.ingredients-tooltip"}},
-    {dictionary="gui", internal="per_second", localised={"rb-gui.per-second"}},
-    {dictionary="gui", internal="products_tooltip", localised={"rb-gui.products-tooltip"}},
-    {dictionary="gui", internal="pumping_speed", localised={"rb-gui.pumping-speed"}},
-    {dictionary="gui", internal="researching_speed", localised={"rb-gui.researching-speed"}},
-    {dictionary="gui", internal="rocket_parts_required", localised={"rb-gui.rocket-parts-required"}},
-    {dictionary="gui", internal="seconds_standalone", localised={"rb-gui.seconds-standalone"}},
-    {dictionary="gui", internal="shift_click_to_view_fixed_recipe", localised={"rb-gui.shift-click-to-view-fixed-recipe"}},
-    {dictionary="gui", internal="stack_size", localised={"rb-gui.stack-size"}},
-    {dictionary="gui", internal="unresearched", localised={"rb-gui.unresearched"}}
+    {dictionary = "gui", internal = "blueprint_not_available", localised = {"rb-gui.blueprint-not-available"}},
+    {dictionary = "gui", internal = "category", localised = {"rb-gui.category"}},
+    {dictionary = "gui", internal = "crafting_categories", localised = {"rb-gui.crafting-categories"}},
+    {dictionary = "gui", internal = "crafting_speed", localised = {"rb-gui.crafting-speed"}},
+    {dictionary = "gui", internal = "crafting_time", localised = {"rb-gui.crafting-time"}},
+    {dictionary = "gui", internal = "click_to_get_blueprint", localised = {"rb-gui.click-to-get-blueprint"}},
+    {dictionary = "gui", internal = "click_to_view_technology", localised = {"rb-gui.click-to-view-technology"}},
+    {dictionary = "gui", internal = "click_to_view", localised = {"rb-gui.click-to-view"}},
+    {dictionary = "gui", internal = "fixed_recipe", localised = {"rb-gui.fixed-recipe"}},
+    {dictionary = "gui", internal = "hidden", localised = {"rb-gui.hidden"}},
+    {dictionary = "gui", internal = "ingredients_tooltip", localised = {"rb-gui.ingredients-tooltip"}},
+    {dictionary = "gui", internal = "per_second", localised = {"rb-gui.per-second"}},
+    {dictionary = "gui", internal = "products_tooltip", localised = {"rb-gui.products-tooltip"}},
+    {dictionary = "gui", internal = "pumping_speed", localised = {"rb-gui.pumping-speed"}},
+    {dictionary = "gui", internal = "researching_speed", localised = {"rb-gui.researching-speed"}},
+    {dictionary = "gui", internal = "rocket_parts_required", localised = {"rb-gui.rocket-parts-required"}},
+    {dictionary = "gui", internal = "seconds_standalone", localised = {"rb-gui.seconds-standalone"}},
+    {dictionary = "gui", internal = "shift_click_to_view_fixed_recipe", localised = {"rb-gui.shift-click-to-view-fixed-recipe"}},
+    {dictionary = "gui", internal = "stack_size", localised = {"rb-gui.stack-size"}},
+    {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
   }
 
   -- forces
@@ -109,7 +109,7 @@ function global_data.build_recipe_book()
 
   -- iterate characters (as crafters)
   local character_prototypes = game.get_filtered_entity_prototypes{
-    {filter="type", type="character"}
+    {filter = "type", type = "character"}
   }
   for name, prototype in pairs(character_prototypes) do
     -- add to recipe book
@@ -124,14 +124,14 @@ function global_data.build_recipe_book()
       sprite_class = "entity"
     }
     -- add to translations table
-    translation_data[#translation_data+1] = {dictionary="crafter", internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary = "crafter", internal = name, localised = prototype.localised_name}
   end
 
   -- iterate crafters
   local crafter_prototypes = game.get_filtered_entity_prototypes{
-    {filter="type", type="assembling-machine"},
-    {filter="type", type="furnace"},
-    {filter="type", type="rocket-silo"}
+    {filter = "type", type = "assembling-machine"},
+    {filter = "type", type = "furnace"},
+    {filter = "type", type = "rocket-silo"}
   }
   local fixed_recipes = {}
   local rocket_silo_categories = {}
@@ -161,14 +161,14 @@ function global_data.build_recipe_book()
       sprite_class = "entity"
     }
     -- add to translations table
-    translation_data[#translation_data+1] = {dictionary="crafter", internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary = "crafter", internal = name, localised = prototype.localised_name}
   end
 
   -- iterate materials
   local fluid_prototypes = game.fluid_prototypes
   local item_prototypes = game.item_prototypes
   local rocket_launch_payloads = {}
-  for class, t in pairs{fluid=fluid_prototypes, item=item_prototypes} do
+  for class, t in pairs{fluid = fluid_prototypes, item = item_prototypes} do
     for name, prototype in pairs(t) do
       local hidden
       if class == "fluid" then
@@ -193,9 +193,9 @@ function global_data.build_recipe_book()
           local product_key = product.type.."."..product.name
           local product_payloads = rocket_launch_payloads[product_key]
           if product_payloads then
-            product_payloads[#product_payloads+1] = {type=class, name=name}
+            product_payloads[#product_payloads+1] = {type = class, name = name}
           else
-            rocket_launch_payloads[product_key] = {{type=class, name=name}}
+            rocket_launch_payloads[product_key] = {{type = class, name = name}}
           end
         end
       end
@@ -218,14 +218,14 @@ function global_data.build_recipe_book()
         usable_in = {}
       }
       -- add to translations table
-      translation_data[#translation_data+1] = {dictionary="material", internal=class.."."..name, localised=prototype.localised_name}
+      translation_data[#translation_data+1] = {dictionary = "material", internal = class.."."..name, localised = prototype.localised_name}
     end
   end
 
   -- iterate labs
   -- this has to be done after materials
   local lab_prototypes = game.get_filtered_entity_prototypes{
-    {filter="type", type="lab"}
+    {filter = "type", type = "lab"}
   }
   for name, prototype in pairs(lab_prototypes) do
     -- add to materials
@@ -246,12 +246,12 @@ function global_data.build_recipe_book()
       sprite_class = "entity"
     }
     -- add to translations table
-    translation_data[#translation_data+1] = {dictionary="lab", internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary = "lab", internal = name, localised = prototype.localised_name}
   end
 
   -- iterate offshore pumps
   local offshore_pump_prototypes = game.get_filtered_entity_prototypes{
-    {filter="type", type="offshore-pump"}
+    {filter = "type", type = "offshore-pump"}
   }
   for name, prototype in pairs(offshore_pump_prototypes) do
     -- add to material
@@ -271,7 +271,7 @@ function global_data.build_recipe_book()
       sprite_class = "entity"
     }
     -- add to translations table
-    translation_data[#translation_data+1] = {dictionary="offshore_pump", internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary = "offshore_pump", internal = name, localised = prototype.localised_name}
   end
 
   -- iterate recipes
@@ -320,7 +320,7 @@ function global_data.build_recipe_book()
     end
     -- material: ingredient in
     local ingredients = prototype.ingredients
-    for i=1,#ingredients do
+    for i = 1,#ingredients do
       local ingredient = ingredients[i]
       local ingredient_data = recipe_book.material[ingredient.type.."."..ingredient.name]
       if ingredient_data then
@@ -330,7 +330,7 @@ function global_data.build_recipe_book()
     end
     -- material: product of
     local products = prototype.products
-    for i=1,#products do
+    for i = 1,#products do
       local product = products[i]
       local product_data = recipe_book.material[product.type.."."..product.name]
       if product_data then
@@ -341,11 +341,11 @@ function global_data.build_recipe_book()
     -- insert into recipe book
     recipe_book.recipe[name] = data
     -- insert into translations table
-    translation_data[#translation_data+1] = {dictionary="recipe", internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary = "recipe", internal = name, localised = prototype.localised_name}
   end
 
   -- iterate resources
-  local resource_prototypes = game.get_filtered_entity_prototypes{{filter="type", type="resource"}}
+  local resource_prototypes = game.get_filtered_entity_prototypes{{filter = "type", type = "resource"}}
   for name, prototype in pairs(resource_prototypes) do
     local products = prototype.mineable_properties.products
     if products then
@@ -364,7 +364,7 @@ function global_data.build_recipe_book()
       sprite_class = "entity"
     }
     -- insert into translations table
-    translation_data[#translation_data+1] = {dictionary="resource", internal=name, localised=prototype.localised_name}
+    translation_data[#translation_data+1] = {dictionary = "resource", internal = name, localised = prototype.localised_name}
   end
 
   -- iterate technologies
@@ -407,7 +407,7 @@ function global_data.build_recipe_book()
         sprite_class = "technology"
       }
       -- insert into translations table
-      translation_data[#translation_data+1] = {dictionary="technology", internal=prototype.name, localised=prototype.localised_name}
+      translation_data[#translation_data+1] = {dictionary = "technology", internal = prototype.name, localised = prototype.localised_name}
     end
   end
 

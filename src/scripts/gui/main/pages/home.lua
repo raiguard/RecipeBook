@@ -35,7 +35,7 @@ gui.add_templates{
               item.caption = caption
               item.tooltip = tooltip
             else
-              add{type="button", name="rb_list_box_item__"..i, style=style, caption=caption, tooltip=tooltip}
+              add{type = "button", name = "rb_list_box_item__"..i, style = style, caption = caption, tooltip = tooltip}
             end
           end
         end
@@ -52,7 +52,7 @@ gui.add_templates{
 function home_page.build()
   return {
     gui.templates.info_list_box.build({"rb-gui.favorites"}, 7, "home.favorites"),
-    {template="pushers.vertical"},
+    {template = "pushers.vertical"},
     gui.templates.info_list_box.build({"rb-gui.history"}, 8, "home.history")
   }
 end

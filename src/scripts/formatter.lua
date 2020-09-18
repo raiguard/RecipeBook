@@ -19,10 +19,10 @@ end
 
 -- string builders
 local function build_rich_text(key, value, inner)
-  return "["..key.."="..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
+  return "["..key.." = "..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
 end
 local function build_sprite(class, name)
-  return "[img="..class.."/"..name.."]"
+  return "[img = "..class.."/"..name.."]"
 end
 
 local function get_properties(obj_data, force_index)
@@ -147,7 +147,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   return title_str..alternate_name_str..category_class_str..hidden_str..unresearched_str
 end
 
-local ingredients_products_keys = {ingredients=true, products=true}
+local ingredients_products_keys = {ingredients = true, products = true}
 
 local formatters = {
   crafter = {

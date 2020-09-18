@@ -76,7 +76,7 @@ gui.add_handlers{
                 child.caption = caption
                 child.tooltip = tooltip
               else
-                add{type="button", name="rb_list_box_item__"..i, style=style, caption=caption, tooltip=tooltip}
+                add{type = "button", name = "rb_list_box_item__"..i, style = style, caption = caption, tooltip = tooltip}
               end
 
               if i == constants.search_results_limit then
@@ -102,19 +102,20 @@ gui.add_handlers{
 
 function search_page.build()
   return {
-    {type="frame", style="subheader_frame", children={
-      {type="label", style="subheader_caption_label", caption={"rb-gui.search-by"}},
-      {template="pushers.horizontal"},
-      {type="drop-down", items=constants.search_categories_localised, selected_index=2, handlers="search.category_drop_down",
-        save_as="search.category_drop_down"}
+    {type = "frame", style = "subheader_frame", children = {
+      {type = "label", style = "subheader_caption_label", caption = {"rb-gui.search-by"}},
+      {template = "pushers.horizontal"},
+      {
+        type = "drop-down", items = constants.search_categories_localised, selected_index = 2, handlers = "search.category_drop_down",
+        save_as = "search.category_drop_down"}
     }},
-    {type="flow", style="rb_search_content_flow", direction="vertical", children={
-      {type="textfield", style="rb_search_textfield", clear_and_focus_on_right_click=true, handlers="search.textfield", save_as="search.textfield"},
-      {type="frame", style="rb_search_results_frame", direction="vertical", children={
-        {type="frame", style="rb_search_results_subheader_frame", elem_mods={visible=false}, save_as="search.limit_frame", children={
-          {type="label", style="info_label", caption={"", "[img=info] ", {"rb-gui.results-limited", constants.search_results_limit}}}
+    {type = "flow", style = "rb_search_content_flow", direction = "vertical", children = {
+      {type = "textfield", style = "rb_search_textfield", clear_and_focus_on_right_click = true, handlers = "search.textfield", save_as = "search.textfield"},
+      {type = "frame", style = "rb_search_results_frame", direction = "vertical", children = {
+        {type = "frame", style = "rb_search_results_subheader_frame", elem_mods = {visible = false}, save_as = "search.limit_frame", children = {
+          {type = "label", style = "info_label", caption = {"", "[img = info] ", {"rb-gui.results-limited", constants.search_results_limit}}}
         }},
-        {type="scroll-pane", style="rb_search_results_scroll_pane", save_as="search.results_scroll_pane"}
+        {type = "scroll-pane", style = "rb_search_results_scroll_pane", save_as = "search.results_scroll_pane"}
       }}
     }}
   }

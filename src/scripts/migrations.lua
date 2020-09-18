@@ -32,7 +32,7 @@ return {
         -- add an empty filters table to prevent crashes
         rqr_gui.filters = {}
         -- nest into a parent table
-        new_t = {[rqr_gui.recipe_name]=rqr_gui}
+        new_t = {[rqr_gui.recipe_name] = rqr_gui}
       end
       player_table.gui.recipe_quick_reference = new_t
     end

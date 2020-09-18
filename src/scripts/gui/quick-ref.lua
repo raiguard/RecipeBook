@@ -8,11 +8,11 @@ local formatter = require("scripts.formatter")
 
 gui.add_templates{
   quick_ref_panel = function(name, children)
-    return {type="flow", direction="vertical", children={
-      {type="label", style="bold_label", save_as=name..".label"},
-      {type="frame", style="rb_slot_table_frame", save_as=name..".frame", children={
-        {type="scroll-pane", style="rb_slot_table_scroll_pane", save_as=name..".scroll_pane", children={
-          {type="table", style="slot_table", column_count=5, save_as=name..".table", children=children}
+    return {type = "flow", direction = "vertical", children = {
+      {type = "label", style = "bold_label", save_as = name..".label"},
+      {type = "frame", style = "rb_slot_table_frame", save_as = name..".frame", children = {
+        {type = "scroll-pane", style = "rb_slot_table_scroll_pane", save_as = name..".scroll_pane", children = {
+          {type = "table", style = "slot_table", column_count = 5, save_as = name..".table", children = children}
         }}
       }}
     }}
@@ -25,19 +25,19 @@ gui.add_handlers{
       on_gui_click = function(e)
         local _, _, name = string.find(e.element.name, "rb_quick_ref_close_button__(.*)")
         quick_ref_gui.destroy(game.get_player(e.player_index), global.players[e.player_index], name)
-        event.raise(constants.events.update_quick_ref_button, {player_index=e.player_index})
+        event.raise(constants.events.update_quick_ref_button, {player_index = e.player_index})
       end
     },
     open_info_button = {
       on_gui_click = function(e)
         local _, _, name = string.find(e.element.name, "rb_quick_ref_expand_button__(.*)")
-        event.raise(constants.events.open_page, {player_index=e.player_index, obj_class="recipe", obj_name=name})
+        event.raise(constants.events.open_page, {player_index = e.player_index, obj_class = "recipe", obj_name = name})
       end
     },
     material_button = {
       on_gui_click = function(e)
         local _, _, class, name = string.find(e.element.sprite, "^(.-)/(.-)$")
-        event.raise(constants.events.open_page, {player_index=e.player_index, obj_class=class, obj_name=name})
+        event.raise(constants.events.open_page, {player_index = e.player_index, obj_class = class, obj_name = name})
       end
     }
   }
@@ -47,24 +47,24 @@ function quick_ref_gui.create(player, player_table, name)
   local recipe_data = global.recipe_book.recipe[name]
 
   local gui_data, filters = gui.build(player.gui.screen, {
-    {type="frame", direction="vertical", save_as="window", children={
-      {type="flow", save_as="titlebar.flow", children={
-        {type="label", style="frame_title", caption={"rb-gui.recipe"}, elem_mods={ignored_by_interaction=true}},
-        {type="empty-widget", style="flib_titlebar_drag_handle", elem_mods={ignored_by_interaction=true}},
-        {template="frame_action_button", name="rb_quick_ref_expand_button__"..name, tooltip={"rb-gui.view-details"}, sprite="rb_expand_white",
-          hovered_sprite="rb_expand_black", clicked_sprite="rb_expand_black", handlers="quick_ref.open_info_button"},
-        {template="frame_action_button", name="rb_quick_ref_close_button__"..name, sprite="utility/close_white", hovered_sprite="utility/close_black",
-          clicked_sprite="utility/close_black", handlers="quick_ref.close_button"}
+    {type = "frame", direction = "vertical", save_as = "window", children = {
+      {type = "flow", save_as = "titlebar.flow", children = {
+        {type = "label", style = "frame_title", caption = {"rb-gui.recipe"}, elem_mods = {ignored_by_interaction = true}},
+        {type = "empty-widget", style = "flib_titlebar_drag_handle", elem_mods = {ignored_by_interaction = true}},
+        {template = "frame_action_button", name = "rb_quick_ref_expand_button__"..name, tooltip = {"rb-gui.view-details"}, sprite = "rb_expand_white",
+          hovered_sprite = "rb_expand_black", clicked_sprite = "rb_expand_black", handlers = "quick_ref.open_info_button"},
+        {template = "frame_action_button", name = "rb_quick_ref_close_button__"..name, sprite = "utility/close_white", hovered_sprite = "utility/close_black",
+          clicked_sprite = "utility/close_black", handlers = "quick_ref.close_button"}
       }},
-      {type="frame", style="rb_quick_ref_content_frame", direction="vertical", children={
-        {type="frame", style="subheader_frame", children={
-          {type="label", style="rb_toolbar_label", save_as="toolbar_label"},
-          {template="pushers.horizontal"}
+      {type = "frame", style = "rb_quick_ref_content_frame", direction = "vertical", children = {
+        {type = "frame", style = "subheader_frame", children = {
+          {type = "label", style = "rb_toolbar_label", save_as = "toolbar_label"},
+          {template = "pushers.horizontal"}
         }},
-        {type="flow", style="rb_quick_ref_content_flow", direction="vertical", children={
+        {type = "flow", style = "rb_quick_ref_content_flow", direction = "vertical", children = {
           gui.templates.quick_ref_panel("ingredients", {
-            {type="sprite-button", style="flib_slot_button_default", tooltip={"rb-gui.seconds-tooltip"}, sprite="quantity-time", number=recipe_data.energy,
-              enabled=false}
+            {type = "sprite-button", style = "flib_slot_button_default", tooltip = {"rb-gui.seconds-tooltip"}, sprite = "quantity-time", number = recipe_data.energy,
+              enabled = false}
           }),
           gui.templates.quick_ref_panel("products")
         }}
@@ -105,7 +105,7 @@ function quick_ref_gui.create(player, player_table, name)
       i = i + 1
 
       local button_style = string.find(style, "unresearched") and "flib_slot_button_red" or "flib_slot_button_default"
-      tooltip = string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
+      tooltip = string.gsub(tooltip, "^.-color = .-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
       local shown_string = obj.avg_amount_string and "~"..obj.avg_amount_string or string.gsub(obj.amount_string, "^.-(%d+)x$", "%1")
 
       local button = table_add{

@@ -4,7 +4,7 @@ data:extend {
   {
     type = "blueprint",
     name = "rb-crafter-blueprint",
-    icons = {{icon=data_util.planner_base_image, icon_size=64, icon_mipmaps=4, tint={r=0.2, g=1, b=1}}},
+    icons = {{icon = data_util.planner_base_image, icon_size = 64, icon_mipmaps = 4, tint = {r = 0.2, g = 1, b = 1}}},
     stack_size = 1,
     flags = {"hidden", "only-in-cursor", "not-stackable"},
     draw_label_for_cursor_render = true,

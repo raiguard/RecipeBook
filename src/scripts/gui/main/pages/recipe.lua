@@ -11,8 +11,8 @@ function recipe_page.build()
   }
 
   -- add time item to ingredients
-  elems[1].children[2].children[1].children = {{type="button", name="rb_list_box_item__1", style="rb_list_box_item", tooltip={"rb-gui.seconds-tooltip"},
-    enabled=false, save_as="recipe.ingredients.time_item"}}
+  elems[1].children[2].children[1].children = {{type = "button", name = "rb_list_box_item__1", style = "rb_list_box_item", tooltip = {"rb-gui.seconds-tooltip"},
+    enabled = false, save_as = "recipe.ingredients.time_item"}}
 
   return elems
 end
@@ -23,9 +23,9 @@ function recipe_page.update(int_name, gui_data, player_data)
   local update_list_box = gui.templates.info_list_box.update
 
   -- set time item
-  local time_item_prefix = player_data.settings.show_glyphs and "[font=RecipeBook]Z[/font]   " or ""
+  local time_item_prefix = player_data.settings.show_glyphs and "[font = RecipeBook]Z[/font]   " or ""
   local time_item = gui_data.recipe.ingredients.time_item
-  time_item.caption = {"", time_item_prefix.."[img=quantity-time]   [font=default-bold]", {"rb-gui.seconds", obj_data.energy}, "[/font]"}
+  time_item.caption = {"", time_item_prefix.."[img = quantity-time]   [font = default-bold]", {"rb-gui.seconds", obj_data.energy}, "[/font]"}
 
   update_list_box(obj_data.ingredients, "material", gui_data.recipe.ingredients, player_data, true, 1)
   update_list_box(obj_data.products, "material", gui_data.recipe.products, player_data, true)
