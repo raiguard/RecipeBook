@@ -124,7 +124,7 @@ function quick_ref_gui.create(player, player_table, name)
       i = i + 1
 
       local button_style = string.find(style, "unresearched") and "flib_slot_button_red" or "flib_slot_button_default"
-      tooltip = string.gsub(tooltip, "^.-color = .-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
+      tooltip = string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
       local shown_string = (
         obj.avg_amount_string
         and "~"..obj.avg_amount_string
