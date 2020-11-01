@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "factoriomod",
+      "request": "launch",
+      "name": "Debug",
+      "factorioPath": "${env:factorioTestbench1}",
+      "hookMode": "debug",
+      "hookControl": ["RecipeBook", "Sandbox"],
+      "factorioArgs": ["--load-scenario", "EditorExtensions/testing"]
+    },
+    {
+      "type": "factoriomod",
+      "request": "launch",
+      "name": "Debug (data)",
+      "factorioPath": "${env:factorioTestbench1}",
+      "hookMode": "debug",
+      "hookControl": ["RecipeBook", "Sandbox"],
+      "hookData": true,
+      "hookSettings": true,
+      "factorioArgs": ["--load-scenario", "EditorExtensions/testing"]
+    },
+    {
+      "type": "factoriomod",
+      "request": "launch",
+      "name": "Profile",
+      "factorioPath": "${env:factorioTestbench1}",
+      "hookMode": "profile",
+      "hookControl": ["RecipeBook", "Sandbox"]
+    }
+  ]
+}
