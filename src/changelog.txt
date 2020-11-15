@@ -3,6 +3,7 @@ Version: 2.3.1
 Date: ????
   Changes:
     - Updated deprecated require path for flib data-util module
+    - Updated German translation (by Moonsilence)
 ---------------------------------------------------------------------------------------------------
 Version: 2.3.0
 Date: 2020-09-02
