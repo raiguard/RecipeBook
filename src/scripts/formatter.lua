@@ -10,7 +10,6 @@ local caches = {}
 local class_to_font_glyph = constants.class_to_font_glyph
 local colors = constants.colors
 local concat = table.concat
-local floor = math.floor
 local unpack = table.unpack
 
 -- string builders
@@ -169,7 +168,7 @@ local ingredients_products_keys = {ingredients = true, products = true}
 
 local formatters = {
   crafter = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
       -- locals
       local translations = player_data.translations
       local gui_translations = translations.gui
@@ -247,7 +246,7 @@ local formatters = {
     enabled = function(obj_data) return obj_data.blueprintable end
   },
   lab = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- researching speed
       local researching_speed_str = (
@@ -287,7 +286,7 @@ local formatters = {
     enabled = function() return true end
   },
   offshore_pump = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
       -- locals
       local gui_translations = player_data.translations.gui
 
@@ -369,13 +368,13 @@ local formatters = {
     enabled = function() return true end
   },
   resource = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
       return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     end,
     enabled = function() return false end
   },
   technology = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- interaction help
       local interaction_help_str = "\n"..player_data.translations.gui.click_to_view_technology

@@ -1,5 +1,6 @@
 local global_data = {}
 
+local math = require("__flib__.math")
 local table = require("__flib__.table")
 
 local constants = require("constants")
@@ -27,12 +28,6 @@ local function convert_and_sort(tbl)
   return tbl
 end
 
--- from http://lua-users.org/wiki/SimpleRound
-local function round(num, decimals)
-  local mult = 10^(decimals or 0)
-  return math.floor(num * mult + 0.5) / mult
-end
-
 function global_data.init()
   global.flags = {}
   global.players = {}
@@ -53,8 +48,6 @@ local function build_amount_string(material)
 end
 
 function global_data.build_recipe_book()
-  -- character prototype
-  local character_prototype = game.entity_prototypes["character"]
   local recipe_book = {
     crafter = {},
     lab = {},
@@ -334,7 +327,7 @@ function global_data.build_recipe_book()
         local rocket_parts_str = crafter_data.rocket_parts_required and crafter_data.rocket_parts_required.."x  " or ""
         data.made_in[#data.made_in+1] = {
           name = crafter_name,
-          amount_string = rocket_parts_str.."("..round(prototype.energy / crafter_data.crafting_speed, 2).."s)"
+          amount_string = rocket_parts_str.."("..math.round_to(prototype.energy / crafter_data.crafting_speed, 2).."s)"
         }
       end
     end
