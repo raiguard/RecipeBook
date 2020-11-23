@@ -196,11 +196,13 @@ gui.add_handlers{
         local gui_data = player_table.gui.main.base
         if gui_data.window.pinned then
           gui_data.titlebar.pin_button.style = "frame_action_button"
+          gui_data.titlebar.pin_button.sprite = "rb_pin_white"
           gui_data.window.pinned = false
           gui_data.window.frame.force_auto_center()
           player.opened = gui_data.window.frame
         else
           gui_data.titlebar.pin_button.style = "flib_selected_frame_action_button"
+          gui_data.titlebar.pin_button.sprite = "rb_pin_black"
           gui_data.window.pinned = true
           gui_data.window.frame.auto_center = false
           player.opened = nil
@@ -223,17 +225,18 @@ gui.add_handlers{
     },
     settings_button = {
       on_gui_click = function(e)
-        local player = game.get_player(e.player_index)
         local player_table = global.players[e.player_index]
         local gui_data = player_table.gui.main
         if gui_data.settings.open then
           gui_data.settings.open = false
           gui_data.settings.window.visible = false
           gui_data.base.titlebar.settings_button.style = "frame_action_button"
+          gui_data.base.titlebar.settings_button.sprite = "rb_settings_white"
         else
           gui_data.settings.open = true
           gui_data.settings.window.visible = true
           gui_data.base.titlebar.settings_button.style = "flib_selected_frame_action_button"
+          gui_data.base.titlebar.settings_button.sprite = "rb_settings_black"
         end
       end
     },
