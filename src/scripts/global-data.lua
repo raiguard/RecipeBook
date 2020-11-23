@@ -98,12 +98,6 @@ function global_data.build_recipe_book()
     {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
   }
 
-  -- forces
-  local forces = {}
-  for _, force in pairs(game.forces) do
-    forces[force.index] = force.recipes
-  end
-
   -- iterate characters (as crafters)
   local character_prototypes = game.get_filtered_entity_prototypes{
     {filter = "type", type = "character"}

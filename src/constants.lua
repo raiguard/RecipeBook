@@ -79,7 +79,7 @@ constants.empty_translations_table = {
   technology = {}
 }
 
-constants.input_sanitisers = {
+constants.input_sanitizers = {
   ["%("] = "%%(",
   ["%)"] = "%%)",
   ["%.^[%*]"] = "%%.",

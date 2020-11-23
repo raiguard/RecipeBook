@@ -44,7 +44,7 @@ gui.add_handlers{
         end
 
         -- input sanitization
-        for pattern, replacement in pairs(constants.input_sanitisers) do
+        for pattern, replacement in pairs(constants.input_sanitizers) do
           query = string.gsub(query, pattern, replacement)
         end
 
@@ -145,7 +145,7 @@ function search_page.build()
   }
 end
 
-function search_page.setup(player, player_table, gui_data)
+function search_page.setup(_, _, gui_data)
   gui_data.search.category = "recipe"
   return gui_data
 end
