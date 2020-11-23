@@ -267,7 +267,7 @@ gui.add_handlers{
           else
             local recipe_name = player_table.gui.main.state.name
             local cursor_stack = player.cursor_stack
-            player.clean_cursor()
+            player.clear_cursor()
             if cursor_stack and cursor_stack.valid then
               -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
               local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
