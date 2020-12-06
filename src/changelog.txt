@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.3.3
-Date: ????
+Date: 2020-12-06
   Changes:
     - Clicking a crafter to give a blueprint of it will use the blueprint clipboard intead of a one-off item
 ---------------------------------------------------------------------------------------------------
