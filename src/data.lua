@@ -1,6 +1,5 @@
 require("prototypes.custom-input")
 require("prototypes.font")
-require("prototypes.item")
 require("prototypes.shortcut")
 require("prototypes.sprite")
 require("prototypes.style")

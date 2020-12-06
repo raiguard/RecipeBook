@@ -271,7 +271,7 @@ gui.add_handlers{
             if cursor_stack and cursor_stack.valid then
               -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
               local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
-              cursor_stack.set_stack{name = "rb-crafter-blueprint", count = 1}
+              cursor_stack.set_stack{name = "blueprint", count = 1}
               cursor_stack.set_blueprint_entities{
                 {
                   entity_number = 1,
@@ -283,6 +283,8 @@ gui.add_handlers{
                   recipe = recipe_name
                 }
               }
+              player.add_to_clipboard(cursor_stack)
+              player.activate_paste()
             end
           end
         else
