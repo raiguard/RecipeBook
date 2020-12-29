@@ -1,4 +1,4 @@
-local gui = require("__flib__.gui")
+local gui = require("__flib__.gui-beta")
 local translation = require("__flib__.translation")
 
 local global_data = require("scripts.global-data")

@@ -1,7 +1,7 @@
 local quick_ref_gui = {}
 
 local event = require("__flib__.event")
-local gui = require("__flib__.gui")
+local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")

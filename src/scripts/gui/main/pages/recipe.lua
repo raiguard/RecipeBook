@@ -1,6 +1,6 @@
 local recipe_page = {}
 
-local gui = require("__flib__.gui")
+local gui = require("__flib__.gui-beta")
 
 function recipe_page.build()
   local elems =  {

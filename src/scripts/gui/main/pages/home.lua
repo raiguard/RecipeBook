@@ -1,6 +1,6 @@
 local home_page = {}
 
-local gui = require("__flib__.gui")
+local gui = require("__flib__.gui-beta")
 
 local formatter = require("scripts.formatter")
 

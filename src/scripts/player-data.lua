@@ -1,6 +1,6 @@
 local player_data = {}
 
-local gui = require("__flib__.gui")
+local gui = require("__flib__.gui-beta")
 local translation = require("__flib__.translation")
 local util = require("__core__.lualib.util")
 

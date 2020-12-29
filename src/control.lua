@@ -1,5 +1,5 @@
 local event = require("__flib__.event")
-local gui = require("__flib__.gui")
+local gui = require("__flib__.gui-beta")
 local migration = require("__flib__.migration")
 local translation = require("__flib__.translation")
 
@@ -36,8 +36,6 @@ end)
 -- BOOTSTRAP
 
 event.on_init(function()
-  gui.init()
-  gui.build_lookup_tables()
   translation.init()
 
   global_data.init()
@@ -48,14 +46,12 @@ event.on_init(function()
 end)
 
 event.on_load(function()
-  gui.build_lookup_tables()
   formatter.create_all_caches()
   on_tick.register()
 end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
-    gui.check_filter_validity()
     translation.init()
     on_tick.register()
 
@@ -106,10 +102,11 @@ end)
 
 -- GUI
 
-gui.register_handlers()
-
-event.on_gui_closed(function(e)
-  if not gui.dispatch_handlers(e) and e.gui_type == defines.gui_type.research then
+gui.hook_events(function(e)
+  local msg = gui.read_action(e)
+  if msg then
+    -- TODO: implement actions
+  elseif e.name == defines.events.on_gui_closed and e.gui_type == defines.gui_type.research then
     local player_table = global.players[e.player_index]
     if player_table.flags.technology_gui_open then
       player_table.flags.technology_gui_open = false

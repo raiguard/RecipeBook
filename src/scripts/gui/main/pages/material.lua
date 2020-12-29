@@ -1,6 +1,6 @@
 local material_page = {}
 
-local gui = require("__flib__.gui")
+local gui = require("__flib__.gui-beta")
 
 function material_page.build()
   local build_list_box = gui.templates.info_list_box.build
