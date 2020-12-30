@@ -168,7 +168,7 @@ function info_list_box.handle_click(e, player, player_table)
         return "recipe", crafter_data.fixed_recipe
       end
     else
-      local recipe_name = player_table.gui.main.state.name
+      local recipe_name = player_table.gui.main.state.open_page.name
       local cursor_stack = player.cursor_stack
       player.clear_cursor()
       if cursor_stack and cursor_stack.valid then

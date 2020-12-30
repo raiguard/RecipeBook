@@ -264,18 +264,18 @@ remote.add_interface("RecipeBook", remote_interface)
 -- -----------------------------------------------------------------------------
 -- SHARED FUNCTIONS
 
-function shared.register_on_tick()
-  if global.__flib and translation.translating_players_count() > 0 then
-    event.on_tick(on_tick)
-  end
-end
-
 function shared.open_page(player, player_table, class, name)
   if main_gui.check_can_open(player, player_table) then
     main_gui.open_page(player, player_table, class, name)
     if not player_table.flags.gui_open then
       main_gui.open(player, player_table)
     end
+  end
+end
+
+function shared.register_on_tick()
+  if global.__flib and translation.translating_players_count() > 0 then
+    event.on_tick(on_tick)
   end
 end
 
