@@ -1,9 +1,9 @@
+local info_list_box = require("scripts.gui.main.info-list-box")
+
 local material_page = {}
 
-local gui = require("__flib__.gui-beta")
-
 function material_page.build()
-  local build_list_box = gui.templates.info_list_box.build
+  local build_list_box = info_list_box.build
   return {
     build_list_box({"rb-gui.ingredient-in"}, 1, "material.ingredient_in"),
     build_list_box({"rb-gui.product-of"}, 1, "material.product_of"),
@@ -19,7 +19,7 @@ end
 function material_page.update(int_name, gui_data, player_data)
   local obj_data = global.recipe_book.material[int_name]
 
-  local update_list_box = gui.templates.info_list_box.update
+  local update_list_box = info_list_box.update
 
   update_list_box(obj_data.ingredient_in, "recipe", gui_data.material.ingredient_in, player_data)
   update_list_box(obj_data.product_of, "recipe", gui_data.material.product_of, player_data)

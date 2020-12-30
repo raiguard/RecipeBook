@@ -1,33 +1,9 @@
-local settings_page = {}
-
 local event = require("__flib__.event")
 local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
 
-gui.add_handlers{
-  settings = {
-    checkbox = {
-      on_gui_checked_state_changed = function(e)
-        local player = game.get_player(e.player_index)
-        local player_table = global.players[e.player_index]
-        local checked_state = e.element.state
-        local _, _, setting_name = string.find(e.element.name, "^rb_setting__(.*)$")
-        if string.find(setting_name, "recipe_category") then
-          local _, _, category_name = string.find(setting_name, "^recipe_category_(.*)$")
-          player_table.settings.recipe_categories[category_name] = checked_state
-        else
-          -- set a flag to avoid iterating over all settings
-          player_table.flags.updating_setting = true
-          player.mod_settings[constants.setting_prototype_names[setting_name]] = {value = checked_state}
-          player_table.settings[setting_name] = checked_state
-          player_table.flags.updating_setting = false
-        end
-        event.raise(constants.events.update_list_box_items, {player_index = e.player_index})
-      end
-    }
-  }
-}
+local settings_page = {}
 
 function settings_page.build(settings)
   local output = {}
@@ -77,10 +53,6 @@ function settings_page.build(settings)
   return output
 end
 
-function settings_page.setup(player)
-  gui.update_filters("settings.checkbox", player.index, {"rb_setting"}, "add")
-end
-
 function settings_page.update(player_settings, gui_data)
   for _, names in pairs(constants.settings) do
     for name in pairs(names) do
@@ -90,6 +62,27 @@ function settings_page.update(player_settings, gui_data)
 
   for name in pairs(game.recipe_category_prototypes) do
     gui_data.recipe_category[name] = player_settings.recipe_categories[name]
+  end
+end
+
+function settings_page.handle_action(msg, e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+
+  if msg.action == "toggle_category" then
+    local checked_state = e.element.state
+    local _, _, setting_name = string.find(e.element.name, "^rb_setting__(.*)$")
+    if string.find(setting_name, "recipe_category") then
+      local _, _, category_name = string.find(setting_name, "^recipe_category_(.*)$")
+      player_table.settings.recipe_categories[category_name] = checked_state
+    else
+      -- set a flag to avoid iterating over all settings
+      player_table.flags.updating_setting = true
+      player.mod_settings[constants.setting_prototype_names[setting_name]] = {value = checked_state}
+      player_table.settings[setting_name] = checked_state
+      player_table.flags.updating_setting = false
+    end
+    event.raise(constants.events.update_list_box_items, {player_index = e.player_index})
   end
 end
 

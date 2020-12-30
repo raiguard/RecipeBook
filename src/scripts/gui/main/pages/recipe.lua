@@ -1,13 +1,13 @@
-local recipe_page = {}
+local info_list_box = require("scripts.gui.main.info-list-box")
 
-local gui = require("__flib__.gui-beta")
+local recipe_page = {}
 
 function recipe_page.build()
   local elems =  {
-    gui.templates.info_list_box.build({"rb-gui.ingredients"}, 1, "recipe.ingredients"),
-    gui.templates.info_list_box.build({"rb-gui.products"}, 1, "recipe.products"),
-    gui.templates.info_list_box.build({"rb-gui.made-in"}, 1, "recipe.made_in"),
-    gui.templates.info_list_box.build({"rb-gui.unlocked-by"}, 1, "recipe.unlocked_by")
+    info_list_box.build({"rb-gui.ingredients"}, 1, "recipe.ingredients"),
+    info_list_box.build({"rb-gui.products"}, 1, "recipe.products"),
+    info_list_box.build({"rb-gui.made-in"}, 1, "recipe.made_in"),
+    info_list_box.build({"rb-gui.unlocked-by"}, 1, "recipe.unlocked_by")
   }
 
   -- add time item to ingredients
@@ -28,7 +28,7 @@ end
 function recipe_page.update(int_name, gui_data, player_data)
   local obj_data = global.recipe_book.recipe[int_name]
 
-  local update_list_box = gui.templates.info_list_box.update
+  local update_list_box = info_list_box.update
 
   -- set time item
   local time_item_prefix = player_data.settings.show_glyphs and "[font=RecipeBook]Z[/font]   " or ""

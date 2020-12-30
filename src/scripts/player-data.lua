@@ -1,6 +1,5 @@
 local player_data = {}
 
-local gui = require("__flib__.gui-beta")
 local translation = require("__flib__.translation")
 local util = require("__core__.lualib.util")
 
@@ -105,7 +104,6 @@ function player_data.refresh(player, player_table)
 end
 
 function player_data.remove(player_index)
-  gui.remove_player_filters(player_index)
   global.players[player_index] = nil
 end
 

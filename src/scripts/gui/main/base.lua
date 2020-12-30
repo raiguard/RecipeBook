@@ -1,5 +1,3 @@
-local main_gui = {}
-
 local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
@@ -12,295 +10,14 @@ for _, name in ipairs(constants.main_pages) do
   pages[name] = require("scripts.gui.main.pages."..name)
 end
 
--- get the width and height of an area
-local function area_dimensions(area)
-  local width = math.abs(area.left_top.x - area.right_bottom.x)
-  local height = math.abs(area.left_top.y - area.right_bottom.y)
-  return width, height
-end
+local main_gui = {}
 
-gui.add_templates{
-  frame_action_button = {type = "sprite-button", style = "frame_action_button", mouse_button_filter = {"left"}},
-  info_list_box = {
-    build = function(caption, rows, save_location)
-      return {type = "flow", direction = "vertical", save_as = save_location..".flow", children = {
-        {type = "label", style = "rb_info_list_box_label", caption = caption, save_as = save_location..".label"},
-        {type = "frame", style = "deep_frame_in_shallow_frame", save_as = save_location..".frame",  children = {
-          {
-            type = "scroll-pane",
-            style = "rb_list_box_scroll_pane",
-            style_mods = {height = (rows * 28)},
-            save_as = save_location..".scroll_pane"
-          }
-        }}
-      }}
-    end,
-    update = function(tbl, int_class, list_box, player_data, always_show, starting_index)
-      starting_index = starting_index or 0
-      local recipe_book = global.recipe_book[int_class]
-
-      -- scroll pane
-      local scroll = list_box.scroll_pane
-      local add = scroll.add
-      local children = scroll.children
-
-      -- loop through input table
-      local i = starting_index
-      for j = 1, #tbl do
-        -- get object information
-        local obj = tbl[j]
-        local obj_data
-        if int_class == "material" then
-          obj_data = recipe_book[obj.type.."."..obj.name]
-        elseif int_class == "crafter" then
-          obj_data = recipe_book[obj.name]
-        else
-          obj_data = recipe_book[obj]
-        end
-        local should_add, style, caption, tooltip, enabled = formatter(
-          obj_data,
-          player_data,
-          obj.amount_string,
-          always_show
-        )
-
-        if should_add then
-          i = i + 1
-          -- update or add item
-          local item = children[i]
-          if item then
-            item.style = style
-            item.caption = caption
-            item.tooltip = tooltip
-            item.enabled = enabled
-          else
-            add{
-              type = "button",
-              name = "rb_list_box_item__"..i,
-              style = style,
-              caption = caption,
-              tooltip = tooltip,
-              enabled = enabled
-            }
-          end
-        end
-      end
-      -- destroy extraneous items
-      for j = i + 1, #children do
-        children[j].destroy()
-      end
-
-      -- set listbox properties
-      if i == 0 then
-        list_box.flow.visible = false
-      else
-        list_box.flow.visible = true
-        scroll.style.height = math.min((28 * i), (28 * 6))
-
-        local caption = list_box.label.caption
-        caption[2] = i - starting_index
-        list_box.label.caption = caption
-      end
-    end
-  },
-  pushers = {
-    horizontal = {type = "empty-widget", style = "flib_horizontal_pusher"},
-    vertical = {type = "empty-widget", style = "flib_vertical_pusher"}
-  },
-  tool_button = {type = "sprite-button", style = "tool_button", mouse_button_filter = {"left"}},
-}
-
-gui.add_handlers{
-  base = {
-    close_button = {
-      on_gui_click = function(e)
-        main_gui.close(game.get_player(e.player_index), global.players[e.player_index])
-      end
-    },
-    favorite_button = {
-      on_gui_click = function(e)
-        local player_table = global.players[e.player_index]
-        local favorites = player_table.favorites
-        local gui_data = player_table.gui.main
-        local state = gui_data.state
-        local index_name = state.class.."."..state.name
-        if favorites[index_name] then
-          for i = 1, #favorites do
-            local obj = favorites[i]
-            if obj.class.."."..obj.name == index_name then
-              table.remove(favorites, i)
-              break
-            end
-          end
-          favorites[index_name] = nil
-
-          e.element.style = "tool_button"
-          e.element.tooltip = {"rb-gui.add-to-favorites"}
-        else
-          favorites[index_name] = true
-          table.insert(favorites, 1, state)
-
-          e.element.style = "flib_selected_tool_button"
-          e.element.tooltip = {"rb-gui.remove-from-favorites"}
-        end
-      end
-    },
-    nav_button = {
-      backward = {
-        on_gui_click = function(e)
-          local player_table = global.players[e.player_index]
-          local session_history = player_table.history.session
-          -- latency protection
-          if session_history.position < #session_history then
-            if e.button == defines.mouse_button_type.left then
-              -- go back one
-              session_history.position = session_history.position + 1
-            else
-              -- go all the way back
-              session_history.position = #session_history
-            end
-            local back_obj = session_history[session_history.position]
-            main_gui.open_page(
-              game.get_player(e.player_index),
-              player_table,
-              back_obj.class,
-              back_obj.name,
-              true
-            )
-          end
-        end
-      },
-      forward = {
-        on_gui_click = function(e)
-          local player_table = global.players[e.player_index]
-          local session_history = player_table.history.session
-          -- latency protection
-          if session_history.position > 1 then
-            session_history.position = session_history.position - 1
-            local forward_object = session_history[session_history.position]
-            main_gui.open_page(
-              game.get_player(e.player_index),
-              player_table,
-              forward_object.class,
-              forward_object.name,
-              true
-            )
-          end
-        end
-      }
-    },
-    pin_button = {
-      on_gui_click = function(e)
-        local player = game.get_player(e.player_index)
-        local player_table = global.players[e.player_index]
-        local gui_data = player_table.gui.main.base
-        if gui_data.window.pinned then
-          gui_data.titlebar.pin_button.style = "frame_action_button"
-          gui_data.titlebar.pin_button.sprite = "rb_pin_white"
-          gui_data.window.pinned = false
-          gui_data.window.frame.force_auto_center()
-          player.opened = gui_data.window.frame
-        else
-          gui_data.titlebar.pin_button.style = "flib_selected_frame_action_button"
-          gui_data.titlebar.pin_button.sprite = "rb_pin_black"
-          gui_data.window.pinned = true
-          gui_data.window.frame.auto_center = false
-          player.opened = nil
-        end
-      end
-    },
-    quick_reference_button = {
-      on_gui_click = function(e)
-        local player = game.get_player(e.player_index)
-        local player_table = global.players[e.player_index]
-        local name = player_table.gui.main.state.name
-        if player_table.gui.quick_ref[name] then
-          quick_ref_gui.destroy(player, player_table, name)
-          player_table.gui.main.base.info_bar.quick_ref_button.style = "tool_button"
-        else
-          quick_ref_gui.create(player, player_table, name)
-          player_table.gui.main.base.info_bar.quick_ref_button.style = "flib_selected_tool_button"
-        end
-      end
-    },
-    settings_button = {
-      on_gui_click = function(e)
-        local player_table = global.players[e.player_index]
-        local gui_data = player_table.gui.main
-        if gui_data.settings.open then
-          gui_data.settings.open = false
-          gui_data.settings.window.visible = false
-          gui_data.base.titlebar.settings_button.style = "frame_action_button"
-          gui_data.base.titlebar.settings_button.sprite = "rb_settings_white"
-        else
-          gui_data.settings.open = true
-          gui_data.settings.window.visible = true
-          gui_data.base.titlebar.settings_button.style = "flib_selected_frame_action_button"
-          gui_data.base.titlebar.settings_button.sprite = "rb_settings_black"
-        end
-      end
-    },
-    window = {
-      on_gui_closed = function(e)
-        local player_table = global.players[e.player_index]
-        if not player_table.gui.main.base.window.pinned and not player_table.flags.technology_gui_open then
-          gui.handlers.base.close_button.on_gui_click(e)
-        end
-      end
-    }
-  },
-  shared = {
-    list_box_item = {
-      on_gui_click = function(e)
-        local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%]  .*$")
-        local player = game.get_player(e.player_index)
-        local player_table = global.players[e.player_index]
-        if class == "technology" then
-          player_table.flags.technology_gui_open = true
-          player.open_technology_gui(name)
-        elseif class == "entity" then
-          if e.shift then
-            local crafter_data = global.recipe_book.crafter[name]
-            if crafter_data and crafter_data.fixed_recipe then
-              main_gui.open_page(player, player_table, "recipe", crafter_data.fixed_recipe)
-            end
-          else
-            local recipe_name = player_table.gui.main.state.name
-            local cursor_stack = player.cursor_stack
-            player.clear_cursor()
-            if cursor_stack and cursor_stack.valid then
-              -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
-              local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
-              cursor_stack.set_stack{name = "blueprint", count = 1}
-              cursor_stack.set_blueprint_entities{
-                {
-                  entity_number = 1,
-                  name = name,
-                  position = {
-                    math.ceil(width) % 2 == 0 and -0.5 or 0,
-                    math.ceil(height) % 2 == 0 and -0.5 or 0
-                  },
-                  recipe = recipe_name
-                }
-              }
-              player.add_to_clipboard(cursor_stack)
-              player.activate_paste()
-            end
-          end
-        else
-          main_gui.open_page(player, player_table, class, name)
-        end
-      end
-    }
-  }
-}
-
-function main_gui.create(player, player_table)
+function main_gui.build(player, player_table)
   local gui_data = gui.build(player.gui.screen, {
     {
       type = "frame",
       style = "outer_frame",
-      elem_mods = {visible = false},
+      visible = false,
       handlers = "base.window",
       save_as = "base.window.frame",
       children = {
@@ -308,21 +25,24 @@ function main_gui.create(player, player_table)
         {type = "frame", style = "inner_frame_in_outer_frame", direction = "vertical", children = {
           {type = "flow", save_as = "base.titlebar.flow", children = {
             {
-              template = "frame_action_button",
+              type = "sprite-button",
+              style = "frame_action_button",
               sprite = "rb_nav_backward_white",
               hovered_sprite = "rb_nav_backward_black",
               clicked_sprite = "rb_nav_backward_black",
               mouse_button_filter = {"left", "right"},
-              elem_mods = {enabled = false},
+              visible = false,
               handlers = "base.nav_button.backward",
               save_as = "base.titlebar.nav_backward_button"
             },
             {
-              template = "frame_action_button",
+              type = "sprite-button",
+              style = "frame_action_button",
               sprite = "rb_nav_forward_white",
               hovered_sprite = "rb_nav_forward_black",
               clicked_sprite = "rb_nav_forward_black",
-              elem_mods = {enabled = false},
+              mouse_button_filter = {"left"},
+              visible = false,
               handlers = "base.nav_button.forward",
               save_as = "base.titlebar.nav_forward_button"
             },
@@ -330,28 +50,34 @@ function main_gui.create(player, player_table)
             {type = "label", style = "frame_title", caption = {"mod-name.RecipeBook"}, ignored_by_interaction = true},
             {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
             {
-              template = "frame_action_button",
+              type = "sprite-button",
+              style = "frame_action_button",
               tooltip = {"rb-gui.keep-open"},
               sprite = "rb_pin_white",
               hovered_sprite = "rb_pin_black",
               clicked_sprite = "rb_pin_black",
+              mouse_button_filter = {"left"},
               handlers = "base.pin_button",
               save_as = "base.titlebar.pin_button"
             },
             {
-              template = "frame_action_button",
+              type = "sprite-button",
+              style = "frame_action_button",
               tooltip = {"rb-gui.settings"},
               sprite = "rb_settings_white",
               hovered_sprite = "rb_settings_black",
               clicked_sprite = "rb_settings_black",
+              mouse_button_filter = {"left"},
               handlers = "base.settings_button",
               save_as = "base.titlebar.settings_button"
             },
             {
-              template = "frame_action_button",
+              type = "sprite-button",
+              style = "frame_action_button",
               sprite = "utility/close_white",
               hovered_sprite = "utility/close_black",
               clicked_sprite = "utility/close_black",
+              mouse_button_filter = {"left"},
               handlers = "base.close_button"
             }
           }},
@@ -364,22 +90,26 @@ function main_gui.create(player, player_table)
               {
                 type = "frame",
                 style = "subheader_frame",
-                elem_mods = {visible = false},
+                visible = false,
                 save_as = "base.info_bar.frame",
                 children = {
                   {type = "label", style = "rb_toolbar_label", save_as = "base.info_bar.label"},
-                  {template = "pushers.horizontal"},
+                  {type = "empty-widget", style = "flib_horizontal_pusher"},
                   {
-                    template = "tool_button",
+                    type = "sprite-button",
+                    style = "tool_button",
                     sprite = "rb_clipboard_black",
                     tooltip = {"rb-gui.open-quick-reference"},
+                    mouse_button_filter = {"left"},
                     handlers = "base.quick_reference_button",
                     save_as = "base.info_bar.quick_ref_button"
                   },
                   {
-                    template = "tool_button",
+                    type = "sprite-button",
+                    style = "tool_button",
                     sprite = "rb_favorite_black",
                     tooltip = {"rb-gui.add-to-favorites"},
+                    mouse_button_filter = {"left"},
                     handlers = "base.favorite_button",
                     save_as = "base.info_bar.favorite_button"
                   }
@@ -391,7 +121,7 @@ function main_gui.create(player, player_table)
                   type = "flow",
                   style = "rb_main_info_pane_flow",
                   direction = "vertical",
-                  elem_mods = {visible = false},
+                  visible = false,
                   save_as = "home.flow",
                   children = pages.home.build()
                 },
@@ -399,7 +129,7 @@ function main_gui.create(player, player_table)
                   type = "flow",
                   style = "rb_main_info_pane_flow",
                   direction = "vertical",
-                  elem_mods = {visible = false},
+                  visible = false,
                   save_as = "material.flow",
                   children = pages.material.build()
                 },
@@ -407,7 +137,7 @@ function main_gui.create(player, player_table)
                   type = "flow",
                   style = "rb_main_info_pane_flow",
                   direction = "vertical",
-                  elem_mods = {visible = false},
+                  visible = false,
                   save_as = "recipe.flow",
                   children = pages.recipe.build()
                 }
@@ -421,7 +151,7 @@ function main_gui.create(player, player_table)
         type = "frame",
         style = "inner_frame_in_outer_frame",
         direction = "vertical",
-        elem_mods = {visible = false},
+        visible = false,
         save_as = "settings.window",
         children = {
           {type = "flow", save_as = "settings.titlebar_flow", children = {
@@ -448,7 +178,6 @@ function main_gui.create(player, player_table)
 
   -- base setup
   gui_data.base.window.pinned = false
-  gui.update_filters("shared.list_box_item", player.index, {"rb_list_box_item"}, "add")
 
   -- page setup
   gui_data = pages.search.setup(player, player_table, gui_data)
@@ -467,9 +196,6 @@ function main_gui.create(player, player_table)
 end
 
 function main_gui.destroy(player, player_table)
-  for _, name in ipairs{"base", "shared", "search"} do
-    gui.update_filters(name, player.index, nil, "remove")
-  end
   local gui_data = player_table.gui.main
   if gui_data then
     local frame = gui_data.base.window.frame
@@ -665,6 +391,107 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
     class = obj_class,
     name = obj_name
   }
+end
+
+function main_gui.handle_action(msg, e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local gui_data = player_table.gui.main
+  if msg.action == "close" then
+    main_gui.close(player, player_table)
+  elseif msg.action == "toggle_favorite" then
+    local favorites = player_table.favorites
+    local state = gui_data.state
+    local index_name = state.class.."."..state.name
+    if favorites[index_name] then
+      for i = 1, #favorites do
+        local obj = favorites[i]
+        if obj.class.."."..obj.name == index_name then
+          table.remove(favorites, i)
+          break
+        end
+      end
+      favorites[index_name] = nil
+
+      e.element.style = "tool_button"
+      e.element.tooltip = {"rb-gui.add-to-favorites"}
+    else
+      favorites[index_name] = true
+      table.insert(favorites, 1, state)
+
+      e.element.style = "flib_selected_tool_button"
+      e.element.tooltip = {"rb-gui.remove-from-favorites"}
+    end
+  elseif msg.action == "toggle_quick_ref" then
+    local name = player_table.gui.main.state.name
+    if player_table.gui.quick_ref[name] then
+      quick_ref_gui.destroy(player, player_table, name)
+      player_table.gui.main.base.info_bar.quick_ref_button.style = "tool_button"
+    else
+      quick_ref_gui.build(player, player_table, name)
+      player_table.gui.main.base.info_bar.quick_ref_button.style = "flib_selected_tool_button"
+    end
+  elseif msg.action == "navigate_backward" then
+    local session_history = player_table.history.session
+    -- latency protection
+    if session_history.position < #session_history then
+      if e.button == defines.mouse_button_type.left then
+        -- go back one
+        session_history.position = session_history.position + 1
+      else
+        -- go all the way back
+        session_history.position = #session_history
+      end
+      local back_obj = session_history[session_history.position]
+      main_gui.open_page(
+        game.get_player(e.player_index),
+        player_table,
+        back_obj.class,
+        back_obj.name,
+        true
+      )
+    end
+  elseif msg.action == "navigate_forward" then
+    local session_history = player_table.history.session
+    -- latency protection
+    if session_history.position > 1 then
+      session_history.position = session_history.position - 1
+      local forward_object = session_history[session_history.position]
+      main_gui.open_page(
+        game.get_player(e.player_index),
+        player_table,
+        forward_object.class,
+        forward_object.name,
+        true
+      )
+    end
+  elseif msg.action == "toggle_pinned" then
+    if gui_data.window.pinned then
+      gui_data.titlebar.pin_button.style = "frame_action_button"
+      gui_data.titlebar.pin_button.sprite = "rb_pin_white"
+      gui_data.window.pinned = false
+      gui_data.window.frame.force_auto_center()
+      player.opened = gui_data.window.frame
+    else
+      gui_data.titlebar.pin_button.style = "flib_selected_frame_action_button"
+      gui_data.titlebar.pin_button.sprite = "rb_pin_black"
+      gui_data.window.pinned = true
+      gui_data.window.frame.auto_center = false
+      player.opened = nil
+    end
+  elseif msg.action == "toggle_settings" then
+    if gui_data.settings.open then
+      gui_data.settings.open = false
+      gui_data.settings.window.visible = false
+      gui_data.base.titlebar.settings_button.style = "frame_action_button"
+      gui_data.base.titlebar.settings_button.sprite = "rb_settings_white"
+    else
+      gui_data.settings.open = true
+      gui_data.settings.window.visible = true
+      gui_data.base.titlebar.settings_button.style = "flib_selected_frame_action_button"
+      gui_data.base.titlebar.settings_button.sprite = "rb_settings_black"
+    end
+  end
 end
 
 function main_gui.update_list_box_items(player, player_table)

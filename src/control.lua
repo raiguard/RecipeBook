@@ -12,6 +12,7 @@ local player_data = require("scripts.player-data")
 local remote_interface = require("scripts.remote-interface")
 
 local main_gui = require("scripts.gui.main.base")
+local quick_ref_gui = require("scripts.gui.quick-ref")
 
 -- -----------------------------------------------------------------------------
 -- COMMANDS
@@ -105,7 +106,9 @@ end)
 gui.hook_events(function(e)
   local msg = gui.read_action(e)
   if msg then
-    -- TODO: implement actions
+    if msg.gui == "quick_ref" then
+      quick_ref_gui.handle_action(msg, e)
+    end
   elseif e.name == defines.events.on_gui_closed and e.gui_type == defines.gui_type.research then
     local player_table = global.players[e.player_index]
     if player_table.flags.technology_gui_open then
@@ -252,7 +255,7 @@ event.on_string_translated(function(e)
       player.print{'rb-message.can-open-gui'}
     end
     -- create GUI
-    main_gui.create(player, player_table)
+    main_gui.build(player, player_table)
     -- update flags
     player_table.flags.can_open_gui = true
     player_table.flags.translate_on_join = false -- not really needed, but is here just in case
