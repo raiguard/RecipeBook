@@ -7,9 +7,9 @@ local constants = require("constants")
 local formatter = require("scripts.formatter")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
-local on_tick = require("scripts.on-tick")
 local player_data = require("scripts.player-data")
 local remote_interface = require("scripts.remote-interface")
+local shared = require("scripts.shared")
 
 local main_gui = require("scripts.gui.main.base")
 local quick_ref_gui = require("scripts.gui.quick-ref")
@@ -38,6 +38,7 @@ end)
 
 event.on_init(function()
   translation.init()
+  shared.register_on_tick()
 
   global_data.init()
   for i, player in pairs(game.players) do
@@ -48,13 +49,13 @@ end)
 
 event.on_load(function()
   formatter.create_all_caches()
-  on_tick.register()
+  shared.register_on_tick()
 end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
     translation.init()
-    on_tick.register()
+    shared.register_on_tick()
 
     global_data.build_recipe_book()
     global_data.check_forces()
@@ -63,30 +64,6 @@ event.on_configuration_changed(function(e)
       player_data.refresh(player, global.players[i])
     end
   end
-end)
-
--- CUSTOM
-
-event.register(constants.events.open_page, function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  if main_gui.check_can_open(player, player_table) then
-    main_gui.open_page(player, player_table, e.obj_class, e.obj_name)
-    if not player_table.flags.gui_open then
-      main_gui.open(player, player_table)
-    end
-  end
-end)
-
-event.register(constants.events.update_list_box_items, function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  main_gui.update_list_box_items(player, player_table)
-end)
-
-event.register(constants.events.update_quick_ref_button, function(e)
-  local player_table = global.players[e.player_index]
-  main_gui.update_quick_ref_button(player_table)
 end)
 
 -- FORCE
@@ -233,6 +210,16 @@ event.on_runtime_mod_setting_changed(function(e)
   end
 end)
 
+-- TICK
+
+local function on_tick(e)
+  if translation.translating_players_count() > 0 then
+    translation.iterate_batch(e)
+  else
+    event.on_tick(nil)
+  end
+end
+
 -- TRANSLATIONS
 
 event.on_string_translated(function(e)
@@ -265,7 +252,7 @@ event.on_string_translated(function(e)
     -- enable shortcut
     player.set_shortcut_available("rb-toggle-gui", true)
     -- update on_tick
-    on_tick.register()
+    shared.register_on_tick()
   end
 end)
 
@@ -273,3 +260,29 @@ end)
 -- REMOTE INTERFACE
 
 remote.add_interface("RecipeBook", remote_interface)
+
+-- -----------------------------------------------------------------------------
+-- SHARED FUNCTIONS
+
+function shared.register_on_tick()
+  if global.__flib and translation.translating_players_count() > 0 then
+    event.on_tick(on_tick)
+  end
+end
+
+function shared.open_page(player, player_table, class, name)
+  if main_gui.check_can_open(player, player_table) then
+    main_gui.open_page(player, player_table, class, name)
+    if not player_table.flags.gui_open then
+      main_gui.open(player, player_table)
+    end
+  end
+end
+
+function shared.update_list_box_items(player, player_table)
+  main_gui.update_list_box_items(player, player_table)
+end
+
+function shared.update_quick_ref_button(player_table)
+  main_gui.update_quick_ref_button(player_table)
+end

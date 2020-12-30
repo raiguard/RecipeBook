@@ -1,7 +1,7 @@
-local event = require("__flib__.event")
 local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
+local shared = require("scripts.shared")
 
 local settings_page = {}
 
@@ -96,7 +96,7 @@ function settings_page.handle_action(msg, e)
       player_table.settings[tags.setting_name] = checked_state
       player_table.flags.updating_setting = false
     end
-    event.raise(constants.events.update_list_box_items, {player_index = e.player_index})
+    shared.update_list_box_items(player, player_table)
   end
 end
 

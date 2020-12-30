@@ -1,14 +1,14 @@
-local player_data = {}
-
 local translation = require("__flib__.translation")
 local util = require("__core__.lualib.util")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
-local on_tick = require("scripts.on-tick")
+local shared = require("scripts.shared")
 
 local main_gui = require("scripts.gui.main.base")
 local quick_ref_gui = require("scripts.gui.quick-ref")
+
+local player_data = {}
 
 function player_data.init(player_index)
   local data = {
@@ -67,7 +67,7 @@ end
 
 function player_data.start_translations(player_index)
   translation.add_requests(player_index, global.translation_data)
-  on_tick.register()
+  shared.register_on_tick()
 end
 
 function player_data.refresh(player, player_table)

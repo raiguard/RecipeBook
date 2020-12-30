@@ -1,8 +1,7 @@
-local event = require("__flib__.event")
 local gui = require("__flib__.gui-beta")
 
-local constants = require("constants")
 local formatter = require("scripts.formatter")
+local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 local function quick_ref_panel(ref, children)
@@ -157,8 +156,9 @@ end
 
 function quick_ref_gui.handle_action(msg, e)
   if msg.action == "close" then
-    quick_ref_gui.destroy(global.players[e.player_index], msg.name)
-    event.raise(constants.events.update_quick_ref_button, {player_index = e.player_index})
+    local player_table = global.players[e.player_index]
+    quick_ref_gui.destroy(player_table, msg.name)
+    shared.update_quick_ref_button(player_table)
   end
 end
 

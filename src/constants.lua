@@ -1,19 +1,5 @@
 local constants = {}
 
--- CONTROL-STAGE ONLY
-
-if script then
-  local event = require("__flib__.event")
-
-  constants.events = {
-    open_page = event.generate_id(),
-    update_list_box_items = event.generate_id(),
-    update_quick_ref_button = event.generate_id()
-  }
-end
-
--- BOTH STAGES
-
 -- dictionary category -> affects research
 -- anything with `0` as the value will be ignored for research
 constants.disabled_recipe_categories = {

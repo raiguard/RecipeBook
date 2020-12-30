@@ -1,8 +1,7 @@
-local remote_interface = {}
-
-local event = require("__flib__.event")
-
 local constants = require("constants")
+local main_gui = require("scripts.gui.main.base")
+
+local remote_interface = {}
 
 function remote_interface.open_page(player_index, class, name)
   if not class then return false, "Did not provide a class" end
@@ -15,7 +14,10 @@ function remote_interface.open_page(player_index, class, name)
   local data = global.recipe_book[int_class][int_name]
   if not data then return false, "Did not provide a valid object" end
 
-  event.raise(constants.events.open_page, {player_index = player_index, obj_class = class, obj_name = name})
+  local player = game.get_player(player_index)
+  local player_table = global.players[player_index]
+
+  main_gui.open_page(player, player_table, class, name)
 
   return true
 end
