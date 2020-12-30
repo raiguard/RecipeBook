@@ -138,18 +138,18 @@ function quick_ref_gui.build(player, player_table, name)
   end
 
   -- save to global
-  player_table.gui.quick_ref[name] = refs
+  player_table.guis.quick_ref[name] = refs
 end
 
 function quick_ref_gui.destroy(player_table, name)
-  local guis = player_table.gui.quick_ref
+  local guis = player_table.guis.quick_ref
   local refs = guis[name]
   refs.window.destroy()
   guis[name] = nil
 end
 
 function quick_ref_gui.destroy_all(player_table)
-  for name in pairs(player_table.gui.quick_ref) do
+  for name in pairs(player_table.guis.quick_ref) do
     quick_ref_gui.destroy(player_table, name)
   end
 end

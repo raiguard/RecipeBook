@@ -21,7 +21,7 @@ function player_data.init(player_index)
       translate_on_join = false,
       updating_setting = false,
     },
-    gui = {
+    guis = {
       quick_ref = {}
     },
     history = {

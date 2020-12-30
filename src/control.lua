@@ -92,7 +92,7 @@ gui.hook_events(function(e)
     local player_table = global.players[e.player_index]
     if player_table.flags.technology_gui_open then
       player_table.flags.technology_gui_open = false
-      local gui_data = player_table.gui.main
+      local gui_data = player_table.guis.main
       if not gui_data.state.pinned then
         game.get_player(e.player_index).opened = gui_data.refs.base.window.frame
       end

@@ -58,7 +58,7 @@ end
 function search_page.handle_action(msg, e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
-  local gui_data = player_table.gui.main
+  local gui_data = player_table.guis.main
   local state = gui_data.state
   local refs = gui_data.refs
 

@@ -193,7 +193,7 @@ function main_gui.build(player, player_table)
   refs.base.titlebar.flow.drag_target = refs.base.window.frame
   refs.settings.titlebar_flow.drag_target = refs.base.window.frame
 
-  player_table.gui.main = {
+  player_table.guis.main = {
     refs = refs,
     state = {
       open_page = {
@@ -211,18 +211,18 @@ function main_gui.build(player, player_table)
 end
 
 function main_gui.destroy(player, player_table)
-  local gui_data = player_table.gui.main
+  local gui_data = player_table.guis.main
   if gui_data then
     local frame = gui_data.refs.base.window.frame
     if frame and frame.valid then
       frame.destroy()
     end
   end
-  player_table.gui.main = nil
+  player_table.guis.main = nil
 end
 
 function main_gui.open(player, player_table, skip_focus)
-  local gui_data = player_table.gui.main
+  local gui_data = player_table.guis.main
   local refs = gui_data.refs
   local window = refs.base.window.frame
   if window and window.valid then
@@ -241,7 +241,7 @@ function main_gui.open(player, player_table, skip_focus)
 end
 
 function main_gui.close(player, player_table)
-  local gui_data = player_table.gui.main
+  local gui_data = player_table.guis.main
   if gui_data then
     local frame = gui_data.refs.base.window.frame
     if frame and frame.valid then
@@ -273,7 +273,7 @@ end
 
 function main_gui.open_page(player, player_table, obj_class, obj_name, skip_history)
   obj_name = obj_name or ""
-  local gui_data = player_table.gui.main
+  local gui_data = player_table.guis.main
   local refs = gui_data.refs
   local translations = player_table.translations
   local int_class = (obj_class == "fluid" or obj_class == "item") and "material" or obj_class
@@ -377,7 +377,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
     if obj_class == "recipe" then
       local quick_ref_button = info_bar.quick_ref_button
       quick_ref_button.visible = true
-      if player_table.gui.quick_ref[obj_name] then
+      if player_table.guis.quick_ref[obj_name] then
         quick_ref_button.style = "flib_selected_tool_button"
       else
         quick_ref_button.style = "tool_button"
@@ -414,7 +414,7 @@ end
 function main_gui.handle_action(msg, e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
-  local gui_data = player_table.gui.main
+  local gui_data = player_table.guis.main
   local state = gui_data.state
   local refs = gui_data.refs
 
@@ -458,8 +458,8 @@ function main_gui.handle_action(msg, e)
         e.element.tooltip = {"rb-gui.remove-from-favorites"}
       end
     elseif msg.action == "toggle_quick_ref" then
-      local name = player_table.gui.main.state.open_page.name
-      if player_table.gui.quick_ref[name] then
+      local name = player_table.guis.main.state.open_page.name
+      if player_table.guis.quick_ref[name] then
         quick_ref_gui.destroy(player_table, name)
         refs.base.info_bar.quick_ref_button.style = "tool_button"
       else
@@ -537,7 +537,7 @@ function main_gui.update_list_box_items(player, player_table)
   formatter.purge_cache(player.index)
   -- update all items
   main_gui.handle_action({gui = "main", page = "search"}, {player_index = player.index})
-  local open_page = player_table.gui.main.state.open_page
+  local open_page = player_table.guis.main.state.open_page
   main_gui.open_page(
     player,
     player_table,
@@ -548,12 +548,12 @@ function main_gui.update_list_box_items(player, player_table)
 end
 
 function main_gui.update_quick_ref_button(player_table)
-  local gui_data = player_table.gui.main
+  local gui_data = player_table.guis.main
   local open_page = gui_data.state.open_page
   if open_page.class == "recipe" then
     local quick_ref_button = gui_data.refs.base.info_bar.quick_ref_button
     -- check for the quick ref window
-    if player_table.gui.quick_ref[open_page.name] then
+    if player_table.guis.quick_ref[open_page.name] then
       quick_ref_button.style = "flib_selected_tool_button"
     else
       quick_ref_button.style = "tool_button"
@@ -562,7 +562,7 @@ function main_gui.update_quick_ref_button(player_table)
 end
 
 function main_gui.update_settings(player_table)
-  pages.settings.update(player_table.settings, player_table.gui.main.settings)
+  pages.settings.update(player_table.settings, player_table.guis.main.settings)
 end
 
 return main_gui
