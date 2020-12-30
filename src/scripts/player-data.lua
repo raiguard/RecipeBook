@@ -74,7 +74,7 @@ function player_data.refresh(player, player_table)
   -- destroy GUIs
   main_gui.close(player, player_table)
   main_gui.destroy(player, player_table)
-  quick_ref_gui.destroy_all(player, player_table)
+  quick_ref_gui.destroy_all(player_table)
 
   -- set flag
   player_table.flags.can_open_gui = false

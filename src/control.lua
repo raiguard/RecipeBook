@@ -106,16 +106,18 @@ end)
 gui.hook_events(function(e)
   local msg = gui.read_action(e)
   if msg then
-    if msg.gui == "quick_ref" then
+    if msg.gui == "main" then
+      main_gui.handle_action(msg, e)
+    elseif msg.gui == "quick_ref" then
       quick_ref_gui.handle_action(msg, e)
     end
   elseif e.name == defines.events.on_gui_closed and e.gui_type == defines.gui_type.research then
     local player_table = global.players[e.player_index]
     if player_table.flags.technology_gui_open then
       player_table.flags.technology_gui_open = false
-      local window_data = player_table.gui.main.base.window
-      if not window_data.pinned then
-        game.get_player(e.player_index).opened = window_data.frame
+      local gui_data = player_table.gui.main
+      if not gui_data.state.pinned then
+        game.get_player(e.player_index).opened = gui_data.refs.base.window.frame
       end
     end
   end

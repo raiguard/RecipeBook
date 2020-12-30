@@ -1,19 +1,22 @@
 local formatter = require("scripts.formatter")
+local util = require("scripts.util")
 
 local info_list_box = {}
 
 function info_list_box.build(caption, rows, save_location)
-  return {type = "flow", direction = "vertical", save_as = save_location..".flow", children = {
-    {type = "label", style = "rb_info_list_box_label", caption = caption, save_as = save_location..".label"},
-    {type = "frame", style = "deep_frame_in_shallow_frame", save_as = save_location..".frame",  children = {
-      {
-        type = "scroll-pane",
-        style = "rb_list_box_scroll_pane",
-        style_mods = {height = (rows * 28)},
-        save_as = save_location..".scroll_pane"
-      }
+  return (
+    {type = "flow", direction = "vertical", ref = util.append(save_location, "flow"), children = {
+      {type = "label", style = "rb_info_list_box_label", caption = caption, ref = util.append(save_location, "label")},
+      {type = "frame", style = "deep_frame_in_shallow_frame", ref = util.append(save_location, "frame"),  children = {
+        {
+          type = "scroll-pane",
+          style = "rb_list_box_scroll_pane",
+          style_mods = {height = (rows * 28)},
+          ref = util.append(save_location, "scroll_pane")
+        }
+      }}
     }}
-  }}
+  )
 end
 
 function info_list_box.update(tbl, int_class, list_box, player_data, always_show, starting_index)
@@ -57,11 +60,17 @@ function info_list_box.update(tbl, int_class, list_box, player_data, always_show
       else
         add{
           type = "button",
-          name = "rb_list_box_item__"..i,
           style = style,
           caption = caption,
           tooltip = tooltip,
-          enabled = enabled
+          enabled = enabled,
+          tags = {
+            [script.mod_name] = {
+              flib = {
+                on_click = {gui = "main", action = "handle_list_box_item_click"}
+              }
+            }
+          }
         }
       end
     end
@@ -91,7 +100,7 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
   local tbl = home_data[tbl_name]
 
   -- list box
-  local list_box = gui_data.home[tbl_name]
+  local list_box = gui_data.refs.home[tbl_name]
   local scroll = list_box.scroll_pane
   local add = scroll.add
   local children = scroll.children
@@ -114,7 +123,19 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
           item.caption = caption
           item.tooltip = tooltip
         else
-          add{type = "button", name = "rb_list_box_item__"..i, style = style, caption = caption, tooltip = tooltip}
+          add{
+            type = "button",
+            style = style,
+            caption = caption,
+            tooltip = tooltip,
+            tags = {
+              [script.mod_name] = {
+                flib = {
+                  on_click = {gui = "main", action = "handle_list_box_item_click"}
+                }
+              }
+            }
+          }
         end
       end
     end
@@ -134,10 +155,9 @@ local function area_dimensions(area)
   return width, height
 end
 
-function info_list_box.handle_click(e)
+-- if values are returned, the corresponding page is opened
+function info_list_box.handle_click(e, player, player_table)
   local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%]  .*$")
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
   if class == "technology" then
     player_table.flags.technology_gui_open = true
     player.open_technology_gui(name)
@@ -145,8 +165,7 @@ function info_list_box.handle_click(e)
     if e.shift then
       local crafter_data = global.recipe_book.crafter[name]
       if crafter_data and crafter_data.fixed_recipe then
-        -- FIXME:
-        -- main_gui.open_page(player, player_table, "recipe", crafter_data.fixed_recipe)
+        return "recipe", crafter_data.fixed_recipe
       end
     else
       local recipe_name = player_table.gui.main.state.name
@@ -172,8 +191,7 @@ function info_list_box.handle_click(e)
       end
     end
   else
-    -- FIXME:
-    -- main_gui.open_page(player, player_table, class, name)
+    return class, name
   end
 end
 

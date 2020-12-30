@@ -12,8 +12,10 @@ function search_page.build()
         type = "drop-down",
         items = constants.search_categories_localised,
         selected_index = 2,
-        handlers = "search.category_drop_down",
-        save_as = "search.category_drop_down"
+        ref = {"search", "category_drop_down"},
+        actions = {
+          on_selection_state_changed = {gui = "main", page = "search", action = "change_category"}
+        }
       }
     }},
     {type = "flow", style = "rb_search_content_flow", direction = "vertical", children = {
@@ -21,15 +23,18 @@ function search_page.build()
         type = "textfield",
         style = "rb_search_textfield",
         clear_and_focus_on_right_click = true,
-        handlers = "search.textfield",
-        save_as = "search.textfield"
+        ref = {"search", "textfield"},
+        actions = {
+          -- update_results is a dummy action - the results will be updated regardless
+          on_text_changed = {gui = "main", page = "search", action = "update_results"}
+        }
       },
       {type = "frame", style = "rb_search_results_frame", direction = "vertical", children = {
         {
           type = "frame",
           style = "rb_search_results_subheader_frame",
           visible = false,
-          save_as = "search.limit_frame",
+          ref = {"search", "limit_frame"},
           children = {
             {
               type = "label",
@@ -38,37 +43,40 @@ function search_page.build()
             }
           }
         },
-        {type = "scroll-pane", style = "rb_search_results_scroll_pane", save_as = "search.results_scroll_pane"}
+        {type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = {"search", "results_scroll_pane"}}
       }}
     }}
   }
 end
 
-function search_page.setup(_, _, gui_data)
-  gui_data.search.category = "recipe"
-  return gui_data
+function search_page.init()
+  return {
+    category = "recipe"
+  }
 end
 
 function search_page.handle_action(msg, e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
   local gui_data = player_table.gui.main
+  local state = gui_data.state
+  local refs = gui_data.refs
 
   -- change category
   if msg.action == "change_category" then
-    gui_data.search.category = constants.search_categories[e.element.selected_index]
+    state.search.category = constants.search_categories[e.element.selected_index]
   end
 
   -- update search results
-  local query = string.lower(gui_data.textfield.text)
+  local query = string.lower(refs.search.textfield.text)
 
-  local category = gui_data.category
-  local translations = player_table.translations[gui_data.category]
-  local scroll = gui_data.results_scroll_pane
+  local category = state.search.category
+  local translations = player_table.translations[category]
+  local scroll = refs.search.results_scroll_pane
   local rb_data = global.recipe_book[category]
 
   -- hide limit frame, show it again later if there's more than 50 results
-  local limit_frame = gui_data.limit_frame
+  local limit_frame = refs.search.limit_frame
   limit_frame.visible = false
 
   -- don't show anything if there are zero or one letters in the query
@@ -87,7 +95,7 @@ function search_page.handle_action(msg, e)
     query = string.gsub(query, pattern, replacement)
   end
 
-  gui_data.query = query
+  state.search.query = query
 
   -- settings and player data
   local player_data = {
@@ -117,10 +125,16 @@ function search_page.handle_action(msg, e)
         else
           add{
             type = "button",
-            name = "rb_list_box_item__"..i,
             style = style,
             caption = caption,
-            tooltip = tooltip
+            tooltip = tooltip,
+            tags = {
+              [script.mod_name] = {
+                flib = {
+                  on_click = {gui = "main", action = "handle_list_box_item_click"}
+                }
+              }
+            }
           }
         end
 

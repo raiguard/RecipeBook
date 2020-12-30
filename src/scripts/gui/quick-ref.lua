@@ -3,13 +3,14 @@ local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
+local util = require("scripts.util")
 
-local function quick_ref_panel(name, children)
+local function quick_ref_panel(ref, children)
   return {type = "flow", direction = "vertical", children = {
-    {type = "label", style = "bold_label", save_as = name..".label"},
-    {type = "frame", style = "rb_slot_table_frame", save_as = name..".frame", children = {
-      {type = "scroll-pane", style = "rb_slot_table_scroll_pane", save_as = name..".scroll_pane", children = {
-        {type = "table", style = "slot_table", column_count = 5, save_as = name..".table", children = children}
+    {type = "label", style = "bold_label", ref = util.append(ref, "label")},
+    {type = "frame", style = "rb_slot_table_frame", ref = util.append(ref, "frame"), children = {
+      {type = "scroll-pane", style = "rb_slot_table_scroll_pane", ref = util.append(ref, "scroll_pane"), children = {
+        {type = "table", style = "slot_table", column_count = 5, ref = util.append(ref, "table"), children = children}
       }}
     }}
   }}
@@ -20,40 +21,42 @@ local quick_ref_gui = {}
 function quick_ref_gui.build(player, player_table, name)
   local recipe_data = global.recipe_book.recipe[name]
 
-  local gui_data, filters = gui.build(player.gui.screen, {
-    {type = "frame", direction = "vertical", save_as = "window", children = {
-      {type = "flow", save_as = "titlebar.flow", children = {
+  local refs = gui.build(player.gui.screen, {
+    {type = "frame", direction = "vertical", ref = {"window"}, children = {
+      {type = "flow", ref = {"titlebar_flow"}, children = {
         {type = "label", style = "frame_title", caption = {"rb-gui.recipe"}, ignored_by_interaction = true},
         {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
         {
           type = "sprite-button",
           style = "frame_action_button",
-          name = "rb_quick_ref_expand_button__"..name,
-          tooltip = {"rb-gui.view-details"},
           sprite = "rb_expand_white",
           hovered_sprite = "rb_expand_black",
           clicked_sprite = "rb_expand_black",
+          tooltip = {"rb-gui.view-details"},
           mouse_button_filter = {"left"},
-          handlers = "quick_ref.open_info_button"
+          actions = {
+            on_click = {gui = "main", action = "open_page", class = "recipe", name = name}
+          }
         },
         {
           type = "sprite-button",
           style = "frame_action_button",
-          name = "rb_quick_ref_close_button__"..name,
           sprite = "utility/close_white",
           hovered_sprite = "utility/close_black",
           clicked_sprite = "utility/close_black",
           mouse_button_filter = {"left"},
-          handlers = "quick_ref.close_button"
+          actions = {
+            on_click = {gui = "quick_ref", action = "close", name = name}
+          }
         }
       }},
       {type = "frame", style = "rb_quick_ref_content_frame", direction = "vertical", children = {
         {type = "frame", style = "subheader_frame", children = {
-          {type = "label", style = "rb_toolbar_label", save_as = "toolbar_label"},
+          {type = "label", style = "rb_toolbar_label", ref = {"toolbar_label"}},
           {type = "empty-widget", style = "flib_horizontal_pusher"}
         }},
         {type = "flow", style = "rb_quick_ref_content_flow", direction = "vertical", children = {
-          quick_ref_panel("ingredients", {
+          quick_ref_panel({"ingredients"}, {
             {
               type = "sprite-button",
               style = "flib_slot_button_default",
@@ -63,12 +66,12 @@ function quick_ref_gui.build(player, player_table, name)
               enabled = false
             }
           }),
-          quick_ref_panel("products")
+          quick_ref_panel{"products"}
         }}
       }}
     }}
   })
-  gui_data.titlebar.flow.drag_target = gui_data.window
+  refs.titlebar_flow.drag_target = refs.window
 
   -- to pass to the formatter
   local player_data = {
@@ -85,14 +88,13 @@ function quick_ref_gui.build(player, player_table, name)
     label_caption = string.gsub(label_caption, "^.-nt%]  ", "")
   end
 
-  gui_data.toolbar_label.caption = label_caption
-  gui_data.toolbar_label.tooltip = label_tooltip
+  refs.toolbar_label.caption = label_caption
+  refs.toolbar_label.tooltip = label_tooltip
 
   -- add contents to tables
   local material_data = global.recipe_book.material
   for _, type in ipairs{"ingredients", "products"} do
-    local group = gui_data[type]
-    local table_add = group.table.add
+    local group = refs[type]
     local i = type == "ingredients" and 1 or 0
     for _, obj in ipairs(recipe_data[type]) do
       local obj_data = material_data[obj.type.."."..obj.name]
@@ -107,58 +109,56 @@ function quick_ref_gui.build(player, player_table, name)
         or string.gsub(obj.amount_string, "^.-(%d+)x$", "%1")
       )
 
-      local button = table_add{
-        type = "sprite-button",
-        name = "rb_quick_ref_material_button__"..i,
-        style = button_style,
-        sprite = obj.type.."/"..obj.name,
-        tooltip = tooltip,
-      }
-      button.add{
-        type = "label",
-        style = "rb_slot_label",
-        caption = shown_string,
-        ignored_by_interaction = true
-      }
-      button.add{
-        type = "label",
-        style = "rb_slot_label_top",
-        caption = string.find(obj.amount_string, "%%") and "%" or "",
-        ignored_by_interaction = true
-      }
-      group.label.caption = {"rb-gui."..type, i - (type == "ingredients" and 1 or 0)}
+      gui.build(group.table, {
+        {
+          type = "sprite-button",
+          style = button_style,
+          sprite = obj.type.."/"..obj.name,
+          tooltip = tooltip,
+          actions = {
+            on_click = {gui = "main", action = "open_page", class = obj.type, name = obj.name}
+          },
+          children = {
+            {
+              type = "label",
+              style = "rb_slot_label",
+              caption = shown_string,
+              ignored_by_interaction = true
+            },
+            {
+              type = "label",
+              style = "rb_slot_label_top",
+              caption = string.find(obj.amount_string, "%%") and "%" or "",
+              ignored_by_interaction = true
+            }
+          }
+        }
+      })
     end
+    group.label.caption = {"rb-gui."..type, i - (type == "ingredients" and 1 or 0)}
   end
 
   -- save to global
-  gui_data.filters = filters
-  player_table.gui.quick_ref[name] = gui_data
+  player_table.gui.quick_ref[name] = refs
 end
 
-function quick_ref_gui.destroy(player, player_table, name)
+function quick_ref_gui.destroy(player_table, name)
   local guis = player_table.gui.quick_ref
-  local gui_data = guis[name]
-  gui_data.window.destroy()
+  local refs = guis[name]
+  refs.window.destroy()
   guis[name] = nil
 end
 
-function quick_ref_gui.destroy_all(player, player_table)
+function quick_ref_gui.destroy_all(player_table)
   for name in pairs(player_table.gui.quick_ref) do
-    quick_ref_gui.destroy(player, player_table, name)
+    quick_ref_gui.destroy(player_table, name)
   end
 end
 
 function quick_ref_gui.handle_action(msg, e)
   if msg.action == "close" then
-    local _, _, name = string.find(e.element.name, "rb_quick_ref_close_button__(.*)")
-    quick_ref_gui.destroy(game.get_player(e.player_index), global.players[e.player_index], name)
+    quick_ref_gui.destroy(global.players[e.player_index], msg.name)
     event.raise(constants.events.update_quick_ref_button, {player_index = e.player_index})
-  elseif msg.action == "open_info_page" then
-    local _, _, name = string.find(e.element.name, "rb_quick_ref_expand_button__(.*)")
-    event.raise(constants.events.open_page, {player_index = e.player_index, obj_class = "recipe", obj_name = name})
-  elseif msg.action == "open_material" then
-    local _, _, class, name = string.find(e.element.sprite, "^(.-)/(.-)$")
-    event.raise(constants.events.open_page, {player_index = e.player_index, obj_class = class, obj_name = name})
   end
 end
 

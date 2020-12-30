@@ -4,10 +4,10 @@ local recipe_page = {}
 
 function recipe_page.build()
   local elems =  {
-    info_list_box.build({"rb-gui.ingredients"}, 1, "recipe.ingredients"),
-    info_list_box.build({"rb-gui.products"}, 1, "recipe.products"),
-    info_list_box.build({"rb-gui.made-in"}, 1, "recipe.made_in"),
-    info_list_box.build({"rb-gui.unlocked-by"}, 1, "recipe.unlocked_by")
+    info_list_box.build({"rb-gui.ingredients"}, 1, {"recipe", "ingredients"}),
+    info_list_box.build({"rb-gui.products"}, 1, {"recipe", "products"}),
+    info_list_box.build({"rb-gui.made-in"}, 1, {"recipe", "made_in"}),
+    info_list_box.build({"rb-gui.unlocked-by"}, 1, {"recipe", "unlocked_by"})
   }
 
   -- add time item to ingredients
@@ -18,7 +18,7 @@ function recipe_page.build()
       style = "rb_list_box_item",
       tooltip = {"rb-gui.seconds-tooltip"},
       enabled = false,
-      save_as = "recipe.ingredients.time_item"
+      ref = {"recipe", "ingredients", "time_item"}
     }
   }
 
@@ -26,13 +26,15 @@ function recipe_page.build()
 end
 
 function recipe_page.update(int_name, gui_data, player_data)
+  local refs = gui_data.refs
+
   local obj_data = global.recipe_book.recipe[int_name]
 
   local update_list_box = info_list_box.update
 
   -- set time item
   local time_item_prefix = player_data.settings.show_glyphs and "[font=RecipeBook]Z[/font]   " or ""
-  local time_item = gui_data.recipe.ingredients.time_item
+  local time_item = refs.recipe.ingredients.time_item
   time_item.caption = {
     "",
     time_item_prefix.."[img=quantity-time]   [font=default-bold]",
@@ -40,10 +42,10 @@ function recipe_page.update(int_name, gui_data, player_data)
     "[/font]"
   }
 
-  update_list_box(obj_data.ingredients, "material", gui_data.recipe.ingredients, player_data, true, 1)
-  update_list_box(obj_data.products, "material", gui_data.recipe.products, player_data, true)
-  update_list_box(obj_data.made_in, "crafter", gui_data.recipe.made_in, player_data)
-  update_list_box(obj_data.unlocked_by, "technology", gui_data.recipe.unlocked_by, player_data)
+  update_list_box(obj_data.ingredients, "material", refs.recipe.ingredients, player_data, true, 1)
+  update_list_box(obj_data.products, "material", refs.recipe.products, player_data, true)
+  update_list_box(obj_data.made_in, "crafter", refs.recipe.made_in, player_data)
+  update_list_box(obj_data.unlocked_by, "technology", refs.recipe.unlocked_by, player_data)
 end
 
 return recipe_page
