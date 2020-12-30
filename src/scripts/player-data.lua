@@ -37,20 +37,13 @@ function player_data.init(player_index)
 end
 
 function player_data.update_settings(player, player_table)
-  -- static settings (stored as actual mod settings)
-  local mod_settings = player.mod_settings
-  local settings = {
-    open_item_hotkey = mod_settings["rb-open-item-hotkey"].value,
-    open_fluid_hotkey = mod_settings["rb-open-fluid-hotkey"].value,
-    show_hidden = mod_settings["rb-show-hidden-objects"].value,
-    show_unresearched = mod_settings["rb-show-unresearched-objects"].value,
-    show_glyphs = mod_settings["rb-show-glyphs"].value,
-    show_alternate_name = mod_settings["rb-show-alternate-name"].value,
-    show_detailed_recipe_tooltips = mod_settings["rb-show-detailed-recipe-tooltips"].value,
-    use_fuzzy_search = mod_settings["rb-use-fuzzy-search"].value,
-    use_internal_names = mod_settings["rb-use-internal-names"].value,
-  }
-  -- dynamic settings (stored only on save game)
+  local existing_settings = player_table.settings
+  local settings = {}
+  for _, settings_data in pairs(constants.settings) do
+    for name, data in pairs(settings_data) do
+      settings[name] = existing_settings[name] or data.default_value
+    end
+  end
   local categories = player_table.settings.recipe_categories or {}
   for name in pairs(game.recipe_category_prototypes) do
     if categories[name] == nil then

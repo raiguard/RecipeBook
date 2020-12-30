@@ -124,53 +124,46 @@ constants.search_results_limit = 150
 constants.settings = {
   general = {
     open_item_hotkey = {
-      prototype_name = "rb-open-item-hotkey",
+      default_value = true,
       has_tooltip = true
     },
     open_fluid_hotkey = {
-      prototype_name = "rb-open-fluid-hotkey",
+      default_value = true,
       has_tooltip = true
     }
   },
   interface = {
     show_hidden = {
-      prototype_name = "rb-show-hidden-objects",
+      default_value = false,
       has_tooltip = true
     },
     show_unresearched = {
-      prototype_name = "rb-show-unresearched-objects",
+      default_value = false,
       has_tooltip = true
     },
     show_glyphs = {
-      prototype_name = "rb-show-glyphs",
+      default_value = true,
       has_tooltip = false
     },
     show_alternate_name = {
-      prototype_name = "rb-show-alternate-name",
+      default_value = false,
       has_tooltip = true
     },
     show_detailed_recipe_tooltips = {
-      prototype_name = "rb-show-detailed-recipe-tooltips",
+      default_value = true,
       has_tooltip = true
     },
   },
   search = {
     use_fuzzy_search = {
-      prototype_name = "rb-use-fuzzy-search",
+      default_value = false,
       has_tooltip = true
     },
     use_internal_names = {
-      prototype_name = "rb-use-internal-names",
+      default_value = false,
       has_tooltip = true
     }
   }
 }
-
-constants.setting_prototype_names = {}
-for _, t in pairs(constants.settings) do
-  for name, data in pairs(t) do
-    constants.setting_prototype_names[name] = data.prototype_name
-  end
-end
 
 return constants

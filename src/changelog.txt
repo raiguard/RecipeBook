@@ -3,6 +3,7 @@ Version: 2.4.0
 Date: ????
   Changes:
     - Updated the mod to the new flib `gui-beta` module
+    - Removed per-player settings from the mod settings menu - use the mod's built-in settings GUI instead
 ---------------------------------------------------------------------------------------------------
 Version: 2.3.3
 Date: 2020-12-06

@@ -18,8 +18,8 @@ function settings_page.build(settings)
     for name, data in pairs(elements) do
       category_output.children[#category_output.children+1] = {
         type = "checkbox",
-        caption = {"mod-setting-name."..data.prototype_name},
-        tooltip = data.has_tooltip and {"mod-setting-description."..data.prototype_name} or nil,
+        caption = {"rb-gui.setting-"..name},
+        tooltip = data.has_tooltip and {"rb-gui.setting-"..name.."-tooltip"} or nil,
         state = settings[name],
         ref = {"settings", name},
         tags = {setting_name = name},
