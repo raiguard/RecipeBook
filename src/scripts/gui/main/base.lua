@@ -257,6 +257,12 @@ function main_gui.toggle(player, player_table)
   if player_table.flags.gui_open then
     main_gui.close(player, player_table)
   else
+    if not player_table.settings.preserve_session then
+      local session_history = player_table.history.session
+      session_history.position = #session_history
+      local back_obj = session_history[session_history.position]
+      main_gui.open_page(player, player_table, back_obj.class, back_obj.name, true)
+    end
     main_gui.open(player, player_table)
   end
 end
@@ -479,11 +485,11 @@ function main_gui.handle_action(msg, e)
         end
         local back_obj = session_history[session_history.position]
         main_gui.open_page(
-        game.get_player(e.player_index),
-        player_table,
-        back_obj.class,
-        back_obj.name,
-        true
+          game.get_player(e.player_index),
+          player_table,
+          back_obj.class,
+          back_obj.name,
+          true
         )
       end
     elseif msg.action == "navigate_forward" then

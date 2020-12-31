@@ -153,6 +153,10 @@ constants.settings = {
       default_value = true,
       has_tooltip = true
     },
+    preserve_session = {
+      default_value = false,
+      has_tooltip = true
+    }
   },
   search = {
     use_fuzzy_search = {

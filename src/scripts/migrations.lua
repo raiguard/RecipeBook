@@ -18,6 +18,8 @@ return {
     end
   end,
   ["2.4.0"] = function()
+    global.__flib.gui = nil
+
     for _, player_table in pairs(global.players) do
       local gui_data = player_table.gui.main
       if gui_data then

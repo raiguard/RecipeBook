@@ -92,7 +92,6 @@ function settings_page.handle_action(msg, e)
     else
       -- set a flag to avoid iterating over all settings
       player_table.flags.updating_setting = true
-      player.mod_settings[constants.setting_prototype_names[tags.setting_name]] = {value = checked_state}
       player_table.settings[tags.setting_name] = checked_state
       player_table.flags.updating_setting = false
     end
