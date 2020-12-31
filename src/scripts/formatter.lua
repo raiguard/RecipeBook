@@ -416,7 +416,7 @@ local function format_item(obj_data, player_data, amount_string, always_show, is
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
       get_caption(obj_data, player_data, is_hidden, amount_string),
       formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched, is_label),
-      formatter_subtable.enabled(obj_data, player_data, is_hidden, is_researched)
+      formatter_subtable.enabled(obj_data)
   else
     return false
   end

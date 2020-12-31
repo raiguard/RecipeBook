@@ -280,6 +280,7 @@ function shared.register_on_tick()
   end
 end
 
+-- FIXME: does not update quick reference windows
 function shared.update_list_box_items(player, player_table)
   main_gui.update_list_box_items(player, player_table)
 end

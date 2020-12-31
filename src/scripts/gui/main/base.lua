@@ -210,7 +210,7 @@ function main_gui.build(player, player_table)
   main_gui.open_page(player, player_table, "home")
 end
 
-function main_gui.destroy(player, player_table)
+function main_gui.destroy(player_table)
   local gui_data = player_table.guis.main
   if gui_data then
     local frame = gui_data.refs.base.window.frame
