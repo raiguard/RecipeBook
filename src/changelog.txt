@@ -4,7 +4,8 @@ Date: ????
   Features:
     - Added descriptions to object tooltips
     - Added fuel values to material tooltips
-    - Added a setting to show the home page when opening the Recipe Book instead of picking up where you left off
+    - Pressing enter while in the search textfield will switch search categories
+    - When opening the GUI, the home page will be shown instead of the last viewed page (optional)
   Changes:
     - Updated the mod to the new flib `gui-beta` module
     - Removed per-player settings from the mod settings menu - use the mod's built-in settings GUI instead

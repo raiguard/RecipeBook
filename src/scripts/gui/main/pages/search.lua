@@ -25,6 +25,7 @@ function search_page.build()
         clear_and_focus_on_right_click = true,
         ref = {"search", "textfield"},
         actions = {
+          on_confirmed = {gui = "main", page = "search", action = "next_category"},
           -- update_results is a dummy action - the results will be updated regardless
           on_text_changed = {gui = "main", page = "search", action = "update_results"}
         }
@@ -65,6 +66,13 @@ function search_page.handle_action(msg, e)
   -- change category
   if msg.action == "change_category" then
     state.search.category = constants.search_categories[e.element.selected_index]
+  elseif msg.action == "next_category" then
+    local new_index = refs.search.category_drop_down.selected_index + 1
+    if new_index > #constants.search_categories then
+      new_index = 1
+    end
+    state.search.category = constants.search_categories[new_index]
+    refs.search.category_drop_down.selected_index = new_index
   end
 
   -- update search results
