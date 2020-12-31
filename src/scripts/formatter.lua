@@ -1,6 +1,7 @@
 local formatter = {}
 
 local math = require("__flib__.math")
+local fixed_format = require("lib.fixed-precision-format")
 
 local constants = require("constants")
 
@@ -284,13 +285,24 @@ local formatters = {
       if stack_size then
         stack_size_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.stack_size).." "..stack_size
       end
+      -- fuel value
+      local fuel_value_str = ""
+      if obj_data.fuel_value then
+        fuel_value_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_value)
+          .." "
+          ..fixed_format(obj_data.fuel_value, 3, "2")
+          .."J"
+        )
+      end
       -- interaction help
       local interaction_help_str = ""
       if not is_label then
         interaction_help_str = "\n"..gui_translations.click_to_view
       end
 
-      return base_str..stack_size_str..interaction_help_str
+      return base_str..stack_size_str..fuel_value_str..interaction_help_str
     end,
     enabled = function() return true end
   },
