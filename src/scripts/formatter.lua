@@ -119,16 +119,20 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   local sprite_class = obj_data.sprite_class
 
   -- translation
-  local translation = (
-    translations[internal_class][
-      internal_class == "material"
-      and sprite_class.."."..prototype_name
-      or prototype_name
-    ]
-  )
+  local name = translations[internal_class][
+    internal_class == "material"
+    and sprite_class.."."..prototype_name
+    or prototype_name
+  ]
+  local description = translations[internal_class.."_description"][
+    internal_class == "material"
+    and sprite_class.."."..prototype_name
+    or prototype_name
+  ]
 
   -- settings
   local show_alternate_name = player_settings.show_alternate_name
+  local show_descriptions = player_settings.show_descriptions
   local use_internal_names = player_settings.use_internal_names
 
   -- title
@@ -138,14 +142,19 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     ..build_rich_text(
       "font",
       "default-bold",
-      build_rich_text("color", "heading", use_internal_names and prototype_name or translation)
+      build_rich_text("color", "heading", use_internal_names and prototype_name or name)
     )
     .."\n"
   )
   -- alternate name
   local alternate_name_str = ""
   if show_alternate_name then
-    alternate_name_str = build_rich_text("color", "green", use_internal_names and translation or prototype_name).."\n"
+    alternate_name_str = build_rich_text("color", "green", use_internal_names and name or prototype_name).."\n"
+  end
+  -- description
+  local description_string = ""
+  if description and show_descriptions then
+    description_string = description and description.."\n" or ""
   end
   -- category class
   local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
@@ -161,7 +170,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     unresearched_str = "  |  "..build_rich_text("color", "unresearched", gui_translations.unresearched)
   end
 
-  return title_str..alternate_name_str..category_class_str..hidden_str..unresearched_str
+  return title_str..alternate_name_str..description_string..category_class_str..hidden_str..unresearched_str
 end
 
 local ingredients_products_keys = {ingredients = true, products = true}

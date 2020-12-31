@@ -57,12 +57,19 @@ constants.colors = {
 constants.empty_translations_table = {
   gui = {},
   crafter = {},
+  crafter_description = {},
   lab = {},
+  lab_description = {},
   material = {},
+  material_description = {},
   offshore_pump = {},
+  offshore_pump_description = {},
   recipe = {},
+  recipe_description = {},
   resource = {},
-  technology = {}
+  resource_description = {},
+  technology = {},
+  technology_description = {}
 }
 
 constants.input_sanitizers = {
@@ -147,6 +154,10 @@ constants.settings = {
     },
     show_alternate_name = {
       default_value = false,
+      has_tooltip = true
+    },
+    show_descriptions = {
+      default_value = true,
       has_tooltip = true
     },
     show_detailed_recipe_tooltips = {

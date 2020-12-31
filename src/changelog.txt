@@ -2,6 +2,7 @@
 Version: 2.4.0
 Date: ????
   Features:
+    - Added descriptions to object tooltips
     - Added a setting to show the home page when opening the Recipe Book instead of picking up where you left off
   Changes:
     - Updated the mod to the new flib `gui-beta` module

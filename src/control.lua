@@ -228,10 +228,11 @@ event.on_string_translated(function(e)
     local player_table = global.players[e.player_index]
     local translations = player_table.translations
     for dictionary_name, internal_names in pairs(names) do
+      local is_name = not string.find(dictionary_name, "description")
       local dictionary = translations[dictionary_name]
       for i = 1, #internal_names do
         local internal_name = internal_names[i]
-        local result = e.translated and e.result or internal_name
+        local result = e.translated and e.result or (is_name and internal_name or nil)
         dictionary[internal_name] = result
       end
     end

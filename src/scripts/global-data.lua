@@ -120,6 +120,11 @@ function global_data.build_recipe_book()
       internal = name,
       localised = prototype.localised_name
     }
+    translation_data[#translation_data+1] = {
+      dictionary = "crafter_description",
+      internal = name,
+      localised = prototype.localised_description
+    }
   end
 
   -- iterate crafters
@@ -160,6 +165,11 @@ function global_data.build_recipe_book()
       dictionary = "crafter",
       internal = name,
       localised = prototype.localised_name
+    }
+    translation_data[#translation_data+1] = {
+      dictionary = "crafter_description",
+      internal = name,
+      localised = prototype.localised_description
     }
   end
 
@@ -222,6 +232,11 @@ function global_data.build_recipe_book()
         internal = class.."."..name,
         localised = prototype.localised_name
       }
+      translation_data[#translation_data+1] = {
+        dictionary = "material_description",
+        internal = class.."."..name,
+        localised = prototype.localised_description
+      }
     end
   end
 
@@ -250,6 +265,11 @@ function global_data.build_recipe_book()
     }
     -- add to translations table
     translation_data[#translation_data+1] = {dictionary = "lab", internal = name, localised = prototype.localised_name}
+    translation_data[#translation_data+1] = {
+      dictionary = "lab_description",
+      internal = name,
+      localised = prototype.localised_description
+    }
   end
 
   -- iterate offshore pumps
@@ -278,6 +298,11 @@ function global_data.build_recipe_book()
       dictionary = "offshore_pump",
       internal = name,
       localised = prototype.localised_name
+    }
+    translation_data[#translation_data+1] = {
+      dictionary = "offshore_pump_description",
+      internal = name,
+      localised = prototype.localised_description
     }
   end
 
@@ -353,6 +378,11 @@ function global_data.build_recipe_book()
       internal = name,
       localised = prototype.localised_name
     }
+    translation_data[#translation_data+1] = {
+      dictionary = "recipe_description",
+      internal = name,
+      localised = prototype.localised_description
+    }
   end
 
   -- iterate resources
@@ -379,6 +409,11 @@ function global_data.build_recipe_book()
       dictionary = "resource",
       internal = name,
       localised = prototype.localised_name
+    }
+    translation_data[#translation_data+1] = {
+      dictionary = "resource_description",
+      internal = name,
+      localised = prototype.localised_description
     }
   end
 
@@ -427,6 +462,11 @@ function global_data.build_recipe_book()
         internal = prototype.name,
         localised = prototype.localised_name
       }
+    translation_data[#translation_data+1] = {
+      dictionary = "technology_description",
+      internal = name,
+      localised = prototype.localised_description
+    }
     end
   end
 
