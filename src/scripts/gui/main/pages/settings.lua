@@ -95,7 +95,7 @@ function settings_page.handle_action(msg, e)
       player_table.settings[tags.setting_name] = checked_state
       player_table.flags.updating_setting = false
     end
-    shared.update_list_box_items(player, player_table)
+    shared.refresh_contents(player, player_table)
   end
 end
 

@@ -8,11 +8,15 @@ local function quick_ref_panel(ref, children)
   return {type = "flow", direction = "vertical", children = {
     {type = "label", style = "bold_label", ref = util.append(ref, "label")},
     {type = "frame", style = "rb_slot_table_frame", ref = util.append(ref, "frame"), children = {
-      {type = "scroll-pane", style = "rb_slot_table_scroll_pane", ref = util.append(ref, "scroll_pane"), children = {
+      {type = "scroll-pane", style = "rb_slot_table_scroll_pane", children = {
         {type = "table", style = "slot_table", column_count = 5, ref = util.append(ref, "table"), children = children}
       }}
     }}
   }}
+end
+
+local function build_tooltip(tooltip, amount_string)
+  return string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(amount_string, "%%", "%%%%").." ")
 end
 
 local quick_ref_gui = {}
@@ -101,7 +105,7 @@ function quick_ref_gui.build(player, player_table, name)
       i = i + 1
 
       local button_style = string.find(style, "unresearched") and "flib_slot_button_red" or "flib_slot_button_default"
-      tooltip = string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(obj.amount_string, "%%", "%%%%").." ")
+      tooltip = build_tooltip(tooltip, obj.amount_string)
       local shown_string = (
         obj.avg_amount_string
         and "~"..obj.avg_amount_string
@@ -159,6 +163,43 @@ function quick_ref_gui.handle_action(msg, e)
     local player_table = global.players[e.player_index]
     quick_ref_gui.destroy(player_table, msg.name)
     shared.update_quick_ref_button(player_table)
+  end
+end
+
+-- we only need to update the recipe name label and material tooltips
+function quick_ref_gui.refresh_contents(player_data, name, refs)
+  local recipe_data = global.recipe_book.recipe[name]
+  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, nil, true, true)
+  if player_data.settings.show_glyphs then
+    label_caption = string.gsub(label_caption, "^.-nt%]  ", "")
+  end
+  refs.toolbar_label.caption = label_caption
+  refs.toolbar_label.tooltip = label_tooltip
+
+  local material_data = global.recipe_book.material
+  for _, type in ipairs{"ingredients", "products"} do
+    local group = refs[type]
+    local children = group.table.children
+    local i = type == "ingredients" and 1 or 0
+    for _, obj in ipairs(recipe_data[type]) do
+      i = i + 1
+      local _, _, _, tooltip = formatter(material_data[obj.type.."."..obj.name], player_data, obj.amount_string, true)
+      children[i].tooltip = build_tooltip(tooltip, obj.amount_string)
+    end
+    group.label.caption = {"rb-gui."..type, i - (type == "ingredients" and 1 or 0)}
+  end
+end
+
+function quick_ref_gui.refresh_all(player, player_table)
+  -- to pass to the formatter
+  local player_data = {
+    force_index = player.force.index,
+    player_index = player.index,
+    settings = player_table.settings,
+    translations = player_table.translations
+  }
+  for name, refs in pairs(player_table.guis.quick_ref) do
+    quick_ref_gui.refresh_contents(player_data, name, refs)
   end
 end
 

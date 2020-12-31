@@ -201,9 +201,10 @@ event.on_runtime_mod_setting_changed(function(e)
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
     if not player_table.flags.updating_setting then
+      formatter.purge_cache(e.player_index)
       player_data.update_settings(player, player_table)
       if player_table.flags.can_open_gui then
-        main_gui.update_list_box_items(player, player_table)
+        main_gui.refresh_contents(player, player_table)
         main_gui.update_settings(player_table)
       end
     end
@@ -274,15 +275,16 @@ function shared.open_page(player, player_table, class, name)
   end
 end
 
+function shared.refresh_contents(player, player_table)
+  formatter.purge_cache(player.index)
+  main_gui.refresh_contents(player, player_table)
+  quick_ref_gui.refresh_all(player, player_table)
+end
+
 function shared.register_on_tick()
   if global.__flib and translation.translating_players_count() > 0 then
     event.on_tick(on_tick)
   end
-end
-
--- FIXME: does not update quick reference windows
-function shared.update_list_box_items(player, player_table)
-  main_gui.update_list_box_items(player, player_table)
 end
 
 function shared.update_quick_ref_button(player_table)

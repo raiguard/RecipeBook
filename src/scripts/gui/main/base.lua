@@ -538,9 +538,7 @@ function main_gui.handle_action(msg, e)
   end
 end
 
-function main_gui.update_list_box_items(player, player_table)
-  -- purge player's cache
-  formatter.purge_cache(player.index)
+function main_gui.refresh_contents(player, player_table)
   -- update all items
   main_gui.handle_action({gui = "main", page = "search"}, {player_index = player.index})
   local open_page = player_table.guis.main.state.open_page
