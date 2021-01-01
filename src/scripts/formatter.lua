@@ -288,6 +288,16 @@ local formatters = {
       if stack_size then
         stack_size_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.stack_size).." "..stack_size
       end
+      -- fuel category
+      local fuel_category_str = ""
+      if obj_data.fuel_category then
+        fuel_category_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_category)
+          .." "
+          ..obj_data.fuel_category
+        )
+      end
       -- fuel value
       local fuel_value_str = ""
       if obj_data.fuel_value then
@@ -305,7 +315,7 @@ local formatters = {
         interaction_help_str = "\n"..gui_translations.click_to_view
       end
 
-      return base_str..stack_size_str..fuel_value_str..interaction_help_str
+      return base_str..stack_size_str..fuel_category_str..fuel_value_str..interaction_help_str
     end,
     enabled = function() return true end
   },

@@ -87,6 +87,7 @@ function global_data.build_recipe_book()
     {dictionary = "gui", internal = "click_to_view_technology", localised = {"rb-gui.click-to-view-technology"}},
     {dictionary = "gui", internal = "click_to_view", localised = {"rb-gui.click-to-view"}},
     {dictionary = "gui", internal = "fixed_recipe", localised = {"rb-gui.fixed-recipe"}},
+    {dictionary = "gui", internal = "fuel_category", localised = {"rb-gui.fuel-category"}},
     {dictionary = "gui", internal = "fuel_value", localised = {"rb-gui.fuel-value"}},
     {dictionary = "gui", internal = "hidden", localised = {"rb-gui.hidden"}},
     {dictionary = "gui", internal = "ingredients_tooltip", localised = {"rb-gui.ingredients-tooltip"}},
@@ -220,6 +221,7 @@ function global_data.build_recipe_book()
       -- add to recipe book
       recipe_book.material[class.."."..name] = {
         available_to_forces = {},
+        fuel_category = class == "item" and prototype.fuel_category or nil,
         fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
         hidden = hidden,
         ingredient_in = {},
