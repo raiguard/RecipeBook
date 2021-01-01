@@ -216,7 +216,7 @@ local formatters = {
             fixed_recipe_str = title_str..label
           end
           -- help text
-          fixed_recipe_help_str = "\n"..gui_translations.shift_click_to_view_fixed_recipe
+          fixed_recipe_help_str = "\n"..gui_translations.control_click_to_view_fixed_recipe
         end
       end
       -- crafting speed
@@ -235,10 +235,12 @@ local formatters = {
         crafting_categories_str_arr[#crafting_categories_str_arr+1] = "\n  "..categories[i]
       end
       local crafting_categories_str = concat(crafting_categories_str_arr)
+      -- open page help
+      local open_page_help_str = "\n"..gui_translations.click_to_view
       -- blueprintable
       local blueprintable_str = ""
       if obj_data.blueprintable then
-        blueprintable_str = "\n"..gui_translations.click_to_get_blueprint
+        blueprintable_str = "\n"..gui_translations.shift_click_to_get_blueprint
       else
         blueprintable_str = "\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available)
       end
@@ -249,6 +251,7 @@ local formatters = {
         ..fixed_recipe_str
         ..crafting_speed_str
         ..crafting_categories_str
+        ..open_page_help_str
         ..blueprintable_str
         ..fixed_recipe_help_str
       )

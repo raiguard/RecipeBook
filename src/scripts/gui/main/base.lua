@@ -147,6 +147,14 @@ function main_gui.build(player, player_table)
                   style = "rb_main_info_pane_flow",
                   direction = "vertical",
                   visible = false,
+                  ref = {"crafter", "flow"},
+                  children = pages.crafter.build()
+                },
+                {
+                  type = "flow",
+                  style = "rb_main_info_pane_flow",
+                  direction = "vertical",
+                  visible = false,
                   ref = {"material", "flow"},
                   children = pages.material.build()
                 },
@@ -282,7 +290,14 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
   local gui_data = player_table.guis.main
   local refs = gui_data.refs
   local translations = player_table.translations
-  local int_class = (obj_class == "fluid" or obj_class == "item") and "material" or obj_class
+  local int_class
+  if obj_class == "fluid" or obj_class == "item" then
+    int_class = "material"
+  elseif obj_class == "entity" then -- at the moment, the only entities with a page are crafters
+    int_class = "crafter"
+  else
+    int_class = obj_class
+  end
   local int_name = (obj_class == "fluid" or obj_class == "item") and obj_class.."."..obj_name or obj_name
 
   -- assemble various player data to be passed later

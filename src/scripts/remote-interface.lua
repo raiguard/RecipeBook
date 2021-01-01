@@ -19,6 +19,10 @@ function remote_interface.open_page(player_index, class, name)
 
   main_gui.open_page(player, player_table, class, name)
 
+  if not player_table.flags.gui_open then
+    main_gui.open(player, player_table, true)
+  end
+
   return true
 end
 

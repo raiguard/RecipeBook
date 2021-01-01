@@ -12,12 +12,14 @@ local function unique_array(initial_value)
       hash[initial_value[i]] = true
     end
   end
-  return setmetatable(initial_value or {}, {__newindex = function(tbl, key, value)
-    if not hash[value] then
-      hash[value] = true
-      rawset(tbl, key, value)
-    end
-  end})
+  return setmetatable(initial_value or {}, {
+    __newindex = function(tbl, key, value)
+      if not hash[value] then
+        hash[value] = true
+        rawset(tbl, key, value)
+      end
+    end}
+  )
 end
 
 local function convert_and_sort(tbl)
@@ -74,10 +76,14 @@ function global_data.build_recipe_book()
     -- tooltips
     {dictionary = "gui", internal = "blueprint_not_available", localised = {"rb-gui.blueprint-not-available"}},
     {dictionary = "gui", internal = "category", localised = {"rb-gui.category"}},
+    {
+      dictionary = "gui",
+      internal = "control_click_to_view_fixed_recipe",
+      localised = {"rb-gui.control-click-to-view-fixed-recipe"}
+    },
     {dictionary = "gui", internal = "crafting_categories", localised = {"rb-gui.crafting-categories"}},
     {dictionary = "gui", internal = "crafting_speed", localised = {"rb-gui.crafting-speed"}},
     {dictionary = "gui", internal = "crafting_time", localised = {"rb-gui.crafting-time"}},
-    {dictionary = "gui", internal = "click_to_get_blueprint", localised = {"rb-gui.click-to-get-blueprint"}},
     {dictionary = "gui", internal = "click_to_view_technology", localised = {"rb-gui.click-to-view-technology"}},
     {dictionary = "gui", internal = "click_to_view", localised = {"rb-gui.click-to-view"}},
     {dictionary = "gui", internal = "fixed_recipe", localised = {"rb-gui.fixed-recipe"}},
@@ -92,8 +98,8 @@ function global_data.build_recipe_book()
     {dictionary = "gui", internal = "seconds_standalone", localised = {"rb-gui.seconds-standalone"}},
     {
       dictionary = "gui",
-      internal = "shift_click_to_view_fixed_recipe",
-      localised = {"rb-gui.shift-click-to-view-fixed-recipe"}
+      internal = "shift_click_to_get_blueprint",
+      localised = {"rb-gui.shift-click-to-get-blueprint"}
     },
     {dictionary = "gui", internal = "stack_size", localised = {"rb-gui.stack-size"}},
     {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
@@ -113,6 +119,7 @@ function global_data.build_recipe_book()
       hidden = false,
       internal_class = "crafter",
       prototype_name = name,
+      recipes = {},
       sprite_class = "entity"
     }
     -- add to translations table
@@ -158,6 +165,7 @@ function global_data.build_recipe_book()
       hidden = is_hidden,
       internal_class = "crafter",
       prototype_name = name,
+      recipes = {},
       rocket_parts_required = prototype.rocket_parts_required,
       sprite_class = "entity"
     }
@@ -350,6 +358,7 @@ function global_data.build_recipe_book()
           name = crafter_name,
           amount_string = rocket_parts_str.."("..math.round_to(prototype.energy / crafter_data.crafting_speed, 2).."s)"
         }
+        crafter_data.recipes[#crafter_data.recipes+1] = name
       end
     end
     -- material: ingredient in

@@ -87,6 +87,7 @@ constants.input_sanitizers = {
 }
 
 constants.interface_classes = {
+  crafter = "crafter",
   fluid = "material",
   item = "material",
   recipe = "recipe"
@@ -101,6 +102,7 @@ constants.list_box_item_styles = {
 
 constants.main_pages = {
   "home",
+  "crafter",
   "material",
   "recipe",
   "search",
@@ -117,13 +119,13 @@ constants.open_fluid_types = {
   ["storage-tank"] = true
 }
 
-constants.search_categories = {"material", "recipe"}
+constants.search_categories = {"crafter", "material", "recipe"}
 
 constants.search_categories_lookup = {}
 constants.search_categories_localised = {}
 for i, category in ipairs(constants.search_categories) do
   constants.search_categories_lookup[category] = i
-  constants.search_categories_localised[i] = {"rb-gui."..category.."-lowercase"}
+  constants.search_categories_localised[i] = {"rb-gui."..category}
 end
 
 constants.search_results_limit = 150

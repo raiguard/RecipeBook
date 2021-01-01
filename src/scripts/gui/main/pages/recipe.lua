@@ -30,8 +30,6 @@ function recipe_page.update(int_name, gui_data, player_data)
 
   local obj_data = global.recipe_book.recipe[int_name]
 
-  local update_list_box = info_list_box.update
-
   -- set time item
   local time_item_prefix = player_data.settings.show_glyphs and "[font=RecipeBook]Z[/font]   " or ""
   local time_item = refs.recipe.ingredients.time_item
@@ -42,10 +40,10 @@ function recipe_page.update(int_name, gui_data, player_data)
     "[/font]"
   }
 
-  update_list_box(obj_data.ingredients, "material", refs.recipe.ingredients, player_data, true, 1)
-  update_list_box(obj_data.products, "material", refs.recipe.products, player_data, true)
-  update_list_box(obj_data.made_in, "crafter", refs.recipe.made_in, player_data)
-  update_list_box(obj_data.unlocked_by, "technology", refs.recipe.unlocked_by, player_data)
+  info_list_box.update(obj_data.ingredients, "material", refs.recipe.ingredients, player_data, true, 1)
+  info_list_box.update(obj_data.products, "material", refs.recipe.products, player_data, true)
+  info_list_box.update(obj_data.made_in, "crafter", refs.recipe.made_in, player_data, nil, nil, int_name)
+  info_list_box.update(obj_data.unlocked_by, "technology", refs.recipe.unlocked_by, player_data)
 end
 
 return recipe_page
