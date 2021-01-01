@@ -14,7 +14,7 @@ function crafter_page.update(int_name, gui_data, player_data)
   local refs = gui_data.refs
   local obj_data = global.recipe_book.crafter[int_name]
 
-  info_list_box.update(obj_data.recipes, "recipe", refs.crafter.recipes, player_data)
+  info_list_box.update(obj_data.recipes, "recipe", refs.crafter.recipes, player_data, {max_listbox_height = 15})
 end
 
 return crafter_page

@@ -109,6 +109,8 @@ constants.main_pages = {
   "settings"
 }
 
+constants.max_listbox_height = 6
+
 constants.open_fluid_types = {
   ["fluid-wagon"] = true,
   ["infinity-pipe"] = true,

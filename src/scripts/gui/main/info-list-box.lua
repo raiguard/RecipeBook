@@ -1,5 +1,6 @@
 local gui = require("__flib__.gui-beta")
 
+local constants = require("constants")
 local formatter = require("scripts.formatter")
 local util = require("scripts.util")
 
@@ -21,7 +22,14 @@ function info_list_box.build(caption, rows, save_location)
   )
 end
 
-function info_list_box.update(tbl, int_class, list_box, player_data, always_show, starting_index, blueprint_recipe)
+function info_list_box.update(tbl, int_class, list_box, player_data, options)
+  -- options
+  options = options or {}
+  local always_show = options.always_show
+  local starting_index = options.starting_index
+  local blueprint_recipe = options.blueprint_recipe
+  local max_listbox_height = options.max_listbox_height or constants.max_listbox_height
+
   starting_index = starting_index or 0
   local recipe_book = global.recipe_book[int_class]
 
@@ -88,7 +96,7 @@ function info_list_box.update(tbl, int_class, list_box, player_data, always_show
     list_box.flow.visible = false
   else
     list_box.flow.visible = true
-    scroll.style.height = math.min((28 * i), (28 * 6))
+    scroll.style.height = math.min((28 * i), (28 * max_listbox_height))
 
     local caption = list_box.label.caption
     caption[2] = i - starting_index

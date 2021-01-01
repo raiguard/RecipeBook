@@ -2,6 +2,8 @@
 Version: 2.4.0
 Date: ????
   Features:
+    - Added crafter page, listing the recipes compatible with that crafter
+    - Added search by crafter
     - Added descriptions to object tooltips
     - Added fuel values to material tooltips
     - Pressing enter while in the search textfield will switch search categories
