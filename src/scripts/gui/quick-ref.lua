@@ -84,7 +84,7 @@ function quick_ref_gui.build(player, player_table, name)
     translations = player_table.translations
   }
 
-  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, nil, true, true)
+  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, {always_show = true, is_label = true})
 
   -- remove glyph from caption, since it's implied
   if player_data.settings.show_glyphs then
@@ -101,7 +101,11 @@ function quick_ref_gui.build(player, player_table, name)
     local i = type == "ingredients" and 1 or 0
     for _, obj in ipairs(recipe_data[type]) do
       local obj_data = material_data[obj.type.."."..obj.name]
-      local _, style, _, tooltip = formatter(obj_data, player_data, obj.amount_string, true)
+      local _, style, _, tooltip = formatter(
+        obj_data,
+        player_data,
+        {amount_string = obj.amount_string, always_show = true}
+      )
       i = i + 1
 
       local button_style = string.find(style, "unresearched") and "flib_slot_button_red" or "flib_slot_button_default"
@@ -169,7 +173,7 @@ end
 -- we only need to update the recipe name label and material tooltips
 function quick_ref_gui.refresh_contents(player_data, name, refs)
   local recipe_data = global.recipe_book.recipe[name]
-  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, nil, true, true)
+  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, {always_show = true, is_label = true})
   if player_data.settings.show_glyphs then
     label_caption = string.gsub(label_caption, "^.-nt%]  ", "")
   end
@@ -183,7 +187,11 @@ function quick_ref_gui.refresh_contents(player_data, name, refs)
     local i = type == "ingredients" and 1 or 0
     for _, obj in ipairs(recipe_data[type]) do
       i = i + 1
-      local _, _, _, tooltip = formatter(material_data[obj.type.."."..obj.name], player_data, obj.amount_string, true)
+      local _, _, _, tooltip = formatter(
+        material_data[obj.type.."."..obj.name],
+        player_data,
+        {amount_string = obj.amount_string, always_show = true}
+      )
       children[i].tooltip = build_tooltip(tooltip, obj.amount_string)
     end
     group.label.caption = {"rb-gui."..type, i - (type == "ingredients" and 1 or 0)}

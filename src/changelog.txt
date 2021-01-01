@@ -2,8 +2,9 @@
 Version: 2.4.0
 Date: ????
   Features:
-    - Added crafter page, listing the recipes compatible with that crafter
+    - Added crafter page, listing the recipes compatible with that crafter and the fuels it is compatible with
     - Added search by crafter
+    - Added `burnable in` to material page, listing the crafters where it can be used as fuel
     - Added descriptions to object tooltips
     - Added fuel values to material tooltips
     - Pressing enter while in the search textfield will switch search categories

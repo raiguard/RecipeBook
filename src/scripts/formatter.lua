@@ -209,7 +209,7 @@ local formatters = {
         if fixed_recipe_data then
           local title_str = ("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).."  ")
           -- fixed recipe
-          local _, style, label = formatter.format(fixed_recipe_data, player_data, nil, true)
+          local _, style, label = formatter.format(fixed_recipe_data, player_data, {always_show = true})
           if style == "rb_unresearched_list_box_item" then
             fixed_recipe_str = title_str..build_rich_text("color", "unresearched", label)
           else
@@ -235,6 +235,16 @@ local formatters = {
         crafting_categories_str_arr[#crafting_categories_str_arr+1] = "\n  "..categories[i]
       end
       local crafting_categories_str = concat(crafting_categories_str_arr)
+      -- fuel categories
+      local fuel_categories_str_arr = {}
+      local fuel_categories = obj_data.fuel_categories
+      if fuel_categories then
+        fuel_categories_str_arr[1] = "\n"..build_rich_text("font", "default-semibold", gui_translations.fuel_categories)
+        for i = 1, #fuel_categories do
+          fuel_categories_str_arr[#fuel_categories_str_arr+1] = "\n  "..fuel_categories[i]
+        end
+      end
+      local fuel_categories_str = concat(fuel_categories_str_arr)
       -- open page help
       local open_page_help_str = "\n"..gui_translations.click_to_view
       -- blueprintable
@@ -251,6 +261,7 @@ local formatters = {
         ..fixed_recipe_str
         ..crafting_speed_str
         ..crafting_categories_str
+        ..fuel_categories_str
         ..open_page_help_str
         ..blueprintable_str
         ..fixed_recipe_help_str
@@ -379,7 +390,11 @@ local formatters = {
               local material = materials[i]
               local material_data = materials_data[material.type.."."..material.name]
               if material_data then
-                local _, style, label = formatter.format(material_data, player_data, material.amount_string, true)
+                local _, style, label = formatter.format(
+                  material_data,
+                  player_data,
+                  {amount_string = material.amount_string, always_show = true}
+                )
                 if style == "rb_unresearched_list_box_item" then
                   ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
                 else
@@ -419,16 +434,16 @@ local formatters = {
   }
 }
 
-local function format_item(obj_data, player_data, amount_string, always_show, is_label)
+local function format_item(obj_data, player_data, options)
   local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data)
-  if always_show or should_show then
+  if options.always_show or should_show then
     -- format and return
     local formatter_subtable = formatters[obj_data.internal_class]
     return
       true,
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
-      get_caption(obj_data, player_data, is_hidden, amount_string),
-      formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched, is_label),
+      get_caption(obj_data, player_data, is_hidden, options.amount_string),
+      formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched, options.is_label),
       formatter_subtable.enabled(obj_data)
   else
     return false
@@ -436,16 +451,20 @@ local function format_item(obj_data, player_data, amount_string, always_show, is
 end
 
 -- get the corresponding data from the cache, or generate it (memoized)
-function formatter.format(obj_data, player_data, amount_string, always_show, is_label)
+function formatter.format(obj_data, player_data, options)
+  options = options or {}
+
   local player_index = player_data.player_index
   local cache = caches[player_index]
   local _, is_researched = get_properties(obj_data, player_data.force_index)
-  local cache_key = obj_data.sprite_class
-  .."."..obj_data.prototype_name
-  .."."..(amount_string or "false")
-  .."."..tostring(is_researched)
-  .."."..tostring(always_show)
-  .."."..tostring(is_label)
+  local cache_key = (
+    obj_data.sprite_class
+    .."."..obj_data.prototype_name
+    .."."..tostring(is_researched)
+    .."."..tostring(options.amount_string)
+    .."."..tostring(options.always_show)
+    .."."..tostring(options.is_label)
+  )
   local cached_return = cache[cache_key]
   if cached_return then
     return unpack(cached_return)
@@ -453,9 +472,7 @@ function formatter.format(obj_data, player_data, amount_string, always_show, is_
     local should_show, style, caption, tooltip, enabled = format_item(
       obj_data,
       player_data,
-      amount_string,
-      always_show,
-      is_label
+      options
     )
     cache[cache_key] = {should_show, style, caption, tooltip, enabled}
     return should_show, style, caption, tooltip, enabled

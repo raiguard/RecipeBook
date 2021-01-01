@@ -87,6 +87,7 @@ function global_data.build_recipe_book()
     {dictionary = "gui", internal = "click_to_view_technology", localised = {"rb-gui.click-to-view-technology"}},
     {dictionary = "gui", internal = "click_to_view", localised = {"rb-gui.click-to-view"}},
     {dictionary = "gui", internal = "fixed_recipe", localised = {"rb-gui.fixed-recipe"}},
+    {dictionary = "gui", internal = "fuel_categories", localised = {"rb-gui.fuel-categories"}},
     {dictionary = "gui", internal = "fuel_category", localised = {"rb-gui.fuel-category"}},
     {dictionary = "gui", internal = "fuel_value", localised = {"rb-gui.fuel-value"}},
     {dictionary = "gui", internal = "hidden", localised = {"rb-gui.hidden"}},
@@ -142,6 +143,7 @@ function global_data.build_recipe_book()
     {filter = "type", type = "furnace"},
     {filter = "type", type = "rocket-silo"}
   }
+  local crafter_fuel_categories = {}
   local fixed_recipes = {}
   local rocket_silo_categories = {}
   for name, prototype in pairs(crafter_prototypes) do
@@ -157,12 +159,24 @@ function global_data.build_recipe_book()
     end
     -- add to recipe book
     local is_hidden = prototype.has_flag("hidden")
+    -- read burner prototype
+    local fuel_categories
+    local burner_prototype = prototype.burner_prototype
+    if burner_prototype then
+      crafter_fuel_categories[name] = burner_prototype.fuel_categories
+      fuel_categories = {}
+      for category in pairs(burner_prototype.fuel_categories) do
+        fuel_categories[#fuel_categories+1] = category
+      end
+    end
     recipe_book.crafter[name] = {
       available_to_forces = {},
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       categories = convert_and_sort(prototype.crafting_categories),
+      compatible_fuels = {},
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = prototype.fixed_recipe,
+      fuel_categories = fuel_categories,
       hidden = is_hidden,
       internal_class = "crafter",
       prototype_name = name,
@@ -218,10 +232,23 @@ function global_data.build_recipe_book()
           end
         end
       end
+      -- read fuel category
+      local fuel_category = class == "item" and prototype.fuel_category or nil
+      local burnable_in = {}
+      if fuel_category then
+        for crafter_name, categories in pairs(crafter_fuel_categories) do
+          if categories[fuel_category] then
+            burnable_in[#burnable_in+1] = crafter_name
+            local crafter_data = recipe_book.crafter[crafter_name]
+            crafter_data.compatible_fuels[#crafter_data.compatible_fuels+1] = {type = "item", name = name}
+          end
+        end
+      end
       -- add to recipe book
       recipe_book.material[class.."."..name] = {
         available_to_forces = {},
-        fuel_category = class == "item" and prototype.fuel_category or nil,
+        burnable_in = burnable_in,
+        fuel_category = fuel_category,
         fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
         hidden = hidden,
         ingredient_in = {},

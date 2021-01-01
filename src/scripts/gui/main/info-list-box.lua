@@ -23,14 +23,8 @@ function info_list_box.build(caption, rows, save_location)
 end
 
 function info_list_box.update(tbl, int_class, list_box, player_data, options)
-  -- options
   options = options or {}
-  local always_show = options.always_show
-  local starting_index = options.starting_index
-  local blueprint_recipe = options.blueprint_recipe
-  local max_listbox_height = options.max_listbox_height or constants.max_listbox_height
 
-  starting_index = starting_index or 0
   local recipe_book = global.recipe_book[int_class]
 
   -- scroll pane
@@ -39,14 +33,15 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
   local children = scroll.children
 
   -- loop through input table
-  local i = starting_index
+  local i = options.starting_index or 0
   for j = 1, #tbl do
     -- get object information
     local obj = tbl[j]
     local obj_data
     if int_class == "material" then
       obj_data = recipe_book[obj.type.."."..obj.name]
-    elseif int_class == "crafter" then
+    -- if `blueprint_recipe` exists, this is on a recipe and is therefore a table
+    elseif int_class == "crafter" and options.blueprint_recipe then
       obj_data = recipe_book[obj.name]
     else
       obj_data = recipe_book[obj]
@@ -54,8 +49,7 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
     local should_add, style, caption, tooltip, enabled = formatter(
       obj_data,
       player_data,
-      obj.amount_string,
-      always_show
+      {amount_string = obj.amount_string, always_show = options.always_show}
     )
 
     if should_add then
@@ -76,7 +70,7 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
           enabled = enabled,
           tags = {
             [script.mod_name] = {
-              blueprint_recipe = blueprint_recipe,
+              blueprint_recipe = options.blueprint_recipe,
               flib = {
                 on_click = {gui = "main", action = "handle_list_box_item_click"}
               }
@@ -96,10 +90,10 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
     list_box.flow.visible = false
   else
     list_box.flow.visible = true
-    scroll.style.height = math.min((28 * i), (28 * max_listbox_height))
+    scroll.style.height = math.min((28 * i), 28 * (options.max_listbox_height or constants.max_listbox_height))
 
     local caption = list_box.label.caption
-    caption[2] = i - starting_index
+    caption[2] = i - (options.starting_index or 0)
     list_box.label.caption = caption
   end
 end
