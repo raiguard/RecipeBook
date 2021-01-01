@@ -136,6 +136,7 @@ function search_page.handle_action(msg, e)
             style = style,
             caption = caption,
             tooltip = tooltip,
+            mouse_button_filter = {"left"},
             tags = {
               [script.mod_name] = {
                 flib = {

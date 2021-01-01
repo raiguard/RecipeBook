@@ -72,6 +72,7 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
           caption = caption,
           tooltip = tooltip,
           enabled = enabled,
+          mouse_button_filter = {"left"},
           tags = {
             [script.mod_name] = {
               blueprint_recipe = options.blueprint_recipe,
