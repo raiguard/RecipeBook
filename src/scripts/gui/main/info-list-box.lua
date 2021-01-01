@@ -49,7 +49,11 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
     local should_add, style, caption, tooltip, enabled = formatter(
       obj_data,
       player_data,
-      {amount_string = obj.amount_string, always_show = options.always_show}
+      {
+        amount_string = obj.amount_string,
+        always_show = options.always_show,
+        blueprint_recipe = options.blueprint_recipe
+      }
     )
 
     if should_add then
@@ -167,40 +171,44 @@ function info_list_box.handle_click(e, player, player_table)
     player_table.flags.technology_gui_open = true
     player.open_technology_gui(name)
   elseif class == "entity" then
+    local crafter_data = global.recipe_book.crafter[name]
     if e.control then
-      local crafter_data = global.recipe_book.crafter[name]
       if crafter_data and crafter_data.fixed_recipe then
         return "recipe", crafter_data.fixed_recipe
       end
     elseif e.shift then
-      local blueprint_recipe = gui.get_tags(e.element).blueprint_recipe
-      if blueprint_recipe then
-        local cursor_stack = player.cursor_stack
-        player.clear_cursor()
-        if cursor_stack and cursor_stack.valid then
-          -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
-          local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
-          cursor_stack.set_stack{name = "blueprint", count = 1}
-          cursor_stack.set_blueprint_entities{
-            {
-              entity_number = 1,
-              name = name,
-              position = {
-                math.ceil(width) % 2 == 0 and -0.5 or 0,
-                math.ceil(height) % 2 == 0 and -0.5 or 0
-              },
-              recipe = blueprint_recipe
+      if crafter_data then
+        local blueprint_recipe = gui.get_tags(e.element).blueprint_recipe
+        if blueprint_recipe then
+          if crafter_data.blueprintable then
+            local cursor_stack = player.cursor_stack
+            player.clear_cursor()
+            if cursor_stack and cursor_stack.valid then
+              -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
+              local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
+              cursor_stack.set_stack{name = "blueprint", count = 1}
+              cursor_stack.set_blueprint_entities{
+                {
+                  entity_number = 1,
+                  name = name,
+                  position = {
+                    math.ceil(width) % 2 == 0 and -0.5 or 0,
+                    math.ceil(height) % 2 == 0 and -0.5 or 0
+                  },
+                  recipe = blueprint_recipe
+                }
+              }
+              player.add_to_clipboard(cursor_stack)
+              player.activate_paste()
+            end
+          else
+            player.create_local_flying_text{
+              text = {"rb-message.cannot-create-blueprint"},
+              create_at_cursor = true
             }
-          }
-          player.add_to_clipboard(cursor_stack)
-          player.activate_paste()
+            player.play_sound{path = "utility/cannot_build"}
+          end
         end
-      else
-        player.create_local_flying_text{
-          text = {"rb-message.cannot-create-blueprint"},
-          create_at_cursor = true
-        }
-        player.play_sound{path = "utility/cannot_build"}
       end
     else
       return class, name

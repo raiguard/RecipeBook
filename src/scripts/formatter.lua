@@ -178,7 +178,7 @@ local ingredients_products_keys = {ingredients = true, products = true}
 
 local formatters = {
   crafter = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, _, blueprint_recipe)
       -- locals
       local translations = player_data.translations
       local gui_translations = translations.gui
@@ -249,10 +249,12 @@ local formatters = {
       local open_page_help_str = "\n"..gui_translations.click_to_view
       -- blueprintable
       local blueprintable_str = ""
-      if obj_data.blueprintable then
-        blueprintable_str = "\n"..gui_translations.shift_click_to_get_blueprint
-      else
-        blueprintable_str = "\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available)
+      if blueprint_recipe then
+        if obj_data.blueprintable then
+          blueprintable_str = "\n"..gui_translations.shift_click_to_get_blueprint
+        else
+          blueprintable_str = "\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available)
+        end
       end
 
       return (
@@ -267,7 +269,7 @@ local formatters = {
         ..fixed_recipe_help_str
       )
     end,
-    enabled = function(obj_data) return obj_data.blueprintable end
+    enabled = function() return true end
   },
   lab = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
@@ -443,8 +445,15 @@ local function format_item(obj_data, player_data, options)
       true,
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
       get_caption(obj_data, player_data, is_hidden, options.amount_string),
-      formatter_subtable.tooltip(obj_data, player_data, is_hidden, is_researched, options.is_label),
-      formatter_subtable.enabled(obj_data)
+      formatter_subtable.tooltip(
+        obj_data,
+        player_data,
+        is_hidden,
+        is_researched,
+        options.is_label,
+        options.blueprint_recipe
+      ),
+      formatter_subtable.enabled()
   else
     return false
   end
@@ -464,6 +473,7 @@ function formatter.format(obj_data, player_data, options)
     .."."..tostring(options.amount_string)
     .."."..tostring(options.always_show)
     .."."..tostring(options.is_label)
+    .."."..tostring(options.blueprint_recipe)
   )
   local cached_return = cache[cache_key]
   if cached_return then

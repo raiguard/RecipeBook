@@ -117,6 +117,7 @@ function global_data.build_recipe_book()
       available_to_all_forces = true,
       blueprintable = false,
       categories = convert_and_sort(prototype.crafting_categories),
+      compatible_fuels = {},
       compatible_recipes = {},
       crafting_speed = 1,
       hidden = false,
