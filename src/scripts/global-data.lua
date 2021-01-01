@@ -117,11 +117,11 @@ function global_data.build_recipe_book()
       available_to_all_forces = true,
       blueprintable = false,
       categories = convert_and_sort(prototype.crafting_categories),
+      compatible_recipes = {},
       crafting_speed = 1,
       hidden = false,
       internal_class = "crafter",
       prototype_name = name,
-      recipes = {},
       sprite_class = "entity"
     }
     -- add to translations table
@@ -174,13 +174,13 @@ function global_data.build_recipe_book()
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       categories = convert_and_sort(prototype.crafting_categories),
       compatible_fuels = {},
+      compatible_recipes = {},
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = prototype.fixed_recipe,
       fuel_categories = fuel_categories,
       hidden = is_hidden,
       internal_class = "crafter",
       prototype_name = name,
-      recipes = {},
       rocket_parts_required = prototype.rocket_parts_required,
       sprite_class = "entity"
     }
@@ -387,7 +387,7 @@ function global_data.build_recipe_book()
           name = crafter_name,
           amount_string = rocket_parts_str.."("..math.round_to(prototype.energy / crafter_data.crafting_speed, 2).."s)"
         }
-        crafter_data.recipes[#crafter_data.recipes+1] = name
+        crafter_data.compatible_recipes[#crafter_data.compatible_recipes+1] = name
       end
     end
     -- material: ingredient in
