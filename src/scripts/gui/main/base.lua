@@ -359,51 +359,49 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
   local tooltip_str_tbl = {}
   for i = 1, #session_history do
     local entry = session_history[i]
-    local label = "\n      "
+    local label = "      "
     if i == position then
-      label = "\n".."[font=default-bold][color="..constants.colors.green.str.."]>[/color][/font]   "
+      label = "[font=default-bold][color="..constants.colors.green.str.."]>[/color][/font]   "
     end
     if entry.int_class == "home" then
       label = label.."[font=default-semibold]"..translations.gui.home_page.."[/font]"
     else
       local obj_data = global.recipe_book[entry.int_class][entry.int_name]
-      local _, _, caption = formatter.format(obj_data, player_data, {always_show = true, is_label = true})
+      local _, style, caption = formatter(obj_data, player_data, {always_show = true, is_label = true})
+      if string.find(style, "unresearched") then
+        caption = "[color="..constants.colors.unresearched.str.."]"..caption.."[/color]"
+      end
       label = label..caption
     end
+    label = label.."\n"
     tooltip_str_tbl[i] = label
   end
   local tooltip_str = table.concat(tooltip_str_tbl)
   local backward_button = refs.base.titlebar.nav_backward_button
   local forward_button = refs.base.titlebar.nav_forward_button
+  backward_button.tooltip = {
+    "",
+    tooltip_str,
+    {"rb-gui.navigate-backward-tooltip"}
+  }
+  forward_button.tooltip = {
+    "",
+    tooltip_str,
+    {"rb-gui.navigate-forward-tooltip"}
+  }
   if position == 1 then
     forward_button.enabled = false
     forward_button.sprite = "rb_nav_forward_disabled"
-    forward_button.tooltip = ""
   else
     forward_button.enabled = true
     forward_button.sprite = "rb_nav_forward_white"
-    forward_button.tooltip = {
-      "",
-      {"rb-gui.navigate-forward"},
-      tooltip_str,
-      "\n",
-      {"rb-gui.shift-click-to-jump-to-front"}
-    }
   end
   if position < #session_history then
     backward_button.enabled = true
     backward_button.sprite = "rb_nav_backward_white"
-    backward_button.tooltip = {
-      "",
-      {"rb-gui.navigate-backward"},
-      tooltip_str,
-      "\n",
-      {"rb-gui.shift-click-to-jump-to-back"}
-    }
   else
     backward_button.enabled = false
     backward_button.sprite = "rb_nav_backward_disabled"
-    backward_button.tooltip = ""
   end
 
   -- update / toggle info bar
@@ -540,14 +538,20 @@ function main_gui.handle_action(msg, e)
       local session_history = player_table.history.session
       -- latency protection
       if session_history.position > 1 then
-        session_history.position = session_history.position - 1
+        if e.shift then
+          -- go all the way forward
+          session_history.position = 1
+        else
+          -- go forward one
+          session_history.position = session_history.position - 1
+        end
         local forward_object = session_history[session_history.position]
         main_gui.open_page(
-        game.get_player(e.player_index),
-        player_table,
-        forward_object.class,
-        forward_object.name,
-        true
+          game.get_player(e.player_index),
+          player_table,
+          forward_object.class,
+          forward_object.name,
+          true
         )
       end
     elseif msg.action == "toggle_pinned" then
