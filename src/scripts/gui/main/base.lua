@@ -1,4 +1,5 @@
 local gui = require("__flib__.gui-beta")
+local table = require("__flib__.table")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
@@ -33,7 +34,7 @@ function main_gui.build(player, player_table)
               sprite = "rb_nav_backward_white",
               hovered_sprite = "rb_nav_backward_black",
               clicked_sprite = "rb_nav_backward_black",
-              mouse_button_filter = {"left", "right"},
+              mouse_button_filter = {"left"},
               enabled = false,
               ref = {"base", "titlebar", "nav_backward_button"},
               actions = {
@@ -354,34 +355,55 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
   end
 
   -- update nav buttons
-  local back_button = refs.base.titlebar.nav_backward_button
-  back_button.sprite = "rb_nav_backward_white"
-  back_button.enabled = true
-  local back_obj = session_history[session_history.position + 1]
-  if back_obj then
-    if back_obj.int_class == "home" then
-      back_button.tooltip = {"rb-gui.back-to", {"rb-gui.home"}}
-    else
-      back_button.tooltip = {"rb-gui.back-to", string.lower(translations[back_obj.int_class][back_obj.int_name])}
+  local position = session_history.position
+  local tooltip_str_tbl = {}
+  for i = 1, #session_history do
+    local entry = session_history[i]
+    local label = "\n      "
+    if i == position then
+      label = "\n".."[font=default-bold][color="..constants.colors.green.str.."]>[/color][/font]   "
     end
-  else
-    back_button.sprite = "rb_nav_backward_disabled"
-    back_button.enabled = false
-    back_button.tooltip = ""
+    if entry.int_class == "home" then
+      label = label.."[font=default-semibold]"..translations.gui.home_page.."[/font]"
+    else
+      local obj_data = global.recipe_book[entry.int_class][entry.int_name]
+      local _, _, caption = formatter.format(obj_data, player_data, {always_show = true, is_label = true})
+      label = label..caption
+    end
+    tooltip_str_tbl[i] = label
   end
+  local tooltip_str = table.concat(tooltip_str_tbl)
+  local backward_button = refs.base.titlebar.nav_backward_button
   local forward_button = refs.base.titlebar.nav_forward_button
-  if session_history.position > 1 then
-    forward_button.sprite = "rb_nav_forward_white"
+  if position == 1 then
+    forward_button.enabled = false
+    forward_button.sprite = "rb_nav_forward_disabled"
+    forward_button.tooltip = ""
+  else
     forward_button.enabled = true
-    local forward_obj = session_history[session_history.position-1]
+    forward_button.sprite = "rb_nav_forward_white"
     forward_button.tooltip = {
-      "rb-gui.forward-to",
-      string.lower(translations[forward_obj.int_class][forward_obj.int_name])
+      "",
+      {"rb-gui.navigate-forward"},
+      tooltip_str,
+      "\n",
+      {"rb-gui.shift-click-to-jump-to-front"}
+    }
+  end
+  if position < #session_history then
+    backward_button.enabled = true
+    backward_button.sprite = "rb_nav_backward_white"
+    backward_button.tooltip = {
+      "",
+      {"rb-gui.navigate-backward"},
+      tooltip_str,
+      "\n",
+      {"rb-gui.shift-click-to-jump-to-back"}
     }
   else
-    forward_button.sprite = "rb_nav_forward_disabled"
-    forward_button.enabled = false
-    forward_button.tooltip = ""
+    backward_button.enabled = false
+    backward_button.sprite = "rb_nav_backward_disabled"
+    backward_button.tooltip = ""
   end
 
   -- update / toggle info bar
@@ -498,12 +520,12 @@ function main_gui.handle_action(msg, e)
       local session_history = player_table.history.session
       -- latency protection
       if session_history.position < #session_history then
-        if e.button == defines.mouse_button_type.left then
-          -- go back one
-          session_history.position = session_history.position + 1
-        else
+        if e.shift then
           -- go all the way back
           session_history.position = #session_history
+        else
+          -- go back one
+          session_history.position = session_history.position + 1
         end
         local back_obj = session_history[session_history.position]
         main_gui.open_page(

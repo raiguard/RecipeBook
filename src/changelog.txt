@@ -7,6 +7,7 @@ Date: ????
     - Added `burnable in` to material page, listing the crafters where it can be used as fuel
     - Added descriptions to object tooltips
     - Added fuel values to material tooltips
+    - Added session history listing to the navigation button tooltips
     - Pressing enter while in the search textfield will switch search categories
     - When opening the GUI, the home page will be shown instead of the last viewed page (optional)
   Changes:

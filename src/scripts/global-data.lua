@@ -18,8 +18,8 @@ local function unique_array(initial_value)
         hash[value] = true
         rawset(tbl, key, value)
       end
-    end}
-  )
+    end
+  })
 end
 
 local function convert_and_sort(tbl)
@@ -73,6 +73,7 @@ function global_data.build_recipe_book()
     {dictionary = "gui", internal = "technology", localised = {"rb-gui.technology"}},
     -- captions
     {dictionary = "gui", internal = "hidden_abbrev", localised = {"rb-gui.hidden-abbrev"}},
+    {dictionary = "gui", internal = "home_page", localised = {"rb-gui.home-page"}},
     -- tooltips
     {dictionary = "gui", internal = "blueprint_not_available", localised = {"rb-gui.blueprint-not-available"}},
     {dictionary = "gui", internal = "category", localised = {"rb-gui.category"}},
