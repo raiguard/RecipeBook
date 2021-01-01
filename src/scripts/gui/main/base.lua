@@ -450,6 +450,9 @@ function main_gui.handle_action(msg, e)
   else
     if msg.action == "open_page" then
       main_gui.open_page(player, player_table, msg.class, msg.name)
+      if not player_table.flags.gui_open then
+        main_gui.open(player, player_table, true)
+      end
     elseif msg.action == "handle_list_box_item_click" then
       local class, name = info_list_box.handle_click(e, player, player_table)
       if class then
