@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.4.0
-Date: ????
+Date: 2021-01-02
   Features:
     - Added crafter page, listing the recipes compatible with that crafter and the fuels it is compatible with
     - Added search by crafter
