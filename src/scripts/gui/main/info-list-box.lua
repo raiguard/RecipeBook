@@ -6,10 +6,16 @@ local util = require("scripts.util")
 
 local info_list_box = {}
 
-function info_list_box.build(caption, rows, save_location)
+function info_list_box.build(caption, rows, save_location, tooltip)
   return (
     {type = "flow", direction = "vertical", ref = util.append(save_location, "flow"), children = {
-      {type = "label", style = "rb_info_list_box_label", caption = caption, ref = util.append(save_location, "label")},
+      {
+        type = "label",
+        style = "rb_info_list_box_label",
+        caption = caption,
+        tooltip = tooltip,
+        ref = util.append(save_location, "label")
+      },
       {type = "frame", style = "deep_frame_in_shallow_frame", ref = util.append(save_location, "frame"),  children = {
         {
           type = "scroll-pane",

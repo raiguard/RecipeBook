@@ -55,7 +55,13 @@ function main_gui.build(player, player_table)
               }
             },
             {type = "empty-widget"}, -- spacer
-            {type = "label", style = "frame_title", caption = {"mod-name.RecipeBook"}, ignored_by_interaction = true},
+            {
+              type = "label",
+              style = "frame_title",
+              style_mods = {left_margin = 4, right_margin = 4},
+              caption = {"mod-name.RecipeBook"},
+              ignored_by_interaction = true
+            },
             {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
             {
               type = "sprite-button",

@@ -11,7 +11,7 @@ function material_page.build()
     info_list_box.build({"rb-gui.mined-from"}, 1, {"material", "mined_from"}),
     info_list_box.build({"rb-gui.pumped-by"}, 1, {"material", "pumped_by"}),
     info_list_box.build({"rb-gui.usable-in"}, 1, {"material", "usable_in"}),
-    info_list_box.build({"rb-gui.burnable-in"}, 1, {"material", "burnable_in"}),
+    info_list_box.build({"rb-gui.burnable-in"}, 1, {"material", "burnable_in"}, {"rb-gui.burnable-in-tooltip"}),
     info_list_box.build({"rb-gui.unlocked-by"}, 1, {"material", "unlocked_by"})
   }
 end
