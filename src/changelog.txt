@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.4.1
-Date: ????
+Date: 2021-01-02
   Features:
     - Added compatibility with Factory Planner's dimmer frame - RB will now stay in front of it if both GUIs are open at once
   Bugfixes:
