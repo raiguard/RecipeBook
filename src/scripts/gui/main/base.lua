@@ -242,6 +242,7 @@ function main_gui.open(player, player_table, skip_focus)
   local window = refs.base.window.frame
   if window and window.valid then
     window.visible = true
+    window.bring_to_front()
   end
   player_table.flags.gui_open = true
   if not gui_data.state.pinned then
@@ -261,10 +262,12 @@ function main_gui.close(player, player_table)
     local frame = gui_data.refs.base.window.frame
     if frame and frame.valid then
       frame.visible = false
+      if player.opened == frame then
+        player.opened = nil
+      end
     end
   end
   player_table.flags.gui_open = false
-  player.opened = nil
   player.set_shortcut_toggled("rb-toggle-gui", false)
 end
 

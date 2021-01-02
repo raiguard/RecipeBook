@@ -1,7 +1,11 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.4.1
 Date: ????
-  Changes:
+  Features:
+    - Added compatibility with Factory Planner's dimmer frame - RB will now stay in front of it if both GUIs are open at once
+  Bugfixes:
+    - Fixed RB GUI not coming to the front when opened
+    - Fixed that closing RB while pinned would also close whatever GUI happened to be marked as `opened` at the time
 ---------------------------------------------------------------------------------------------------
 Version: 2.4.0
 Date: 2021-01-02

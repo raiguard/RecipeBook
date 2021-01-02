@@ -97,6 +97,13 @@ gui.hook_events(function(e)
         game.get_player(e.player_index).opened = gui_data.refs.base.window.frame
       end
     end
+  -- bring frame to front if clicking on Factory Planner dimmer frame
+  elseif e.name == defines.events.on_gui_click and e.element.name == "fp_frame_background_dimmer" then
+    local player_table = global.players[e.player_index]
+    local gui_data = player_table.guis.main
+    if gui_data then
+      gui_data.refs.base.window.frame.bring_to_front()
+    end
   end
 end)
 
