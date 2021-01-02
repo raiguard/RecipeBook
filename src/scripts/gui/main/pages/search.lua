@@ -11,7 +11,7 @@ function search_page.build()
       {
         type = "drop-down",
         items = constants.search_categories_localised,
-        selected_index = 2,
+        selected_index = 3,
         ref = {"search", "category_drop_down"},
         actions = {
           on_selection_state_changed = {gui = "main", page = "search", action = "change_category"}
