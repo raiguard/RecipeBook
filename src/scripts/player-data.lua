@@ -63,6 +63,24 @@ function player_data.start_translations(player_index)
   shared.register_on_tick()
 end
 
+function player_data.validate_favorites(favorites)
+  local recipe_book = global.recipe_book
+  local i = 1
+  while true do
+    local obj = favorites[i]
+    if obj then
+      if recipe_book[obj.class] and recipe_book[obj.class][obj.name] then
+        i = i + 1
+      else
+        table.remove(favorites, i)
+        favorites[obj.class.."."..obj.name] = nil
+      end
+    else
+      break
+    end
+  end
+end
+
 function player_data.refresh(player, player_table)
   -- destroy GUIs
   main_gui.close(player, player_table)
@@ -75,6 +93,9 @@ function player_data.refresh(player, player_table)
   -- set shortcut state
   player.set_shortcut_toggled("rb-toggle-gui", false)
   player.set_shortcut_available("rb-toggle-gui", false)
+
+  -- validate favorites
+  player_data.validate_favorites(player_table.favorites)
 
   -- destroy histories
   player_table.history = {

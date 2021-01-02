@@ -14,6 +14,7 @@ Date: ????
     - Updated the mod to the new flib `gui-beta` module
     - Removed per-player settings from the mod settings menu - use the mod's built-in settings GUI instead
   Bugfixes:
+    - Fixed a crash when an object was added to the favorites list, then removed from the game on configuration changed
     - Fixed that quick reference windows would not update their contents when settings were changed
 ---------------------------------------------------------------------------------------------------
 Version: 2.3.3
