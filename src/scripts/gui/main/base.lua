@@ -387,11 +387,17 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
   local forward_button = refs.base.titlebar.nav_forward_button
   backward_button.tooltip = {
     "",
+    "[font=default-bold][color="..constants.colors.heading.str.."]",
+    {"rb-gui.session-history"},
+    "[/color][/font]\n",
     tooltip_str,
     {"rb-gui.navigate-backward-tooltip"}
   }
   forward_button.tooltip = {
     "",
+    "[font=default-bold][color="..constants.colors.heading.str.."]",
+    {"rb-gui.session-history"},
+    "[/color][/font]\n",
     tooltip_str,
     {"rb-gui.navigate-forward-tooltip"}
   }
