@@ -368,10 +368,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
   local tooltip_str_tbl = {}
   for i = 1, #session_history do
     local entry = session_history[i]
-    local label = "      "
-    if i == position then
-      label = "[font=default-bold][color="..constants.colors.green.str.."]>[/color][/font]   "
-    end
+    local label = "[font=default-bold][color="..(position == i and constants.colors.green.str or "0,0,0,0").."]>[/color][/font]   "
     if entry.int_class == "home" then
       label = label.."[font=default-semibold]"..translations.gui.home_page.."[/font]"
     else
