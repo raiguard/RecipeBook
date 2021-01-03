@@ -310,6 +310,16 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
   end
   local int_name = (obj_class == "fluid" or obj_class == "item") and obj_class.."."..obj_name or obj_name
 
+  -- don't do anything if the page is already open
+  local open_page_data = gui_data.state.open_page
+  if
+    open_page_data.int_class ~= "home"
+    and open_page_data.int_class == int_class
+    and open_page_data.int_name == int_name
+  then
+    return
+  end
+
   -- assemble various player data to be passed later
   local player_data = {
     force_index = player.force.index,

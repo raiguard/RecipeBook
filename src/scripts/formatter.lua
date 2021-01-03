@@ -210,6 +210,10 @@ local formatters = {
           local title_str = ("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).."  ")
           -- fixed recipe
           local _, style, label = formatter(fixed_recipe_data, player_data, {always_show = true})
+          -- remove glyph from caption, since it's implied
+          if player_data.settings.show_glyphs then
+            label = string.gsub(label, "^.-nt%]  ", "")
+          end
           if style == "rb_unresearched_list_box_item" then
             fixed_recipe_str = title_str..build_rich_text("color", "unresearched", label)
           else
