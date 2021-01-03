@@ -41,7 +41,11 @@ end
 -- build amount string, to display probability, [min/max] amount - includes the "x"
 local function build_amount_string(material)
   local amount = material.amount
-  local amount_string = amount and (tostring(amount).."x") or (material.amount_min.."-"..material.amount_max.."x")
+  local amount_string = (
+    amount
+    and (tostring(math.round_to(amount, 2)).."x")
+    or (material.amount_min.."-"..material.amount_max.."x")
+  )
   local probability = material.probability
   if probability and probability < 1 then
     amount_string = tostring(probability * 100).."% "..amount_string
@@ -82,11 +86,16 @@ function global_data.build_recipe_book()
       internal = "control_click_to_view_fixed_recipe",
       localised = {"rb-gui.control-click-to-view-fixed-recipe"}
     },
+    {dictionary = "gui", internal = "click_to_view", localised = {"rb-gui.click-to-view"}},
+    {
+      dictionary = "gui",
+      internal = "click_to_view_required_fluid",
+      localised = {"rb-gui.click-to-view-required-fluid"}
+    },
+    {dictionary = "gui", internal = "click_to_view_technology", localised = {"rb-gui.click-to-view-technology"}},
     {dictionary = "gui", internal = "crafting_categories", localised = {"rb-gui.crafting-categories"}},
     {dictionary = "gui", internal = "crafting_speed", localised = {"rb-gui.crafting-speed"}},
     {dictionary = "gui", internal = "crafting_time", localised = {"rb-gui.crafting-time"}},
-    {dictionary = "gui", internal = "click_to_view_technology", localised = {"rb-gui.click-to-view-technology"}},
-    {dictionary = "gui", internal = "click_to_view", localised = {"rb-gui.click-to-view"}},
     {dictionary = "gui", internal = "fixed_recipe", localised = {"rb-gui.fixed-recipe"}},
     {dictionary = "gui", internal = "fuel_categories", localised = {"rb-gui.fuel-categories"}},
     {dictionary = "gui", internal = "fuel_category", localised = {"rb-gui.fuel-category"}},
@@ -96,6 +105,7 @@ function global_data.build_recipe_book()
     {dictionary = "gui", internal = "per_second", localised = {"rb-gui.per-second"}},
     {dictionary = "gui", internal = "products_tooltip", localised = {"rb-gui.products-tooltip"}},
     {dictionary = "gui", internal = "pumping_speed", localised = {"rb-gui.pumping-speed"}},
+    {dictionary = "gui", internal = "required_fluid", localised = {"rb-gui.required-fluid"}},
     {dictionary = "gui", internal = "researching_speed", localised = {"rb-gui.researching-speed"}},
     {dictionary = "gui", internal = "rocket_parts_required", localised = {"rb-gui.rocket-parts-required"}},
     {dictionary = "gui", internal = "seconds_standalone", localised = {"rb-gui.seconds-standalone"}},
@@ -439,11 +449,20 @@ function global_data.build_recipe_book()
         end
       end
     end
+    local required_fluid
+    local mineable_properties = prototype.mineable_properties
+    if mineable_properties.required_fluid then
+      required_fluid = {
+        name = mineable_properties.required_fluid,
+        amount_string = build_amount_string{amount = mineable_properties.fluid_amount}
+      }
+    end
     -- insert into recipe book
     recipe_book.resource[name] = {
       available_to_all_forces = true,
       internal_class = "resource",
       prototype_name = name,
+      required_fluid = required_fluid,
       sprite_class = "entity"
     }
     -- insert into translations table

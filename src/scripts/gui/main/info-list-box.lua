@@ -179,12 +179,12 @@ function info_list_box.handle_click(e, player, player_table)
     player.open_technology_gui(name)
   elseif class == "entity" then
     local crafter_data = global.recipe_book.crafter[name]
-    if e.control then
-      if crafter_data and crafter_data.fixed_recipe then
-        return "recipe", crafter_data.fixed_recipe
-      end
-    elseif e.shift then
-      if crafter_data then
+    if crafter_data then
+      if e.control then
+        if crafter_data.fixed_recipe then
+          return "recipe", crafter_data.fixed_recipe
+        end
+      elseif e.shift then
         local blueprint_recipe = gui.get_tags(e.element).blueprint_recipe
         if blueprint_recipe then
           if crafter_data.blueprintable then
@@ -216,9 +216,17 @@ function info_list_box.handle_click(e, player, player_table)
             player.play_sound{path = "utility/cannot_build"}
           end
         end
+      else
+        return class, name
       end
     else
-      return class, name
+      local resource_data = global.recipe_book.resource[name]
+      if resource_data then
+        local required_fluid = resource_data.required_fluid
+        if required_fluid then
+          return "fluid", required_fluid.name
+        end
+      end
     end
   else
     return class, name

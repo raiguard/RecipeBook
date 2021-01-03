@@ -209,7 +209,7 @@ local formatters = {
         if fixed_recipe_data then
           local title_str = ("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).."  ")
           -- fixed recipe
-          local _, style, label = formatter.format(fixed_recipe_data, player_data, {always_show = true})
+          local _, style, label = formatter(fixed_recipe_data, player_data, {always_show = true})
           if style == "rb_unresearched_list_box_item" then
             fixed_recipe_str = title_str..build_rich_text("color", "unresearched", label)
           else
@@ -392,7 +392,7 @@ local formatters = {
               local material = materials[i]
               local material_data = materials_data[material.type.."."..material.name]
               if material_data then
-                local _, style, label = formatter.format(
+                local _, style, label = formatter(
                   material_data,
                   player_data,
                   {amount_string = material.amount_string, always_show = true}
@@ -420,9 +420,33 @@ local formatters = {
   },
   resource = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
-      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local required_fluid_str = ""
+      local interaction_help_str = ""
+      local required_fluid = obj_data.required_fluid
+      if required_fluid then
+        local fluid_data = global.recipe_book.material["fluid."..required_fluid.name]
+        if fluid_data then
+          local _, style, label = formatter(fluid_data, player_data, {amount_string = required_fluid.amount_string})
+          -- remove glyph from caption, since it's implied
+          if player_data.settings.show_glyphs then
+            label = string.gsub(label, "^.-nt%]  ", "")
+          end
+          if style == "rb_unresearched_list_box_item" then
+            label = build_rich_text("color", "unresearched", label)
+          end
+          required_fluid_str = (
+            "\n"
+            ..build_rich_text("font", "default-semibold", player_data.translations.gui.required_fluid)
+            .."  "
+            ..label
+          )
+          interaction_help_str = "\n"..player_data.translations.gui.click_to_view_required_fluid
+        end
+      end
+      return base_str..required_fluid_str..interaction_help_str
     end,
-    enabled = function() return false end
+    enabled = function(obj_data) return obj_data.required_fluid and true or false end
   },
   technology = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
@@ -453,7 +477,7 @@ local function format_item(obj_data, player_data, options)
         options.is_label,
         options.blueprint_recipe
       ),
-      formatter_subtable.enabled()
+      formatter_subtable.enabled(obj_data)
   else
     return false
   end
