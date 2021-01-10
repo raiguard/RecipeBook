@@ -279,7 +279,7 @@ function main_gui.toggle(player, player_table)
       local session_history = player_table.history.session
       session_history.position = #session_history
       local back_obj = session_history[session_history.position]
-      main_gui.open_page(player, player_table, back_obj.class, back_obj.name, true)
+      main_gui.open_page(player, player_table, back_obj.class, back_obj.name, {skip_history = true})
     end
     main_gui.open(player, player_table)
   end
@@ -295,7 +295,8 @@ function main_gui.check_can_open(player, player_table)
   end
 end
 
-function main_gui.open_page(player, player_table, obj_class, obj_name, skip_history)
+function main_gui.open_page(player, player_table, obj_class, obj_name, options)
+  options = options or {}
   obj_name = obj_name or ""
   local gui_data = player_table.guis.main
   local refs = gui_data.refs
@@ -311,13 +312,15 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
   local int_name = (obj_class == "fluid" or obj_class == "item") and obj_class.."."..obj_name or obj_name
 
   -- don't do anything if the page is already open
-  local open_page_data = gui_data.state.open_page
-  if
-    open_page_data.int_class ~= "home"
-    and open_page_data.int_class == int_class
-    and open_page_data.int_name == int_name
-  then
-    return
+  if not options.force_open then
+    local open_page_data = gui_data.state.open_page
+    if
+      open_page_data.int_class ~= "home"
+      and open_page_data.int_class == int_class
+      and open_page_data.int_name == int_name
+    then
+      return
+    end
   end
 
   -- assemble various player data to be passed later
@@ -340,7 +343,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, skip_hist
   local history = player_table.history
   local session_history = history.session
   local global_history = history.global
-  if not skip_history then
+  if not options.skip_history then
     -- global history
     local combined_name = obj_class.."."..obj_name
     if global_history[combined_name] then
@@ -553,7 +556,7 @@ function main_gui.handle_action(msg, e)
           player_table,
           back_obj.class,
           back_obj.name,
-          true
+          {skip_history = true}
         )
       end
     elseif msg.action == "navigate_forward" then
@@ -573,7 +576,7 @@ function main_gui.handle_action(msg, e)
           player_table,
           forward_object.class,
           forward_object.name,
-          true
+          {skip_history = true}
         )
       end
     elseif msg.action == "toggle_pinned" then
@@ -617,7 +620,7 @@ function main_gui.refresh_contents(player, player_table)
     player_table,
     open_page.class,
     open_page.name,
-    true
+    {force_open = true, skip_history = true}
   )
 end
 
