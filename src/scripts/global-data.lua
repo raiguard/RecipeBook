@@ -136,7 +136,8 @@ function global_data.build_recipe_book()
       localised = {"rb-gui.shift-click-to-get-blueprint"}
     },
     {dictionary = "gui", internal = "stack_size", localised = {"rb-gui.stack-size"}},
-    {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
+    {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}},
+    {dictionary = "gui", internal = "free_fluid", localised = {"rb-gui.free-fluid"}}
   }
 
   -- iterate characters (as crafters)

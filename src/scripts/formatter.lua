@@ -104,8 +104,14 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
     or translations[internal_class][translation_key]
   )
 
+  -- free fluid
+  local freefluid_str = ""
+  if internal_class == "recipe" and obj_data.category == "creative-mod_free-fluids" and player_settings.show_free_fluid_text_in_caption == true then
+    freefluid_str = " ("..translations.gui.free_fluid..")"
+  end
+
   -- output
-  return glyph_str..hidden_str..icon_str..amount_str..name_str
+  return glyph_str..hidden_str..icon_str..amount_str..name_str..freefluid_str
 end
 
 local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)

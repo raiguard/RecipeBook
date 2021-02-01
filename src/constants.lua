@@ -168,6 +168,10 @@ constants.settings = {
       default_value = true,
       has_tooltip = true
     },
+    show_free_fluid_text_in_caption = {
+      default_value = true,
+      has_tooltip = true
+    },
     preserve_session = {
       default_value = false,
       has_tooltip = true
