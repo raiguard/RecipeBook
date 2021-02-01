@@ -122,6 +122,11 @@ function search_page.handle_action(msg, e)
     if string.find(string.lower(match_internal and internal or translation), query) then
       local obj_data = rb_data[internal]
       local should_add, style, caption, tooltip = formatter(obj_data, player_data)
+      local context_data = {
+        item_class = obj_data.sprite_class,
+        item_name = obj_data.prototype_name
+      }
+
       if should_add then
         i = i + 1
         -- create or modify element
@@ -130,6 +135,14 @@ function search_page.handle_action(msg, e)
           child.style = style
           child.caption = caption
           child.tooltip = tooltip
+          child.tags = {
+            [script.mod_name] = {
+              flib = {
+                on_click = {gui = "main", action = "handle_list_box_item_click"}
+              },
+              context_data = context_data
+            }
+          }
         else
           add{
             type = "button",
@@ -141,7 +154,8 @@ function search_page.handle_action(msg, e)
               [script.mod_name] = {
                 flib = {
                   on_click = {gui = "main", action = "handle_list_box_item_click"}
-                }
+                },
+                context_data = context_data
               }
             }
           }

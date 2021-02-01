@@ -61,16 +61,28 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
         blueprint_recipe = options.blueprint_recipe
       }
     )
+    local context_data = {
+      item_class = obj_data.sprite_class,
+      item_name = obj_data.prototype_name
+    }
 
     if should_add then
       i = i + 1
       -- update or add item
-      local item = children[i]
-      if item then
-        item.style = style
-        item.caption = caption
-        item.tooltip = tooltip
-        item.enabled = enabled
+      local child = children[i]
+      if child then
+        child.style = style
+        child.caption = caption
+        child.tooltip = tooltip
+        child.enabled = enabled
+        child.tags = {
+          [script.mod_name] = {
+            flib = {
+              on_click = {gui = "main", action = "handle_list_box_item_click"}
+            },
+            context_data = context_data
+          }
+        }
       else
         add{
           type = "button",
@@ -84,7 +96,8 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
               blueprint_recipe = options.blueprint_recipe,
               flib = {
                 on_click = {gui = "main", action = "handle_list_box_item_click"}
-              }
+              },
+              context_data = context_data
             }
           }
         }
@@ -129,15 +142,27 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
     if entry.int_class ~= "home" then
       local obj_data = recipe_book[entry.int_class][entry.int_name]
       local should_add, style, caption, tooltip = formatter(obj_data, player_data)
+      local context_data = {
+        item_class = obj_data.sprite_class,
+        item_name = obj_data.prototype_name
+      }
 
       if should_add then
         i = i + 1
         -- add or update item
-        local item = children[i]
-        if item then
-          item.style = style
-          item.caption = caption
-          item.tooltip = tooltip
+        local child = children[i]
+        if child then
+          child.style = style
+          child.caption = caption
+          child.tooltip = tooltip
+          child.tags = {
+            [script.mod_name] = {
+              flib = {
+                on_click = {gui = "main", action = "handle_list_box_item_click"}
+              },
+              context_data = context_data
+            }
+          }
         else
           add{
             type = "button",
@@ -148,7 +173,8 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
               [script.mod_name] = {
                 flib = {
                   on_click = {gui = "main", action = "handle_list_box_item_click"}
-                }
+                },
+                context_data = context_data
               }
             }
           }
@@ -173,7 +199,10 @@ end
 
 -- if values are returned, the corresponding page is opened
 function info_list_box.handle_click(e, player, player_table)
-  local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%]  .*$")
+  local listbox_item_data = e.element.tags[script.mod_name].context_data
+  local class = listbox_item_data.item_class
+  local name = listbox_item_data.item_name
+
   if class == "technology" then
     player_table.flags.technology_gui_open = true
     player.open_technology_gui(name)
