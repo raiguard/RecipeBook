@@ -168,12 +168,22 @@ constants.settings = {
       default_value = true,
       has_tooltip = true
     },
+    preserve_session = {
+      default_value = false,
+      has_tooltip = true
+    }
+  },
+  fluids = {
     show_free_fluid_text_in_caption = {
       default_value = true,
       has_tooltip = true
     },
-    preserve_session = {
-      default_value = false,
+    show_fluid_temperatures_in_recipes = {
+      default_value = true,
+      has_tooltip = false
+    },
+    hide_fluid_temperatures_when_single_temperature = {
+      default_value = true,
       has_tooltip = true
     }
   },

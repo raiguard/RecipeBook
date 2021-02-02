@@ -63,7 +63,7 @@ local function get_should_show(obj_data, player_data)
   return false, is_hidden, is_researched
 end
 
-local function get_caption(obj_data, player_data, is_hidden, amount)
+local function get_caption(obj_data, player_data, is_hidden, options)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
@@ -94,8 +94,8 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
   local icon_str = build_sprite(sprite_class, prototype_name).."  "
   -- amount string
   local amount_str = ""
-  if amount then
-    amount_str = build_rich_text("font", "default-semibold", amount).."  "
+  if options.amount_string then
+    amount_str = build_rich_text("font", "default-semibold", options.amount_string).."  "
   end
   -- name
   local name_str = (
@@ -110,8 +110,14 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
     freefluid_str = " ("..translations.gui.free_fluid..")"
   end
 
+  -- temperature
+  local temperature_str = ""
+  if options.temperature_string and player_settings.show_fluid_temperatures_in_recipes == true and (player_settings.hide_fluid_temperatures_when_single_temperature == false or obj_data.temperatures_count > 1) then
+    temperature_str = options.temperature_string
+  end
+
   -- output
-  return glyph_str..hidden_str..icon_str..amount_str..name_str..freefluid_str
+  return glyph_str..hidden_str..icon_str..amount_str..name_str..freefluid_str..temperature_str
 end
 
 local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
@@ -405,7 +411,7 @@ local formatters = {
                 local _, style, label = formatter(
                   material_data,
                   player_data,
-                  {amount_string = material.amount_string, always_show = true}
+                  {amount_string = material.amount_string, temperature_string = material.temperature_string, always_show = true}
                 )
                 if style == "rb_unresearched_list_box_item" then
                   ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
@@ -478,7 +484,7 @@ local function format_item(obj_data, player_data, options)
     return
       true,
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
-      get_caption(obj_data, player_data, is_hidden, options.amount_string),
+      get_caption(obj_data, player_data, is_hidden, options),
       formatter_subtable.tooltip(
         obj_data,
         player_data,
@@ -505,6 +511,7 @@ function formatter.format(obj_data, player_data, options)
     .."."..obj_data.prototype_name
     .."."..tostring(is_researched)
     .."."..tostring(options.amount_string)
+    .."."..tostring(options.temperature_string)
     .."."..tostring(options.always_show)
     .."."..tostring(options.is_label)
     .."."..tostring(options.blueprint_recipe)

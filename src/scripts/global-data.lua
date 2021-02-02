@@ -74,6 +74,71 @@ local function build_amount_string(material)
   return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
 end
 
+local function build_temperature_strings(temperature, temperatureMin, temperatureMax)
+  if temperature then
+    return tostring(temperature), " ("..tostring(temperature).."°C"..")"
+  end
+
+  if temperatureMin and temperatureMax then 
+    return tostring(temperatureMin).."-"..tostring(temperatureMax), " ("..tostring(temperatureMin).."-"..tostring(temperatureMax).."°C"..")"
+  end
+
+  if temperatureMax then
+    return  "≤"..tostring(temperatureMax), " (≤"..tostring(temperatureMax).."°C"..")"
+  end
+
+  if temperatureMin then
+    return  "≥"..tostring(temperatureMin)," (≥"..tostring(temperatureMin).."°C"..")"
+  end
+end
+
+local function assureTemperatures(material, obj_data, fluid_data, recipe)
+  local default = obj_data.default_temperature
+  local defaultMax = 1000000
+  local defaultMin = -1000000
+
+  local isDefault
+  local temperature
+  local temperatureMin
+  local temperatureMax
+
+  if material.temperature then
+    isDefault = material.temperature == default
+    temperature = material.temperature
+  elseif material.minimum_temperature or material.maximum_temperature then
+    temperatureMin = material.minimum_temperature
+    temperatureMax = material.maximum_temperature
+
+    if material.minimum_temperature <= defaultMin then
+      temperatureMin = nil
+    end
+
+    if material.maximum_temperature >= defaultMax then
+      temperatureMax = nil
+    end
+
+    isDefault = false
+  else
+    isDefault = true;
+    temperature = default
+  end
+
+  local temperature_key, temperature_string = build_temperature_strings(temperature, temperatureMin, temperatureMax)
+
+  if not fluid_data.temperatures[temperature_key] and recipe.category ~= "py-venting" and recipe.category ~= "py-runoff" then
+    fluid_data.temperatures_count =fluid_data.temperatures_count + 1
+    fluid_data.temperatures[temperature_key] = {
+      temperature_string = temperature_string,
+      temperature = temperature,
+      temperature_min = temperatureMin,
+      temperature_max = temperatureMax,
+      is_default = isDefault
+    }
+  end
+
+  return isDefault, temperature, temperatureMin, temperatureMax, temperature_string
+end
+
 function global_data.build_recipe_book()
   local recipe_book = {
     crafter = {},
@@ -297,7 +362,9 @@ function global_data.build_recipe_book()
         sprite_class = class,
         stack_size = class == "item" and prototype.stack_size or nil,
         unlocked_by = unique_array(),
-        usable_in = {}
+        usable_in = {},
+        temperatures = {},
+        temperatures_count = 0
       }
       -- add to translations table
       translation_data[#translation_data+1] = {
@@ -401,12 +468,28 @@ function global_data.build_recipe_book()
       for i = 1, #materials do
         local material = materials[i]
         local amount_string, avg_amount_string = build_amount_string(material)
+
+        local temperature, temperatureMin, temperatureMax
+        local temperature_string, isDefault
+
+        if material.type == "fluid" then
+          local obj_data = game.fluid_prototypes[material.name]
+          local fluid_data = recipe_book.material["fluid."..material.name]
+          
+          isDefault, temperature, temperatureMin, temperatureMax, temperature_string = assureTemperatures(material, obj_data, fluid_data, prototype)
+        end
+
         -- save only the essentials
         output[i] = {
           type = material.type,
           name = material.name,
           amount_string = amount_string,
-          avg_amount_string = avg_amount_string
+          avg_amount_string = avg_amount_string,
+          temperature_string = temperature_string,
+          temperature = temperature,
+          temperatureMin = temperatureMin,
+          temperatureMax = temperatureMax,
+          temperatureIsDefault = isDefault
         }
       end
       -- add to data

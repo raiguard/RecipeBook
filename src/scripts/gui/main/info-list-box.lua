@@ -52,11 +52,13 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
     else
       obj_data = recipe_book[obj]
     end
+
     local should_add, style, caption, tooltip, enabled = formatter(
       obj_data,
       player_data,
       {
         amount_string = obj.amount_string,
+        temperature_string = obj.temperature_string,
         always_show = options.always_show,
         blueprint_recipe = options.blueprint_recipe
       }
