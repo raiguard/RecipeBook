@@ -545,7 +545,7 @@ function global_data.build_recipe_book()
     end
   end
 
-  -- remove all materials that aren't used in recipes or rockets
+  -- remove all materials that aren't used
   do
     local materials = recipe_book.material
     local translations = translation_data
@@ -554,10 +554,14 @@ function global_data.build_recipe_book()
       if t.dictionary == "material" then
         local data = materials[t.internal]
         if
-          #data.ingredient_in == 0
+          #data.burnable_in == 0
+          and #data.ingredient_in == 0
+          and #data.mined_from == 0
           and #data.product_of == 0
+          and #data.pumped_by == 0
           and #data.rocket_launch_products == 0
           and #data.rocket_launch_payloads == 0
+          and #data.usable_in == 0
         then
           materials[t.internal] = nil
           table.remove(translations, i)
