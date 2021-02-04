@@ -40,16 +40,21 @@ end
 
 -- build amount string, to display probability, [min/max] amount - includes the "x"
 local function build_amount_string(material)
+  -- amount
   local amount = material.amount
   local amount_string = (
     amount
-    and (tostring(math.round_to(amount, 2)).."x")
-    or (material.amount_min.."-"..material.amount_max.."x")
+    and math.round_to(amount, 2).."x"
+    or material.amount_min.." - "..material.amount_max.."x"
   )
+
+  -- probability
   local probability = material.probability
   if probability and probability < 1 then
-    amount_string = tostring(probability * 100).."% "..amount_string
+    amount_string = (probability * 100).."% "..amount_string
   end
+
+  -- temperature
   local temperature = material.temperature
   local temp_min = material.minimum_temperature
   local temp_max = material.maximum_temperature
@@ -64,6 +69,8 @@ local function build_amount_string(material)
       amount_string = amount_string.."  ("..math.round_to(temp_min, 2).." - "..math.round_to(temp_max, 2).."°)"
     end
   end
+
+  -- second return is the "average" amount
   return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
 end
 
