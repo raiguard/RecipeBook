@@ -50,6 +50,20 @@ local function build_amount_string(material)
   if probability and probability < 1 then
     amount_string = tostring(probability * 100).."% "..amount_string
   end
+  local temperature = material.temperature
+  local temp_min = material.minimum_temperature
+  local temp_max = material.maximum_temperature
+  if temperature then
+    amount_string = amount_string.."  ("..math.round_to(temperature, 2).."°)"
+  elseif temp_min and temp_max then
+    if temp_min == -0X1.FFFFFFFFFFFFFP+1023 then
+      amount_string = amount_string.."  (<= "..math.round_to(temp_max, 2).."°)"
+    elseif temp_max == 0X1.FFFFFFFFFFFFFP+1023 then
+      amount_string = amount_string.."  (>= "..math.round_to(temp_min, 2).."°)"
+    else
+      amount_string = amount_string.."  ("..math.round_to(temp_min, 2).." - "..math.round_to(temp_max, 2).."°)"
+    end
+  end
   return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
 end
 
