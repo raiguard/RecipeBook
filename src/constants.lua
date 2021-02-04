@@ -178,11 +178,15 @@ constants.settings = {
       default_value = true,
       has_tooltip = true
     },
-    show_fluid_temperatures_in_recipes = {
-      default_value = true,
-      has_tooltip = false
-    },
     hide_fluid_temperatures_when_single_temperature = {
+      default_value = true,
+      has_tooltip = true
+    },
+    display_fluid_with_temperatures_in_search_results = {
+      default_value = true,
+      has_tooltip = true
+    },
+    hide_fluid_with_range_temperatures_in_search_result = {
       default_value = true,
       has_tooltip = true
     }

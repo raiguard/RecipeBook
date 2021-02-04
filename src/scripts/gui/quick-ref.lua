@@ -104,7 +104,7 @@ function quick_ref_gui.build(player, player_table, name)
       local _, style, _, tooltip = formatter(
         obj_data,
         player_data,
-        {amount_string = obj.amount_string, always_show = true}
+        {amount_string = obj.amount_string, always_show = true, fluid_temperature_string = obj.fluid_temperature_string}
       )
       i = i + 1
 

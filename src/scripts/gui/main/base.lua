@@ -221,7 +221,7 @@ function main_gui.build(player, player_table)
   }
 
   -- open home page
-  main_gui.open_page(player, player_table, "home")
+  main_gui.open_page(player, player_table, { item_class = "home" })
 end
 
 function main_gui.destroy(player_table)
@@ -278,7 +278,7 @@ function main_gui.toggle(player, player_table)
       local session_history = player_table.history.session
       session_history.position = #session_history
       local back_obj = session_history[session_history.position]
-      main_gui.open_page(player, player_table, back_obj.class, back_obj.name, {skip_history = true})
+      main_gui.open_page(player, player_table, { item_class = back_obj.class, item_name = back_obj.name, fluid_temperature_key = back_obj.fluid_temperature_key, fluid_temperature_string = back_obj.fluid_temperature_string }, {skip_history = true})
     end
     main_gui.open(player, player_table)
   end
@@ -294,9 +294,10 @@ function main_gui.check_can_open(player, player_table)
   end
 end
 
-function main_gui.open_page(player, player_table, obj_class, obj_name, options)
+function main_gui.open_page(player, player_table, item_data, options)
   options = options or {}
-  obj_name = obj_name or ""
+  local obj_name = item_data.item_name or ""
+  local obj_class = item_data.item_class
   local gui_data = player_table.guis.main
   local refs = gui_data.refs
   local translations = player_table.translations
@@ -317,6 +318,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
       open_page_data.int_class ~= "home"
       and open_page_data.int_class == int_class
       and open_page_data.int_name == int_name
+      and (open_page_data.fluid_temperature_key or "") == (item_data.fluid_temperature_key or "")
     then
       return
     end
@@ -339,12 +341,17 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   }
 
   -- update search history
+  local temperature_key = ""
+  if item_data.fluid_temperature_key then
+    temperature_key = "#"..item_data.fluid_temperature_key
+  end
+
   local history = player_table.history
   local session_history = history.session
   local global_history = history.global
   if not options.skip_history then
     -- global history
-    local combined_name = obj_class.."."..obj_name
+    local combined_name = obj_class.."."..obj_name..temperature_key
     if global_history[combined_name] then
       for i = 1, #global_history do
         local entry = global_history[i]
@@ -356,7 +363,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     else
       global_history[combined_name] = true
     end
-    table.insert(global_history, 1, {int_class = int_class, int_name = int_name, class = obj_class, name = obj_name})
+    table.insert(global_history, 1, {int_class = int_class, int_name = int_name, class = obj_class, name = obj_name, fluid_temperature_key = item_data.fluid_temperature_key, fluid_temperature_string = item_data.fluid_temperature_string})
     local last_entry = global_history[31]
     if last_entry then
       table.remove(global_history, 31)
@@ -372,7 +379,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     elseif session_history.position == 0 then
       session_history.position = 1
     end
-    table.insert(session_history, 1, {int_class = int_class, int_name = int_name, class = obj_class, name = obj_name})
+    table.insert(session_history, 1, {int_class = int_class, int_name = int_name, class = obj_class, name = obj_name, fluid_temperature_key = item_data.fluid_temperature_key, fluid_temperature_string = item_data.fluid_temperature_string})
   end
 
   -- update nav buttons
@@ -380,12 +387,15 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   local tooltip_str_tbl = {}
   for i = 1, #session_history do
     local entry = session_history[i]
-    local label = "[font=default-bold][color="..(position == i and constants.colors.green.str or "0,0,0,0").."]>[/color][/font]   "
+    local label = "      "
+    if i == position then
+      label = "[font=default-bold][color="..constants.colors.green.str.."]>[/color][/font]   "
+    end
     if entry.int_class == "home" then
       label = label.."[font=default-semibold]"..translations.gui.home_page.."[/font]"
     else
       local obj_data = global.recipe_book[entry.int_class][entry.int_name]
-      local _, style, caption = formatter(obj_data, player_data, {always_show = true, is_label = true})
+      local _, style, caption = formatter(obj_data, player_data, {always_show = true, is_label = true, fluid_temperature_string = entry.fluid_temperature_string})
       if string.find(style, "unresearched") then
         caption = "[color="..constants.colors.unresearched.str.."]"..caption.."[/color]"
       end
@@ -438,7 +448,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     local _, _, caption, tooltip = formatter(
       global.recipe_book[int_class][int_name],
       player_data,
-      {always_show = true, is_label = true}
+      {always_show = true, is_label = true, fluid_temperature_string = item_data.fluid_temperature_string }
     )
     info_bar.label.caption = caption
     info_bar.label.tooltip = tooltip
@@ -455,7 +465,12 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
       info_bar.quick_ref_button.visible = false
     end
 
-    if player_table.favorites[obj_class.."."..obj_name] then
+    local temperature_key = ""
+    if item_data.fluid_temperature_key then
+      temperature_key = "#"..item_data.fluid_temperature_key
+    end
+
+    if player_table.favorites[obj_class.."."..obj_name..temperature_key] then
       info_bar.favorite_button.style = "flib_selected_tool_button"
       info_bar.favorite_button.tooltip = {"rb-gui.remove-from-favorites"}
     else
@@ -465,7 +480,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   end
 
   -- update page information
-  pages[int_class].update(int_name, gui_data, player_data, home_data)
+  pages[int_class].update(int_name, gui_data, player_data, home_data, item_data)
 
   -- update visible page
   refs[gui_data.state.open_page.int_class].flow.visible = false
@@ -476,7 +491,9 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     int_class = int_class,
     int_name = int_name,
     class = obj_class,
-    name = obj_name
+    name = obj_name,
+    fluid_temperature_key = item_data.fluid_temperature_key,
+    fluid_temperature_string = item_data.fluid_temperature_string
   }
 end
 
@@ -493,14 +510,14 @@ function main_gui.handle_action(msg, e)
     pages.settings.handle_action(msg, e)
   else
     if msg.action == "open_page" then
-      main_gui.open_page(player, player_table, msg.class, msg.name)
+      main_gui.open_page(player, player_table, { item_class = msg.class, item_name = msg.name} )
       if not player_table.flags.gui_open then
         main_gui.open(player, player_table, true)
       end
     elseif msg.action == "handle_list_box_item_click" then
-      local class, name = info_list_box.handle_click(e, player, player_table)
-      if class then
-        main_gui.open_page(player, player_table, class, name)
+      local item_data = info_list_box.handle_click(e, player, player_table)
+      if item_data then
+        main_gui.open_page(player, player_table, item_data)
       end
     elseif msg.action == "close" then
       if not state.pinning and not player_table.flags.technology_gui_open then
@@ -509,7 +526,12 @@ function main_gui.handle_action(msg, e)
     elseif msg.action == "toggle_favorite" then
       local favorites = player_table.favorites
       local open_page = state.open_page
-      local index_name = open_page.class.."."..open_page.name
+      local temperature_key = ""
+      if open_page.fluid_temperature_key then
+        temperature_key = "#"..open_page.fluid_temperature_key
+      end
+
+      local index_name = open_page.class.."."..open_page.name..temperature_key
       if favorites[index_name] then
         for i = 1, #favorites do
           local obj = favorites[i]
@@ -553,8 +575,7 @@ function main_gui.handle_action(msg, e)
         main_gui.open_page(
           game.get_player(e.player_index),
           player_table,
-          back_obj.class,
-          back_obj.name,
+          { item_class = back_obj.class, item_name = back_obj.name, fluid_temperature_key = back_obj.fluid_temperature_key, fluid_temperature_string = back_obj.fluid_temperature_string},
           {skip_history = true}
         )
       end
@@ -569,12 +590,11 @@ function main_gui.handle_action(msg, e)
           -- go forward one
           session_history.position = session_history.position - 1
         end
-        local forward_object = session_history[session_history.position]
+        local forward_obj = session_history[session_history.position]
         main_gui.open_page(
           game.get_player(e.player_index),
           player_table,
-          forward_object.class,
-          forward_object.name,
+          { item_class = forward_obj.class, item_name = forward_obj.name, fluid_temperature_key = forward_obj.fluid_temperature_key, fluid_temperature_string = forward_obj.fluid_temperature_string},
           {skip_history = true}
         )
       end
@@ -617,9 +637,8 @@ function main_gui.refresh_contents(player, player_table)
   main_gui.open_page(
     player,
     player_table,
-    open_page.class,
-    open_page.name,
-    {force_open = true, skip_history = true}
+    { item_class = open_page.class, item_name = open_page.name},
+    { force_open = true, skip_history = true }
   )
 end
 

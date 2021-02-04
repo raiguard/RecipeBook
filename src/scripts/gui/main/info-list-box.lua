@@ -28,7 +28,7 @@ function info_list_box.build(caption, rows, save_location, tooltip)
   )
 end
 
-function info_list_box.update(tbl, int_class, list_box, player_data, options)
+function info_list_box.update(tbl, int_class, list_box, player_data, options, direction_aid)
   options = options or {}
 
   local recipe_book = global.recipe_book[int_class]
@@ -49,60 +49,96 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
     -- if `blueprint_recipe` exists, this is on a recipe and is therefore a table
     elseif int_class == "crafter" and options.blueprint_recipe then
       obj_data = recipe_book[obj.name]
+    elseif obj.name then
+      obj_data = recipe_book[obj.name]
     else
       obj_data = recipe_book[obj]
     end
 
-    local should_add, style, caption, tooltip, enabled = formatter(
-      obj_data,
-      player_data,
-      {
-        amount_string = obj.amount_string,
-        temperature_string = obj.temperature_string,
-        always_show = options.always_show,
-        blueprint_recipe = options.blueprint_recipe
-      }
-    )
-    local context_data = {
-      item_class = obj_data.sprite_class,
-      item_name = obj_data.prototype_name
-    }
+    local skip = false
 
-    if should_add then
-      i = i + 1
-      -- update or add item
-      local child = children[i]
-      if child then
-        child.style = style
-        child.caption = caption
-        child.tooltip = tooltip
-        child.enabled = enabled
-        child.tags = {
-          [script.mod_name] = {
-            flib = {
-              on_click = {gui = "main", action = "handle_list_box_item_click"}
-            },
-            context_data = context_data
-          }
+    if options.fluid_temperature_key and obj.fluid_temperature_key and direction_aid then
+      local min1, max1 = parse_fluid_temperature_key(options.fluid_temperature_key)
+      local min2, max2 = parse_fluid_temperature_key(obj.fluid_temperature_key)
+      
+      if direction_aid == "in" and (min1 < min2 or max1 > max2) then
+        skip = true
+      elseif direction_aid == "out" and (min2 < min1 or max2 > max1) then
+        skip = true
+      end
+    end
+
+    if options.fluid_temperature_key and obj.fluid_temperature_keys and not skip then
+      skip = true
+
+      local min1, max1 = parse_fluid_temperature_key(options.fluid_temperature_key)
+      for k = 1, #obj.fluid_temperature_keys do
+
+        local min2, max2 = parse_fluid_temperature_key(obj.fluid_temperature_keys[k])
+
+        if min1 >= min2 and max1 <= max2 then
+          skip = false
+          break
+        end
+      end
+
+    end
+    
+    if not skip then
+      local should_add, style, caption, tooltip, enabled = formatter(
+        obj_data,
+        player_data,
+        {
+          amount_string = obj.amount_string,
+          fluid_temperature_string = obj.fluid_temperature_string,
+          fluid_temperature_key = obj.fluid_temperature_key,
+          always_show = options.always_show,
+          blueprint_recipe = options.blueprint_recipe
         }
-      else
-        add{
-          type = "button",
-          style = style,
-          caption = caption,
-          tooltip = tooltip,
-          enabled = enabled,
-          mouse_button_filter = {"left"},
-          tags = {
+      )
+      local context_data = {
+        item_class = obj_data.sprite_class,
+        item_name = obj_data.prototype_name,
+        fluid_temperature_string = obj.fluid_temperature_string,
+        fluid_temperature_key = obj.fluid_temperature_key,
+      }
+
+      if should_add then
+        i = i + 1
+        -- update or add item
+        local child = children[i]
+        if child then
+          child.style = style
+          child.caption = caption
+          child.tooltip = tooltip
+          child.enabled = enabled
+          child.tags = {
             [script.mod_name] = {
-              blueprint_recipe = options.blueprint_recipe,
               flib = {
                 on_click = {gui = "main", action = "handle_list_box_item_click"}
               },
               context_data = context_data
             }
           }
-        }
+        else
+          add{
+            type = "button",
+            style = style,
+            caption = caption,
+            tooltip = tooltip,
+            enabled = enabled,
+            mouse_button_filter = {"left"},
+            tags = {
+              [script.mod_name] = {
+                blueprint_recipe = options.blueprint_recipe,
+                flib = {
+                  on_click = {gui = "main", action = "handle_list_box_item_click"}
+                },
+                context_data = context_data
+              }
+            }
+          }
+        end
       end
     end
   end
@@ -124,6 +160,35 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
   end
 end
 
+-- todo: put in flib
+function parse_fluid_temperature_key(key)
+  local min, max
+
+  min, max = string.match(key, '^(%d+)%-(%d+)$')
+  if min and max then
+    return tonumber(min), tonumber(max)
+  end
+
+  min = string.match(key, '^(%d+)$')
+
+  if min then
+    return tonumber(min), tonumber(min)
+  end
+
+  max = string.match(key, '^≤(%d+)$')
+
+  if max then
+    return -1000000, tonumber(max)
+  end
+
+  min = string.match(key, '^≥(%d+)$')
+
+  if min then
+    return tonumber(min), 1000000
+  end
+
+  return min, max
+end
 
 -- only used on the home screen
 function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
@@ -143,10 +208,16 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
     local entry = tbl[j]
     if entry.int_class ~= "home" then
       local obj_data = recipe_book[entry.int_class][entry.int_name]
-      local should_add, style, caption, tooltip = formatter(obj_data, player_data)
+
+      local options = { fluid_temperature_key = entry.fluid_temperature_key, fluid_temperature_string = entry.fluid_temperature_string }
+
+      local should_add, style, caption, tooltip = formatter(obj_data, player_data, options)
       local context_data = {
         item_class = obj_data.sprite_class,
-        item_name = obj_data.prototype_name
+        item_name = obj_data.prototype_name,
+        fluid_temperature_string = entry.fluid_temperature_string,
+        fluid_temperature_key = entry.fluid_temperature_key,
+        fluid_temperature_force = true
       }
 
       if should_add then
@@ -205,6 +276,11 @@ function info_list_box.handle_click(e, player, player_table)
   local class = listbox_item_data.item_class
   local name = listbox_item_data.item_name
 
+  if e.shift and not listbox_item_data.fluid_temperature_force then
+    listbox_item_data.fluid_temperature_key = nil
+    listbox_item_data.fluid_temperature_string = nil
+  end
+
   if class == "technology" then
     player_table.flags.technology_gui_open = true
     player.open_technology_gui(name)
@@ -213,7 +289,7 @@ function info_list_box.handle_click(e, player, player_table)
     if crafter_data then
       if e.control then
         if crafter_data.fixed_recipe then
-          return "recipe", crafter_data.fixed_recipe
+          return { item_class = "recipe", item_name = crafter_data.fixed_recipe }
         end
       elseif e.shift then
         local blueprint_recipe = gui.get_tags(e.element).blueprint_recipe
@@ -248,19 +324,19 @@ function info_list_box.handle_click(e, player, player_table)
           end
         end
       else
-        return class, name
+        return listbox_item_data
       end
     else
       local resource_data = global.recipe_book.resource[name]
       if resource_data then
         local required_fluid = resource_data.required_fluid
         if required_fluid then
-          return "fluid", required_fluid.name
+          return { item_class = "fluid", item_name = required_fluid.name }
         end
       end
     end
   else
-    return class, name
+    return listbox_item_data
   end
 end
 

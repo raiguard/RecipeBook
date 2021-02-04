@@ -21,17 +21,65 @@ local function build_sprite(class, name)
   return "[img="..class.."/"..name.."]"
 end
 
-local function get_properties(obj_data, force_index)
-  local researched
+local function get_properties(obj_data, force_index, options)
+  local opt = options or {}
+  local researched = false
   if obj_data.researched_forces then
     researched = obj_data.researched_forces[force_index] or false
-  else
-    researched = obj_data.available_to_all_forces or obj_data.available_to_forces[force_index] or false
+  elseif obj_data.available_to_all_forces or not obj_data.unlocked_by or #obj_data.unlocked_by == 0 or (obj_data.available_to_forces[force_index] and ((obj_data.temperatures_count and obj_data.temperatures_count <= 1) or not opt.fluid_temperature_key)) then
+    researched = true
+  elseif obj_data.available_to_forces[force_index] and opt.fluid_temperature_key then
+    local min1, max1 = parse_fluid_temperature_key(opt.fluid_temperature_key)
+
+    local atf = obj_data.available_to_forces[force_index]
+
+    if atf then
+      researched = true
+    else
+      for fluid_temperature_key, _ in pairs(atf) do
+        local min2, max2 = parse_fluid_temperature_key(fluid_temperature_key)
+
+        if min2 >= min1 and max2 <= max1 then
+          researched = true
+          break
+        end
+      end
+    end
   end
   return obj_data.hidden, researched
 end
 
-local function get_should_show(obj_data, player_data)
+-- todo: put in flib
+local function parse_fluid_temperature_key(key)
+  local min, max
+
+  min, max = string.match(key, '^(%d+)%-(%d+)$')
+  if min and max then
+    return tonumber(min), tonumber(max)
+  end
+
+  min = string.match(key, '^(%d+)$')
+
+  if min then
+    return tonumber(min), tonumber(min)
+  end
+
+  max = string.match(key, '^≤(%d+)$')
+
+  if max then
+    return -1000000, tonumber(max)
+  end
+
+  min = string.match(key, '^≥(%d+)$')
+
+  if min then
+    return tonumber(min), 1000000
+  end
+
+  return min, max
+end
+
+local function get_should_show(obj_data, player_data, options)
   -- player data
   local force_index = player_data.force_index
   local player_settings = player_data.settings
@@ -39,7 +87,7 @@ local function get_should_show(obj_data, player_data)
   local show_unresearched = player_settings.show_unresearched
 
   -- check hidden and researched status
-  local is_hidden, is_researched = get_properties(obj_data, force_index)
+  local is_hidden, is_researched = get_properties(obj_data, force_index, options)
   if (show_hidden or not is_hidden) and (show_unresearched or is_researched) then
     -- for recipes - check category to see if it should be shown
     local category = obj_data.category
@@ -106,25 +154,26 @@ local function get_caption(obj_data, player_data, is_hidden, options)
 
   -- free fluid
   local freefluid_str = ""
-  if internal_class == "recipe" and obj_data.category == "creative-mod_free-fluids" and player_settings.show_free_fluid_text_in_caption == true then
+  if internal_class == "recipe" and obj_data.category == "creative-mod_free-fluids" and player_settings.show_free_fluid_text_in_caption then
     freefluid_str = " ("..translations.gui.free_fluid..")"
   end
 
   -- temperature
   local temperature_str = ""
-  if options.temperature_string and player_settings.show_fluid_temperatures_in_recipes == true and (player_settings.hide_fluid_temperatures_when_single_temperature == false or obj_data.temperatures_count > 1) then
-    temperature_str = options.temperature_string
+  if options.fluid_temperature_string and (not player_settings.hide_fluid_temperatures_when_single_temperature or obj_data.temperatures_count > 1) then
+    temperature_str = options.fluid_temperature_string
   end
 
   -- output
   return glyph_str..hidden_str..icon_str..amount_str..name_str..freefluid_str..temperature_str
 end
 
-local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched, fluid_temperature_string)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
   local gui_translations = translations.gui
+  local fluid_temperature_str = fluid_temperature_string or ""
 
   -- object properties
   local internal_class = obj_data.internal_class
@@ -136,7 +185,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     internal_class == "material"
     and sprite_class.."."..prototype_name
     or prototype_name
-  ]
+  ]..fluid_temperature_str
   local description = translations[internal_class.."_description"][
     internal_class == "material"
     and sprite_class.."."..prototype_name
@@ -190,7 +239,7 @@ local ingredients_products_keys = {ingredients = true, products = true}
 
 local formatters = {
   crafter = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _, blueprint_recipe)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, options)
       -- locals
       local translations = player_data.translations
       local gui_translations = translations.gui
@@ -265,7 +314,7 @@ local formatters = {
       local open_page_help_str = "\n"..gui_translations.click_to_view
       -- blueprintable
       local blueprintable_str = ""
-      if blueprint_recipe then
+      if options.blueprint_recipe then
         if obj_data.blueprintable then
           blueprintable_str = "\n"..gui_translations.shift_click_to_get_blueprint
         else
@@ -288,7 +337,7 @@ local formatters = {
     enabled = function() return true end
   },
   lab = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, options)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- researching speed
       local researching_speed_str = (
@@ -303,7 +352,7 @@ local formatters = {
     enabled = function() return false end
   },
   material = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, options)
       -- locals
       local gui_translations = player_data.translations.gui
 
@@ -311,7 +360,7 @@ local formatters = {
       local stack_size = obj_data.stack_size
 
       -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, options.fluid_temperature_string)
       -- stack size
       local stack_size_str = ""
       if stack_size then
@@ -340,8 +389,12 @@ local formatters = {
       end
       -- interaction help
       local interaction_help_str = ""
-      if not is_label then
+      if not options.is_label then
         interaction_help_str = "\n"..gui_translations.click_to_view
+
+        if obj_data.temperatures_count and obj_data.temperatures_count > 1 and not options.fluid_temperature_force then
+          interaction_help_str = interaction_help_str.."\n"..gui_translations.shift_click_to_view
+        end
       end
 
       return base_str..stack_size_str..fuel_category_str..fuel_value_str..interaction_help_str
@@ -349,7 +402,7 @@ local formatters = {
     enabled = function() return true end
   },
   offshore_pump = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, options)
       -- locals
       local gui_translations = player_data.translations.gui
 
@@ -369,7 +422,7 @@ local formatters = {
     enabled = function() return false end
   },
   recipe = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, options)
       -- locals
       local materials_data = global.recipe_book.material
       local gui_translations = player_data.translations.gui
@@ -386,7 +439,7 @@ local formatters = {
       )
       -- crafting time, ingredients and products
       local ip_str_arr = {}
-      if player_settings.show_detailed_recipe_tooltips and not is_label then
+      if player_settings.show_detailed_recipe_tooltips and not options.is_label then
         -- crafting time
         ip_str_arr[1] = (
           "\n"
@@ -411,7 +464,7 @@ local formatters = {
                 local _, style, label = formatter(
                   material_data,
                   player_data,
-                  {amount_string = material.amount_string, temperature_string = material.temperature_string, always_show = true}
+                  {amount_string = material.amount_string, fluid_temperature_string = material.fluid_temperature_string, always_show = true}
                 )
                 if style == "rb_unresearched_list_box_item" then
                   ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
@@ -435,7 +488,7 @@ local formatters = {
     enabled = function() return true end
   },
   resource = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, options)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       local required_fluid_str = ""
       local interaction_help_str = ""
@@ -465,7 +518,7 @@ local formatters = {
     enabled = function(obj_data) return obj_data.required_fluid and true or false end
   },
   technology = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, options)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- interaction help
       local interaction_help_str = "\n"..player_data.translations.gui.click_to_view_technology
@@ -477,7 +530,7 @@ local formatters = {
 }
 
 local function format_item(obj_data, player_data, options)
-  local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data)
+  local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data,options)
   if options.always_show or should_show then
     -- format and return
     local formatter_subtable = formatters[obj_data.internal_class]
@@ -490,8 +543,7 @@ local function format_item(obj_data, player_data, options)
         player_data,
         is_hidden,
         is_researched,
-        options.is_label,
-        options.blueprint_recipe
+        options
       ),
       formatter_subtable.enabled(obj_data)
   else
@@ -505,18 +557,18 @@ function formatter.format(obj_data, player_data, options)
 
   local player_index = player_data.player_index
   local cache = caches[player_index]
-  local _, is_researched = get_properties(obj_data, player_data.force_index)
+  local _, is_researched = get_properties(obj_data, player_data.force_index, options)
   local cache_key = (
     obj_data.sprite_class
     .."."..obj_data.prototype_name
     .."."..tostring(is_researched)
     .."."..tostring(options.amount_string)
-    .."."..tostring(options.temperature_string)
+    .."."..tostring(options.fluid_temperature_string)
     .."."..tostring(options.always_show)
     .."."..tostring(options.is_label)
     .."."..tostring(options.blueprint_recipe)
   )
-  local cached_return = cache[cache_key]
+  local cached_return --= cache[cache_key]
   if cached_return then
     return unpack(cached_return)
   else
