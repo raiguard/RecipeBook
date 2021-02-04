@@ -4,6 +4,9 @@ Date: ????
   Features:
     - Added required fluid to resource tooltip
     - Added support for recipe fluid temperatures
+  Changes:
+    - Adjusted titlebar styling to match the base game
+    - Put the settings gear icon on a diet
   Bugfixes:
     - Fixed a crash with certain modded burner entities
     - Fixed that even if a page was already open, it would be added again to the session history and re-opened

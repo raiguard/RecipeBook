@@ -26,7 +26,7 @@ function quick_ref_gui.build(player, player_table, name)
 
   local refs = gui.build(player.gui.screen, {
     {type = "frame", direction = "vertical", ref = {"window"}, children = {
-      {type = "flow", ref = {"titlebar_flow"}, children = {
+      {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar_flow"}, children = {
         {type = "label", style = "frame_title", caption = {"rb-gui.recipe"}, ignored_by_interaction = true},
         {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
         {

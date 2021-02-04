@@ -27,7 +27,7 @@ function main_gui.build(player, player_table)
       children = {
         -- main window
         {type = "frame", style = "inner_frame_in_outer_frame", direction = "vertical", children = {
-          {type = "flow", ref = {"base", "titlebar", "flow"}, children = {
+          {type = "flow", style = "flib_titlebar_flow", ref = {"base", "titlebar", "flow"}, children = {
             {
               type = "sprite-button",
               style = "frame_action_button",
@@ -54,11 +54,10 @@ function main_gui.build(player, player_table)
                 on_click = {gui = "main", action = "navigate_forward"}
               }
             },
-            {type = "empty-widget"}, -- spacer
             {
               type = "label",
               style = "frame_title",
-              style_mods = {left_margin = 4, right_margin = 4},
+              style_mods = {left_margin = 4},
               caption = {"mod-name.RecipeBook"},
               ignored_by_interaction = true
             },
