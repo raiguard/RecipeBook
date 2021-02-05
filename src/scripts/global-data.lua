@@ -544,11 +544,11 @@ function global_data.build_recipe_book()
         internal = prototype.name,
         localised = prototype.localised_name
       }
-    translation_data[#translation_data+1] = {
-      dictionary = "technology_description",
-      internal = name,
-      localised = prototype.localised_description
-    }
+      translation_data[#translation_data+1] = {
+        dictionary = "technology_description",
+        internal = name,
+        localised = prototype.localised_description
+      }
     end
   end
 
