@@ -54,24 +54,76 @@ local function build_amount_string(material)
     amount_string = (probability * 100).."% "..amount_string
   end
 
-  -- temperature
-  local temperature = material.temperature
-  local temp_min = material.minimum_temperature
-  local temp_max = material.maximum_temperature
-  if temperature then
-    amount_string = amount_string.."  ("..math.round_to(temperature, 2).."°)"
-  elseif temp_min and temp_max then
-    if temp_min == -0X1.FFFFFFFFFFFFFP+1023 then
-      amount_string = amount_string.."  (<= "..math.round_to(temp_max, 2).."°)"
-    elseif temp_max == 0X1.FFFFFFFFFFFFFP+1023 then
-      amount_string = amount_string.."  (>= "..math.round_to(temp_min, 2).."°)"
-    else
-      amount_string = amount_string.."  ("..math.round_to(temp_min, 2).." - "..math.round_to(temp_max, 2).."°)"
-    end
-  end
-
   -- second return is the "average" amount
   return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
+end
+
+local function build_temperature_strings(temperatureMin, temperatureMax)
+  if temperatureMin == temperatureMax then
+    return tostring(temperatureMin), " ("..tostring(temperatureMin).."°C"..")"
+  end
+
+  local min = -0X1.FFFFFFFFFFFFFP+1023
+  local max = 0X1.FFFFFFFFFFFFFP+1023
+
+  if temperatureMin > min and temperatureMax < max then 
+    return tostring(temperatureMin).."-"..tostring(temperatureMax), " ("..tostring(temperatureMin).."-"..tostring(temperatureMax).."°C"..")"
+  end
+
+  if temperatureMax < max then
+    return  "≤"..tostring(temperatureMax), " (≤"..tostring(temperatureMax).."°C"..")"
+  end
+
+  if temperatureMin > min then
+    return  "≥"..tostring(temperatureMin)," (≥"..tostring(temperatureMin).."°C"..")"
+  end
+end
+
+local function assureTemperatures(material, obj_data, fluid_data, recipe, secondRun)
+  local default = obj_data.default_temperature
+  local defaultMin = -0X1.FFFFFFFFFFFFFP+1023
+  local defaultMax = 0X1.FFFFFFFFFFFFFP+1023
+  
+  local isDefault
+  local temperatureMin
+  local temperatureMax
+
+  if material.temperature then
+    isDefault = material.temperature == default
+    temperatureMin = material.temperature
+    temperatureMax = material.temperature
+  elseif material.minimum_temperature or material.maximum_temperature then
+    temperatureMin = material.minimum_temperature
+    temperatureMax = material.maximum_temperature
+
+    if material.minimum_temperature <= defaultMin then
+      temperatureMin = defaultMin
+    end
+
+    if material.maximum_temperature >= defaultMax then
+      temperatureMax = defaultMax
+    end
+
+    isDefault = false
+  else
+    isDefault = true
+    temperatureMin = default
+    temperatureMax = default
+  end
+
+  local temperature_key, temperature_string = build_temperature_strings(temperatureMin, temperatureMax)
+
+  if not secondRun and not fluid_data.temperatures[temperature_key] and recipe.category ~= "py-venting" and recipe.category ~= "py-runoff" and recipe.category ~= "py-venting" then
+    fluid_data.temperatures_count =fluid_data.temperatures_count + 1
+    fluid_data.temperatures[temperature_key] = {
+      temperature_string = temperature_string,
+      temperature_min = temperatureMin,
+      temperature_max = temperatureMax,
+      is_default = isDefault,
+    }
+  end
+
+  return isDefault, temperatureMin, temperatureMax, temperature_string, temperature_key
 end
 
 function global_data.build_recipe_book()
@@ -135,8 +187,10 @@ function global_data.build_recipe_book()
       internal = "shift_click_to_get_blueprint",
       localised = {"rb-gui.shift-click-to-get-blueprint"}
     },
+    {dictionary = "gui", internal = "shift_click_to_view", localised = {"rb-gui.shift-click-to-view"}},
     {dictionary = "gui", internal = "stack_size", localised = {"rb-gui.stack-size"}},
-    {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
+    {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}},
+    {dictionary = "gui", internal = "free_fluid", localised = {"rb-gui.free-fluid"}}
   }
 
   -- iterate characters (as crafters)
@@ -296,7 +350,9 @@ function global_data.build_recipe_book()
         sprite_class = class,
         stack_size = class == "item" and prototype.stack_size or nil,
         unlocked_by = unique_array(),
-        usable_in = {}
+        usable_in = {},
+        temperatures = {},
+        temperatures_count = 0
       }
       -- add to translations table
       translation_data[#translation_data+1] = {
@@ -393,6 +449,11 @@ function global_data.build_recipe_book()
       unlocked_by = {},
       used_as_fixed_recipe = fixed_recipes[name]
     }
+
+    if prototype.name == "warm-stone-brick-1" then
+      local a = 1
+    end
+
     -- ingredients / products
     for _, mode in ipairs{"ingredients", "products"} do
       local materials = prototype[mode]
@@ -400,12 +461,28 @@ function global_data.build_recipe_book()
       for i = 1, #materials do
         local material = materials[i]
         local amount_string, avg_amount_string = build_amount_string(material)
+
+        local temperatureMin, temperatureMax
+        local temperature_string, temperature_key, isDefault
+
+        if material.type == "fluid" then
+          local obj_data = game.fluid_prototypes[material.name]
+          local fluid_data = recipe_book.material["fluid."..material.name]
+          
+          isDefault, temperatureMin, temperatureMax, temperature_string, temperature_key = assureTemperatures(material, obj_data, fluid_data, prototype, false)
+        end
+
         -- save only the essentials
         output[i] = {
           type = material.type,
           name = material.name,
           amount_string = amount_string,
-          avg_amount_string = avg_amount_string
+          avg_amount_string = avg_amount_string,
+          fluid_temperature_string = temperature_string,
+          fluid_temperature_key = temperature_key,
+          temperature_min = temperatureMin,
+          temperature_max = temperatureMax,
+          temperature_is_default = isDefault
         }
       end
       -- add to data
@@ -423,14 +500,22 @@ function global_data.build_recipe_book()
         crafter_data.compatible_recipes[#crafter_data.compatible_recipes+1] = name
       end
     end
+
     -- material: ingredient in
     local ingredients = prototype.ingredients
     for i = 1, #ingredients do
       local ingredient = ingredients[i]
       local ingredient_data = recipe_book.material[ingredient.type.."."..ingredient.name]
       if ingredient_data then
+        local temperature_key_in
+        if ingredient.type == "fluid" then
+          local obj_data = game.fluid_prototypes[ingredient_data.prototype_name]
+          local fluid_data = recipe_book.material["fluid."..ingredient_data.prototype_name]
+          _, _, _, _, temperature_key_in = assureTemperatures(ingredient, obj_data, fluid_data, prototype, true)
+        end
+
         ingredient_data.recipe_categories[data.category] = true
-        ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = name
+        ingredient_data.ingredient_in[#ingredient_data.ingredient_in+1] = { name = name, fluid_temperature_key = temperature_key_in}
       end
     end
     -- material: product of
@@ -439,8 +524,15 @@ function global_data.build_recipe_book()
       local product = products[i]
       local product_data = recipe_book.material[product.type.."."..product.name]
       if product_data then
+        local temperature_key_pr
+        if product.type == "fluid" then
+          local obj_data = game.fluid_prototypes[product_data.prototype_name]
+          local fluid_data = recipe_book.material["fluid."..product_data.prototype_name]
+          _, _, _, _, temperature_key_pr = assureTemperatures(product, obj_data, fluid_data, prototype, true)
+        end
+
         product_data.recipe_categories[data.category] = true
-        product_data.product_of[#product_data.product_of+1] = name
+        product_data.product_of[#product_data.product_of+1] = { name = name, fluid_temperature_key = temperature_key_pr}
       end
     end
     -- insert into recipe book
@@ -513,17 +605,32 @@ function global_data.build_recipe_book()
               local product_type = product.type
               -- product
               local product_data = recipe_book.material[product_type.."."..product_name]
+              local temperature_key_re
+              if product.type == "fluid" then
+                temperature_key_re = product.fluid_temperature_key
+              end
+
               if product_data then
                 -- check if we've already been added here
-                local add = true
+                local add = true 
+                local add2 = true
                 for _, technology in ipairs(product_data.unlocked_by) do
-                  if technology == name then
+                  if technology and technology.name == name then
                     add = false
+                    for _, fluid_temperature_key in ipairs(technology.fluid_temperature_keys) do
+                      if fluid_temperature_key == temperature_key_re then
+                        add2 = false
+                        break
+                      end
+                    end
+                    if add2 then
+                      technology.fluid_temperature_keys[#technology.fluid_temperature_keys+1] = temperature_key_re
+                    end
                     break
                   end
                 end
                 if add then
-                  product_data.unlocked_by[#product_data.unlocked_by+1] = name
+                  product_data.unlocked_by[#product_data.unlocked_by+1] = { name = name, fluid_temperature_keys = { temperature_key_re } }
                 end
               end
             end
@@ -619,7 +726,16 @@ local function set_recipe_available(force_index, recipe_data, recipe_book, item_
     -- product
     local product_data = recipe_book.material[product.type.."."..product.name]
     if product_data and product_data.available_to_forces then
-      product_data.available_to_forces[force_index] = true
+      if product.type == "fluid" then
+        if not product_data.available_to_forces[force_index] then
+          product_data.available_to_forces[force_index] = {}
+          product_data.available_to_forces[force_index][tostring(product.fluid_temperature_key)] = true
+        elseif not product_data.available_to_forces[force_index][tostring(product.fluid_temperature_key)] then
+          product_data.available_to_forces[force_index][tostring(product.fluid_temperature_key)] = true
+        end
+      else
+        product_data.available_to_forces[force_index] = true
+      end
     end
     -- crafter / lab
     if product.type == "item" then

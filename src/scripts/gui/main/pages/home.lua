@@ -10,7 +10,7 @@ function home_page.build()
   }
 end
 
-function home_page.update(_, gui_data, player_data, home_data)
+function home_page.update(_, gui_data, player_data, home_data, options)
   local update = info_list_box.update_home
   update("favorites", gui_data, player_data, home_data)
   update("history", gui_data, player_data, home_data)

@@ -173,6 +173,24 @@ constants.settings = {
       has_tooltip = true
     }
   },
+  fluids = {
+    show_free_fluid_text_in_caption = {
+      default_value = true,
+      has_tooltip = true
+    },
+    hide_fluid_temperatures_when_single_temperature = {
+      default_value = true,
+      has_tooltip = true
+    },
+    display_fluid_with_temperatures_in_search_results = {
+      default_value = true,
+      has_tooltip = true
+    },
+    hide_fluid_with_range_temperatures_in_search_result = {
+      default_value = true,
+      has_tooltip = true
+    }
+  },
   search = {
     use_fuzzy_search = {
       default_value = false,

@@ -104,7 +104,7 @@ function quick_ref_gui.build(player, player_table, name)
       local _, style, _, tooltip = formatter(
         obj_data,
         player_data,
-        {amount_string = obj.amount_string, always_show = true}
+        {amount_string = obj.amount_string, always_show = true, fluid_temperature_string = obj.fluid_temperature_string, fluid_temperature_key = obj.fluid_temperature_key}
       )
       i = i + 1
 
@@ -123,7 +123,7 @@ function quick_ref_gui.build(player, player_table, name)
           sprite = obj.type.."/"..obj.name,
           tooltip = tooltip,
           actions = {
-            on_click = {gui = "main", action = "open_page", class = obj.type, name = obj.name}
+            on_click = {gui = "main", action = "open_page", class = obj.type, name = obj.name, fluid_temperature_key = obj.fluid_temperature_key, fluid_temperature_string = obj.fluid_temperature_string }
           },
           children = {
             {
@@ -138,7 +138,7 @@ function quick_ref_gui.build(player, player_table, name)
               caption = string.find(obj.amount_string, "%%") and "%" or "",
               ignored_by_interaction = true
             }
-          }
+          },
         }
       })
     end
