@@ -59,7 +59,8 @@ function player_data.update_settings(player, player_table)
 end
 
 function player_data.start_translations(player_index)
-  translation.add_requests(player_index, global.translation_data)
+  translation.add_requests(player_index, constants.gui_strings)
+  -- translation.add_requests(player_index, global.translation_data)
   shared.register_on_tick()
 end
 

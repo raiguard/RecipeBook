@@ -41,6 +41,8 @@ event.on_init(function()
   shared.register_on_tick()
 
   global_data.init()
+  -- global_data.build_recipe_book()
+  -- global_data.check_forces()
   for i, player in pairs(game.players) do
     player_data.init(i)
     player_data.refresh(player, global.players[i])
@@ -57,8 +59,8 @@ event.on_configuration_changed(function(e)
     translation.init()
     shared.register_on_tick()
 
-    global_data.build_recipe_book()
-    global_data.check_forces()
+    -- global_data.build_recipe_book()
+    -- global_data.check_forces()
 
     for i, player in pairs(game.players) do
       player_data.refresh(player, global.players[i])
@@ -70,12 +72,12 @@ end)
 
 event.on_force_created(function(e)
   local force = e.force
-  global_data.check_force_recipes(force)
-  global_data.check_force_technologies(force)
+  -- global_data.check_force_recipes(force)
+  -- global_data.check_force_technologies(force)
 end)
 
 event.on_research_finished(function(e)
-  global_data.update_available_objects(e.research)
+  -- global_data.update_available_objects(e.research)
 end)
 
 -- GUI

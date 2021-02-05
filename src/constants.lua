@@ -72,6 +72,60 @@ constants.empty_translations_table = {
   technology_description = {}
 }
 
+constants.gui_strings = {
+  -- internal classes
+  {dictionary = "gui", internal = "crafter", localised = {"rb-gui.crafter"}},
+  {dictionary = "gui", internal = "fluid", localised = {"rb-gui.fluid"}},
+  {dictionary = "gui", internal = "item", localised = {"rb-gui.item"}},
+  {dictionary = "gui", internal = "lab", localised = {"rb-gui.lab"}},
+  {dictionary = "gui", internal = "material", localised = {"rb-gui.material"}},
+  {dictionary = "gui", internal = "offshore_pump", localised = {"rb-gui.offshore-pump"}},
+  {dictionary = "gui", internal = "recipe", localised = {"rb-gui.recipe"}},
+  {dictionary = "gui", internal = "resource", localised = {"rb-gui.resource"}},
+  {dictionary = "gui", internal = "technology", localised = {"rb-gui.technology"}},
+  -- captions
+  {dictionary = "gui", internal = "hidden_abbrev", localised = {"rb-gui.hidden-abbrev"}},
+  {dictionary = "gui", internal = "home_page", localised = {"rb-gui.home-page"}},
+  -- tooltips
+  {dictionary = "gui", internal = "blueprint_not_available", localised = {"rb-gui.blueprint-not-available"}},
+  {dictionary = "gui", internal = "category", localised = {"rb-gui.category"}},
+  {
+    dictionary = "gui",
+    internal = "control_click_to_view_fixed_recipe",
+    localised = {"rb-gui.control-click-to-view-fixed-recipe"}
+  },
+  {dictionary = "gui", internal = "click_to_view", localised = {"rb-gui.click-to-view"}},
+  {
+    dictionary = "gui",
+    internal = "click_to_view_required_fluid",
+    localised = {"rb-gui.click-to-view-required-fluid"}
+  },
+  {dictionary = "gui", internal = "click_to_view_technology", localised = {"rb-gui.click-to-view-technology"}},
+  {dictionary = "gui", internal = "crafting_categories", localised = {"rb-gui.crafting-categories"}},
+  {dictionary = "gui", internal = "crafting_speed", localised = {"rb-gui.crafting-speed"}},
+  {dictionary = "gui", internal = "crafting_time", localised = {"rb-gui.crafting-time"}},
+  {dictionary = "gui", internal = "fixed_recipe", localised = {"rb-gui.fixed-recipe"}},
+  {dictionary = "gui", internal = "fuel_categories", localised = {"rb-gui.fuel-categories"}},
+  {dictionary = "gui", internal = "fuel_category", localised = {"rb-gui.fuel-category"}},
+  {dictionary = "gui", internal = "fuel_value", localised = {"rb-gui.fuel-value"}},
+  {dictionary = "gui", internal = "hidden", localised = {"rb-gui.hidden"}},
+  {dictionary = "gui", internal = "ingredients_tooltip", localised = {"rb-gui.ingredients-tooltip"}},
+  {dictionary = "gui", internal = "per_second", localised = {"rb-gui.per-second"}},
+  {dictionary = "gui", internal = "products_tooltip", localised = {"rb-gui.products-tooltip"}},
+  {dictionary = "gui", internal = "pumping_speed", localised = {"rb-gui.pumping-speed"}},
+  {dictionary = "gui", internal = "required_fluid", localised = {"rb-gui.required-fluid"}},
+  {dictionary = "gui", internal = "researching_speed", localised = {"rb-gui.researching-speed"}},
+  {dictionary = "gui", internal = "rocket_parts_required", localised = {"rb-gui.rocket-parts-required"}},
+  {dictionary = "gui", internal = "seconds_standalone", localised = {"rb-gui.seconds-standalone"}},
+  {
+    dictionary = "gui",
+    internal = "shift_click_to_get_blueprint",
+    localised = {"rb-gui.shift-click-to-get-blueprint"}
+  },
+  {dictionary = "gui", internal = "stack_size", localised = {"rb-gui.stack-size"}},
+  {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
+}
+
 constants.input_sanitizers = {
   ["%("] = "%%(",
   ["%)"] = "%%)",
