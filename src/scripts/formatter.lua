@@ -33,7 +33,7 @@ local function get_properties(obj_data, force_index, options)
 
     local atf = obj_data.available_to_forces[force_index]
 
-    if atf then
+    if atf == true then
       researched = true
     else
       for fluid_temperature_key, _ in pairs(atf) do
@@ -46,12 +46,27 @@ local function get_properties(obj_data, force_index, options)
       end
     end
   end
+
+  if researched and obj_data.internal_class == "recipe" and obj_data.category ~= "creative-mod_free-fluids" then
+    for _, ingredient in pairs(obj_data.ingredients) do
+      local ingredient_data = global.recipe_book.material[ingredient.type.."."..ingredient.name]
+      local _, ingredient_researched = get_properties (ingredient_data, force_index, { fluid_temperature_key = ingredient.fluid_temperature_key })
+
+      if not ingredient_researched then
+        researched = false
+        break
+      end
+    end
+  end
+
   return obj_data.hidden, researched
 end
 
 -- todo: put in flib
 local function parse_fluid_temperature_key(key)
   local min, max
+  local defaultMin = -0X1.FFFFFFFFFFFFFP+1023
+  local defaultMax = 0X1.FFFFFFFFFFFFFP+1023
 
   min, max = string.match(key, '^(%d+)%-(%d+)$')
   if min and max then
@@ -67,13 +82,13 @@ local function parse_fluid_temperature_key(key)
   max = string.match(key, '^≤(%d+)$')
 
   if max then
-    return -1000000, tonumber(max)
+    return defaultMin, tonumber(max)
   end
 
   min = string.match(key, '^≥(%d+)$')
 
   if min then
-    return tonumber(min), 1000000
+    return tonumber(min), defaultMax
   end
 
   return min, max
@@ -173,19 +188,27 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched,
   local player_settings = player_data.settings
   local translations = player_data.translations
   local gui_translations = translations.gui
-  local fluid_temperature_str = fluid_temperature_string or ""
 
   -- object properties
   local internal_class = obj_data.internal_class
   local prototype_name = obj_data.prototype_name
   local sprite_class = obj_data.sprite_class
 
+  -- fluid temperature string
+  local fluid_temperature_str = fluid_temperature_string or ""
+
+  -- free fluid
+  local freefluid_str = ""
+  if internal_class == "recipe" and obj_data.category == "creative-mod_free-fluids" and player_settings.show_free_fluid_text_in_caption then
+    freefluid_str = " ("..translations.gui.free_fluid..")"
+  end
+
   -- translation
   local name = translations[internal_class][
     internal_class == "material"
     and sprite_class.."."..prototype_name
     or prototype_name
-  ]..fluid_temperature_str
+  ]..fluid_temperature_str..freefluid_str
   local description = translations[internal_class.."_description"][
     internal_class == "material"
     and sprite_class.."."..prototype_name
@@ -196,6 +219,8 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched,
   local show_alternate_name = player_settings.show_alternate_name
   local show_descriptions = player_settings.show_descriptions
   local use_internal_names = player_settings.use_internal_names
+
+
 
   -- title
   local title_str = (
@@ -464,7 +489,7 @@ local formatters = {
                 local _, style, label = formatter(
                   material_data,
                   player_data,
-                  {amount_string = material.amount_string, fluid_temperature_string = material.fluid_temperature_string, always_show = true}
+                  {amount_string = material.amount_string, fluid_temperature_key = material.fluid_temperature_key, fluid_temperature_string = material.fluid_temperature_string, always_show = true}
                 )
                 if style == "rb_unresearched_list_box_item" then
                   ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
@@ -479,7 +504,7 @@ local formatters = {
       local ip_str = concat(ip_str_arr)
       -- interaction help
       local interaction_help_str = ""
-      if not is_label then
+      if not options.is_label then
         interaction_help_str = "\n"..gui_translations.click_to_view
       end
 

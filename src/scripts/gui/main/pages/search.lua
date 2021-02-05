@@ -123,7 +123,7 @@ function search_page.handle_action(msg, e)
       local obj_data = rb_data[internal]
 
       local temperatures = {}
-      temperatures["dummy"] = { order = -10000000 }
+      temperatures["dummy"] = { order = -0X1.FFFFFFFFFFFFFP+1023 }
       
       if obj_data.temperatures_count and player_data.settings.display_fluid_with_temperatures_in_search_results then
         if obj_data.temperatures_count == 1 then

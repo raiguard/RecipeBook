@@ -163,6 +163,8 @@ end
 -- todo: put in flib
 function parse_fluid_temperature_key(key)
   local min, max
+  local defaultMin = -0X1.FFFFFFFFFFFFFP+1023
+  local defaultMax = 0X1.FFFFFFFFFFFFFP+1023
 
   min, max = string.match(key, '^(%d+)%-(%d+)$')
   if min and max then
@@ -178,18 +180,17 @@ function parse_fluid_temperature_key(key)
   max = string.match(key, '^≤(%d+)$')
 
   if max then
-    return -1000000, tonumber(max)
+    return defaultMin, tonumber(max)
   end
 
   min = string.match(key, '^≥(%d+)$')
 
   if min then
-    return tonumber(min), 1000000
+    return tonumber(min), defaultMax
   end
 
   return min, max
 end
-
 -- only used on the home screen
 function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
   local recipe_book = global.recipe_book

@@ -395,7 +395,7 @@ function main_gui.open_page(player, player_table, item_data, options)
       label = label.."[font=default-semibold]"..translations.gui.home_page.."[/font]"
     else
       local obj_data = global.recipe_book[entry.int_class][entry.int_name]
-      local _, style, caption = formatter(obj_data, player_data, {always_show = true, is_label = true, fluid_temperature_string = entry.fluid_temperature_string})
+      local _, style, caption = formatter(obj_data, player_data, {always_show = true, is_label = true, fluid_temperature_string = entry.fluid_temperature_string, fluid_temperature_key = entry.fluid_temperature_key})
       if string.find(style, "unresearched") then
         caption = "[color="..constants.colors.unresearched.str.."]"..caption.."[/color]"
       end
@@ -448,7 +448,7 @@ function main_gui.open_page(player, player_table, item_data, options)
     local _, _, caption, tooltip = formatter(
       global.recipe_book[int_class][int_name],
       player_data,
-      {always_show = true, is_label = true, fluid_temperature_string = item_data.fluid_temperature_string }
+      {always_show = true, is_label = true, fluid_temperature_string = item_data.fluid_temperature_string, fluid_temperature_key = item_data.fluid_temperature_key }
     )
     info_bar.label.caption = caption
     info_bar.label.tooltip = tooltip
@@ -510,7 +510,14 @@ function main_gui.handle_action(msg, e)
     pages.settings.handle_action(msg, e)
   else
     if msg.action == "open_page" then
-      main_gui.open_page(player, player_table, { item_class = msg.class, item_name = msg.name} )
+      local fluid_temperature_key = msg.fluid_temperature_key
+      local fluid_temperature_string = msg.fluid_temperature_string
+
+      if e.shift then
+        fluid_temperature_key = nil
+        fluid_temperature_string = nil
+      end
+      main_gui.open_page(player, player_table, { item_class = msg.class, item_name = msg.name, fluid_temperature_key = fluid_temperature_key, fluid_temperature_string = fluid_temperature_string } )
       if not player_table.flags.gui_open then
         main_gui.open(player, player_table, true)
       end
@@ -637,7 +644,7 @@ function main_gui.refresh_contents(player, player_table)
   main_gui.open_page(
     player,
     player_table,
-    { item_class = open_page.class, item_name = open_page.name},
+    { item_class = open_page.class, item_name = open_page.name, fluid_temperature_key = open_page.fluid_temperature_key, fluid_temperature_string = open_page.fluid_temperature_string },
     { force_open = true, skip_history = true }
   )
 end

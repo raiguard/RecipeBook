@@ -54,22 +54,6 @@ local function build_amount_string(material)
     amount_string = (probability * 100).."% "..amount_string
   end
 
-  -- temperature
-  local temperature = material.temperature
-  local temp_min = material.minimum_temperature
-  local temp_max = material.maximum_temperature
-  if temperature then
-    amount_string = amount_string.."  ("..math.round_to(temperature, 2).."°)"
-  elseif temp_min and temp_max then
-    if temp_min == -0X1.FFFFFFFFFFFFFP+1023 then
-      amount_string = amount_string.."  (<= "..math.round_to(temp_max, 2).."°)"
-    elseif temp_max == 0X1.FFFFFFFFFFFFFP+1023 then
-      amount_string = amount_string.."  (>= "..math.round_to(temp_min, 2).."°)"
-    else
-      amount_string = amount_string.."  ("..math.round_to(temp_min, 2).." - "..math.round_to(temp_max, 2).."°)"
-    end
-  end
-
   -- second return is the "average" amount
   return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
 end
@@ -79,24 +63,27 @@ local function build_temperature_strings(temperatureMin, temperatureMax)
     return tostring(temperatureMin), " ("..tostring(temperatureMin).."°C"..")"
   end
 
-  if temperatureMin > -1000000 and temperatureMax < 1000000 then 
+  local min = -0X1.FFFFFFFFFFFFFP+1023
+  local max = 0X1.FFFFFFFFFFFFFP+1023
+
+  if temperatureMin > min and temperatureMax < max then 
     return tostring(temperatureMin).."-"..tostring(temperatureMax), " ("..tostring(temperatureMin).."-"..tostring(temperatureMax).."°C"..")"
   end
 
-  if temperatureMax < 1000000 then
+  if temperatureMax < max then
     return  "≤"..tostring(temperatureMax), " (≤"..tostring(temperatureMax).."°C"..")"
   end
 
-  if temperatureMin > -1000000 then
+  if temperatureMin > min then
     return  "≥"..tostring(temperatureMin)," (≥"..tostring(temperatureMin).."°C"..")"
   end
 end
 
 local function assureTemperatures(material, obj_data, fluid_data, recipe, secondRun)
   local default = obj_data.default_temperature
-  local defaultMax = 1000000
-  local defaultMin = -1000000
-
+  local defaultMin = -0X1.FFFFFFFFFFFFFP+1023
+  local defaultMax = 0X1.FFFFFFFFFFFFFP+1023
+  
   local isDefault
   local temperatureMin
   local temperatureMax
@@ -110,11 +97,11 @@ local function assureTemperatures(material, obj_data, fluid_data, recipe, second
     temperatureMax = material.maximum_temperature
 
     if material.minimum_temperature <= defaultMin then
-      temperatureMin = -1000000
+      temperatureMin = defaultMin
     end
 
     if material.maximum_temperature >= defaultMax then
-      temperatureMax = 1000000
+      temperatureMax = defaultMax
     end
 
     isDefault = false
