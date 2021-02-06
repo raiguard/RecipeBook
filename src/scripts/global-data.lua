@@ -58,72 +58,58 @@ local function build_amount_string(material)
   return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
 end
 
-local function build_temperature_strings(temperatureMin, temperatureMax)
-  if temperatureMin == temperatureMax then
-    return tostring(temperatureMin), " ("..tostring(temperatureMin).."°C"..")"
+local function build_temperature_strings(temperature_min, temperature_max)
+  if temperature_min == temperature_max then
+    return math.round_to(temperature_min, 2), " ("..math.round_to(temperature_min, 2).."°C"..")"
   end
 
   local min = -0X1.FFFFFFFFFFFFFP+1023
   local max = 0X1.FFFFFFFFFFFFFP+1023
 
-  if temperatureMin > min and temperatureMax < max then 
-    return tostring(temperatureMin).."-"..tostring(temperatureMax), " ("..tostring(temperatureMin).."-"..tostring(temperatureMax).."°C"..")"
+  if temperature_min > min and temperature_max < max then 
+    return math.round_to(temperature_min, 2).."-"..math.round_to(temperature_max, 2), " ("..math.round_to(temperature_min, 2).."-"..math.round_to(temperature_max, 2).."°C"..")"
   end
 
-  if temperatureMax < max then
-    return  "≤"..tostring(temperatureMax), " (≤"..tostring(temperatureMax).."°C"..")"
+  if temperature_max < max then
+    return  "≤"..math.round_to(temperature_max, 2), " (≤"..math.round_to(temperature_max, 2).."°C"..")"
   end
 
-  if temperatureMin > min then
-    return  "≥"..tostring(temperatureMin)," (≥"..tostring(temperatureMin).."°C"..")"
+  if temperature_min > min then
+    return  "≥"..math.round_to(temperature_min, 2)," (≥"..math.round_to(temperature_min, 2).."°C"..")"
   end
 end
 
-local function assureTemperatures(material, obj_data, fluid_data, recipe, secondRun)
+local function get_temperatures(material, obj_data)
   local default = obj_data.default_temperature
-  local defaultMin = -0X1.FFFFFFFFFFFFFP+1023
-  local defaultMax = 0X1.FFFFFFFFFFFFFP+1023
+  local absolute_min = -0X1.FFFFFFFFFFFFFP+1023
+  local absolute_max = 0X1.FFFFFFFFFFFFFP+1023
   
-  local isDefault
-  local temperatureMin
-  local temperatureMax
+  local temperature_min
+  local temperature_max
 
   if material.temperature then
-    isDefault = material.temperature == default
-    temperatureMin = material.temperature
-    temperatureMax = material.temperature
+    temperature_min = material.temperature
+    temperature_max = material.temperature
   elseif material.minimum_temperature or material.maximum_temperature then
-    temperatureMin = material.minimum_temperature
-    temperatureMax = material.maximum_temperature
+    temperature_min = material.minimum_temperature
+    temperature_max = material.maximum_temperature
 
-    if material.minimum_temperature <= defaultMin then
-      temperatureMin = defaultMin
+    if material.minimum_temperature <= absolute_min then
+      temperature_min = absolute_min
     end
 
-    if material.maximum_temperature >= defaultMax then
-      temperatureMax = defaultMax
+    if material.maximum_temperature >= absolute_max then
+      temperature_max = absolute_max
     end
 
-    isDefault = false
   else
-    isDefault = true
-    temperatureMin = default
-    temperatureMax = default
+    temperature_min = default
+    temperature_max = default
   end
 
-  local temperature_key, temperature_string = build_temperature_strings(temperatureMin, temperatureMax)
+  local temperature_key, temperature_string = build_temperature_strings(temperature_min, temperature_max)
 
-  if not secondRun and not fluid_data.temperatures[temperature_key] and recipe.category ~= "py-venting" and recipe.category ~= "py-runoff" and recipe.category ~= "py-venting" then
-    fluid_data.temperatures_count =fluid_data.temperatures_count + 1
-    fluid_data.temperatures[temperature_key] = {
-      temperature_string = temperature_string,
-      temperature_min = temperatureMin,
-      temperature_max = temperatureMax,
-      is_default = isDefault,
-    }
-  end
-
-  return isDefault, temperatureMin, temperatureMax, temperature_string, temperature_key
+  return temperature_min, temperature_max, temperature_string, temperature_key
 end
 
 function global_data.build_recipe_book()
@@ -450,10 +436,6 @@ function global_data.build_recipe_book()
       used_as_fixed_recipe = fixed_recipes[name]
     }
 
-    if prototype.name == "warm-stone-brick-1" then
-      local a = 1
-    end
-
     -- ingredients / products
     for _, mode in ipairs{"ingredients", "products"} do
       local materials = prototype[mode]
@@ -462,14 +444,25 @@ function global_data.build_recipe_book()
         local material = materials[i]
         local amount_string, avg_amount_string = build_amount_string(material)
 
-        local temperatureMin, temperatureMax
-        local temperature_string, temperature_key, isDefault
+        local temperature_min, temperature_max
+        local temperature_string, temperature_key
 
         if material.type == "fluid" then
           local obj_data = game.fluid_prototypes[material.name]
           local fluid_data = recipe_book.material["fluid."..material.name]
           
-          isDefault, temperatureMin, temperatureMax, temperature_string, temperature_key = assureTemperatures(material, obj_data, fluid_data, prototype, false)
+          temperature_min, temperature_max, temperature_string, temperature_key = get_temperatures(material, obj_data)
+
+          -- add fluid temperature to all possible temperatures of this fluid
+          -- skip temperatures from PyanodonIndustry dynamic recipes for voiding Fluids in Py-Sinkhole / Py-GasVent
+          if not fluid_data.temperatures[temperature_key] and prototype.category ~= "py-venting" and prototype.category ~= "py-runoff" then
+            fluid_data.temperatures_count =fluid_data.temperatures_count + 1
+            fluid_data.temperatures[temperature_key] = {
+              temperature_string = temperature_string,
+              temperature_min = temperature_min,
+              temperature_max = temperature_max,
+    }
+  end
         end
 
         -- save only the essentials
@@ -480,9 +473,8 @@ function global_data.build_recipe_book()
           avg_amount_string = avg_amount_string,
           fluid_temperature_string = temperature_string,
           fluid_temperature_key = temperature_key,
-          temperature_min = temperatureMin,
-          temperature_max = temperatureMax,
-          temperature_is_default = isDefault
+          temperature_min = temperature_min,
+          temperature_max = temperature_max
         }
       end
       -- add to data
@@ -510,8 +502,7 @@ function global_data.build_recipe_book()
         local temperature_key_in
         if ingredient.type == "fluid" then
           local obj_data = game.fluid_prototypes[ingredient_data.prototype_name]
-          local fluid_data = recipe_book.material["fluid."..ingredient_data.prototype_name]
-          _, _, _, _, temperature_key_in = assureTemperatures(ingredient, obj_data, fluid_data, prototype, true)
+          _, _, _, _, temperature_key_in = get_temperatures(ingredient, obj_data)
         end
 
         ingredient_data.recipe_categories[data.category] = true
@@ -527,8 +518,7 @@ function global_data.build_recipe_book()
         local temperature_key_pr
         if product.type == "fluid" then
           local obj_data = game.fluid_prototypes[product_data.prototype_name]
-          local fluid_data = recipe_book.material["fluid."..product_data.prototype_name]
-          _, _, _, _, temperature_key_pr = assureTemperatures(product, obj_data, fluid_data, prototype, true)
+          _, _, _, _, temperature_key_pr = get_temperatures(product, obj_data)
         end
 
         product_data.recipe_categories[data.category] = true

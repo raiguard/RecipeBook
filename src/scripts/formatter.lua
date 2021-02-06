@@ -4,6 +4,7 @@ local math = require("__flib__.math")
 local fixed_format = require("lib.fixed-precision-format")
 
 local constants = require("constants")
+local util = require("scripts.util")
 
 local caches = {}
 
@@ -29,7 +30,7 @@ local function get_properties(obj_data, force_index, options)
   elseif obj_data.available_to_all_forces or not obj_data.unlocked_by or #obj_data.unlocked_by == 0 or (obj_data.available_to_forces[force_index] and ((obj_data.temperatures_count and obj_data.temperatures_count <= 1) or not opt.fluid_temperature_key)) then
     researched = true
   elseif obj_data.available_to_forces[force_index] and opt.fluid_temperature_key then
-    local min1, max1 = parse_fluid_temperature_key(opt.fluid_temperature_key)
+    local min1, max1 = util.parse_fluid_temperature_key(opt.fluid_temperature_key)
 
     local atf = obj_data.available_to_forces[force_index]
 
@@ -37,7 +38,7 @@ local function get_properties(obj_data, force_index, options)
       researched = true
     else
       for fluid_temperature_key, _ in pairs(atf) do
-        local min2, max2 = parse_fluid_temperature_key(fluid_temperature_key)
+        local min2, max2 = util.parse_fluid_temperature_key(fluid_temperature_key)
 
         if min2 >= min1 and max2 <= max1 then
           researched = true
@@ -47,6 +48,7 @@ local function get_properties(obj_data, force_index, options)
     end
   end
 
+  -- TODO: move logic to event when research is complete, but the logic must be there not from bottom but from top and recursive
   if researched and obj_data.internal_class == "recipe" and obj_data.category ~= "creative-mod_free-fluids" then
     for _, ingredient in pairs(obj_data.ingredients) do
       local ingredient_data = global.recipe_book.material[ingredient.type.."."..ingredient.name]
@@ -62,68 +64,33 @@ local function get_properties(obj_data, force_index, options)
   return obj_data.hidden, researched
 end
 
--- todo: put in flib
-local function parse_fluid_temperature_key(key)
-  local min, max
-  local defaultMin = -0X1.FFFFFFFFFFFFFP+1023
-  local defaultMax = 0X1.FFFFFFFFFFFFFP+1023
-
-  min, max = string.match(key, '^(%d+)%-(%d+)$')
-  if min and max then
-    return tonumber(min), tonumber(max)
-  end
-
-  min = string.match(key, '^(%d+)$')
-
-  if min then
-    return tonumber(min), tonumber(min)
-  end
-
-  max = string.match(key, '^≤(%d+)$')
-
-  if max then
-    return defaultMin, tonumber(max)
-  end
-
-  min = string.match(key, '^≥(%d+)$')
-
-  if min then
-    return tonumber(min), defaultMax
-  end
-
-  return min, max
-end
-
-local function get_should_show(obj_data, player_data, options)
+local function get_should_show(obj_data, player_data, is_hidden, is_researched)
   -- player data
-  local force_index = player_data.force_index
   local player_settings = player_data.settings
   local show_hidden = player_settings.show_hidden
   local show_unresearched = player_settings.show_unresearched
 
-  -- check hidden and researched status
-  local is_hidden, is_researched = get_properties(obj_data, force_index, options)
   if (show_hidden or not is_hidden) and (show_unresearched or is_researched) then
     -- for recipes - check category to see if it should be shown
     local category = obj_data.category
     local categories = obj_data.recipe_categories
     if category then
       if player_settings.recipe_categories[category] then
-        return true, is_hidden, is_researched
+        return true
       end
     -- for materials - check if any of their categories are enabled
     elseif categories then
       local category_settings = player_settings.recipe_categories
       for category_name in pairs(categories) do
         if category_settings[category_name] then
-          return true, is_hidden, is_researched
+          return true
         end
       end
     else
-      return true, is_hidden, is_researched
+      return true
     end
   end
-  return false, is_hidden, is_researched
+  return false
 end
 
 local function get_caption(obj_data, player_data, is_hidden, options)
@@ -554,8 +521,8 @@ local formatters = {
   }
 }
 
-local function format_item(obj_data, player_data, options)
-  local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data,options)
+local function format_item(obj_data, player_data, is_hidden, is_researched, options)
+  local should_show get_should_show(obj_data, player_data, is_hidden, is_researched)
   if options.always_show or should_show then
     -- format and return
     local formatter_subtable = formatters[obj_data.internal_class]
@@ -582,7 +549,7 @@ function formatter.format(obj_data, player_data, options)
 
   local player_index = player_data.player_index
   local cache = caches[player_index]
-  local _, is_researched = get_properties(obj_data, player_data.force_index, options)
+  local is_hidden, is_researched = get_properties(obj_data, player_data.force_index, options)
   local cache_key = (
     obj_data.sprite_class
     .."."..obj_data.prototype_name
@@ -593,13 +560,15 @@ function formatter.format(obj_data, player_data, options)
     .."."..tostring(options.is_label)
     .."."..tostring(options.blueprint_recipe)
   )
-  local cached_return --= cache[cache_key]
+  local cached_return = cache[cache_key]
   if cached_return then
     return unpack(cached_return)
   else
     local should_show, style, caption, tooltip, enabled = format_item(
       obj_data,
       player_data,
+      is_hidden,
+      is_researched,
       options
     )
     cache[cache_key] = {should_show, style, caption, tooltip, enabled}

@@ -28,7 +28,7 @@ function info_list_box.build(caption, rows, save_location, tooltip)
   )
 end
 
-function info_list_box.update(tbl, int_class, list_box, player_data, options, direction_aid)
+function info_list_box.update(tbl, int_class, list_box, player_data, options, direction_hint)
   options = options or {}
 
   local recipe_book = global.recipe_book[int_class]
@@ -58,12 +58,12 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options, di
     local skip = false
 
     if options.fluid_temperature_key and obj.fluid_temperature_key and direction_aid then
-      local min1, max1 = parse_fluid_temperature_key(options.fluid_temperature_key)
-      local min2, max2 = parse_fluid_temperature_key(obj.fluid_temperature_key)
+      local min1, max1 = util.parse_fluid_temperature_key(options.fluid_temperature_key)
+      local min2, max2 = util.parse_fluid_temperature_key(obj.fluid_temperature_key)
       
-      if direction_aid == "in" and (min1 < min2 or max1 > max2) then
+      if direction_hint == "in" and (min1 < min2 or max1 > max2) then
         skip = true
-      elseif direction_aid == "out" and (min2 < min1 or max2 > max1) then
+      elseif direction_hint == "out" and (min2 < min1 or max2 > max1) then
         skip = true
       end
     end
@@ -71,10 +71,10 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options, di
     if options.fluid_temperature_key and obj.fluid_temperature_keys and not skip then
       skip = true
 
-      local min1, max1 = parse_fluid_temperature_key(options.fluid_temperature_key)
+      local min1, max1 = util.parse_fluid_temperature_key(options.fluid_temperature_key)
       for k = 1, #obj.fluid_temperature_keys do
 
-        local min2, max2 = parse_fluid_temperature_key(obj.fluid_temperature_keys[k])
+        local min2, max2 = util.parse_fluid_temperature_key(obj.fluid_temperature_keys[k])
 
         if min1 >= min2 and max1 <= max2 then
           skip = false
@@ -160,37 +160,6 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options, di
   end
 end
 
--- todo: put in flib
-function parse_fluid_temperature_key(key)
-  local min, max
-  local defaultMin = -0X1.FFFFFFFFFFFFFP+1023
-  local defaultMax = 0X1.FFFFFFFFFFFFFP+1023
-
-  min, max = string.match(key, '^(%d+)%-(%d+)$')
-  if min and max then
-    return tonumber(min), tonumber(max)
-  end
-
-  min = string.match(key, '^(%d+)$')
-
-  if min then
-    return tonumber(min), tonumber(min)
-  end
-
-  max = string.match(key, '^≤(%d+)$')
-
-  if max then
-    return defaultMin, tonumber(max)
-  end
-
-  min = string.match(key, '^≥(%d+)$')
-
-  if min then
-    return tonumber(min), defaultMax
-  end
-
-  return min, max
-end
 -- only used on the home screen
 function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
   local recipe_book = global.recipe_book
