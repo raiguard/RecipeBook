@@ -522,7 +522,7 @@ local formatters = {
 }
 
 local function format_item(obj_data, player_data, is_hidden, is_researched, options)
-  local should_show get_should_show(obj_data, player_data, is_hidden, is_researched)
+  local should_show = get_should_show(obj_data, player_data, is_hidden, is_researched)
   if options.always_show or should_show then
     -- format and return
     local formatter_subtable = formatters[obj_data.internal_class]
