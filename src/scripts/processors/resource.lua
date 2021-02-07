@@ -5,7 +5,7 @@ return function(recipe_book, strings)
     local products = prototype.mineable_properties.products
     if products then
       for _, product in ipairs(products) do
-        local product_data = recipe_book.item[product.name]
+        local product_data = recipe_book[product.type][product.name]
         if product_data then
           product_data.mined_from[#product_data.mined_from + 1] = {class = "resource", name = name}
         end

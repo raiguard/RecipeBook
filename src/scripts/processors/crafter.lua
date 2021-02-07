@@ -58,7 +58,7 @@ return function(recipe_book, strings, metadata)
     }
     util.add_string(strings, {dictionary = "crafter", internal = name, localised = prototype.localised_name})
     util.add_string(strings, {
-      dictionary = "crafter",
+      dictionary = "crafter_description",
       internal = name,
       localised = prototype.localised_description
     })

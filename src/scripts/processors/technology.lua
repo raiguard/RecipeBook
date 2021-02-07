@@ -23,8 +23,7 @@ return function(recipe_book, strings)
                   recipe_book,
                   product_data,
                   temperature_data,
-                  "unlocked_by",
-                  {class = "technology", name = name}
+                  {unlocked_by = {class = "technology", name = name}}
                 )
               end
             end

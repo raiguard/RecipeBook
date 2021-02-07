@@ -80,7 +80,6 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "fluid", localised = {"rb-gui.fluid"}},
   {dictionary = "gui", internal = "item", localised = {"rb-gui.item"}},
   {dictionary = "gui", internal = "lab", localised = {"rb-gui.lab"}},
-  {dictionary = "gui", internal = "material", localised = {"rb-gui.material"}},
   {dictionary = "gui", internal = "offshore_pump", localised = {"rb-gui.offshore-pump"}},
   {dictionary = "gui", internal = "recipe", localised = {"rb-gui.recipe"}},
   {dictionary = "gui", internal = "resource", localised = {"rb-gui.resource"}},
@@ -143,10 +142,10 @@ constants.input_sanitizers = {
 }
 
 constants.interface_classes = {
-  crafter = "crafter",
-  fluid = "material",
-  item = "material",
-  recipe = "recipe"
+  crafter = true,
+  fluid = true,
+  item = true,
+  recipe = true
 }
 
 constants.interface_version = 4
@@ -159,7 +158,8 @@ constants.list_box_item_styles = {
 constants.main_pages = {
   "home",
   "crafter",
-  "material",
+  "fluid",
+  "item",
   "recipe",
   "search",
   "settings"
@@ -177,7 +177,7 @@ constants.open_fluid_types = {
   ["storage-tank"] = true
 }
 
-constants.search_categories = {"crafter", "material", "recipe"}
+constants.search_categories = {"crafter", "fluid", "item", "recipe"}
 
 constants.search_categories_lookup = {}
 constants.search_categories_localised = {}

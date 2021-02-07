@@ -118,39 +118,53 @@ function search_page.handle_action(msg, e)
   local children = scroll.children
   local add = scroll.add
   local i = 0
-  for internal, translation in pairs(translations) do
-    if string.find(string.lower(match_internal and internal or translation), query) then
-      local obj_data = rb_data[internal]
-      local should_add, style, caption, tooltip = formatter(obj_data, player_data)
-      if should_add then
-        i = i + 1
-        -- create or modify element
-        local child = children[i]
-        if child then
-          child.style = style
-          child.caption = caption
-          child.tooltip = tooltip
-        else
-          add{
-            type = "button",
-            style = style,
-            caption = caption,
-            tooltip = tooltip,
-            mouse_button_filter = {"left"},
-            tags = {
-              [script.mod_name] = {
-                flib = {
-                  on_click = {gui = "main", action = "handle_list_box_item_click"}
-                }
+
+  local function process_item(obj_data, temperature_string)
+    local should_add, style, caption, tooltip = formatter(
+      obj_data,
+      player_data,
+      {temperature_string = temperature_string}
+    )
+    if should_add then
+      i = i + 1
+      -- create or modify element
+      local child = children[i]
+      if child then
+        child.style = style
+        child.caption = caption
+        child.tooltip = tooltip
+      else
+        add{
+          type = "button",
+          style = style,
+          caption = caption,
+          tooltip = tooltip,
+          mouse_button_filter = {"left"},
+          tags = {
+            [script.mod_name] = {
+              flib = {
+                on_click = {gui = "main", action = "handle_list_box_item_click"}
               }
             }
           }
-        end
+        }
+      end
 
-        if i == constants.search_results_limit then
-          limit_frame.visible = true
-          break
-        end
+      if i == constants.search_results_limit then
+        limit_frame.visible = true
+        return true
+      end
+    end
+  end
+
+  for internal, translation in pairs(translations) do
+    if string.find(string.lower(match_internal and internal or translation), query) then
+      local obj_data = rb_data[internal]
+
+      process_item(obj_data)
+
+      for _, sub_obj_data in pairs(obj_data.temperatures or {}) do
+        process_item(sub_obj_data, sub_obj_data.temperature_data.string)
       end
     end
   end

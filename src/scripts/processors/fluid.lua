@@ -11,6 +11,7 @@ function fluid_proc.build(recipe_book, strings)
       fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
       hidden = prototype.hidden,
       ingredient_in = {},
+      mined_from = {},
       product_of = {},
       prototype_name = name,
       pumped_by = {},
@@ -20,7 +21,11 @@ function fluid_proc.build(recipe_book, strings)
       unlocked_by = util.unique_obj_array()
     }
     util.add_string(strings, {dictionary = "fluid", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {dictionary = "fluid", internal = name, localised = prototype.localised_description})
+    util.add_string(strings, {
+      dictionary = "fluid_description",
+      internal = name,
+      localised = prototype.localised_description
+    })
   end
 end
 
@@ -41,6 +46,7 @@ function fluid_proc.add_temperature(recipe_book, fluid_data, temperature_data)
     fuel_value = fluid_data.fuel_value,
     hidden = fluid_data.hidden,
     ingredient_in = util.unique_obj_array(),
+    mined_from = {}, -- TODO: remove?
     product_of = util.unique_obj_array(),
     prototype_name = fluid_name,
     pumped_by = {}, -- TODO: remove?
@@ -64,7 +70,7 @@ function fluid_proc.add_temperature(recipe_book, fluid_data, temperature_data)
   fluid_data.temperatures[temperature_data.string] = data
 end
 
-function fluid_proc.add_to_matching_temperatures(recipe_book, fluid_data, temperature_data, lookup_type, obj)
+function fluid_proc.add_to_matching_temperatures(recipe_book, fluid_data, temperature_data, sets)
   -- create current temperature table, if it doesn't yet exist
   if not fluid_data.temperatures[temperature_data.string] then
     fluid_proc.add_temperature(recipe_book, fluid_data, temperature_data)
@@ -72,8 +78,10 @@ function fluid_proc.add_to_matching_temperatures(recipe_book, fluid_data, temper
 
   for _, subfluid_data in pairs(fluid_data.temperatures) do
     if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
-      local list = subfluid_data[lookup_type]
-      list[#list + 1] = obj
+      for lookup_type, obj in pairs(sets) do
+        local list = subfluid_data[lookup_type]
+        list[#list + 1] = obj
+      end
     end
   end
 end

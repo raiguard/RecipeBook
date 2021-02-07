@@ -1,12 +1,16 @@
+local math = require("__flib__.math")
+
 local util = require("scripts.util")
 
 local fluid_proc = require("scripts.processors.fluid")
 
 return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.recipe_prototypes) do
+    local category = prototype.category
+
     local data = {
       available_to_forces = {},
-      category = prototype.category,
+      category = category,
       class = "recipe",
       energy = prototype.energy,
       hidden = prototype.hidden,
@@ -33,6 +37,7 @@ return function(recipe_book, strings, metadata)
         local lookup_table = material_data[lookup_type]
         lookup_table[#lookup_table + 1] = {class = "recipe", name = name}
         output[i] = material_io_data
+        material_data.recipe_categories[#material_data.recipe_categories + 1] = category
 
         -- fluid temperatures
         if material.type == "fluid" then
@@ -43,12 +48,34 @@ return function(recipe_book, strings, metadata)
               recipe_book,
               material_data,
               temperature_data,
-              lookup_type,
-              {class = "recipe", name = name}
+              {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
             )
           end
         end
       end
+
+      -- made in
+      for crafter_name, crafter_data in pairs(recipe_book.crafter) do
+        if crafter_data.categories[category] then
+          local rocket_parts_str = (
+            crafter_data.rocket_parts_required
+            and crafter_data.rocket_parts_required.."x  "
+            or ""
+          )
+          data.made_in[#data.made_in + 1] = {
+            class = "crafter",
+            name = crafter_name,
+            amount_string = (
+              rocket_parts_str
+              .."("
+              ..math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
+              .."s)"
+            )
+          }
+          crafter_data.compatible_recipes[#crafter_data.compatible_recipes + 1] = {class = "recipe", name = name}
+        end
+      end
+
       data[io_type] = output
     end
 
@@ -59,7 +86,7 @@ return function(recipe_book, strings, metadata)
       localised = prototype.localised_name
     })
     util.add_string(strings, {
-      dictionary = "recipe",
+      dictionary = "recipe_description",
       internal = name,
       localised = prototype.localised_description
     })

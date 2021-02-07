@@ -51,7 +51,7 @@ local function get_should_show(obj_data, player_data)
     -- for materials - check if any of their categories are enabled
     elseif categories then
       local category_settings = player_settings.recipe_categories
-      for category_name in pairs(categories) do
+      for _, category_name in ipairs(categories) do
         if category_settings[category_name] then
           return true, is_hidden, is_researched
         end
@@ -63,18 +63,15 @@ local function get_should_show(obj_data, player_data)
   return false, is_hidden, is_researched
 end
 
-local function get_caption(obj_data, player_data, is_hidden, amount)
+local function get_caption(obj_data, player_data, is_hidden, amount, temperature)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
 
   -- object properties
-  local internal_class = obj_data.internal_class
+  local class = obj_data.class
   local prototype_name = obj_data.prototype_name
   local type = obj_data.type
-
-  -- translation key
-  local translation_key = internal_class == "material" and type.."."..prototype_name or prototype_name
 
   -- glyph
   local glyph_str = ""
@@ -82,7 +79,7 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
     glyph_str = build_rich_text(
       "font",
       "RecipeBook",
-      class_to_font_glyph[internal_class] or class_to_font_glyph[type]
+      class_to_font_glyph[class] or class_to_font_glyph[type]
     ).."  "
   end
   -- hidden
@@ -101,35 +98,31 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
   local name_str = (
     player_settings.use_internal_names
     and obj_data.prototype_name
-    or translations[internal_class][translation_key]
+    or translations[class][prototype_name]
   )
+
+  if temperature then
+    name_str = name_str.." ("..temperature.."°C)"
+  end
 
   -- output
   return glyph_str..hidden_str..icon_str..amount_str..name_str
 end
 
-local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched, temperature)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
   local gui_translations = translations.gui
 
   -- object properties
-  local internal_class = obj_data.internal_class
+  local class = obj_data.class
   local prototype_name = obj_data.prototype_name
   local type = obj_data.type
 
   -- translation
-  local name = translations[internal_class][
-    internal_class == "material"
-    and type.."."..prototype_name
-    or prototype_name
-  ]
-  local description = translations[internal_class.."_description"][
-    internal_class == "material"
-    and type.."."..prototype_name
-    or prototype_name
-  ]
+  local name = translations[class][prototype_name]
+  local description = translations[class.."_description"][prototype_name]
 
   -- settings
   local show_alternate_name = player_settings.show_alternate_name
@@ -137,13 +130,17 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   local use_internal_names = player_settings.use_internal_names
 
   -- title
+  local name_str = use_internal_names and prototype_name or name
+  if temperature then
+    name_str = name_str.." ("..temperature.."°C)"
+  end
   local title_str = (
     build_sprite(type, prototype_name)
     .."  "
     ..build_rich_text(
       "font",
       "default-bold",
-      build_rich_text("color", "heading", use_internal_names and prototype_name or name)
+      build_rich_text("color", "heading", name_str)
     )
     .."\n"
   )
@@ -158,7 +155,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     description_string = description and description.."\n" or ""
   end
   -- category class
-  local category_class = obj_data.type == "entity" and obj_data.internal_class or obj_data.type
+  local category_class = obj_data.type == "entity" and obj_data.class or obj_data.type
   local category_class_str = build_rich_text("color", "info", gui_translations[category_class])
   -- hidden
   local hidden_str = ""
@@ -275,22 +272,35 @@ local formatters = {
     end,
     enabled = function() return true end
   },
-  lab = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- researching speed
-      local researching_speed_str = (
-        "\n"
-        ..build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed)
-        .." "
-        ..math.round_to(obj_data.researching_speed, 2)
-      )
+  fluid = {
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label, temperature)
+      -- locals
+      local gui_translations = player_data.translations.gui
 
-      return base_str..researching_speed_str
+      -- build string
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, temperature)
+      -- fuel value
+      local fuel_value_str = ""
+      if obj_data.fuel_value then
+        fuel_value_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_value)
+          .." "
+          ..fixed_format(obj_data.fuel_value, 3, "2")
+          .."J"
+        )
+      end
+      -- interaction help
+      local interaction_help_str = ""
+      if not is_label then
+        interaction_help_str = "\n"..gui_translations.click_to_view
+      end
+
+      return base_str..fuel_value_str..interaction_help_str
     end,
-    enabled = function() return false end
+    enabled = function() return true end
   },
-  material = {
+  item = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       -- locals
       local gui_translations = player_data.translations.gui
@@ -336,6 +346,21 @@ local formatters = {
     end,
     enabled = function() return true end
   },
+  lab = {
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      -- researching speed
+      local researching_speed_str = (
+        "\n"
+        ..build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed)
+        .." "
+        ..math.round_to(obj_data.researching_speed, 2)
+      )
+
+      return base_str..researching_speed_str
+    end,
+    enabled = function() return false end
+  },
   offshore_pump = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
       -- locals
@@ -359,7 +384,7 @@ local formatters = {
   recipe = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       -- locals
-      local materials_data = global.recipe_book.material
+      local recipe_book = global.recipe_book
       local gui_translations = player_data.translations.gui
       local player_settings = player_data.settings
 
@@ -394,7 +419,7 @@ local formatters = {
             )
             for i = 1, #materials do
               local material = materials[i]
-              local material_data = materials_data[material.type.."."..material.name]
+              local material_data = recipe_book[material.class][material.name]
               if material_data then
                 local _, style, label = formatter(
                   material_data,
@@ -429,7 +454,7 @@ local formatters = {
       local interaction_help_str = ""
       local required_fluid = obj_data.required_fluid
       if required_fluid then
-        local fluid_data = global.recipe_book.material["fluid."..required_fluid.name]
+        local fluid_data = global.recipe_book.fluid[required_fluid.name]
         if fluid_data then
           local _, style, label = formatter(fluid_data, player_data, {amount_string = required_fluid.amount_string})
           -- remove glyph from caption, since it's implied
@@ -468,11 +493,11 @@ local function format_item(obj_data, player_data, options)
   local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data)
   if options.always_show or should_show then
     -- format and return
-    local formatter_subtable = formatters[obj_data.internal_class]
+    local formatter_subtable = formatters[obj_data.class]
     return
       true,
       is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
-      get_caption(obj_data, player_data, is_hidden, options.amount_string),
+      get_caption(obj_data, player_data, is_hidden, options.amount_string, options.temperature_string),
       formatter_subtable.tooltip(
         obj_data,
         player_data,
@@ -499,11 +524,13 @@ function formatter.format(obj_data, player_data, options)
     .."."..obj_data.prototype_name
     .."."..tostring(is_researched)
     .."."..tostring(options.amount_string)
+    .."."..tostring(options.temperature_string)
     .."."..tostring(options.always_show)
     .."."..tostring(options.is_label)
     .."."..tostring(options.blueprint_recipe)
   )
-  local cached_return = cache[cache_key]
+  -- FIXME: BORKED!!!
+  local cached_return -- = cache[cache_key]
   if cached_return then
     return unpack(cached_return)
   else

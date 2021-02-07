@@ -161,8 +161,16 @@ function main_gui.build(player, player_table)
                   style = "rb_main_info_pane_flow",
                   direction = "vertical",
                   visible = false,
-                  ref = {"material", "flow"},
-                  children = pages.material.build()
+                  ref = {"fluid", "flow"},
+                  children = pages.fluid.build()
+                },
+                {
+                  type = "flow",
+                  style = "rb_main_info_pane_flow",
+                  direction = "vertical",
+                  visible = false,
+                  ref = {"item", "flow"},
+                  children = pages.item.build()
                 },
                 {
                   type = "flow",
@@ -301,14 +309,11 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   local refs = gui_data.refs
   local translations = player_table.translations
   local int_class
-  if obj_class == "fluid" or obj_class == "item" then
-    int_class = "material"
-  elseif obj_class == "entity" then -- at the moment, the only entities with a page are crafters
+  if obj_class == "entity" then -- at the moment, the only entities with a page are crafters
     int_class = "crafter"
   else
     int_class = obj_class
   end
-  local int_name = (obj_class == "fluid" or obj_class == "item") and obj_class.."."..obj_name or obj_name
 
   -- don't do anything if the page is already open
   if not options.force_open then
@@ -316,7 +321,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     if
       open_page_data.int_class ~= "home"
       and open_page_data.int_class == int_class
-      and open_page_data.int_name == int_name
+      and open_page_data.int_name == obj_name
     then
       return
     end
@@ -356,7 +361,8 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     else
       global_history[combined_name] = true
     end
-    table.insert(global_history, 1, {int_class = int_class, int_name = int_name, class = obj_class, name = obj_name})
+    -- TODO: remove this
+    table.insert(global_history, 1, {int_class = int_class, int_name = obj_name, class = obj_class, name = obj_name})
     local last_entry = global_history[31]
     if last_entry then
       table.remove(global_history, 31)
@@ -372,7 +378,8 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     elseif session_history.position == 0 then
       session_history.position = 1
     end
-    table.insert(session_history, 1, {int_class = int_class, int_name = int_name, class = obj_class, name = obj_name})
+    -- TODO: remove obj_name
+    table.insert(session_history, 1, {int_class = int_class, int_name = obj_name, class = obj_class, name = obj_name})
   end
 
   -- update nav buttons
@@ -436,7 +443,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     info_bar.frame.visible = true
 
     local _, _, caption, tooltip = formatter(
-      global.recipe_book[int_class][int_name],
+      global.recipe_book[int_class][obj_name],
       player_data,
       {always_show = true, is_label = true}
     )
@@ -465,7 +472,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   end
 
   -- update page information
-  pages[int_class].update(int_name, gui_data, player_data, home_data)
+  pages[int_class].update(obj_name, gui_data, player_data, home_data)
 
   -- update visible page
   refs[gui_data.state.open_page.int_class].flow.visible = false
@@ -474,7 +481,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   -- update state
   gui_data.state.open_page = {
     int_class = int_class,
-    int_name = int_name,
+    int_name = obj_name,
     class = obj_class,
     name = obj_name
   }

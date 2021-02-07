@@ -10,8 +10,7 @@ function remote_interface.open_page(player_index, class, name)
     return false, "Did not provide a valid class"
   end
   if not name then return false, "Did not provide a name" end
-  local int_name = (int_class == "material") and class.."."..name or name
-  local data = global.recipe_book[int_class][int_name]
+  local data = global.recipe_book[int_class][name]
   if not data then return false, "Did not provide a valid object" end
 
   local player = game.get_player(player_index)

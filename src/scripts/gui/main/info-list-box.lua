@@ -28,10 +28,10 @@ function info_list_box.build(caption, rows, save_location, tooltip)
   )
 end
 
-function info_list_box.update(tbl, int_class, list_box, player_data, options)
+function info_list_box.update(tbl, list_box, player_data, options)
   options = options or {}
 
-  local recipe_book = global.recipe_book[int_class]
+  local recipe_book = global.recipe_book
 
   -- scroll pane
   local scroll = list_box.scroll_pane
@@ -43,20 +43,13 @@ function info_list_box.update(tbl, int_class, list_box, player_data, options)
   for j = 1, #tbl do
     -- get object information
     local obj = tbl[j]
-    local obj_data
-    if int_class == "material" then
-      obj_data = recipe_book[obj.type.."."..obj.name]
-    -- if `blueprint_recipe` exists, this is on a recipe and is therefore a table
-    elseif int_class == "crafter" and options.blueprint_recipe then
-      obj_data = recipe_book[obj.name]
-    else
-      obj_data = recipe_book[obj]
-    end
+    local obj_data = recipe_book[obj.class][obj.name]
     local should_add, style, caption, tooltip, enabled = formatter(
       obj_data,
       player_data,
       {
         amount_string = obj.amount_string,
+        temperature_string = obj.temperature_string,
         always_show = options.always_show,
         blueprint_recipe = options.blueprint_recipe
       }

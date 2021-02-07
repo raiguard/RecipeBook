@@ -43,6 +43,10 @@ return function(recipe_book, strings, metadata)
       usable_in = {}
     }
     util.add_string(strings, {dictionary = "item", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {dictionary = "item", internal = name, localised = prototype.localised_description})
+    util.add_string(strings, {
+      dictionary = "item_description",
+      internal = name,
+      localised = prototype.localised_description
+    })
   end
 end
