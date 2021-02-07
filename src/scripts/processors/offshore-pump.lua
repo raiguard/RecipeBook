@@ -7,8 +7,6 @@ return function(recipe_book, strings)
     local fluid = prototype.fluid
     local fluid_data = recipe_book.fluid[fluid.name]
     if fluid_data then
-      -- pumps pump out the default temperature only
-      fluid_data = fluid_data.temperatures[fluid_data.default_temperature]
       fluid_data.pumped_by[#fluid_data.pumped_by + 1] = {class = "offshore-pump", name = name}
     end
 

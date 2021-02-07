@@ -27,11 +27,11 @@ function recipe_book_data.build()
   local metadata = {}
 
   -- CRAFTERS
-  crafter_proc.build(recipe_book, strings, metadata)
+  crafter_proc(recipe_book, strings, metadata)
   -- FLUIDS
   fluid_proc(recipe_book, strings)
   -- ITEMS
-  item_proc.build(recipe_book, strings, metadata)
+  item_proc(recipe_book, strings, metadata)
   -- LABS
   lab_proc(recipe_book, strings)
   -- OFFSHORE PUMPS
@@ -47,6 +47,8 @@ function recipe_book_data.build()
   global.recipe_book = recipe_book
   -- game.write_file("recipe_book_dump", serpent.block(recipe_book))
   global.strings = strings
+
+  error("THOU FOOL!")
 end
 
 return recipe_book_data

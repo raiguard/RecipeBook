@@ -1,8 +1,6 @@
 local util = require("scripts.util")
 
-local crafter_proc = {}
-
-function crafter_proc.build(recipe_book, strings, metadata)
+return function(recipe_book, strings, metadata)
   -- characters as crafters
   for name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "character"}}) do
     recipe_book.crafter[name] = {
@@ -66,5 +64,3 @@ function crafter_proc.build(recipe_book, strings, metadata)
     })
   end
 end
-
-return crafter_proc

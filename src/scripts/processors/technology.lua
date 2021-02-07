@@ -15,27 +15,7 @@ return function(recipe_book, strings)
               local product_name = product.name
               local product_data = recipe_book[product.class][product_name]
               if product_data then
-                if product.class == "fluid" then
-                  local default_temperature = product_data.default_temperature
-                  local temperature_string = product.temperature_string
-                  if temperature_string and temperature_string ~= default_temperature then
-                    -- add to default temperature
-                    fluid_proc.add_or_update_temperature(
-                      product_data,
-                      "unlocked_by",
-                      default_temperature,
-                      {class = "technology", name = name}
-                    )
-                  end
-                  fluid_proc.add_or_update_temperature(
-                    product_data,
-                    "unlocked_by",
-                    temperature_string or default_temperature,
-                    {class = "technology", name = name}
-                  )
-                else
-                  product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
-                end
+                product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
               end
             end
           end

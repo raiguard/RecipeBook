@@ -2,9 +2,7 @@ local table = require("__flib__.table")
 
 local util = require("scripts.util")
 
-local item_proc = {}
-
-function item_proc.build(recipe_book, strings, metadata)
+return function(recipe_book, strings, metadata)
   local rocket_launch_payloads = {}
   for name, prototype in pairs(game.item_prototypes) do
     -- rocket launch products
@@ -48,5 +46,3 @@ function item_proc.build(recipe_book, strings, metadata)
     util.add_string(strings, {dictionary = "item", internal = name, localised = prototype.localised_description})
   end
 end
-
-return item_proc
