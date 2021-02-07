@@ -48,7 +48,7 @@ function recipe_book_data.build()
   -- game.write_file("recipe_book_dump", serpent.block(recipe_book))
   global.strings = strings
 
-  error("THOU FOOL!")
+  -- error("THOU FOOL!")
 end
 
 return recipe_book_data

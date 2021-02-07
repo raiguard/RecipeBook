@@ -23,15 +23,31 @@ return function(recipe_book, strings, metadata)
       for i, material in ipairs(prototype[io_type]) do
         local amount_string, avg_amount_string = util.build_amount_string(material)
         -- TODO: find better name
-        local to_save = {
+        local material_io_data = {
           class = material.type,
           name = material.name,
           amount_string = amount_string,
           avg_amount_string = avg_amount_string
         }
-        local lookup_table = recipe_book[material.type][material.name][lookup_type]
+        local material_data = recipe_book[material.type][material.name]
+        local lookup_table = material_data[lookup_type]
         lookup_table[#lookup_table + 1] = {class = "recipe", name = name}
-        output[i] = to_save
+        output[i] = material_io_data
+
+        -- fluid temperatures
+        if material.type == "fluid" then
+          local temperature_data = util.build_temperature_data(material)
+          if temperature_data then
+            material_io_data.temperature_string = temperature_data.string
+            fluid_proc.add_to_matching_temperatures(
+              recipe_book,
+              material_data,
+              temperature_data,
+              lookup_type,
+              {class = "recipe", name = name}
+            )
+          end
+        end
       end
       data[io_type] = output
     end

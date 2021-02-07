@@ -28,21 +28,27 @@ function util.build_amount_string(material)
   return amount_string -- , amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
 end
 
-function util.build_temperature_string(fluid)
-  -- temperature
+function util.build_temperature_data(fluid)
   local temperature = fluid.temperature
-  local temp_min = fluid.minimum_temperature
-  local temp_max = fluid.maximum_temperature
+  local temperature_min = fluid.minimum_temperature
+  local temperature_max = fluid.maximum_temperature
+  local temperature_string
   if temperature then
-    return tostring(math.round_to(temperature, 2))
-  elseif temp_min and temp_max then
-    if temp_min == math.min_double then
-      return "≤"..math.round_to(temp_max, 2)
-    elseif temp_max == math.max_double then
-      return "≥"..math.round_to(temp_min, 2)
+    temperature_string = tostring(math.round_to(temperature, 2))
+    temperature_min = temperature
+    temperature_max = temperature
+  elseif temperature_min and temperature_max then
+    if temperature_min == math.min_double then
+      temperature_string = "≤"..math.round_to(temperature_max, 2)
+    elseif temperature_max == math.max_double then
+      temperature_string = "≥"..math.round_to(temperature_min, 2)
     else
-      return ""..math.round_to(temp_min, 2).."-"..math.round_to(temp_max, 2)
+      temperature_string = ""..math.round_to(temperature_min, 2).."-"..math.round_to(temperature_max, 2)
     end
+  end
+
+  if temperature_string then
+    return {string = temperature_string, min = temperature_min, max = temperature_max}
   end
 end
 
@@ -59,7 +65,7 @@ function util.add_string(strings, tbl)
   strings[strings.__index] = tbl
 end
 
-function util.technology_array()
+function util.unique_obj_array()
   local hash = {}
   return setmetatable({}, {
     __newindex = function(tbl, key, value)

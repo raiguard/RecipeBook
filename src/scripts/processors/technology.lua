@@ -14,8 +14,18 @@ return function(recipe_book, strings)
             for _, product in pairs(recipe_data.products) do
               local product_name = product.name
               local product_data = recipe_book[product.class][product_name]
-              if product_data then
-                product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
+              product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
+
+              if product.class == "fluid" and product.temperature_string then
+                -- this shouldn't ever be nil. Right? RIIIGHT!???
+                local temperature_data = product_data.temperatures[product.temperature_string].temperature_data
+                fluid_proc.add_to_matching_temperatures(
+                  recipe_book,
+                  product_data,
+                  temperature_data,
+                  "unlocked_by",
+                  {class = "technology", name = name}
+                )
               end
             end
           end

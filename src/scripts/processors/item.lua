@@ -39,7 +39,7 @@ return function(recipe_book, strings, metadata)
       rocket_launch_products = launch_products,
       stack_size = prototype.stack_size,
       type = "item",
-      unlocked_by = util.technology_array(),
+      unlocked_by = util.unique_obj_array(),
       usable_in = {}
     }
     util.add_string(strings, {dictionary = "item", internal = name, localised = prototype.localised_name})
