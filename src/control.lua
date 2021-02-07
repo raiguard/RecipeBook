@@ -8,6 +8,7 @@ local formatter = require("scripts.formatter")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
+local recipe_book_data = require("scripts.recipe-book-data")
 local remote_interface = require("scripts.remote-interface")
 local shared = require("scripts.shared")
 
@@ -41,6 +42,7 @@ event.on_init(function()
   shared.register_on_tick()
 
   global_data.init()
+  recipe_book_data.build()
   -- global_data.build_recipe_book()
   -- global_data.check_forces()
   for i, player in pairs(game.players) do
@@ -59,6 +61,7 @@ event.on_configuration_changed(function(e)
     translation.init()
     shared.register_on_tick()
 
+    recipe_book_data.build()
     -- global_data.build_recipe_book()
     -- global_data.check_forces()
 

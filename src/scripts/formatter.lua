@@ -71,10 +71,10 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
   -- object properties
   local internal_class = obj_data.internal_class
   local prototype_name = obj_data.prototype_name
-  local sprite_class = obj_data.sprite_class
+  local type = obj_data.type
 
   -- translation key
-  local translation_key = internal_class == "material" and sprite_class.."."..prototype_name or prototype_name
+  local translation_key = internal_class == "material" and type.."."..prototype_name or prototype_name
 
   -- glyph
   local glyph_str = ""
@@ -82,7 +82,7 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
     glyph_str = build_rich_text(
       "font",
       "RecipeBook",
-      class_to_font_glyph[internal_class] or class_to_font_glyph[sprite_class]
+      class_to_font_glyph[internal_class] or class_to_font_glyph[type]
     ).."  "
   end
   -- hidden
@@ -91,7 +91,7 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
     hidden_str = build_rich_text("font", "default-semibold", translations.gui.hidden_abbrev).."  "
   end
   -- icon
-  local icon_str = build_sprite(sprite_class, prototype_name).."  "
+  local icon_str = build_sprite(type, prototype_name).."  "
   -- amount string
   local amount_str = ""
   if amount then
@@ -117,17 +117,17 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   -- object properties
   local internal_class = obj_data.internal_class
   local prototype_name = obj_data.prototype_name
-  local sprite_class = obj_data.sprite_class
+  local type = obj_data.type
 
   -- translation
   local name = translations[internal_class][
     internal_class == "material"
-    and sprite_class.."."..prototype_name
+    and type.."."..prototype_name
     or prototype_name
   ]
   local description = translations[internal_class.."_description"][
     internal_class == "material"
-    and sprite_class.."."..prototype_name
+    and type.."."..prototype_name
     or prototype_name
   ]
 
@@ -138,7 +138,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
 
   -- title
   local title_str = (
-    build_sprite(sprite_class, prototype_name)
+    build_sprite(type, prototype_name)
     .."  "
     ..build_rich_text(
       "font",
@@ -158,7 +158,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
     description_string = description and description.."\n" or ""
   end
   -- category class
-  local category_class = obj_data.sprite_class == "entity" and obj_data.internal_class or obj_data.sprite_class
+  local category_class = obj_data.type == "entity" and obj_data.internal_class or obj_data.type
   local category_class_str = build_rich_text("color", "info", gui_translations[category_class])
   -- hidden
   local hidden_str = ""
@@ -495,7 +495,7 @@ function formatter.format(obj_data, player_data, options)
   local cache = caches[player_index]
   local _, is_researched = get_properties(obj_data, player_data.force_index)
   local cache_key = (
-    obj_data.sprite_class
+    obj_data.type
     .."."..obj_data.prototype_name
     .."."..tostring(is_researched)
     .."."..tostring(options.amount_string)

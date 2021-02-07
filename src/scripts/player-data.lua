@@ -1,5 +1,5 @@
+local table = require("__flib__.table")
 local translation = require("__flib__.translation")
-local util = require("__core__.lualib.util")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
@@ -60,7 +60,7 @@ end
 
 function player_data.start_translations(player_index)
   translation.add_requests(player_index, constants.gui_strings)
-  -- translation.add_requests(player_index, global.translation_data)
+  translation.add_requests(player_index, global.strings)
   shared.register_on_tick()
 end
 
@@ -110,7 +110,7 @@ function player_data.refresh(player, player_table)
   player_data.update_settings(player, player_table)
 
   -- run translations
-  player_table.translations = util.table.deepcopy(constants.empty_translations_table)
+  player_table.translations = table.deep_copy(constants.empty_translations_table)
   if player.connected then
     player_data.start_translations(player.index)
   else

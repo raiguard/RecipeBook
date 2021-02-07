@@ -33,5 +33,8 @@ return {
         quick_ref = {}
       }
     end
+  end,
+  ["2.5.0"] = function()
+    global.translation_data = nil
   end
 }
