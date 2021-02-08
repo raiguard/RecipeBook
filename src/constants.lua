@@ -3,6 +3,9 @@ local constants = {}
 -- dictionary category -> affects research
 -- anything with `0` as the value will be ignored for research
 constants.disabled_recipe_categories = {
+  -- creative mod
+  ["creative-mod_free-fluids"] = 1,
+  ["creative-mod_energy-absorption"] = 1,
   -- editor extensions
   ["ee-testing-tool"] = 1,
   -- deep storage unit
@@ -14,13 +17,13 @@ constants.disabled_recipe_categories = {
   ["deep-storage-fluid-mk2/3"] = 0,
   -- mining drones
   ["mining-depot"] = 0,
+  -- pyanodon's
+  ["py-runoff"] = 1,
+  ["py-venting"] = 1,
   -- transport drones
   ["fuel-depot"] = 0,
   ["transport-drone-request"] = 0,
-  ["transport-fluid-request"] = 0,
-  -- pyanodon's
-  ["py-runoff"] = 1,
-  ["py-venting"] = 1
+  ["transport-fluid-request"] = 0
 }
 
 constants.class_to_font_glyph = {

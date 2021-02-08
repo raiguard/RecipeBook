@@ -14,7 +14,7 @@ function fluid_proc.build(recipe_book, strings)
       product_of = {},
       prototype_name = name,
       pumped_by = {},
-      recipe_categories = {},
+      recipe_categories = util.unique_string_array(),
       temperatures = {},
       unlocked_by = util.unique_obj_array()
     }
@@ -46,7 +46,7 @@ function fluid_proc.add_temperature(recipe_book, strings, fluid_data, temperatur
     ingredient_in = util.unique_obj_array(),
     product_of = util.unique_obj_array(),
     prototype_name = fluid_name,
-    recipe_categories = {},
+    recipe_categories = util.unique_string_array(),
     temperature_data = temperature_data,
     unlocked_by = util.unique_obj_array()
   }

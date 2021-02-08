@@ -23,7 +23,9 @@ return function(recipe_book, strings, metadata)
         rocket_launch_payloads[product.name] = {{class = product.type, name = product.name}}
       end
     end
-    local default_categories = (#launch_products > 0 and table.shallow_copy(metadata.rocket_silo_categories)) or {}
+    local default_categories = util.unique_string_array(
+      #launch_products > 0 and table.shallow_copy(metadata.rocket_silo_categories) or {}
+    )
 
     local place_result = prototype.place_result
     if place_result then

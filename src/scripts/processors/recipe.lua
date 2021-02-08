@@ -42,7 +42,7 @@ return function(recipe_book, strings, metadata)
         output[i] = material_io_data
         material_data.recipe_categories[#material_data.recipe_categories + 1] = category
 
-        if enabled_at_start then
+        if enabled_at_start and io_type == "products" then
           material_data.enabled_at_start = true
         end
 

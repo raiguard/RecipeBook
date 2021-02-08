@@ -65,9 +65,21 @@ function util.add_string(strings, tbl)
   strings[strings.__index] = tbl
 end
 
-function util.unique_obj_array()
+function util.unique_string_array(initial_tbl)
   local hash = {}
-  return setmetatable({}, {
+  return setmetatable(initial_tbl or {}, {
+    __newindex = function(tbl, key, value)
+      if not hash[value] then
+        hash[value] = true
+        rawset(tbl, key, value)
+      end
+    end
+  })
+end
+
+function util.unique_obj_array(initial_tbl)
+  local hash = {}
+  return setmetatable(initial_tbl or {}, {
     __newindex = function(tbl, key, value)
       if not hash[value.name] then
         hash[value.name] = true

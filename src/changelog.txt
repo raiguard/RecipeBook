@@ -7,6 +7,7 @@ Date: ????
       - When searching, temperatures and temperature ranges for each fluid will be shown as well
       - Each temperature and temperature range has a separate fluid page listing the properties specific to that temperature or range
       - Each fluid still has a non-temperature page that shows all properties for that fluid
+    - Added default recipe category excludes for Creative Mod and the PySuite
   Changes:
     - Adjusted titlebar styling to match the base game
     - Improved interaction help formatting
