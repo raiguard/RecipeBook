@@ -4,7 +4,7 @@ Date: ????
   Features:
     - Added controls for navigating the session history, bound by default to the back and forward buttons on the mouse
     - Added default recipe category excludes for Creative Mod and the PySuite
-    - Added fluid temperature support
+    - Added fluid temperature support (thanks kubiix!)
       - When searching, temperatures and temperature ranges for each fluid will be shown as well
       - Each temperature and temperature range has a separate fluid page listing the properties specific to that temperature or range
       - Each fluid still has a non-temperature page that shows all properties for that fluid
