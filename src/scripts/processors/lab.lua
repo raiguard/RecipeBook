@@ -18,8 +18,7 @@ return function(recipe_book, strings)
       hidden = prototype.has_flag("hidden"),
       inputs = table.map(prototype.lab_inputs, function(v) return {class = "item", name = v} end),
       prototype_name = name,
-      researching_speed = prototype.researching_speed,
-      type = "entity"
+      researching_speed = prototype.researching_speed
     }
     util.add_string(strings, {dictionary = "lab", internal = name, localised = prototype.localised_name})
     util.add_string(strings, {

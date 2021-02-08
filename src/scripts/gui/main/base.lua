@@ -219,7 +219,7 @@ function main_gui.build(player, player_table)
     refs = refs,
     state = {
       open_page = {
-        int_class = "home"
+        class = "home"
       },
       pinned = false,
       pinning = false,
@@ -302,26 +302,20 @@ function main_gui.check_can_open(player, player_table)
   end
 end
 
-function main_gui.open_page(player, player_table, obj_class, obj_name, options)
+function main_gui.open_page(player, player_table, class, name, options)
   options = options or {}
-  obj_name = obj_name or ""
+  name = name or ""
   local gui_data = player_table.guis.main
   local refs = gui_data.refs
   local translations = player_table.translations
-  local int_class
-  if obj_class == "entity" then -- at the moment, the only entities with a page are crafters
-    int_class = "crafter"
-  else
-    int_class = obj_class
-  end
 
   -- don't do anything if the page is already open
   if not options.force_open then
     local open_page_data = gui_data.state.open_page
     if
-      open_page_data.int_class ~= "home"
-      and open_page_data.int_class == int_class
-      and open_page_data.int_name == obj_name
+      open_page_data.class ~= "home"
+      and open_page_data.class == class
+      and open_page_data.name == name
     then
       return
     end
@@ -338,6 +332,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   -- extra data for the home page
   -- this cannot be kept in player_data due to memoization. if it were,
   -- the cache would be invalidated whenever the player did anything
+  -- TODO: this doesn't need to be separate any more?
   local home_data = {
     favorites = player_table.favorites,
     history = player_table.history.global
@@ -349,7 +344,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   local global_history = history.global
   if not options.skip_history then
     -- global history
-    local combined_name = obj_class.."."..obj_name
+    local combined_name = class.."."..name
     if global_history[combined_name] then
       for i = 1, #global_history do
         local entry = global_history[i]
@@ -361,8 +356,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     else
       global_history[combined_name] = true
     end
-    -- TODO: remove this
-    table.insert(global_history, 1, {int_class = int_class, int_name = obj_name, class = obj_class, name = obj_name})
+    table.insert(global_history, 1, {class = class, name = name})
     local last_entry = global_history[31]
     if last_entry then
       table.remove(global_history, 31)
@@ -378,8 +372,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
     elseif session_history.position == 0 then
       session_history.position = 1
     end
-    -- TODO: remove obj_name
-    table.insert(session_history, 1, {int_class = int_class, int_name = obj_name, class = obj_class, name = obj_name})
+    table.insert(session_history, 1, {class = class, name = name})
   end
 
   -- update nav buttons
@@ -387,13 +380,17 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   local tooltip_str_tbl = {}
   for i = 1, #session_history do
     local entry = session_history[i]
-    local label = "[font=default-bold][color="..(position == i and constants.colors.green.str or "0,0,0,0").."]>[/color][/font]   "
-    if entry.int_class == "home" then
+    local label = (
+      "[font=default-bold][color="
+      ..(position == i and constants.colors.green.str or "0,0,0,0")
+      .."]>[/color][/font]   "
+    )
+    if entry.class == "home" then
       label = label.."[font=default-semibold]"..translations.gui.home_page.."[/font]"
     else
-      local obj_data = global.recipe_book[entry.int_class][entry.int_name]
-      local _, style, caption = formatter(obj_data, player_data, {always_show = true, is_label = true})
-      if string.find(style, "unresearched") then
+      local obj_data = global.recipe_book[entry.class][entry.name]
+      local _, researched, caption = formatter(obj_data, player_data, {always_show = true, is_label = true})
+      if not researched then
         caption = "[color="..constants.colors.unresearched.str.."]"..caption.."[/color]"
       end
       label = label..caption
@@ -437,23 +434,23 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
 
   -- update / toggle info bar
   local info_bar = refs.base.info_bar
-  if obj_class == "home" then
+  if class == "home" then
     info_bar.frame.visible = false
   else
     info_bar.frame.visible = true
 
     local _, _, caption, tooltip = formatter(
-      global.recipe_book[int_class][obj_name],
+      global.recipe_book[class][name],
       player_data,
       {always_show = true, is_label = true}
     )
     info_bar.label.caption = caption
     info_bar.label.tooltip = tooltip
 
-    if obj_class == "recipe" then
+    if class == "recipe" then
       local quick_ref_button = info_bar.quick_ref_button
       quick_ref_button.visible = true
-      if player_table.guis.quick_ref[obj_name] then
+      if player_table.guis.quick_ref[name] then
         quick_ref_button.style = "flib_selected_tool_button"
       else
         quick_ref_button.style = "tool_button"
@@ -462,7 +459,7 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
       info_bar.quick_ref_button.visible = false
     end
 
-    if player_table.favorites[obj_class.."."..obj_name] then
+    if player_table.favorites[class.."."..name] then
       info_bar.favorite_button.style = "flib_selected_tool_button"
       info_bar.favorite_button.tooltip = {"rb-gui.remove-from-favorites"}
     else
@@ -472,18 +469,16 @@ function main_gui.open_page(player, player_table, obj_class, obj_name, options)
   end
 
   -- update page information
-  pages[int_class].update(obj_name, gui_data, player_data, home_data)
+  pages[class].update(name, gui_data, player_data, home_data)
 
   -- update visible page
-  refs[gui_data.state.open_page.int_class].flow.visible = false
-  gui_data.refs[int_class].flow.visible = true
+  refs[gui_data.state.open_page.class].flow.visible = false
+  gui_data.refs[class].flow.visible = true
 
   -- update state
   gui_data.state.open_page = {
-    int_class = int_class,
-    int_name = obj_name,
-    class = obj_class,
-    name = obj_name
+    class = class,
+    name = name
   }
 end
 

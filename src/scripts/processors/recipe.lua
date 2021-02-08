@@ -16,7 +16,6 @@ return function(recipe_book, strings, metadata)
       hidden = prototype.hidden,
       made_in = {},
       prototype_name = name,
-      type = "recipe",
       unlocked_by = {},
       used_as_fixed_recipe = metadata.fixed_recipes[name]
     }
@@ -43,9 +42,10 @@ return function(recipe_book, strings, metadata)
         if material.type == "fluid" then
           local temperature_data = util.build_temperature_data(material)
           if temperature_data then
-            material_io_data.temperature_string = temperature_data.string
+            material_io_data.name = material.name.."."..temperature_data.string
             fluid_proc.add_to_matching_temperatures(
               recipe_book,
+              strings,
               material_data,
               temperature_data,
               {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
@@ -54,29 +54,21 @@ return function(recipe_book, strings, metadata)
         end
       end
 
-      -- made in
-      for crafter_name, crafter_data in pairs(recipe_book.crafter) do
-        if crafter_data.categories[category] then
-          local rocket_parts_str = (
-            crafter_data.rocket_parts_required
-            and crafter_data.rocket_parts_required.."x  "
-            or ""
-          )
-          data.made_in[#data.made_in + 1] = {
-            class = "crafter",
-            name = crafter_name,
-            amount_string = (
-              rocket_parts_str
-              .."("
-              ..math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
-              .."s)"
-            )
-          }
-          crafter_data.compatible_recipes[#crafter_data.compatible_recipes + 1] = {class = "recipe", name = name}
-        end
-      end
 
       data[io_type] = output
+    end
+
+    -- made in
+    for crafter_name, crafter_data in pairs(recipe_book.crafter) do
+      if crafter_data.categories[category] then
+        local rocket_parts_str = crafter_data.rocket_parts_required and crafter_data.rocket_parts_required.."x  " or ""
+        data.made_in[#data.made_in + 1] = {
+          class = "crafter",
+          name = crafter_name,
+          amount_string = rocket_parts_str.."("..math.round_to(prototype.energy / crafter_data.crafting_speed, 2).."s)"
+        }
+        crafter_data.compatible_recipes[#crafter_data.compatible_recipes + 1] = {class = "recipe", name = name}
+      end
     end
 
     recipe_book.recipe[name] = data

@@ -1,3 +1,5 @@
+local gui = require("__flib__.gui-beta")
+
 local constants = require("constants")
 local formatter = require("scripts.formatter")
 
@@ -11,7 +13,7 @@ function search_page.build()
       {
         type = "drop-down",
         items = constants.search_categories_localised,
-        selected_index = 3,
+        selected_index = 4,
         ref = {"search", "category_drop_down"},
         actions = {
           on_selection_state_changed = {gui = "main", page = "search", action = "change_category"}
@@ -119,52 +121,46 @@ function search_page.handle_action(msg, e)
   local add = scroll.add
   local i = 0
 
-  local function process_item(obj_data, temperature_string)
-    local should_add, style, caption, tooltip = formatter(
-      obj_data,
-      player_data,
-      {temperature_string = temperature_string}
-    )
-    if should_add then
-      i = i + 1
-      -- create or modify element
-      local child = children[i]
-      if child then
-        child.style = style
-        child.caption = caption
-        child.tooltip = tooltip
-      else
-        add{
-          type = "button",
-          style = style,
-          caption = caption,
-          tooltip = tooltip,
-          mouse_button_filter = {"left"},
-          tags = {
-            [script.mod_name] = {
-              flib = {
-                on_click = {gui = "main", action = "handle_list_box_item_click"}
-              }
-            }
-          }
-        }
-      end
-
-      if i == constants.search_results_limit then
-        limit_frame.visible = true
-        return true
-      end
-    end
-  end
-
   for internal, translation in pairs(translations) do
     if string.find(string.lower(match_internal and internal or translation), query) then
       local obj_data = rb_data[internal]
 
-      process_item(obj_data)
+      local should_add, researched, caption, tooltip = formatter(
+        obj_data,
+        player_data
+      )
+      local style = researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+      if should_add then
+        i = i + 1
+        -- create or modify element
+        local child = children[i]
+        if child then
+          child.style = style
+          child.caption = caption
+          child.tooltip = tooltip
+          gui.update_tags(child, {obj = {class = category, name = internal}})
+        else
+          add{
+            type = "button",
+            style = style,
+            caption = caption,
+            tooltip = tooltip,
+            mouse_button_filter = {"left"},
+            tags = {
+              [script.mod_name] = {
+                flib = {
+                  on_click = {gui = "main", action = "handle_list_box_item_click"}
+                },
+                obj = {class = category, name = internal}
+              }
+            }
+          }
+        end
 
-      for _, sub_obj_data in pairs(obj_data.temperatures or {}) do
-        process_item(sub_obj_data, sub_obj_data.temperature_data.string)
+        if i == constants.search_results_limit then
+          limit_frame.visible = true
+          return true
+        end
       end
     end
   end

@@ -32,13 +32,13 @@ return function(recipe_book, strings, metadata)
       hidden = prototype.has_flag("hidden"),
       ingredient_in = {},
       mined_from = {},
+      place_result = prototype.place_result and prototype.place_result.name or nil,
       product_of = {},
       prototype_name = name,
       recipe_categories = default_categories,
       rocket_launch_payloads = {},
       rocket_launch_products = launch_products,
       stack_size = prototype.stack_size,
-      type = "item",
       unlocked_by = util.unique_obj_array(),
       usable_in = {}
     }
@@ -48,5 +48,19 @@ return function(recipe_book, strings, metadata)
       internal = name,
       localised = prototype.localised_description
     })
+  end
+
+  -- add rocket launch payloads to their material tables
+  for product, payloads in pairs(rocket_launch_payloads) do
+    local product_data = recipe_book.item[product]
+    product_data.rocket_launch_payloads = table.array_copy(payloads)
+    for i = 1, #payloads do
+      local payload = payloads[i]
+      local payload_data = recipe_book.item[payload.name]
+      local payload_unlocked_by = payload_data.unlocked_by
+      for j = 1, #payload_unlocked_by do
+        product_data.unlocked_by[#product_data.unlocked_by + 1] = payload_unlocked_by[j]
+      end
+    end
   end
 end

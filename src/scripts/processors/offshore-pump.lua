@@ -16,8 +16,7 @@ return function(recipe_book, strings)
       fluid = fluid.name,
       hidden = prototype.has_flag("hidden"),
       prototype_name = name,
-      pumping_speed = prototype.pumping_speed,
-      type = "entity"
+      pumping_speed = prototype.pumping_speed
     }
     util.add_string(strings, {
       dictionary = "offshore_pump",

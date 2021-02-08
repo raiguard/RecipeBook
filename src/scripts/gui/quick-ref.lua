@@ -1,5 +1,7 @@
 local gui = require("__flib__.gui-beta")
 
+local constants = require("constants")
+
 local formatter = require("scripts.formatter")
 local shared = require("scripts.shared")
 local util = require("scripts.util")
@@ -95,20 +97,19 @@ function quick_ref_gui.build(player, player_table, name)
   refs.toolbar_label.tooltip = label_tooltip
 
   -- add contents to tables
-  local material_data = global.recipe_book.material
+  local recipe_book = global.recipe_book
   for _, type in ipairs{"ingredients", "products"} do
     local group = refs[type]
     local i = type == "ingredients" and 1 or 0
     for _, obj in ipairs(recipe_data[type]) do
-      local obj_data = material_data[obj.type.."."..obj.name]
-      local _, style, _, tooltip = formatter(
+      local obj_data = recipe_book[obj.class][obj.name]
+      local _, researched, _, tooltip = formatter(
         obj_data,
         player_data,
         {amount_string = obj.amount_string, always_show = true}
       )
       i = i + 1
-
-      local button_style = string.find(style, "unresearched") and "flib_slot_button_red" or "flib_slot_button_default"
+      local button_style = researched and "flib_slot_button_default" or "flib_slot_button_red"
       tooltip = build_tooltip(tooltip, obj.amount_string)
       local shown_string = (
         obj.avg_amount_string
@@ -120,10 +121,10 @@ function quick_ref_gui.build(player, player_table, name)
         {
           type = "sprite-button",
           style = button_style,
-          sprite = obj.type.."/"..obj.name,
+          sprite = constants.class_to_type[obj.class].."/"..obj_data.prototype_name,
           tooltip = tooltip,
           actions = {
-            on_click = {gui = "main", action = "open_page", class = obj.type, name = obj.name}
+            on_click = {gui = "main", action = "open_page", class = obj.class, name = obj.name}
           },
           children = {
             {

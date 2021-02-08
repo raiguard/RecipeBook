@@ -63,15 +63,13 @@ local function get_should_show(obj_data, player_data)
   return false, is_hidden, is_researched
 end
 
-local function get_caption(obj_data, player_data, is_hidden, amount, temperature)
+local function get_caption(obj_data, player_data, is_hidden, amount)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
 
   -- object properties
   local class = obj_data.class
-  local prototype_name = obj_data.prototype_name
-  local type = obj_data.type
 
   -- glyph
   local glyph_str = ""
@@ -79,7 +77,7 @@ local function get_caption(obj_data, player_data, is_hidden, amount, temperature
     glyph_str = build_rich_text(
       "font",
       "RecipeBook",
-      class_to_font_glyph[class] or class_to_font_glyph[type]
+      class_to_font_glyph[class] or class_to_font_glyph[class]
     ).."  "
   end
   -- hidden
@@ -88,28 +86,25 @@ local function get_caption(obj_data, player_data, is_hidden, amount, temperature
     hidden_str = build_rich_text("font", "default-semibold", translations.gui.hidden_abbrev).."  "
   end
   -- icon
-  local icon_str = build_sprite(type, prototype_name).."  "
+  local icon_str = build_sprite(constants.class_to_type[class], obj_data.prototype_name).."  "
   -- amount string
   local amount_str = ""
   if amount then
     amount_str = build_rich_text("font", "default-semibold", amount).."  "
   end
   -- name
+  local internal_name = obj_data.combined_name or obj_data.prototype_name
   local name_str = (
     player_settings.use_internal_names
-    and obj_data.prototype_name
-    or translations[class][prototype_name]
+    and internal_name
+    or translations[class][internal_name]
   )
-
-  if temperature then
-    name_str = name_str.." ("..temperature.."°C)"
-  end
 
   -- output
   return glyph_str..hidden_str..icon_str..amount_str..name_str
 end
 
-local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched, temperature)
+local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
@@ -117,12 +112,11 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched,
 
   -- object properties
   local class = obj_data.class
-  local prototype_name = obj_data.prototype_name
-  local type = obj_data.type
+  local internal_name = obj_data.combined_name or obj_data.prototype_name
 
   -- translation
-  local name = translations[class][prototype_name]
-  local description = translations[class.."_description"][prototype_name]
+  local name = translations[class][internal_name]
+  local description = translations[class.."_description"][internal_name]
 
   -- settings
   local show_alternate_name = player_settings.show_alternate_name
@@ -130,12 +124,9 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched,
   local use_internal_names = player_settings.use_internal_names
 
   -- title
-  local name_str = use_internal_names and prototype_name or name
-  if temperature then
-    name_str = name_str.." ("..temperature.."°C)"
-  end
+  local name_str = use_internal_names and internal_name or name
   local title_str = (
-    build_sprite(type, prototype_name)
+    build_sprite(constants.class_to_type[class], obj_data.prototype_name)
     .."  "
     ..build_rich_text(
       "font",
@@ -147,7 +138,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched,
   -- alternate name
   local alternate_name_str = ""
   if show_alternate_name then
-    alternate_name_str = build_rich_text("color", "green", use_internal_names and name or prototype_name).."\n"
+    alternate_name_str = build_rich_text("color", "green", use_internal_names and name or internal_name).."\n"
   end
   -- description
   local description_string = ""
@@ -155,8 +146,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched,
     description_string = description and description.."\n" or ""
   end
   -- category class
-  local category_class = obj_data.type == "entity" and obj_data.class or obj_data.type
-  local category_class_str = build_rich_text("color", "info", gui_translations[category_class])
+  local category_class_str = build_rich_text("color", "info", gui_translations[class])
   -- hidden
   local hidden_str = ""
   if is_hidden then
@@ -496,8 +486,8 @@ local function format_item(obj_data, player_data, options)
     local formatter_subtable = formatters[obj_data.class]
     return
       true,
-      is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item",
-      get_caption(obj_data, player_data, is_hidden, options.amount_string, options.temperature_string),
+      is_researched,
+      get_caption(obj_data, player_data, is_hidden, options.amount_string),
       formatter_subtable.tooltip(
         obj_data,
         player_data,
@@ -520,17 +510,15 @@ function formatter.format(obj_data, player_data, options)
   local cache = caches[player_index]
   local _, is_researched = get_properties(obj_data, player_data.force_index)
   local cache_key = (
-    obj_data.type
-    .."."..obj_data.prototype_name
+    obj_data.class
+    .."."..(obj_data.combined_name or obj_data.prototype_name)
     .."."..tostring(is_researched)
     .."."..tostring(options.amount_string)
-    .."."..tostring(options.temperature_string)
     .."."..tostring(options.always_show)
     .."."..tostring(options.is_label)
     .."."..tostring(options.blueprint_recipe)
   )
-  -- FIXME: BORKED!!!
-  local cached_return -- = cache[cache_key]
+  local cached_return = cache[cache_key]
   if cached_return then
     return unpack(cached_return)
   else

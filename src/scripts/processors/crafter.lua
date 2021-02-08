@@ -11,8 +11,7 @@ return function(recipe_book, strings, metadata)
       compatible_recipes = {},
       crafting_speed = 1,
       hidden = false,
-      prototype_name = name,
-      type = "entity"
+      prototype_name = name
     }
     util.add_string(strings, {dictionary = "crafter", internal = name, localised = prototype.localised_name})
     util.add_string(strings, {
@@ -53,8 +52,7 @@ return function(recipe_book, strings, metadata)
       fixed_recipe = prototype.fixed_recipe,
       hidden = is_hidden,
       prototype_name = name,
-      rocket_parts_required = prototype.rocket_parts_required,
-      type = "entity"
+      rocket_parts_required = prototype.rocket_parts_required
     }
     util.add_string(strings, {dictionary = "crafter", internal = name, localised = prototype.localised_name})
     util.add_string(strings, {

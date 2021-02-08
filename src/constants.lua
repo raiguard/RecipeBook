@@ -17,7 +17,10 @@ constants.disabled_recipe_categories = {
   -- transport drones
   ["fuel-depot"] = 0,
   ["transport-drone-request"] = 0,
-  ["transport-fluid-request"] = 0
+  ["transport-fluid-request"] = 0,
+  -- pyanodon's
+  ["py-runoff"] = 1,
+  ["py-venting"] = 1
 }
 
 constants.class_to_font_glyph = {
@@ -29,6 +32,17 @@ constants.class_to_font_glyph = {
   recipe = "E",
   resource = "F",
   technology = "A"
+}
+
+constants.class_to_type = {
+  crafter = "entity",
+  fluid = "fluid",
+  item = "item",
+  lab = "entity",
+  offshore_pump = "entity",
+  recipe = "recipe",
+  resource = "entity",
+  technology = "technology"
 }
 
 constants.colors = {

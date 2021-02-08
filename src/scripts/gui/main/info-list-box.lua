@@ -44,12 +44,11 @@ function info_list_box.update(tbl, list_box, player_data, options)
     -- get object information
     local obj = tbl[j]
     local obj_data = recipe_book[obj.class][obj.name]
-    local should_add, style, caption, tooltip, enabled = formatter(
+    local should_add, researched, caption, tooltip, enabled = formatter(
       obj_data,
       player_data,
       {
         amount_string = obj.amount_string,
-        temperature_string = obj.temperature_string,
         always_show = options.always_show,
         blueprint_recipe = options.blueprint_recipe
       }
@@ -58,12 +57,14 @@ function info_list_box.update(tbl, list_box, player_data, options)
     if should_add then
       i = i + 1
       -- update or add item
+      local style = researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
       local item = children[i]
       if item then
         item.style = style
         item.caption = caption
         item.tooltip = tooltip
         item.enabled = enabled
+        gui.update_tags(item, {obj = {class = obj.class, name = obj.name}})
       else
         add{
           type = "button",
@@ -77,7 +78,8 @@ function info_list_box.update(tbl, list_box, player_data, options)
               blueprint_recipe = options.blueprint_recipe,
               flib = {
                 on_click = {gui = "main", action = "handle_list_box_item_click"}
-              }
+              },
+              obj = {class = obj.class, name = obj.name}
             }
           }
         }
@@ -119,9 +121,10 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
   for j = 1, #tbl do
     -- get object information
     local entry = tbl[j]
-    if entry.int_class ~= "home" then
-      local obj_data = recipe_book[entry.int_class][entry.int_name]
-      local should_add, style, caption, tooltip = formatter(obj_data, player_data)
+    if entry.class ~= "home" then
+      local obj_data = recipe_book[entry.class][entry.name]
+      local should_add, researched, caption, tooltip = formatter(obj_data, player_data)
+      local style = researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
 
       if should_add then
         i = i + 1
@@ -131,6 +134,7 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
           item.style = style
           item.caption = caption
           item.tooltip = tooltip
+          gui.update_tags(item, {class = entry.class, name = entry.name})
         else
           add{
             type = "button",
@@ -141,7 +145,8 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
               [script.mod_name] = {
                 flib = {
                   on_click = {gui = "main", action = "handle_list_box_item_click"}
-                }
+                },
+                obj = {class = entry.class, name = entry.name}
               }
             }
           }
@@ -166,12 +171,9 @@ end
 
 -- if values are returned, the corresponding page is opened
 function info_list_box.handle_click(e, player, player_table)
-  local _, _, class, name = string.find(e.element.caption, "^.-%[img=(.-)/(.-)%]  .*$")
-  if class == "technology" then
-    player_table.flags.technology_gui_open = true
-    player.open_technology_gui(name)
-  elseif class == "entity" then
-    local crafter_data = global.recipe_book.crafter[name]
+  local obj = gui.get_tags(e.element).obj
+  if obj.class == "crafter" then
+    local crafter_data = global.recipe_book.crafter[obj.name]
     if crafter_data then
       if e.control then
         if crafter_data.fixed_recipe then
@@ -185,12 +187,12 @@ function info_list_box.handle_click(e, player, player_table)
             player.clear_cursor()
             if cursor_stack and cursor_stack.valid then
               -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
-              local width, height = area_dimensions(game.entity_prototypes[name].collision_box)
+              local width, height = area_dimensions(game.entity_prototypes[obj.name].collision_box)
               cursor_stack.set_stack{name = "blueprint", count = 1}
               cursor_stack.set_blueprint_entities{
                 {
                   entity_number = 1,
-                  name = name,
+                  name = obj.name,
                   position = {
                     math.ceil(width) % 2 == 0 and -0.5 or 0,
                     math.ceil(height) % 2 == 0 and -0.5 or 0
@@ -210,19 +212,22 @@ function info_list_box.handle_click(e, player, player_table)
           end
         end
       else
-        return class, name
-      end
-    else
-      local resource_data = global.recipe_book.resource[name]
-      if resource_data then
-        local required_fluid = resource_data.required_fluid
-        if required_fluid then
-          return "fluid", required_fluid.name
-        end
+        return obj.class, obj.name
       end
     end
+  elseif obj.class == "resource" then
+    local resource_data = global.recipe_book.resource[obj.name]
+    if resource_data then
+      local required_fluid = resource_data.required_fluid
+      if required_fluid then
+        return "fluid", required_fluid.name
+      end
+    end
+  elseif obj.class == "technology" then
+    player_table.flags.technology_gui_open = true
+    player.open_technology_gui(obj.name)
   else
-    return class, name
+    return obj.class, obj.name
   end
 end
 

@@ -25,8 +25,7 @@ return function(recipe_book, strings)
       available_to_all_forces = true,
       class = "resource",
       prototype_name = name,
-      required_fluid = required_fluid,
-      type = "entity"
+      required_fluid = required_fluid
     }
     util.add_string(strings, {
       dictionary = "resource",

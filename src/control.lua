@@ -8,7 +8,6 @@ local formatter = require("scripts.formatter")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
-local recipe_book_data = require("scripts.recipe-book-data")
 local remote_interface = require("scripts.remote-interface")
 local shared = require("scripts.shared")
 
@@ -42,9 +41,8 @@ event.on_init(function()
   shared.register_on_tick()
 
   global_data.init()
-  recipe_book_data.build()
-  -- global_data.build_recipe_book()
-  -- global_data.check_forces()
+  global_data.build_recipe_book()
+  global_data.check_forces()
   for i, player in pairs(game.players) do
     player_data.init(i)
     player_data.refresh(player, global.players[i])
@@ -61,9 +59,8 @@ event.on_configuration_changed(function(e)
     translation.init()
     shared.register_on_tick()
 
-    recipe_book_data.build()
-    -- global_data.build_recipe_book()
-    -- global_data.check_forces()
+    global_data.build_recipe_book()
+    global_data.check_forces()
 
     for i, player in pairs(game.players) do
       player_data.refresh(player, global.players[i])
@@ -75,12 +72,12 @@ end)
 
 event.on_force_created(function(e)
   local force = e.force
-  -- global_data.check_force_recipes(force)
-  -- global_data.check_force_technologies(force)
+  global_data.check_force_recipes(force)
+  global_data.check_force_technologies(force)
 end)
 
 event.on_research_finished(function(e)
-  -- global_data.update_available_objects(e.research)
+  global_data.handle_research_finished(e.research)
 end)
 
 -- GUI

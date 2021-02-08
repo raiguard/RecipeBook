@@ -17,7 +17,6 @@ function fluid_proc.build(recipe_book, strings)
       pumped_by = {},
       recipe_categories = {},
       temperatures = {},
-      type = "fluid",
       unlocked_by = util.unique_obj_array()
     }
     util.add_string(strings, {dictionary = "fluid", internal = name, localised = prototype.localised_name})
@@ -37,11 +36,12 @@ local function append(tbl_1, tbl_2)
   end
 end
 
-function fluid_proc.add_temperature(recipe_book, fluid_data, temperature_data)
+function fluid_proc.add_temperature(recipe_book, strings, fluid_data, temperature_data)
   local fluid_name = fluid_data.prototype_name
   local data = {
     available_to_forces = {},
     class = "fluid",
+    combined_name = fluid_name.."."..temperature_data.string,
     default_temperature = fluid_data.default_temperature,
     fuel_value = fluid_data.fuel_value,
     hidden = fluid_data.hidden,
@@ -52,7 +52,6 @@ function fluid_proc.add_temperature(recipe_book, fluid_data, temperature_data)
     pumped_by = {}, -- TODO: remove?
     recipe_categories = {},
     temperature_data = temperature_data,
-    type = "fluid",
     unlocked_by = util.unique_obj_array()
   }
 
@@ -66,14 +65,28 @@ function fluid_proc.add_temperature(recipe_book, fluid_data, temperature_data)
   end
 
   -- save
-  recipe_book.fluid[fluid_name.."."..temperature_data.string] = data
+  local combined_name = fluid_name.."."..temperature_data.string
+  recipe_book.fluid[combined_name] = data
   fluid_data.temperatures[temperature_data.string] = data
+
+  -- strings
+  util.add_string(strings, {
+    dictionary = "fluid",
+    internal = combined_name,
+    localised = {
+      "",
+      -- TODO: avoid this. use metadata?
+      game.fluid_prototypes[fluid_name].localised_name,
+      -- TODO: localise the degree suffix?
+      " ("..temperature_data.string.."°C)"
+    }
+  })
 end
 
-function fluid_proc.add_to_matching_temperatures(recipe_book, fluid_data, temperature_data, sets)
+function fluid_proc.add_to_matching_temperatures(recipe_book, strings, fluid_data, temperature_data, sets)
   -- create current temperature table, if it doesn't yet exist
   if not fluid_data.temperatures[temperature_data.string] then
-    fluid_proc.add_temperature(recipe_book, fluid_data, temperature_data)
+    fluid_proc.add_temperature(recipe_book, strings, fluid_data, temperature_data)
   end
 
   for _, subfluid_data in pairs(fluid_data.temperatures) do
