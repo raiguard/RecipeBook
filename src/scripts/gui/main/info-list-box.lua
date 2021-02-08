@@ -135,7 +135,7 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
           item.style = style
           item.caption = data.caption
           item.tooltip = data.tooltip
-          gui.update_tags(item, {class = entry.class, name = entry.name})
+          gui.update_tags(item, {obj = {class = entry.class, name = entry.name}})
         else
           add{
             type = "button",
