@@ -16,6 +16,7 @@ Date: ????
     - Recipes and materials that are available at the beginning of the game are now treated as such
     - Separated fluid and item search categories
     - Significantly refactored the data processor to improve code quality, simplify some things, and support fluid temperatures
+    - Removed "burnable in" and "compatible fuels" sections, as they were inconsistent and only worked with crafters
   Bugfixes:
     - Fixed a crash with certain modded burner entities
     - Fixed a long-standing bug that materials would be marked as available when usable as an ingredient, even if it was not obtainable
