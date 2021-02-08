@@ -140,6 +140,11 @@ constants.gui_strings = {
     internal = "shift_click_to_get_blueprint",
     localised = {"rb-gui.shift-click-to-get-blueprint"}
   },
+  {
+    dictionary = "gui",
+    internal = "shift_click_to_view_main_fluid",
+    localised = {"rb-gui.shift-click-to-view-main-fluid"}
+  },
   {dictionary = "gui", internal = "stack_size", localised = {"rb-gui.stack-size"}},
   {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
 }

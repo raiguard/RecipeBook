@@ -286,6 +286,9 @@ local formatters = {
       local interaction_help_str = ""
       if not is_label then
         interaction_help_str = "\n"..gui_translations.click_to_view
+        if obj_data.temperature_data then
+          interaction_help_str = interaction_help_str.."\n"..gui_translations.shift_click_to_view_main_fluid
+        end
       end
 
       return base_str..fuel_value_str..interaction_help_str
