@@ -389,8 +389,9 @@ function main_gui.open_page(player, player_table, class, name, options)
       label = label.."[font=default-semibold]"..translations.gui.home_page.."[/font]"
     else
       local obj_data = global.recipe_book[entry.class][entry.name]
-      local _, researched, caption = formatter(obj_data, player_data, {always_show = true, is_label = true})
-      if not researched then
+      local data = formatter(obj_data, player_data, {always_show = true, is_label = true})
+      local caption = data.caption
+      if not data.is_researched then
         caption = "[color="..constants.colors.unresearched.str.."]"..caption.."[/color]"
       end
       label = label..caption
@@ -439,13 +440,13 @@ function main_gui.open_page(player, player_table, class, name, options)
   else
     info_bar.frame.visible = true
 
-    local _, _, caption, tooltip = formatter(
+    local data = formatter(
       global.recipe_book[class][name],
       player_data,
       {always_show = true, is_label = true}
     )
-    info_bar.label.caption = caption
-    info_bar.label.tooltip = tooltip
+    info_bar.label.caption = data.caption
+    info_bar.label.tooltip = data.tooltip
 
     if class == "recipe" then
       local quick_ref_button = info_bar.quick_ref_button

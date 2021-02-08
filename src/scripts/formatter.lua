@@ -196,15 +196,16 @@ local formatters = {
         if fixed_recipe_data then
           local title_str = ("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).."  ")
           -- fixed recipe
-          local _, style, label = formatter(fixed_recipe_data, player_data, {always_show = true})
+          local data = formatter(fixed_recipe_data, player_data, {always_show = true})
+          local label = data.caption
           -- remove glyph from caption, since it's implied
           if player_data.settings.show_glyphs then
             label = string.gsub(label, "^.-nt%]  ", "")
           end
-          if style == "rb_unresearched_list_box_item" then
-            fixed_recipe_str = title_str..build_rich_text("color", "unresearched", label)
-          else
+          if data.is_researched then
             fixed_recipe_str = title_str..label
+          else
+            fixed_recipe_str = title_str..build_rich_text("color", "unresearched", label)
           end
           -- help text
           fixed_recipe_help_str = "\n"..gui_translations.control_click_to_view_fixed_recipe
@@ -411,15 +412,16 @@ local formatters = {
               local material = materials[i]
               local material_data = recipe_book[material.class][material.name]
               if material_data then
-                local _, style, label = formatter(
+                local data = formatter(
                   material_data,
                   player_data,
                   {amount_string = material.amount_string, always_show = true}
                 )
-                if style == "rb_unresearched_list_box_item" then
-                  ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
-                else
+                local label = data.caption
+                if data.is_researched then
                   ip_str_arr[#ip_str_arr+1] = "\n  "..label
+                else
+                  ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
                 end
               end
             end
@@ -446,12 +448,13 @@ local formatters = {
       if required_fluid then
         local fluid_data = global.recipe_book.fluid[required_fluid.name]
         if fluid_data then
-          local _, style, label = formatter(fluid_data, player_data, {amount_string = required_fluid.amount_string})
+          local data = formatter(fluid_data, player_data, {amount_string = required_fluid.amount_string})
+          local label = data.caption
           -- remove glyph from caption, since it's implied
           if player_data.settings.show_glyphs then
             label = string.gsub(label, "^.-nt%]  ", "")
           end
-          if style == "rb_unresearched_list_box_item" then
+          if not data.is_researched then
             label = build_rich_text("color", "unresearched", label)
           end
           required_fluid_str = (
@@ -484,19 +487,19 @@ local function format_item(obj_data, player_data, options)
   if options.always_show or should_show then
     -- format and return
     local formatter_subtable = formatters[obj_data.class]
-    return
-      true,
-      is_researched,
-      get_caption(obj_data, player_data, is_hidden, options.amount_string),
-      formatter_subtable.tooltip(
+    return {
+      caption = get_caption(obj_data, player_data, is_hidden, options.amount_string),
+      is_enabled = formatter_subtable.enabled(obj_data),
+      is_researched = is_researched,
+      tooltip = formatter_subtable.tooltip(
         obj_data,
         player_data,
         is_hidden,
         is_researched,
         options.is_label,
         options.blueprint_recipe
-      ),
-      formatter_subtable.enabled(obj_data)
+      )
+    }
   else
     return false
   end
@@ -519,16 +522,12 @@ function formatter.format(obj_data, player_data, options)
     .."."..tostring(options.blueprint_recipe)
   )
   local cached_return = cache[cache_key]
-  if cached_return then
-    return unpack(cached_return)
+  if cached_return ~= nil then
+    return cached_return
   else
-    local should_show, style, caption, tooltip, enabled = format_item(
-      obj_data,
-      player_data,
-      options
-    )
-    cache[cache_key] = {should_show, style, caption, tooltip, enabled}
-    return should_show, style, caption, tooltip, enabled
+    local data = format_item(obj_data, player_data, options)
+    cache[cache_key] = data
+    return data
   end
 end
 

@@ -86,7 +86,8 @@ function quick_ref_gui.build(player, player_table, name)
     translations = player_table.translations
   }
 
-  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, {always_show = true, is_label = true})
+  local data = formatter(recipe_data, player_data, {always_show = true, is_label = true})
+  local label_caption = data.caption
 
   -- remove glyph from caption, since it's implied
   if player_data.settings.show_glyphs then
@@ -94,7 +95,7 @@ function quick_ref_gui.build(player, player_table, name)
   end
 
   refs.toolbar_label.caption = label_caption
-  refs.toolbar_label.tooltip = label_tooltip
+  refs.toolbar_label.tooltip = data.tooltip
 
   -- add contents to tables
   local recipe_book = global.recipe_book
@@ -103,14 +104,14 @@ function quick_ref_gui.build(player, player_table, name)
     local i = type == "ingredients" and 1 or 0
     for _, obj in ipairs(recipe_data[type]) do
       local obj_data = recipe_book[obj.class][obj.name]
-      local _, researched, _, tooltip = formatter(
+      local formatter_data = formatter(
         obj_data,
         player_data,
         {amount_string = obj.amount_string, always_show = true}
       )
       i = i + 1
-      local button_style = researched and "flib_slot_button_default" or "flib_slot_button_red"
-      tooltip = build_tooltip(tooltip, obj.amount_string)
+      local button_style = formatter_data.is_researched and "flib_slot_button_default" or "flib_slot_button_red"
+      local tooltip = build_tooltip(formatter_data.tooltip, obj.amount_string)
       local shown_string = (
         obj.avg_amount_string
         and "~"..obj.avg_amount_string
@@ -174,12 +175,13 @@ end
 -- we only need to update the recipe name label and material tooltips
 function quick_ref_gui.refresh_contents(player_data, name, refs)
   local recipe_data = global.recipe_book.recipe[name]
-  local _, _, label_caption, label_tooltip = formatter(recipe_data, player_data, {always_show = true, is_label = true})
+  local data = formatter(recipe_data, player_data, {always_show = true, is_label = true})
+  local label_caption = data.caption
   if player_data.settings.show_glyphs then
     label_caption = string.gsub(label_caption, "^.-nt%]  ", "")
   end
   refs.toolbar_label.caption = label_caption
-  refs.toolbar_label.tooltip = label_tooltip
+  refs.toolbar_label.tooltip = data.tooltip
 
   local material_data = global.recipe_book.material
   for _, type in ipairs{"ingredients", "products"} do
@@ -188,12 +190,12 @@ function quick_ref_gui.refresh_contents(player_data, name, refs)
     local i = type == "ingredients" and 1 or 0
     for _, obj in ipairs(recipe_data[type]) do
       i = i + 1
-      local _, _, _, tooltip = formatter(
+      local formatter_data = formatter(
         material_data[obj.type.."."..obj.name],
         player_data,
         {amount_string = obj.amount_string, always_show = true}
       )
-      children[i].tooltip = build_tooltip(tooltip, obj.amount_string)
+      children[i].tooltip = build_tooltip(formatter_data.tooltip, obj.amount_string)
     end
     group.label.caption = {"rb-gui."..type, i - (type == "ingredients" and 1 or 0)}
   end

@@ -44,7 +44,7 @@ function info_list_box.update(tbl, list_box, player_data, options)
     -- get object information
     local obj = tbl[j]
     local obj_data = recipe_book[obj.class][obj.name]
-    local should_add, researched, caption, tooltip, enabled = formatter(
+    local data = formatter(
       obj_data,
       player_data,
       {
@@ -54,24 +54,24 @@ function info_list_box.update(tbl, list_box, player_data, options)
       }
     )
 
-    if should_add then
+    if data then
       i = i + 1
       -- update or add item
-      local style = researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+      local style = data.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
       local item = children[i]
       if item then
         item.style = style
-        item.caption = caption
-        item.tooltip = tooltip
-        item.enabled = enabled
+        item.caption = data.caption
+        item.tooltip = data.tooltip
+        item.enabled = data.is_enabled
         gui.update_tags(item, {obj = {class = obj.class, name = obj.name}})
       else
         add{
           type = "button",
           style = style,
-          caption = caption,
-          tooltip = tooltip,
-          enabled = enabled,
+          caption = data.caption,
+          tooltip = data.tooltip,
+          enabled = data.is_enabled,
           mouse_button_filter = {"left"},
           tags = {
             [script.mod_name] = {
@@ -123,24 +123,24 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
     local entry = tbl[j]
     if entry.class ~= "home" then
       local obj_data = recipe_book[entry.class][entry.name]
-      local should_add, researched, caption, tooltip = formatter(obj_data, player_data)
-      local style = researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+      local data = formatter(obj_data, player_data)
 
-      if should_add then
+      if data then
         i = i + 1
         -- add or update item
+        local style = data.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
         local item = children[i]
         if item then
           item.style = style
-          item.caption = caption
-          item.tooltip = tooltip
+          item.caption = data.caption
+          item.tooltip = data.tooltip
           gui.update_tags(item, {class = entry.class, name = entry.name})
         else
           add{
             type = "button",
             style = style,
-            caption = caption,
-            tooltip = tooltip,
+            caption = data.caption,
+            tooltip = data.tooltip,
             tags = {
               [script.mod_name] = {
                 flib = {

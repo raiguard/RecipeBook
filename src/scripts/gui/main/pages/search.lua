@@ -125,26 +125,23 @@ function search_page.handle_action(msg, e)
     if string.find(string.lower(match_internal and internal or translation), query) then
       local obj_data = rb_data[internal]
 
-      local should_add, researched, caption, tooltip = formatter(
-        obj_data,
-        player_data
-      )
-      local style = researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
-      if should_add then
+      local data = formatter(obj_data, player_data)
+      if data then
         i = i + 1
         -- create or modify element
+        local style = data.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
         local child = children[i]
         if child then
           child.style = style
-          child.caption = caption
-          child.tooltip = tooltip
+          child.caption = data.caption
+          child.tooltip = data.tooltip
           gui.update_tags(child, {obj = {class = category, name = internal}})
         else
           add{
             type = "button",
             style = style,
-            caption = caption,
-            tooltip = tooltip,
+            caption = data.caption,
+            tooltip = data.tooltip,
             mouse_button_filter = {"left"},
             tags = {
               [script.mod_name] = {
