@@ -189,6 +189,13 @@ constants.main_pages = {
 
 constants.max_listbox_height = 6
 
+constants.nav_event_properties = {
+  ["rb-jump-to-front"] = {action_name = "navigate_forward", shift = true},
+  ["rb-navigate-backward"] = {action_name = "navigate_backward"},
+  ["rb-navigate-forward"] = {action_name = "navigate_forward"},
+  ["rb-return-to-home"] = {action_name = "navigate_backward", shift = true}
+}
+
 constants.open_fluid_types = {
   ["fluid-wagon"] = true,
   ["infinity-pipe"] = true,

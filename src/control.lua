@@ -174,6 +174,17 @@ event.register("rb-toggle-gui", function(e)
   end
 end)
 
+event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front"}, function(e)
+  local player_table = global.players[e.player_index]
+  if player_table.flags.can_open_gui and player_table.flags.gui_open then
+    local event_properties = constants.nav_event_properties[e.input_name]
+    main_gui.handle_action(
+      {gui = "main", action = event_properties.action_name},
+      {player_index = e.player_index, shift = event_properties.shift}
+    )
+  end
+end)
+
 -- PLAYER
 
 event.on_player_created(function(e)
