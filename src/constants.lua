@@ -251,6 +251,14 @@ constants.settings = {
     use_internal_names = {
       default_value = false,
       has_tooltip = true
+    },
+    show_fluid_temperatures = {
+      default_value = true,
+      has_tooltip = true
+    },
+    show_fluid_temperature_ranges = {
+      default_value = true,
+      has_tooltip = true
     }
   }
 }

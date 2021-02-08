@@ -183,7 +183,7 @@ function quick_ref_gui.refresh_contents(player_data, name, refs)
   refs.toolbar_label.caption = label_caption
   refs.toolbar_label.tooltip = data.tooltip
 
-  local material_data = global.recipe_book.material
+  local recipe_book = global.recipe_book
   for _, type in ipairs{"ingredients", "products"} do
     local group = refs[type]
     local children = group.table.children
@@ -191,7 +191,7 @@ function quick_ref_gui.refresh_contents(player_data, name, refs)
     for _, obj in ipairs(recipe_data[type]) do
       i = i + 1
       local formatter_data = formatter(
-        material_data[obj.type.."."..obj.name],
+        recipe_book[obj.class][obj.name],
         player_data,
         {amount_string = obj.amount_string, always_show = true}
       )

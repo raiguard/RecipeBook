@@ -142,6 +142,7 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
             style = style,
             caption = data.caption,
             tooltip = data.tooltip,
+            mouse_button_filter = {"left"},
             tags = {
               [script.mod_name] = {
                 flib = {

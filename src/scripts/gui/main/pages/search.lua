@@ -85,6 +85,9 @@ function search_page.handle_action(msg, e)
   local scroll = refs.search.results_scroll_pane
   local rb_data = global.recipe_book[category]
 
+  local show_temperatures = player_table.settings.show_fluid_temperatures
+  local show_temp_ranges = player_table.settings.show_fluid_temperature_ranges
+
   -- hide limit frame, show it again later if there's more than 50 results
   local limit_frame = refs.search.limit_frame
   limit_frame.visible = false
@@ -125,6 +128,16 @@ function search_page.handle_action(msg, e)
     if string.find(string.lower(match_internal and internal or translation), query) then
       local obj_data = rb_data[internal]
 
+      -- check temperature settings
+      if category == "fluid" then
+        local temperature_data = obj_data.temperature_data
+        if temperature_data then
+          if not (show_temperatures and (temperature_data.min == temperature_data.max or show_temp_ranges)) then
+            goto continue
+          end
+        end
+      end
+
       local data = formatter(obj_data, player_data)
       if data then
         i = i + 1
@@ -159,6 +172,8 @@ function search_page.handle_action(msg, e)
           return true
         end
       end
+
+      ::continue::
     end
   end
 

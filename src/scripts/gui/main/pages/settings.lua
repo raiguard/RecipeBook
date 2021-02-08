@@ -46,7 +46,7 @@ function settings_page.build(settings)
     }
   }
   for name in pairs(game.recipe_category_prototypes) do
-    recipe_categories_output.children[#recipe_categories_output.children+1] = {
+    recipe_categories_output.children[#recipe_categories_output.children + 1] = {
       type = "checkbox",
       caption = name,
       state = settings.recipe_categories[name],
