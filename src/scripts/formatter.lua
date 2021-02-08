@@ -11,7 +11,6 @@ local caches = {}
 local class_to_font_glyph = constants.class_to_font_glyph
 local colors = constants.colors
 local concat = table.concat
-local unpack = table.unpack
 
 -- string builders
 local function build_rich_text(key, value, inner)
@@ -23,10 +22,12 @@ end
 
 local function get_properties(obj_data, force_index)
   local researched
-  if obj_data.researched_forces then
+  if obj_data.enabled_at_start then
+    researched = true
+  elseif obj_data.researched_forces then
     researched = obj_data.researched_forces[force_index] or false
   else
-    researched = obj_data.available_to_all_forces or obj_data.available_to_forces[force_index] or false
+    researched = true
   end
   return obj_data.hidden, researched
 end

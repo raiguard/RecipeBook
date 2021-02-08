@@ -13,12 +13,12 @@ return function(recipe_book, strings)
     end
 
     recipe_book.lab[name] = {
-      available_to_forces = {},
       class = "lab",
       hidden = prototype.has_flag("hidden"),
       inputs = table.map(prototype.lab_inputs, function(v) return {class = "item", name = v} end),
       prototype_name = name,
-      researching_speed = prototype.researching_speed
+      researching_speed = prototype.researching_speed,
+      unlocked_by = {}
     }
     util.add_string(strings, {dictionary = "lab", internal = name, localised = prototype.localised_name})
     util.add_string(strings, {

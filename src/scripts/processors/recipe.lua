@@ -8,10 +8,14 @@ return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.recipe_prototypes) do
     local category = prototype.category
 
+    local enabled_at_start = prototype.enabled
+
     local data = {
-      available_to_forces = {},
+      associated_crafters = {},
+      associated_labs = {},
       category = category,
       class = "recipe",
+      enabled_at_start = enabled_at_start,
       energy = prototype.energy,
       hidden = prototype.hidden,
       made_in = {},
@@ -37,6 +41,10 @@ return function(recipe_book, strings, metadata)
         lookup_table[#lookup_table + 1] = {class = "recipe", name = name}
         output[i] = material_io_data
         material_data.recipe_categories[#material_data.recipe_categories + 1] = category
+
+        if enabled_at_start then
+          material_data.enabled_at_start = true
+        end
 
         -- fluid temperatures
         if material.type == "fluid" then

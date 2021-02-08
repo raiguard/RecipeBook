@@ -25,14 +25,21 @@ return function(recipe_book, strings, metadata)
     end
     local default_categories = (#launch_products > 0 and table.shallow_copy(metadata.rocket_silo_categories)) or {}
 
+    local place_result = prototype.place_result
+    if place_result then
+      place_result = place_result.name
+      if not (recipe_book.crafter[place_result] or recipe_book.lab[place_result]) then
+        place_result = nil
+      end
+    end
+
     recipe_book.item[name] = {
-      available_to_forces = {},
       class = "item",
       fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
       hidden = prototype.has_flag("hidden"),
       ingredient_in = {},
       mined_from = {},
-      place_result = prototype.place_result and prototype.place_result.name or nil,
+      place_result = place_result,
       product_of = {},
       prototype_name = name,
       recipe_categories = default_categories,

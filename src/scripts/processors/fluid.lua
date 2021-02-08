@@ -5,7 +5,6 @@ local fluid_proc = {}
 function fluid_proc.build(recipe_book, strings)
   for name, prototype in pairs(game.fluid_prototypes) do
     recipe_book.fluid[name] = {
-      available_to_forces = {},
       class = "fluid",
       default_temperature = prototype.default_temperature,
       fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
@@ -39,17 +38,14 @@ end
 function fluid_proc.add_temperature(recipe_book, strings, fluid_data, temperature_data)
   local fluid_name = fluid_data.prototype_name
   local data = {
-    available_to_forces = {},
     class = "fluid",
     combined_name = fluid_name.."."..temperature_data.string,
     default_temperature = fluid_data.default_temperature,
     fuel_value = fluid_data.fuel_value,
     hidden = fluid_data.hidden,
     ingredient_in = util.unique_obj_array(),
-    mined_from = {}, -- TODO: remove?
     product_of = util.unique_obj_array(),
     prototype_name = fluid_name,
-    pumped_by = {}, -- TODO: remove?
     recipe_categories = {},
     temperature_data = temperature_data,
     unlocked_by = util.unique_obj_array()
@@ -92,8 +88,14 @@ function fluid_proc.add_to_matching_temperatures(recipe_book, strings, fluid_dat
   for _, subfluid_data in pairs(fluid_data.temperatures) do
     if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
       for lookup_type, obj in pairs(sets) do
+        if lookup_type == "unlocked_by" then
+          subfluid_data.researched_forces = {}
+        end
         local list = subfluid_data[lookup_type]
         list[#list + 1] = obj
+      end
+      if fluid_data.enabled_at_start then
+        subfluid_data.enabled_at_start = true
       end
     end
   end

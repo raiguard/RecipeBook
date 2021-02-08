@@ -4,7 +4,6 @@ return function(recipe_book, strings, metadata)
   -- characters as crafters
   for name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "character"}}) do
     recipe_book.crafter[name] = {
-      available_to_all_forces = true,
       blueprintable = false,
       categories = util.convert_and_sort(prototype.crafting_categories),
       class = "crafter",
@@ -43,7 +42,6 @@ return function(recipe_book, strings, metadata)
 
     local is_hidden = prototype.has_flag("hidden")
     recipe_book.crafter[name] = {
-      available_to_forces = {},
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       categories = util.convert_and_sort(prototype.crafting_categories),
       class = "crafter",
@@ -52,7 +50,8 @@ return function(recipe_book, strings, metadata)
       fixed_recipe = prototype.fixed_recipe,
       hidden = is_hidden,
       prototype_name = name,
-      rocket_parts_required = prototype.rocket_parts_required
+      rocket_parts_required = prototype.rocket_parts_required,
+      unlocked_by = {}
     }
     util.add_string(strings, {dictionary = "crafter", internal = name, localised = prototype.localised_name})
     util.add_string(strings, {

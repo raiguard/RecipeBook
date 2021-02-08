@@ -11,7 +11,6 @@ return function(recipe_book, strings)
     end
 
     recipe_book.offshore_pump[name] = {
-      available_to_all_forces = true,
       class = "offshore_pump",
       fluid = fluid.name,
       hidden = prototype.has_flag("hidden"),

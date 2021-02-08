@@ -4,7 +4,8 @@ local crafter_page = {}
 
 function crafter_page.build()
   local elems =  {
-    info_list_box.build({"rb-gui.compatible-recipes"}, 1, {"crafter", "recipes"})
+    info_list_box.build({"rb-gui.compatible-recipes"}, 1, {"crafter", "recipes"}),
+    info_list_box.build({"rb-gui.unlocked-by"}, 1, {"crafter", "unlocked_by"})
   }
 
   return elems
@@ -18,7 +19,12 @@ function crafter_page.update(int_name, gui_data, player_data)
     obj_data.compatible_recipes,
     refs.crafter.recipes,
     player_data,
-    {max_listbox_height = (not obj_data.fuel_categories) and 15 or 8}
+    {max_listbox_height = obj_data.researched_forces and 11 or 15}
+  )
+  info_list_box.update(
+    obj_data.unlocked_by,
+    refs.crafter.unlocked_by,
+    player_data
   )
 end
 

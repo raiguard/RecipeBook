@@ -50,16 +50,6 @@ function global_data.build_recipe_book()
   -- TECHNOLOGIES
   technology_proc(recipe_book, strings)
 
-  for _, class in ipairs{"fluid", "item"} do
-    for _, material_data in pairs(recipe_book[class]) do
-      if #material_data.unlocked_by == 0 then
-        -- set unlocked by default
-        material_data.available_to_forces = nil
-        material_data.available_to_all_forces = true
-      end
-    end
-  end
-
   strings.__index = nil
   global.recipe_book = recipe_book
   global.strings = strings
@@ -68,8 +58,8 @@ end
 local function unlock_launch_products(recipe_book, launch_products, force_index)
   for _, launch_product in ipairs(launch_products) do
     local product_data = recipe_book.item[launch_product.name]
-    if product_data.available_to_forces then
-      product_data.available_to_forces[force_index] = true
+    if product_data.researched_forces then
+      product_data.researched_forces[force_index] = true
     end
     unlock_launch_products(recipe_book, product_data.rocket_launch_products, force_index)
   end
@@ -80,8 +70,9 @@ local function set_recipe_available(recipe_book, recipe_data, force_index)
   local disabled = constants.disabled_recipe_categories[recipe_data.category]
   if disabled and disabled == 0 then return end
 
-  recipe_data.available_to_forces[force_index] = true
+  recipe_data.researched_forces[force_index] = true
 
+  -- products
   for _, product in ipairs(recipe_data.products) do
     local product_data = recipe_book[product.class][product.name]
 
@@ -89,30 +80,30 @@ local function set_recipe_available(recipe_book, recipe_data, force_index)
     if product_data.temperature_data then
       -- add to matching fluid temperatures
       for _, subfluid_data in pairs(recipe_book.fluid[product_data.prototype_name].temperatures) do
-        if
-          fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data)
-          and subfluid_data.available_to_forces
-        then
-          subfluid_data.available_to_forces[force_index] = true
+        if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
+          subfluid_data.researched_forces[force_index] = true
         end
       end
-    elseif product_data.available_to_forces then
-      product_data.available_to_forces[force_index] = true
+    else
+      product_data.researched_forces[force_index] = true
     end
 
     if product.class == "item" then
-      -- crafter / lab
-      local place_result = product_data.place_result
-      if place_result then
-        local entity_data = recipe_book.crafter[place_result] or recipe_book.lab[place_result]
-        if entity_data and entity_data.available_to_forces then
-          entity_data.available_to_forces[force_index] = true
-        end
-      end
-
       -- rocket launch products
       unlock_launch_products(recipe_book, product_data.rocket_launch_products, force_index)
     end
+  end
+
+  -- crafters
+  for _, crafter_name in ipairs(recipe_data.associated_crafters) do
+    local crafter_data = recipe_book.crafter[crafter_name]
+    crafter_data.researched_forces[force_index] = true
+  end
+
+  -- labs
+  for _, lab_name in ipairs(recipe_data.associated_labs) do
+    local lab_data = recipe_book.lab[lab_name]
+    lab_data.researched_forces[force_index] = true
   end
 end
 
@@ -135,7 +126,7 @@ function global_data.check_force_recipes(force)
   for name, recipe in pairs(force.recipes) do
     if recipe.enabled then
       local recipe_data = recipe_book.recipe[name]
-      if recipe_data then
+      if recipe_data.researched_forces then
         set_recipe_available(recipe_book, recipe_data, force_index)
       end
     end

@@ -29,6 +29,7 @@ function info_list_box.build(caption, rows, save_location, tooltip)
 end
 
 function info_list_box.update(tbl, list_box, player_data, options)
+  tbl = tbl or {}
   options = options or {}
 
   local recipe_book = global.recipe_book

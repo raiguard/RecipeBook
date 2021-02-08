@@ -22,7 +22,6 @@ return function(recipe_book, strings)
     end
 
     recipe_book.resource[name] = {
-      available_to_all_forces = true,
       class = "resource",
       prototype_name = name,
       required_fluid = required_fluid
