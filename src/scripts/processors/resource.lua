@@ -19,6 +19,14 @@ return function(recipe_book, strings)
         name = mineable_properties.required_fluid,
         amount_string = util.build_amount_string{amount = mineable_properties.fluid_amount}
       }
+    else
+      -- enable resource items that are hand-minable
+      for _, product in ipairs(mineable_properties.products) do
+        if product.type == "item" then
+          local product_data = recipe_book[product.type][product.name]
+          product_data.enabled_at_start = true
+        end
+      end
     end
 
     recipe_book.resource[name] = {

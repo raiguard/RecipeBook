@@ -17,7 +17,9 @@ Date: ????
     - Significantly refactored the data processor to improve code quality, simplify some things, and support fluid temperatures
   Bugfixes:
     - Fixed a crash with certain modded burner entities
+    - Fixed a long-standing bug that materials would be marked as available when usable as an ingredient, even if it was not obtainable
     - Fixed that even if a page was already open, it would be added again to the session history and re-opened
+    - Fixed that hand-minable resource items would be marked as unavailable if no available recipes produced it
     - Fixed the session history active line not lining up with the other lines
 ---------------------------------------------------------------------------------------------------
 Version: 2.4.1
