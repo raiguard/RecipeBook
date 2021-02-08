@@ -128,7 +128,7 @@ function player_data.check_cursor_stack(player)
       cursor_stack
       and cursor_stack.valid
       and cursor_stack.valid_for_read
-      and global.recipe_book.material["item."..cursor_stack.name]
+      and global.recipe_book.item[cursor_stack.name]
     then
       return cursor_stack.name
     end
