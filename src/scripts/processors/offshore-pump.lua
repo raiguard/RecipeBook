@@ -7,7 +7,7 @@ return function(recipe_book, strings)
     local fluid = prototype.fluid
     local fluid_data = recipe_book.fluid[fluid.name]
     if fluid_data then
-      fluid_data.pumped_by[#fluid_data.pumped_by + 1] = {class = "offshore-pump", name = name}
+      fluid_data.pumped_by[#fluid_data.pumped_by + 1] = {class = "offshore_pump", name = name}
     end
 
     recipe_book.offshore_pump[name] = {
