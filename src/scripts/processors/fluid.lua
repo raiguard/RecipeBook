@@ -37,13 +37,14 @@ end
 
 function fluid_proc.add_temperature(recipe_book, strings, fluid_data, temperature_data)
   local fluid_name = fluid_data.prototype_name
+  local combined_name = fluid_name.."."..temperature_data.string
   local data = {
     class = "fluid",
-    combined_name = fluid_name.."."..temperature_data.string,
     default_temperature = fluid_data.default_temperature,
     fuel_value = fluid_data.fuel_value,
     hidden = fluid_data.hidden,
     ingredient_in = util.unique_obj_array(),
+    name = combined_name,
     product_of = util.unique_obj_array(),
     prototype_name = fluid_name,
     recipe_categories = util.unique_string_array(),
@@ -61,7 +62,6 @@ function fluid_proc.add_temperature(recipe_book, strings, fluid_data, temperatur
   end
 
   -- save
-  local combined_name = fluid_name.."."..temperature_data.string
   recipe_book.fluid[combined_name] = data
   fluid_data.temperatures[temperature_data.string] = data
 

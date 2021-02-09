@@ -41,9 +41,8 @@ function info_list_box.update(tbl, list_box, player_data, options)
 
   -- loop through input table
   local i = options.starting_index or 0
-  for j = 1, #tbl do
+  for _, obj in pairs(tbl) do
     -- get object information
-    local obj = tbl[j]
     local obj_data = recipe_book[obj.class][obj.name]
     local data = formatter(
       obj_data,
@@ -220,7 +219,7 @@ function info_list_box.handle_click(e, player, player_table)
   elseif obj.class == "fluid" then
     local fluid_data = global.recipe_book.fluid[obj.name]
     if e.shift and fluid_data.temperature_data then
-      return "fluid", fluid_data.prototype_name
+      return "fluid", fluid_data.name
     else
       return "fluid", obj.name
     end

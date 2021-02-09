@@ -94,7 +94,7 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
     amount_str = build_rich_text("font", "default-semibold", amount).."  "
   end
   -- name
-  local internal_name = obj_data.combined_name or obj_data.prototype_name
+  local internal_name = obj_data.name or obj_data.prototype_name
   local name_str = (
     player_settings.use_internal_names
     and internal_name
@@ -113,7 +113,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
 
   -- object properties
   local class = obj_data.class
-  local internal_name = obj_data.combined_name or obj_data.prototype_name
+  local internal_name = obj_data.name or obj_data.prototype_name
 
   -- translation
   local name = translations[class][internal_name]
@@ -518,7 +518,7 @@ function formatter.format(obj_data, player_data, options)
   local _, is_researched = get_properties(obj_data, player_data.force_index)
   local cache_key = (
     obj_data.class
-    .."."..(obj_data.combined_name or obj_data.prototype_name)
+    .."."..(obj_data.name or obj_data.prototype_name)
     .."."..tostring(is_researched)
     .."."..tostring(options.amount_string)
     .."."..tostring(options.always_show)

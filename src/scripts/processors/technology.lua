@@ -21,10 +21,12 @@ return function(recipe_book, strings)
 
             -- material
             if product_data.temperature_data then
+              local base_fluid_data = recipe_book.fluid[product_data.prototype_name]
+              base_fluid_data.unlocked_by[#base_fluid_data.unlocked_by + 1] = {class = "technology", name = name}
               fluid_proc.add_to_matching_temperatures(
                 recipe_book,
                 strings,
-                recipe_book.fluid[product_data.prototype_name],
+                base_fluid_data,
                 product_data.temperature_data,
                 {unlocked_by = {class = "technology", name = name}}
               )
