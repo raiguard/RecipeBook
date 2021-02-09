@@ -219,7 +219,7 @@ function info_list_box.handle_click(e, player, player_table)
   elseif obj.class == "fluid" then
     local fluid_data = global.recipe_book.fluid[obj.name]
     if e.shift and fluid_data.temperature_data then
-      return "fluid", fluid_data.name
+      return "fluid", fluid_data.prototype_name
     else
       return "fluid", obj.name
     end

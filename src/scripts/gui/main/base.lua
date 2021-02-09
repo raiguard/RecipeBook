@@ -117,6 +117,15 @@ function main_gui.build(player, player_table)
                   {
                     type = "sprite-button",
                     style = "tool_button",
+                    sprite = "rb_fluid_black",
+                    tooltip = {"rb-gui.view-base-fluid"},
+                    mouse_button_filter = {"left"},
+                    ref = {"base", "info_bar", "view_base_fluid_button"},
+                    -- the action is set and changed in the open_page function
+                  },
+                  {
+                    type = "sprite-button",
+                    style = "tool_button",
                     sprite = "rb_clipboard_black",
                     tooltip = {"rb-gui.open-quick-reference"},
                     mouse_button_filter = {"left"},
@@ -440,8 +449,10 @@ function main_gui.open_page(player, player_table, class, name, options)
   else
     info_bar.frame.visible = true
 
+    local obj_data = global.recipe_book[class][name]
+
     local data = formatter(
-      global.recipe_book[class][name],
+      obj_data,
       player_data,
       {always_show = true, is_label = true}
     )
@@ -458,6 +469,17 @@ function main_gui.open_page(player, player_table, class, name, options)
       end
     else
       info_bar.quick_ref_button.visible = false
+    end
+
+    local base_button = info_bar.view_base_fluid_button
+    if class == "fluid" and obj_data.temperature_data then
+      base_button.visible = true
+      gui.update_tags(
+        base_button,
+        {flib = {on_click = {gui = "main", action = "open_page", class = "fluid", name = obj_data.prototype_name}}}
+      )
+    else
+      base_button.visible = false
     end
 
     if player_table.favorites[class.."."..name] then
