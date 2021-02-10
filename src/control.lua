@@ -123,7 +123,7 @@ event.on_lua_shortcut(function(e)
       if item_to_open then
         main_gui.open_page(player, player_table, "item", item_to_open)
         if not player_table.flags.gui_open then
-          main_gui.open(player, player_table)
+          main_gui.open(player, player_table, true)
         end
       else
         main_gui.toggle(player, player_table)
@@ -144,7 +144,7 @@ event.register("rb-toggle-gui", function(e)
       if item_to_open then
         main_gui.open_page(player, player_table, "item", item_to_open)
         if not player_table.flags.gui_open then
-          main_gui.open(player, player_table)
+          main_gui.open(player, player_table, true)
         end
         return
       end
@@ -159,10 +159,10 @@ event.register("rb-toggle-gui", function(e)
           local locked_fluid = fluidbox.get_locked_fluid(1)
           if locked_fluid then
             -- check recipe book to see if this fluid has a material page
-            if global.recipe_book.material["fluid."..locked_fluid] then
+            if global.recipe_book.fluid[locked_fluid] then
               main_gui.open_page(player, player_table, "fluid", locked_fluid)
               if not player_table.flags.gui_open then
-                main_gui.open(player, player_table)
+                main_gui.open(player, player_table, true)
               end
               return
             end
