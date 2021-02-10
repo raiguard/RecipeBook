@@ -25,7 +25,7 @@ function util.build_amount_string(material)
   end
 
   -- second return is the "average" amount
-  return amount_string -- , amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
+  return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
 end
 
 function util.build_temperature_data(fluid)
