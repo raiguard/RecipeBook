@@ -166,7 +166,7 @@ local ingredients_products_keys = {ingredients = true, products = true}
 
 local formatters = {
   crafter = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _, blueprint_recipe)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label, blueprint_recipe)
       -- locals
       local translations = player_data.translations
       local gui_translations = translations.gui
@@ -209,7 +209,9 @@ local formatters = {
             fixed_recipe_str = title_str..build_rich_text("color", "unresearched", label)
           end
           -- help text
-          fixed_recipe_help_str = "\n"..gui_translations.control_click_to_view_fixed_recipe
+          if not is_label then
+            fixed_recipe_help_str = "\n"..gui_translations.control_click_to_view_fixed_recipe
+          end
         end
       end
       -- crafting speed
@@ -238,15 +240,18 @@ local formatters = {
         end
       end
       local fuel_categories_str = concat(fuel_categories_str_arr)
-      -- open page help
-      local open_page_help_str = "\n"..gui_translations.click_to_view
-      -- blueprintable
+      local open_page_help_str = ""
       local blueprintable_str = ""
-      if blueprint_recipe then
-        if obj_data.blueprintable then
-          blueprintable_str = "\n"..gui_translations.shift_click_to_get_blueprint
-        else
-          blueprintable_str = "\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available)
+      if not is_label then
+        -- open page help
+        open_page_help_str = "\n"..gui_translations.click_to_view
+        -- blueprintable
+        if blueprint_recipe then
+          if obj_data.blueprintable then
+            blueprintable_str = "\n"..gui_translations.shift_click_to_get_blueprint
+          else
+            blueprintable_str = "\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available)
+          end
         end
       end
 
