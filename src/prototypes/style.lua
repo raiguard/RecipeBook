@@ -15,6 +15,13 @@ styles.rb_list_box_item = {
   disabled_font_color = styles.list_box_item.default_font_color
 }
 
+styles.rb_last_selected_list_box_item = {
+  type = "button_style",
+  parent = "rb_list_box_item",
+  default_font_color = constants.colors.yellow.tbl,
+  disabled_font_color = constants.colors.yellow.tbl
+}
+
 styles.rb_unresearched_list_box_item = {
   type = "button_style",
   parent = "rb_list_box_item",

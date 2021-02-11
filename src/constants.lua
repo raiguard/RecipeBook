@@ -65,6 +65,10 @@ constants.colors = {
     str = "128, 206, 240",
     tbl = {128, 206, 240}
   },
+  yellow = {
+    str = "255, 240, 69",
+    tbl = {255, 240, 69}
+  },
   unresearched = {
     str = "255, 142, 142",
     tbl = {255, 142, 142}

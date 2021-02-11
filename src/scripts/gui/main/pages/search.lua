@@ -148,7 +148,7 @@ function search_page.handle_action(msg, e)
           child.style = style
           child.caption = data.caption
           child.tooltip = data.tooltip
-          gui.update_tags(child, {obj = {class = category, name = internal}})
+          gui.update_tags(child, {is_researched = data.is_researched, obj = {class = category, name = internal}})
         else
           add{
             type = "button",
@@ -161,6 +161,8 @@ function search_page.handle_action(msg, e)
                 flib = {
                   on_click = {gui = "main", action = "handle_list_box_item_click"}
                 },
+                is_researched = data.is_researched,
+                is_search_item = true,
                 obj = {class = category, name = internal}
               }
             }

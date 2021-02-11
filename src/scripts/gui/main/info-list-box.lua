@@ -42,25 +42,33 @@ function info_list_box.update(tbl, list_box, player_data, options)
   -- loop through input table
   local i = options.starting_index or 0
 
+  local open_class = player_data.open_page_data.class
+  local open_name = player_data.open_page_data.name
+
   local iterator = options.use_pairs and pairs or ipairs
   for _, obj in iterator(tbl) do
     if obj.class ~= "home" then -- for the history listbox specifically
       -- get object information
       local obj_data = recipe_book[obj.class][obj.name]
       local data = formatter(
-      obj_data,
-      player_data,
-      {
-        amount_string = obj.amount_string,
-        always_show = options.always_show,
-        blueprint_recipe = options.blueprint_recipe
-      }
+        obj_data,
+        player_data,
+        {
+          always_show = options.always_show,
+          amount_string = obj.amount_string,
+          blueprint_recipe = options.blueprint_recipe
+        }
       )
 
       if data then
         i = i + 1
         -- update or add item
-        local style = data.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+        local style
+        if obj.class == open_class and obj.name == open_name then
+          style = "rb_last_selected_list_box_item"
+        else
+          style = data.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+        end
         local item = children[i]
         if item then
           item.style = style
@@ -120,7 +128,19 @@ end
 
 -- if values are returned, the corresponding page is opened
 function info_list_box.handle_click(e, player, player_table)
-  local obj = gui.get_tags(e.element).obj
+  local element = e.element
+  local tags = gui.get_tags(element)
+  local obj = tags.obj
+  if tags.is_search_item then
+    local search_refs = player_table.guis.main.refs.search
+    local last_selected = search_refs.last_selected_item
+    if last_selected and last_selected.valid then
+      local is_researched = gui.get_tags(last_selected).is_researched
+      last_selected.style = is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+    end
+    element.style = "rb_last_selected_list_box_item"
+    search_refs.last_selected_item = element
+  end
   if obj.class == "crafter" then
     local crafter_data = global.recipe_book.crafter[obj.name]
     if crafter_data then

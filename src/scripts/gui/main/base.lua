@@ -335,6 +335,7 @@ function main_gui.open_page(player, player_table, class, name, options)
     favorites = player_table.favorites,
     force_index = player.force.index,
     history = player_table.history.global,
+    open_page_data = open_page_data,
     player_index = player.index,
     settings = player_table.settings,
     translations = player_table.translations
@@ -485,7 +486,7 @@ function main_gui.open_page(player, player_table, class, name, options)
   end
 
   -- update page information
-  pages[class].update(name, gui_data, player_data, home_data)
+  pages[class].update(name, gui_data, player_data)
 
   -- update visible page
   refs[gui_data.state.open_page.class].flow.visible = false
