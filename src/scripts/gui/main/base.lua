@@ -319,8 +319,8 @@ function main_gui.open_page(player, player_table, class, name, options)
   local translations = player_table.translations
 
   -- don't do anything if the page is already open
+  local open_page_data = gui_data.state.open_page
   if not options.force_open then
-    local open_page_data = gui_data.state.open_page
     if
       open_page_data.class ~= "home"
       and open_page_data.class == class
@@ -332,19 +332,12 @@ function main_gui.open_page(player, player_table, class, name, options)
 
   -- assemble various player data to be passed later
   local player_data = {
+    favorites = player_table.favorites,
     force_index = player.force.index,
+    history = player_table.history.global,
     player_index = player.index,
     settings = player_table.settings,
     translations = player_table.translations
-  }
-
-  -- extra data for the home page
-  -- this cannot be kept in player_data due to memoization. if it were,
-  -- the cache would be invalidated whenever the player did anything
-  -- TODO: this doesn't need to be separate any more?
-  local home_data = {
-    favorites = player_table.favorites,
-    history = player_table.history.global
   }
 
   -- update search history

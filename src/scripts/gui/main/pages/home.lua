@@ -10,10 +10,13 @@ function home_page.build()
   }
 end
 
-function home_page.update(_, gui_data, player_data, home_data)
-  local update = info_list_box.update_home
-  update("favorites", gui_data, player_data, home_data)
-  update("history", gui_data, player_data, home_data)
+function home_page.update(_, gui_data, player_data)
+  local options = {
+    always_show = true,
+    keep_listbox_properties = true
+  }
+  info_list_box.update(player_data.favorites, gui_data.refs.home.favorites, player_data, options)
+  info_list_box.update(player_data.history, gui_data.refs.home.history, player_data, options)
 end
 
 return home_page

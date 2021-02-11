@@ -41,10 +41,13 @@ function info_list_box.update(tbl, list_box, player_data, options)
 
   -- loop through input table
   local i = options.starting_index or 0
-  for _, obj in pairs(tbl) do
-    -- get object information
-    local obj_data = recipe_book[obj.class][obj.name]
-    local data = formatter(
+
+  local iterator = options.use_pairs and pairs or ipairs
+  for _, obj in iterator(tbl) do
+    if obj.class ~= "home" then -- for the history listbox specifically
+      -- get object information
+      local obj_data = recipe_book[obj.class][obj.name]
+      local data = formatter(
       obj_data,
       player_data,
       {
@@ -52,102 +55,34 @@ function info_list_box.update(tbl, list_box, player_data, options)
         always_show = options.always_show,
         blueprint_recipe = options.blueprint_recipe
       }
-    )
-
-    if data then
-      i = i + 1
-      -- update or add item
-      local style = data.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
-      local item = children[i]
-      if item then
-        item.style = style
-        item.caption = data.caption
-        item.tooltip = data.tooltip
-        item.enabled = data.is_enabled
-        gui.update_tags(item, {obj = {class = obj.class, name = obj.name}})
-      else
-        add{
-          type = "button",
-          style = style,
-          caption = data.caption,
-          tooltip = data.tooltip,
-          enabled = data.is_enabled,
-          mouse_button_filter = {"left"},
-          tags = {
-            [script.mod_name] = {
-              blueprint_recipe = options.blueprint_recipe,
-              flib = {
-                on_click = {gui = "main", action = "handle_list_box_item_click"}
-              },
-              obj = {class = obj.class, name = obj.name}
-            }
-          }
-        }
-      end
-    end
-  end
-  -- destroy extraneous items
-  for j = i + 1, #children do
-    children[j].destroy()
-  end
-
-  -- set listbox properties
-  if i == 0 then
-    list_box.flow.visible = false
-  else
-    list_box.flow.visible = true
-    scroll.style.height = math.min((28 * i), 28 * (options.max_listbox_height or constants.max_listbox_height))
-
-    local caption = list_box.label.caption
-    caption[2] = i - (options.starting_index or 0)
-    list_box.label.caption = caption
-  end
-end
-
-
--- only used on the home screen
-function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
-  local recipe_book = global.recipe_book
-  local tbl = home_data[tbl_name]
-
-  -- list box
-  local list_box = gui_data.refs.home[tbl_name]
-  local scroll = list_box.scroll_pane
-  local add = scroll.add
-  local children = scroll.children
-
-  -- loop through input table
-  local i = 0
-  for j = 1, #tbl do
-    -- get object information
-    local entry = tbl[j]
-    if entry.class ~= "home" then
-      local obj_data = recipe_book[entry.class][entry.name]
-      local data = formatter(obj_data, player_data)
+      )
 
       if data then
         i = i + 1
-        -- add or update item
+        -- update or add item
         local style = data.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
         local item = children[i]
         if item then
           item.style = style
           item.caption = data.caption
           item.tooltip = data.tooltip
-          gui.update_tags(item, {obj = {class = entry.class, name = entry.name}})
+          item.enabled = data.is_enabled
+          gui.update_tags(item, {obj = {class = obj.class, name = obj.name}})
         else
           add{
             type = "button",
             style = style,
             caption = data.caption,
             tooltip = data.tooltip,
+            enabled = data.is_enabled,
             mouse_button_filter = {"left"},
             tags = {
               [script.mod_name] = {
+                blueprint_recipe = options.blueprint_recipe,
                 flib = {
                   on_click = {gui = "main", action = "handle_list_box_item_click"}
                 },
-                obj = {class = entry.class, name = entry.name}
+                obj = {class = obj.class, name = obj.name}
               }
             }
           }
@@ -155,10 +90,23 @@ function info_list_box.update_home(tbl_name, gui_data, player_data, home_data)
       end
     end
   end
-
   -- destroy extraneous items
   for j = i + 1, #children do
     children[j].destroy()
+  end
+
+  if not options.keep_listbox_properties then
+    -- set listbox properties
+    if i == 0 then
+      list_box.flow.visible = false
+    else
+      list_box.flow.visible = true
+      scroll.style.height = math.min((28 * i), 28 * (options.max_listbox_height or constants.max_listbox_height))
+
+      local caption = list_box.label.caption
+      caption[2] = i - (options.starting_index or 0)
+      list_box.label.caption = caption
+    end
   end
 end
 

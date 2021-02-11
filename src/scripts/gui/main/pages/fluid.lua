@@ -23,7 +23,7 @@ function fluid_page.update(int_name, gui_data, player_data)
   info_list_box.update(obj_data.mined_from, refs.fluid.mined_from, player_data)
   info_list_box.update(obj_data.pumped_by, refs.fluid.pumped_by, player_data)
   info_list_box.update(obj_data.unlocked_by, refs.fluid.unlocked_by, player_data)
-  info_list_box.update(obj_data.temperatures, refs.fluid.temperatures, player_data)
+  info_list_box.update(obj_data.temperatures, refs.fluid.temperatures, player_data, {use_pairs = true})
 end
 
 return fluid_page
