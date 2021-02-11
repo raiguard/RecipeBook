@@ -45,6 +45,8 @@ function info_list_box.update(tbl, list_box, player_data, options)
   local open_class = player_data.open_page_data.class
   local open_name = player_data.open_page_data.name
 
+  local highlight_last_selected = player_data.settings.highlight_last_selected and not options.ignore_last_selected
+
   local iterator = options.use_pairs and pairs or ipairs
   for _, obj in iterator(tbl) do
     if obj.class ~= "home" then -- for the history listbox specifically
@@ -64,7 +66,7 @@ function info_list_box.update(tbl, list_box, player_data, options)
         i = i + 1
         -- update or add item
         local style
-        if obj.class == open_class and obj.name == open_name then
+        if highlight_last_selected and obj.class == open_class and obj.name == open_name then
           style = "rb_last_selected_list_box_item"
         else
           style = data.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
@@ -131,7 +133,7 @@ function info_list_box.handle_click(e, player, player_table)
   local element = e.element
   local tags = gui.get_tags(element)
   local obj = tags.obj
-  if tags.is_search_item then
+  if player_table.settings.highlight_last_selected and tags.is_search_item then
     local search_refs = player_table.guis.main.refs.search
     local last_selected = search_refs.last_selected_item
     if last_selected and last_selected.valid then

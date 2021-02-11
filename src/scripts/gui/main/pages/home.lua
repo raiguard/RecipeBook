@@ -13,6 +13,7 @@ end
 function home_page.update(_, gui_data, player_data)
   local options = {
     always_show = true,
+    ignore_last_selected = true,
     keep_listbox_properties = true
   }
   info_list_box.update(player_data.favorites, gui_data.refs.home.favorites, player_data, options)

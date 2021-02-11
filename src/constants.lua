@@ -260,6 +260,10 @@ constants.settings = {
     preserve_session = {
       default_value = false,
       has_tooltip = true
+    },
+    highlight_last_selected = {
+      default_value = true,
+      has_tooltip = true
     }
   },
   search = {

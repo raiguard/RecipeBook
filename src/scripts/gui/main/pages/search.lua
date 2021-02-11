@@ -85,8 +85,9 @@ function search_page.handle_action(msg, e)
   local scroll = refs.search.results_scroll_pane
   local rb_data = global.recipe_book[category]
 
-  local show_temperatures = player_table.settings.show_fluid_temperatures
-  local show_temp_ranges = player_table.settings.show_fluid_temperature_ranges
+  local settings = player_table.settings
+  local show_temp_ranges = settings.show_fluid_temperature_ranges
+  local show_temperatures = settings.show_fluid_temperatures
 
   -- hide limit frame, show it again later if there's more than 50 results
   local limit_frame = refs.search.limit_frame

@@ -8,6 +8,7 @@ Date: ????
       - When searching, temperatures and temperature ranges for each fluid will be shown as well
       - Each temperature and temperature range has a separate fluid page listing the properties specific to that temperature or range
       - Each fluid still has a non-temperature page that shows all properties for that fluid
+    - Added highlight on the last selected item (configurable)
     - Added required fluid to resource tooltip
   Changes:
     - Adjusted glyph sizing to fix alignment
