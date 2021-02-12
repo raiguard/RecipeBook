@@ -65,7 +65,12 @@ function technology_page.update(int_name, gui_data, player_data)
     "[/font]"
   }
 
-  info_list_box.update(obj_data.research_ingredients_per_unit, refs.technology.research_ingredients_per_unit, player_data, {always_show = true, starting_index = 1})
+  info_list_box.update(
+    obj_data.research_ingredients_per_unit,
+    refs.technology.research_ingredients_per_unit,
+    player_data,
+    {always_show = true, starting_index = 1}
+  )
   info_list_box.update(obj_data.associated_recipes, refs.technology.associated_recipes, player_data)
   info_list_box.update(obj_data.prerequisites, refs.technology.prerequisites, player_data)
   info_list_box.update(obj_data.prerequisite_of, refs.technology.prerequisite_of, player_data)

@@ -11,13 +11,20 @@ return function(recipe_book, strings, metadata)
 
       -- research units and ingredients per unit
       for _, ingredient in ipairs(prototype.research_unit_ingredients) do
-        research_ingredients_per_unit[#research_ingredients_per_unit + 1] = { class= ingredient.type, name=ingredient.name, amount_string = ingredient.amount.."x" }
+        research_ingredients_per_unit[#research_ingredients_per_unit + 1] = {
+          class = ingredient.type,
+          name = ingredient.name,
+          amount_string = ingredient.amount.."x"
+        }
       end
 
       if not prototype.research_unit_count_formula then
         research_unit_amount = prototype.research_unit_count
       else
-        research_unit_amount = game.evaluate_expression(prototype.research_unit_count_formula, { L = prototype.level, l = prototype.level })
+        research_unit_amount = game.evaluate_expression(
+          prototype.research_unit_count_formula,
+          {L = prototype.level, l = prototype.level}
+        )
       end
 
       -- unlocks recipes, materials, crafter / lab
