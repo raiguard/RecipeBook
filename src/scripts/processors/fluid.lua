@@ -27,8 +27,6 @@ function fluid_proc.build(recipe_book, strings)
   end
 end
 
--- TODO: it might not actually need `class` and `type` anymore...
-
 local function append(tbl_1, tbl_2)
   for i = 1, #tbl_2 do
     tbl_1[#tbl_1 + 1] = tbl_2[i]

@@ -55,22 +55,22 @@ function global_data.build_recipe_book()
   global.strings = strings
 end
 
-local function unlock_launch_products(recipe_book, launch_products, force_index)
+local function update_launch_products(recipe_book, launch_products, force_index, to_value)
   for _, launch_product in ipairs(launch_products) do
     local product_data = recipe_book.item[launch_product.name]
     if product_data.researched_forces then
-      product_data.researched_forces[force_index] = true
+      product_data.researched_forces[force_index] = to_value
     end
-    unlock_launch_products(recipe_book, product_data.rocket_launch_products, force_index)
+    update_launch_products(recipe_book, product_data.rocket_launch_products, force_index)
   end
 end
 
-local function set_recipe_available(recipe_book, recipe_data, force_index)
+local function update_recipe(recipe_book, recipe_data, force_index, to_value)
   -- check if the category should be ignored for recipe availability
   local disabled = constants.disabled_recipe_categories[recipe_data.category]
   if disabled and disabled == 0 then return end
 
-  recipe_data.researched_forces[force_index] = true
+  recipe_data.researched_forces[force_index] = to_value
 
   -- products
   for _, product in ipairs(recipe_data.products) do
@@ -81,42 +81,42 @@ local function set_recipe_available(recipe_book, recipe_data, force_index)
       -- add to matching fluid temperatures
       for _, subfluid_data in pairs(recipe_book.fluid[product_data.prototype_name].temperatures) do
         if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
-          subfluid_data.researched_forces[force_index] = true
+          subfluid_data.researched_forces[force_index] = to_value
         end
       end
     else
-      product_data.researched_forces[force_index] = true
+      product_data.researched_forces[force_index] = to_value
     end
 
     if product.class == "item" then
       -- rocket launch products
-      unlock_launch_products(recipe_book, product_data.rocket_launch_products, force_index)
+      update_launch_products(recipe_book, product_data.rocket_launch_products, force_index, to_value)
     end
   end
 
   -- crafters
   for _, crafter_name in ipairs(recipe_data.associated_crafters) do
     local crafter_data = recipe_book.crafter[crafter_name]
-    crafter_data.researched_forces[force_index] = true
+    crafter_data.researched_forces[force_index] = to_value
   end
 
   -- labs
   for _, lab_name in ipairs(recipe_data.associated_labs) do
     local lab_data = recipe_book.lab[lab_name]
-    lab_data.researched_forces[force_index] = true
+    lab_data.researched_forces[force_index] = to_value
   end
 end
 
-function global_data.handle_research_finished(technology)
+function global_data.handle_research_updated(technology, to_value)
   local force_index = technology.force.index
   local recipe_book = global.recipe_book
   -- technology
   local technology_data = recipe_book.technology[technology.name]
-  technology_data.researched_forces[force_index] = true
+  technology_data.researched_forces[force_index] = to_value
 
   for _, recipe_name in ipairs(technology_data.associated_recipes) do
     local recipe_data = recipe_book.recipe[recipe_name]
-    set_recipe_available(recipe_book, recipe_data, force_index)
+    update_recipe(recipe_book, recipe_data, force_index, to_value)
   end
 end
 
@@ -127,7 +127,7 @@ function global_data.check_force_recipes(force)
     if recipe.enabled then
       local recipe_data = recipe_book.recipe[name]
       if recipe_data.researched_forces then
-        set_recipe_available(recipe_book, recipe_data, force_index)
+        update_recipe(recipe_book, recipe_data, force_index, true)
       end
     end
   end

@@ -76,21 +76,21 @@ event.on_force_created(function(e)
   global_data.check_force_technologies(force)
 end)
 
-event.on_research_finished(function(e)
+event.register({defines.events.on_research_finished, defines.events.on_research_reversed}, function(e)
   if not global.players then return end
-  global_data.handle_research_finished(e.research)
+  global_data.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
 
   -- refresh all GUIs to reflect finished research
   for _, player in pairs(e.research.force.players) do
     local player_table = global.players[player.index]
     if player_table and player_table.flags.can_open_gui then
-      main_gui.refresh_contents(player, player_table)
+      if player_table.flags.gui_open then
+        main_gui.refresh_contents(player, player_table)
+      end
       quick_ref_gui.refresh_all(player, player_table)
     end
   end
 end)
-
--- TODO: handle on_research_reversed
 
 -- GUI
 
@@ -188,7 +188,7 @@ end)
 
 event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front"}, function(e)
   local player_table = global.players[e.player_index]
-  if player_table.flags.can_open_gui and player_table.flags.gui_open then
+  if player_table.flags.can_open_gui and player_table.flags.gui_open and not player_table.flags.technology_gui_open then
     local event_properties = constants.nav_event_properties[e.input_name]
     main_gui.handle_action(
       {gui = "main", action = event_properties.action_name},
