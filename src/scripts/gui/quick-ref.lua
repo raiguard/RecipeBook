@@ -172,7 +172,7 @@ function quick_ref_gui.handle_action(msg, e)
   end
 end
 
--- we only need to update the recipe name label and material tooltips
+-- we only need to update the recipe name label and material tooltips and style
 function quick_ref_gui.refresh_contents(player_data, name, refs)
   local recipe_data = global.recipe_book.recipe[name]
   local data = formatter(recipe_data, player_data, {always_show = true, is_label = true})
@@ -196,6 +196,7 @@ function quick_ref_gui.refresh_contents(player_data, name, refs)
         {amount_string = obj.amount_string, always_show = true}
       )
       children[i].tooltip = build_tooltip(formatter_data.tooltip, obj.amount_string)
+      children[i].style = formatter_data.is_researched and "flib_slot_button_default" or "flib_slot_button_red"
     end
     group.label.caption = {"rb-gui."..type, i - (type == "ingredients" and 1 or 0)}
   end
