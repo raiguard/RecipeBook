@@ -57,8 +57,29 @@ function settings_page.build(settings)
       }
     }
   end
-  output[#output+1] = recipe_categories_output
-  return output
+  output[#output + 1] = recipe_categories_output
+
+  return {
+    type = "frame",
+    style = "inner_frame_in_outer_frame",
+    direction = "vertical",
+    visible = false,
+    ref = {"settings", "window"},
+    children = {
+      {type = "flow", style = "flib_titlebar_flow", ref = {"settings", "titlebar_flow"}, children = {
+        {type = "label", style = "frame_title", caption = {"gui-menu.settings"}, ignored_by_interaction = true},
+        {type = "empty-widget", style = "flib_dialog_titlebar_drag_handle", ignored_by_interaction = true},
+      }},
+      {type = "frame", style = "inside_shallow_frame", children = {
+        {
+          type = "scroll-pane",
+          style = "rb_settings_content_scroll_pane",
+          direction = "vertical",
+          children = output
+        }
+      }}
+    }
+  }
 end
 
 function settings_page.init()

@@ -1,3 +1,5 @@
+local table = require("__flib__.table")
+
 local constants = {}
 
 -- dictionary category -> affects research
@@ -148,7 +150,11 @@ constants.gui_strings = {
     internal = "shift_click_to_view_base_fluid",
     localised = {"rb-gui.shift-click-to-view-base-fluid"}
   },
-  {dictionary = "gui", internal = "shift_click_to_view_technology", localised = {"rb-gui.shift-click-to-view-technology"}},
+  {
+    dictionary = "gui",
+    internal = "shift_click_to_view_technology",
+    localised = {"rb-gui.shift-click-to-view-technology"}
+  },
   {dictionary = "gui", internal = "stack_size", localised = {"rb-gui.stack-size"}},
   {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
 }
@@ -167,13 +173,6 @@ constants.input_sanitizers = {
   ["%$"] = "%%$"
 }
 
-constants.interface_classes = {
-  crafter = true,
-  fluid = true,
-  item = true,
-  recipe = true
-}
-
 constants.interface_version = 4
 
 constants.list_box_item_styles = {
@@ -187,10 +186,11 @@ constants.main_pages = {
   "fluid",
   "item",
   "recipe",
-  "search",
-  "settings",
   "technology"
 }
+-- interface can open any page but home
+constants.interface_classes = table.invert(constants.main_pages)
+constants.interface_classes.home = nil
 
 constants.max_listbox_height = 6
 

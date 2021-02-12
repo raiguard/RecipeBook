@@ -14,6 +14,21 @@
         "Sandbox": true
       },
       "disableExtraMods": true
+    },
+    {
+      "type": "factorio",
+      "label": "Set mods - Krastorio2",
+      "command": "adjustMods",
+      // unfortunately tasks don't support environment variables... >:(
+        "modsPath": "c:/Files/Development/Factorio/Testbenches/1/mods",
+        "adjustMods": {
+          "EditorExtensions": true,
+          "flib": true,
+          "Krastorio2": true,
+          "RecipeBook": true,
+          "Sandbox": true
+        },
+        "disableExtraMods": true
     }
   ]
 }
