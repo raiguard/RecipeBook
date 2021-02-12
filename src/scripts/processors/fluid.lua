@@ -73,8 +73,9 @@ function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, 
     localised = {
       "",
       metadata.localised_fluids[fluid_name],
-      -- TODO: localise the degree suffix?
-      " ("..temperature_data.string.."°C)"
+      " (",
+      {"format-degrees-c-compact", temperature_data.string},
+      ")"
     }
   })
 end
