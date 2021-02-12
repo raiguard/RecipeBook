@@ -338,12 +338,12 @@ function main_gui.close(player, player_table)
         player.opened = nil
       end
     end
-  end
-  if game.tick_paused == true then
-    game.tick_paused = false
-    local refs = player_table.guis.main.refs
-    refs.base.titlebar.pause_button.style = "frame_action_button"
-    refs.base.titlebar.pause_button.sprite = "rb_pause_white"
+    if game.tick_paused == true then
+      game.tick_paused = false
+      local refs = player_table.guis.main.refs
+      refs.base.titlebar.pause_button.style = "frame_action_button"
+      refs.base.titlebar.pause_button.sprite = "rb_pause_white"
+    end
   end
   player_table.flags.gui_open = false
   player.set_shortcut_toggled("rb-toggle-gui", false)
