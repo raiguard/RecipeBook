@@ -126,6 +126,8 @@ function info_list_box.update(tbl, list_box, player_data, options)
       list_box.label.caption = caption
     end
   end
+
+  return i
 end
 
 -- if values are returned, the corresponding page is opened

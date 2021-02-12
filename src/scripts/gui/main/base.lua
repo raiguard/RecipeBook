@@ -188,6 +188,42 @@ function main_gui.build(player, player_table)
                   visible = false,
                   ref = {"recipe", "flow"},
                   children = pages.recipe.build()
+                },
+                {
+                  type = "flow",
+                  style_mods = {
+                    horizontally_stretchable = true,
+                    vertically_stretchable = true,
+                    horizontal_align = "center",
+                    vertical_align = "center",
+                    vertical_spacing = 12
+                  },
+                  direction = "vertical",
+                  ref = {"empty_page_placeholder_flow"},
+                  children = {
+                    {
+                      type = "label",
+                      style = "heading_1_label",
+                      style_mods = {
+                        horizontal_align = "center",
+                        vertical_align = "center",
+                        single_line = false,
+                        font_color = {36, 35, 36}
+                      },
+                      caption = {"rb-gui.nothing-to-see-here"}
+                    },
+                    {
+                      type = "label",
+                      style = "heading_2_label",
+                      style_mods = {
+                        horizontal_align = "center",
+                        vertical_align = "center",
+                        single_line = false,
+                        font_color = {36, 35, 36}
+                      },
+                      caption = {"rb-gui.no-content-description"}
+                    }
+                  }
                 }
               }}
             }}
@@ -486,7 +522,14 @@ function main_gui.open_page(player, player_table, class, name, options)
   end
 
   -- update page information
-  pages[class].update(name, gui_data, player_data)
+  local num_items = pages[class].update(name, gui_data, player_data)
+
+  -- show placeholder if there are no items
+  if num_items == 0 and class ~= "home" then
+    refs.empty_page_placeholder_flow.visible = true
+  else
+    refs.empty_page_placeholder_flow.visible = false
+  end
 
   -- update visible page
   refs[gui_data.state.open_page.class].flow.visible = false

@@ -16,8 +16,9 @@ function home_page.update(_, gui_data, player_data)
     ignore_last_selected = true,
     keep_listbox_properties = true
   }
-  info_list_box.update(player_data.favorites, gui_data.refs.home.favorites, player_data, options)
-  info_list_box.update(player_data.history, gui_data.refs.home.history, player_data, options)
+  return
+    info_list_box.update(player_data.favorites, gui_data.refs.home.favorites, player_data, options)
+    + info_list_box.update(player_data.history, gui_data.refs.home.history, player_data, options)
 end
 
 return home_page

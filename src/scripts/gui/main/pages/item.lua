@@ -19,13 +19,14 @@ function item_page.update(int_name, gui_data, player_data)
 
   local obj_data = global.recipe_book.item[int_name]
 
-  info_list_box.update(obj_data.ingredient_in, refs.item.ingredient_in, player_data)
-  info_list_box.update(obj_data.product_of, refs.item.product_of, player_data)
-  info_list_box.update(obj_data.rocket_launch_payloads, refs.item.rocket_launch_payloads, player_data)
-  info_list_box.update(obj_data.rocket_launch_products, refs.item.rocket_launch_products, player_data)
-  info_list_box.update(obj_data.mined_from, refs.item.mined_from, player_data)
-  info_list_box.update(obj_data.usable_in, refs.item.usable_in, player_data)
-  info_list_box.update(obj_data.unlocked_by, refs.item.unlocked_by, player_data)
+  return
+    info_list_box.update(obj_data.ingredient_in, refs.item.ingredient_in, player_data)
+    + info_list_box.update(obj_data.product_of, refs.item.product_of, player_data)
+    + info_list_box.update(obj_data.rocket_launch_payloads, refs.item.rocket_launch_payloads, player_data)
+    + info_list_box.update(obj_data.rocket_launch_products, refs.item.rocket_launch_products, player_data)
+    + info_list_box.update(obj_data.mined_from, refs.item.mined_from, player_data)
+    + info_list_box.update(obj_data.usable_in, refs.item.usable_in, player_data)
+    + info_list_box.update(obj_data.unlocked_by, refs.item.unlocked_by, player_data)
 end
 
 return item_page

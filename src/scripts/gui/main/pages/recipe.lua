@@ -40,15 +40,16 @@ function recipe_page.update(int_name, gui_data, player_data)
     "[/font]"
   }
 
-  info_list_box.update(
-    obj_data.ingredients,
-    refs.recipe.ingredients,
-    player_data,
-    {always_show = true, starting_index = 1}
-  )
-  info_list_box.update(obj_data.products, refs.recipe.products, player_data, {always_show = true})
-  info_list_box.update(obj_data.made_in, refs.recipe.made_in, player_data, {blueprint_recipe = int_name})
-  info_list_box.update(obj_data.unlocked_by, refs.recipe.unlocked_by, player_data)
+  return
+    info_list_box.update(
+      obj_data.ingredients,
+      refs.recipe.ingredients,
+      player_data,
+      {always_show = true, starting_index = 1}
+    )
+    + info_list_box.update(obj_data.products, refs.recipe.products, player_data, {always_show = true})
+    + info_list_box.update(obj_data.made_in, refs.recipe.made_in, player_data, {blueprint_recipe = int_name})
+    + info_list_box.update(obj_data.unlocked_by, refs.recipe.unlocked_by, player_data)
 end
 
 return recipe_page

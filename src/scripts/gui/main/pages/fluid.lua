@@ -18,12 +18,13 @@ function fluid_page.update(int_name, gui_data, player_data)
 
   local obj_data = global.recipe_book.fluid[int_name]
 
-  info_list_box.update(obj_data.ingredient_in, refs.fluid.ingredient_in, player_data)
-  info_list_box.update(obj_data.product_of, refs.fluid.product_of, player_data)
-  info_list_box.update(obj_data.mined_from, refs.fluid.mined_from, player_data)
-  info_list_box.update(obj_data.pumped_by, refs.fluid.pumped_by, player_data)
-  info_list_box.update(obj_data.unlocked_by, refs.fluid.unlocked_by, player_data)
-  info_list_box.update(obj_data.temperatures, refs.fluid.temperatures, player_data, {use_pairs = true})
-end
+  return
+    info_list_box.update(obj_data.ingredient_in, refs.fluid.ingredient_in, player_data)
+    + info_list_box.update(obj_data.product_of, refs.fluid.product_of, player_data)
+    + info_list_box.update(obj_data.mined_from, refs.fluid.mined_from, player_data)
+    + info_list_box.update(obj_data.pumped_by, refs.fluid.pumped_by, player_data)
+    + info_list_box.update(obj_data.unlocked_by, refs.fluid.unlocked_by, player_data)
+    + info_list_box.update(obj_data.temperatures, refs.fluid.temperatures, player_data, {use_pairs = true})
+  end
 
 return fluid_page
