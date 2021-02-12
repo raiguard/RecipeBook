@@ -12,6 +12,7 @@ Date: ????
     - Added "made in" to the recipe quick reference panel
     - Added required fluid to resource tooltip
     - Added "placeable by" and "unlocked by" to the crafter page
+    - Added help message when viewing a blank page
   Changes:
     - Adjusted glyph sizing to fix alignment
     - Adjusted titlebar styling to match the base game
