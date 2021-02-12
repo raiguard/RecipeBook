@@ -191,6 +191,14 @@ function main_gui.build(player, player_table)
                 },
                 {
                   type = "flow",
+                  style = "rb_main_info_pane_flow",
+                  direction = "vertical",
+                  visible = false,
+                  ref = {"technology", "flow"},
+                  children = pages.technology.build()
+                },
+                {
+                  type = "flow",
                   style_mods = {
                     horizontally_stretchable = true,
                     vertically_stretchable = true,

@@ -114,8 +114,8 @@ function global_data.handle_research_updated(technology, to_value)
   local technology_data = recipe_book.technology[technology.name]
   technology_data.researched_forces[force_index] = to_value
 
-  for _, recipe_name in ipairs(technology_data.associated_recipes) do
-    local recipe_data = recipe_book.recipe[recipe_name]
+  for _, recipe in ipairs(technology_data.associated_recipes) do
+    local recipe_data = recipe_book.recipe[recipe.name]
     update_recipe(recipe_book, recipe_data, force_index, to_value)
   end
 end
