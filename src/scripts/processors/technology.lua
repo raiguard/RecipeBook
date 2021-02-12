@@ -2,7 +2,7 @@ local util = require("scripts.util")
 
 local fluid_proc = require("scripts.processors.fluid")
 
-return function(recipe_book, strings)
+return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     if prototype.enabled then
       local associated_recipes = {}
@@ -26,6 +26,7 @@ return function(recipe_book, strings)
               fluid_proc.add_to_matching_temperatures(
                 recipe_book,
                 strings,
+                metadata,
                 base_fluid_data,
                 product_data.temperature_data,
                 {unlocked_by = {class = "technology", name = name}}

@@ -2,7 +2,8 @@ local util = require("scripts.util")
 
 local fluid_proc = {}
 
-function fluid_proc.build(recipe_book, strings)
+function fluid_proc.build(recipe_book, strings, metadata)
+  local localised_fluids = {}
   for name, prototype in pairs(game.fluid_prototypes) do
     recipe_book.fluid[name] = {
       class = "fluid",
@@ -24,7 +25,9 @@ function fluid_proc.build(recipe_book, strings)
       internal = name,
       localised = prototype.localised_description
     })
+    localised_fluids[name] = prototype.localised_name
   end
+  metadata.localised_fluids = localised_fluids
 end
 
 local function append(tbl_1, tbl_2)
@@ -33,7 +36,7 @@ local function append(tbl_1, tbl_2)
   end
 end
 
-function fluid_proc.add_temperature(recipe_book, strings, fluid_data, temperature_data)
+function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, temperature_data)
   local fluid_name = fluid_data.prototype_name
   local combined_name = fluid_name.."."..temperature_data.string
   local data = {
@@ -69,18 +72,17 @@ function fluid_proc.add_temperature(recipe_book, strings, fluid_data, temperatur
     internal = combined_name,
     localised = {
       "",
-      -- TODO: avoid this. use metadata?
-      game.fluid_prototypes[fluid_name].localised_name,
+      metadata.localised_fluids[fluid_name],
       -- TODO: localise the degree suffix?
       " ("..temperature_data.string.."°C)"
     }
   })
 end
 
-function fluid_proc.add_to_matching_temperatures(recipe_book, strings, fluid_data, temperature_data, sets)
+function fluid_proc.add_to_matching_temperatures(recipe_book, strings, metadata, fluid_data, temperature_data, sets)
   -- create current temperature table, if it doesn't yet exist
   if not fluid_data.temperatures[temperature_data.string] then
-    fluid_proc.add_temperature(recipe_book, strings, fluid_data, temperature_data)
+    fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, temperature_data)
   end
 
   for _, subfluid_data in pairs(fluid_data.temperatures) do

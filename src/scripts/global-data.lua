@@ -36,7 +36,7 @@ function global_data.build_recipe_book()
   -- CRAFTERS
   crafter_proc(recipe_book, strings, metadata)
   -- FLUIDS
-  fluid_proc(recipe_book, strings)
+  fluid_proc(recipe_book, strings, metadata)
   -- ITEMS
   item_proc(recipe_book, strings, metadata)
   -- LABS

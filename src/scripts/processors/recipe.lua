@@ -29,7 +29,6 @@ return function(recipe_book, strings, metadata)
       local output = {}
       for i, material in ipairs(prototype[io_type]) do
         local amount_string, avg_amount_string = util.build_amount_string(material)
-        -- TODO: find better name
         local material_io_data = {
           class = material.type,
           name = material.name,
@@ -54,6 +53,7 @@ return function(recipe_book, strings, metadata)
             fluid_proc.add_to_matching_temperatures(
               recipe_book,
               strings,
+              metadata,
               material_data,
               temperature_data,
               {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
