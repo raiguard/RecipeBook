@@ -66,7 +66,14 @@ function info_list_box.update(tbl, list_box, player_data, options)
         i = i + 1
         -- update or add item
         local style
-        if highlight_last_selected and obj.class == open_class and obj.name == open_name then
+        if
+          highlight_last_selected
+          and obj.class == open_class
+          and (
+            obj.name == open_name
+            or obj_data.prototype_name == open_name
+          )
+        then
           style = "rb_last_selected_list_box_item"
         else
           style = data.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"

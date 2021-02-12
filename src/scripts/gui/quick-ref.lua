@@ -1,4 +1,5 @@
 local gui = require("__flib__.gui-beta")
+local table = require("__flib__.table")
 
 local constants = require("constants")
 
@@ -7,7 +8,7 @@ local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 local function quick_ref_panel(ref, children)
-  return {type = "flow", direction = "vertical", children = {
+  return {type = "flow", direction = "vertical", ref = util.append(ref, "flow"), children = {
     {type = "label", style = "bold_label", ref = util.append(ref, "label")},
     {type = "frame", style = "rb_slot_table_frame", ref = util.append(ref, "frame"), children = {
       {type = "scroll-pane", style = "rb_slot_table_scroll_pane", children = {
@@ -23,8 +24,10 @@ end
 
 local quick_ref_gui = {}
 
-function quick_ref_gui.build(player, player_table, name)
+function quick_ref_gui.build(player, player_table, name, location)
   local recipe_data = global.recipe_book.recipe[name]
+
+  local show_made_in = player_table.settings.show_made_in_in_quick_ref
 
   local refs = gui.build(player.gui.screen, {
     {type = "frame", direction = "vertical", ref = {"window"}, children = {
@@ -71,7 +74,8 @@ function quick_ref_gui.build(player, player_table, name)
               enabled = false
             }
           }),
-          quick_ref_panel{"products"}
+          quick_ref_panel{"products"},
+          show_made_in and quick_ref_panel{"made_in"} or nil
         }}
       }}
     }}
@@ -99,56 +103,68 @@ function quick_ref_gui.build(player, player_table, name)
 
   -- add contents to tables
   local recipe_book = global.recipe_book
-  for _, type in ipairs{"ingredients", "products"} do
+  for _, type in ipairs{"ingredients", "products", "made_in"} do
     local group = refs[type]
+    if not group then break end -- if made_in doesn't exist
     local i = type == "ingredients" and 1 or 0
     for _, obj in ipairs(recipe_data[type]) do
       local obj_data = recipe_book[obj.class][obj.name]
       local formatter_data = formatter(
         obj_data,
         player_data,
-        {amount_string = obj.amount_string, always_show = true}
+        {amount_string = obj.amount_string, always_show = type ~= "made_in"}
       )
-      i = i + 1
-      local button_style = formatter_data.is_researched and "flib_slot_button_default" or "flib_slot_button_red"
-      local tooltip = build_tooltip(formatter_data.tooltip, obj.amount_string)
-      local shown_string = (
-        obj.avg_amount_string
-        and "~"..obj.avg_amount_string
-        or string.gsub(obj.amount_string, "^.-(%d+)x$", "%1")
-      )
+      if formatter_data then
+        i = i + 1
+        local button_style = formatter_data.is_researched and "flib_slot_button_default" or "flib_slot_button_red"
+        local tooltip = build_tooltip(formatter_data.tooltip, obj.amount_string)
+        local shown_string = (
+          obj.avg_amount_string
+          and "~"..obj.avg_amount_string
+          or string.gsub(obj.amount_string, "^.-%(?(.+)[sx]%)?$", "%1")
+        )
 
-      gui.build(group.table, {
-        {
-          type = "sprite-button",
-          style = button_style,
-          sprite = constants.class_to_type[obj.class].."/"..obj_data.prototype_name,
-          tooltip = tooltip,
-          actions = {
-            on_click = {gui = "main", action = "open_page", class = obj.class, name = obj.name}
-          },
-          children = {
-            {
-              type = "label",
-              style = "rb_slot_label",
-              caption = shown_string,
-              ignored_by_interaction = true
+        gui.build(group.table, {
+          {
+            type = "sprite-button",
+            style = button_style,
+            sprite = constants.class_to_type[obj.class].."/"..obj_data.prototype_name,
+            tooltip = tooltip,
+            actions = {
+              on_click = {gui = "main", action = "open_page", class = obj.class, name = obj.name}
             },
-            {
-              type = "label",
-              style = "rb_slot_label_top",
-              caption = string.find(obj.amount_string, "%%") and "%" or "",
-              ignored_by_interaction = true
+            children = {
+              {
+                type = "label",
+                style = "rb_slot_label",
+                caption = shown_string,
+                ignored_by_interaction = true
+              },
+              {
+                type = "label",
+                style = "rb_slot_label_top",
+                caption = string.find(obj.amount_string, "%%") and "%" or "",
+                ignored_by_interaction = true
+              }
             }
           }
-        }
-      })
+        })
+      end
     end
-    group.label.caption = {"rb-gui."..type, i - (type == "ingredients" and 1 or 0)}
+    group.label.caption = {"rb-gui."..string.gsub(type, "_", "-"), i - (type == "ingredients" and 1 or 0)}
+
+    if i == 0 then
+      group.flow.visible = false
+    end
   end
 
   -- save to global
   player_table.guis.quick_ref[name] = refs
+
+  -- set window location
+  if location then
+    refs.window.location = location
+  end
 end
 
 function quick_ref_gui.destroy(player_table, name)
@@ -172,46 +188,12 @@ function quick_ref_gui.handle_action(msg, e)
   end
 end
 
--- we only need to update the recipe name label and material tooltips and style
-function quick_ref_gui.refresh_contents(player_data, name, refs)
-  local recipe_data = global.recipe_book.recipe[name]
-  local data = formatter(recipe_data, player_data, {always_show = true, is_label = true})
-  local label_caption = data.caption
-  if player_data.settings.show_glyphs then
-    label_caption = string.gsub(label_caption, "^.-nt%]  ", "")
-  end
-  refs.toolbar_label.caption = label_caption
-  refs.toolbar_label.tooltip = data.tooltip
-
-  local recipe_book = global.recipe_book
-  for _, type in ipairs{"ingredients", "products"} do
-    local group = refs[type]
-    local children = group.table.children
-    local i = type == "ingredients" and 1 or 0
-    for _, obj in ipairs(recipe_data[type]) do
-      i = i + 1
-      local formatter_data = formatter(
-        recipe_book[obj.class][obj.name],
-        player_data,
-        {amount_string = obj.amount_string, always_show = true}
-      )
-      children[i].tooltip = build_tooltip(formatter_data.tooltip, obj.amount_string)
-      children[i].style = formatter_data.is_researched and "flib_slot_button_default" or "flib_slot_button_red"
-    end
-    group.label.caption = {"rb-gui."..type, i - (type == "ingredients" and 1 or 0)}
-  end
-end
-
 function quick_ref_gui.refresh_all(player, player_table)
-  -- to pass to the formatter
-  local player_data = {
-    force_index = player.force.index,
-    player_index = player.index,
-    settings = player_table.settings,
-    translations = player_table.translations
-  }
-  for name, refs in pairs(player_table.guis.quick_ref) do
-    quick_ref_gui.refresh_contents(player_data, name, refs)
+  for recipe_name, location in pairs(
+    table.map(player_table.guis.quick_ref, function(refs) return refs.window.location end)
+  ) do
+    quick_ref_gui.destroy(player_table, recipe_name)
+    quick_ref_gui.build(player, player_table, recipe_name, location)
   end
 end
 

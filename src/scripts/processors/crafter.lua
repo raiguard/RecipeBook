@@ -49,6 +49,7 @@ return function(recipe_book, strings, metadata)
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = prototype.fixed_recipe,
       hidden = is_hidden,
+      placeable_by = {},
       prototype_name = name,
       rocket_parts_required = prototype.rocket_parts_required,
       unlocked_by = {}

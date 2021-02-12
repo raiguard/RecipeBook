@@ -264,6 +264,10 @@ constants.settings = {
     highlight_last_selected = {
       default_value = true,
       has_tooltip = true
+    },
+    show_made_in_in_quick_ref = {
+      default_value = true,
+      has_tooltip = false
     }
   },
   search = {

@@ -30,7 +30,10 @@ return function(recipe_book, strings, metadata)
     local place_result = prototype.place_result
     if place_result then
       place_result = place_result.name
-      if not (recipe_book.crafter[place_result] or recipe_book.lab[place_result]) then
+      local result_data = recipe_book.crafter[place_result] or recipe_book.lab[place_result]
+      if result_data then
+        result_data.placeable_by[#result_data.placeable_by + 1] = {class = "item", name = name}
+      else
         place_result = nil
       end
     end
