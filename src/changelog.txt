@@ -28,6 +28,7 @@ Date: ????
     - Fixed that even if a page was already open, it would be added again to the session history and re-opened
     - Fixed that hand-minable resource items would be marked as unavailable if no available recipes produced it
     - Fixed the session history active line not lining up with the other lines
+    - Fixed that the GUIs would not update when a research was finished (credit to kubiix)
 ---------------------------------------------------------------------------------------------------
 Version: 2.4.1
 Date: 2021-01-02
