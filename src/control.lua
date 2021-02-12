@@ -78,6 +78,15 @@ end)
 
 event.on_research_finished(function(e)
   global_data.handle_research_finished(e.research)
+
+  -- refresh all GUIs to reflect finished research
+  for _, player in pairs(e.research.force.players) do
+    local player_table = global.players[player.index]
+    if player_table.flags.can_open_gui then
+      main_gui.refresh_contents(player, player_table)
+      quick_ref_gui.refresh_all(player, player_table)
+    end
+  end
 end)
 
 -- GUI
