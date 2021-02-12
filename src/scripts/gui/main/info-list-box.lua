@@ -1,3 +1,4 @@
+local area = require("__flib__.area")
 local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
@@ -127,14 +128,6 @@ function info_list_box.update(tbl, list_box, player_data, options)
   end
 end
 
--- TODO: move this to flib
--- get the width and height of an area
-local function area_dimensions(area)
-  local width = math.abs(area.left_top.x - area.right_bottom.x)
-  local height = math.abs(area.left_top.y - area.right_bottom.y)
-  return width, height
-end
-
 -- if values are returned, the corresponding page is opened
 function info_list_box.handle_click(e, player, player_table)
   local element = e.element
@@ -164,14 +157,16 @@ function info_list_box.handle_click(e, player, player_table)
             local cursor_stack = player.cursor_stack
             player.clear_cursor()
             if cursor_stack and cursor_stack.valid then
-              -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
-              local width, height = area_dimensions(game.entity_prototypes[obj.name].collision_box)
+              local CollisionBox = area.load(game.entity_prototypes[obj.name].collision_box)
+              local height = CollisionBox:height()
+              local width = CollisionBox:width()
               cursor_stack.set_stack{name = "blueprint", count = 1}
               cursor_stack.set_blueprint_entities{
                 {
                   entity_number = 1,
                   name = obj.name,
                   position = {
+                    -- entities with an even number of tiles to a side need to be set at -0.5 instead of 0
                     math.ceil(width) % 2 == 0 and -0.5 or 0,
                     math.ceil(height) % 2 == 0 and -0.5 or 0
                   },
