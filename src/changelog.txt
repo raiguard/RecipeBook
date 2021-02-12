@@ -9,8 +9,9 @@ Date: ????
       - Each temperature and temperature range has a separate fluid page listing the properties specific to that temperature or range
       - Each fluid still has a non-temperature page that shows all properties for that fluid
     - Added highlight on the last selected item (configurable)
+    - Added "made in" to the recipe quick reference panel
     - Added required fluid to resource tooltip
-    - Added "unlocked by" to the crafter page
+    - Added "placeable by" and "unlocked by" to the crafter page
   Changes:
     - Adjusted glyph sizing to fix alignment
     - Adjusted titlebar styling to match the base game
