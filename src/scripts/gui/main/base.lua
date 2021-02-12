@@ -65,6 +65,19 @@ function main_gui.build(player, player_table)
             {
               type = "sprite-button",
               style = "frame_action_button",
+              sprite = "rb_pause_white",
+              hovered_sprite = "rb_pause_black",
+              clicked_sprite = "rb_pause_black",
+              tooltip = {"rb-gui.pause-game"},
+              mouse_button_filter = {"left"},
+              ref = {"base", "titlebar", "pause_button"},
+              actions = {
+                on_click = {gui = "main", action = "toggle_paused"}
+              }
+            },
+            {
+              type = "sprite-button",
+              style = "frame_action_button",
               sprite = "rb_pin_white",
               hovered_sprite = "rb_pin_black",
               clicked_sprite = "rb_pin_black",
@@ -306,6 +319,13 @@ function main_gui.open(player, player_table, skip_focus)
     refs.search.textfield.focus()
     refs.search.textfield.select_all()
   end
+  if game.is_multiplayer() then
+    refs.base.titlebar.pause_button.visible = false
+  elseif player_table.settings.pause_game_on_open then
+    game.tick_paused = true
+    refs.base.titlebar.pause_button.style = "flib_selected_frame_action_button"
+    refs.base.titlebar.pause_button.sprite = "rb_pause_black"
+  end
 end
 
 function main_gui.close(player, player_table)
@@ -318,6 +338,12 @@ function main_gui.close(player, player_table)
         player.opened = nil
       end
     end
+  end
+  if game.tick_paused == true then
+    game.tick_paused = false
+    local refs = player_table.guis.main.refs
+    refs.base.titlebar.pause_button.style = "frame_action_button"
+    refs.base.titlebar.pause_button.sprite = "rb_pause_white"
   end
   player_table.flags.gui_open = false
   player.set_shortcut_toggled("rb-toggle-gui", false)
@@ -668,6 +694,17 @@ function main_gui.handle_action(msg, e)
         refs.base.titlebar.settings_button.style = "flib_selected_frame_action_button"
         refs.base.titlebar.settings_button.sprite = "rb_settings_black"
       end
+    elseif msg.action == "toggle_paused" then
+      if game.tick_paused then
+        game.tick_paused = false
+        refs.base.titlebar.pause_button.style = "frame_action_button"
+        refs.base.titlebar.pause_button.sprite = "rb_pause_white"
+      elseif not game.is_multiplayer() then
+        game.tick_paused = true
+        refs.base.titlebar.pause_button.style = "flib_selected_frame_action_button"
+        refs.base.titlebar.pause_button.sprite = "rb_pause_black"
+      end
+
     end
   end
 end
