@@ -6,13 +6,27 @@ return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     if prototype.enabled then
       local associated_recipes = {}
+      local research_ingredients_per_unit = {}
+      local research_unit_amount
 
+      -- research units and ingredients per unit
+      for _, ingredient in ipairs(prototype.research_unit_ingredients) do
+        research_ingredients_per_unit[#research_ingredients_per_unit + 1] = { class= ingredient.type, name=ingredient.name, amount_string = ingredient.amount.."x" }
+      end
+
+      if not prototype.research_unit_count_formula then
+        research_unit_amount = prototype.research_unit_count
+      else
+        research_unit_amount = game.evaluate_expression(prototype.research_unit_count_formula, { L = prototype.level, l = prototype.level })
+      end
+
+      -- unlocks recipes, materials, crafter / lab
       for _, modifier in ipairs(prototype.effects) do
         if modifier.type == "unlock-recipe" then
           local recipe_data = recipe_book.recipe[modifier.recipe]
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
           recipe_data.researched_forces = {}
-          associated_recipes[#associated_recipes + 1] = modifier.recipe
+          associated_recipes[#associated_recipes + 1] = {class = "recipe", name = modifier.recipe}
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
             local product_data = recipe_book[product.class][product_name]
@@ -55,9 +69,16 @@ return function(recipe_book, strings, metadata)
         associated_recipes = associated_recipes,
         class = "technology",
         hidden = prototype.hidden,
+        prerequisite_of = {},
+        prerequisites = {},
         prototype_name = name,
-        researched_forces = {}
+        research_unit_energy = prototype.research_unit_energy / 60,
+        research_unit_amount = research_unit_amount,
+        research_ingredients_per_unit= research_ingredients_per_unit,
+        researched_forces = {},
+        upgrade = prototype.upgrade
       }
+
       util.add_string(strings, {
         dictionary = "technology",
         internal = prototype.name,
@@ -68,6 +89,19 @@ return function(recipe_book, strings, metadata)
         internal = name,
         localised = prototype.localised_description
       })
+    end
+  end
+
+  -- generate prerequisites and prerequisite_of
+  for name, technology in pairs(recipe_book.technology) do
+    local prototype = game.technology_prototypes[name]
+
+    if prototype.prerequisites then
+      for prerequisite_name, _ in pairs(prototype.prerequisites) do
+        technology.prerequisites[#technology.prerequisites + 1] = {class = "technology", name = prerequisite_name}
+        local prerequisite_data = recipe_book.technology[prerequisite_name]
+        prerequisite_data.prerequisite_of[#prerequisite_data.prerequisite_of + 1] = {class = "technology", name = name}
+      end
     end
   end
 end

@@ -480,10 +480,15 @@ local formatters = {
     enabled = function(obj_data) return obj_data.required_fluid and true or false end
   },
   technology = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local gui_translations = player_data.translations.gui
       -- interaction help
-      local interaction_help_str = "\n"..player_data.translations.gui.click_to_view_technology
+      local interaction_help_str = ""
+      if not is_label then
+        interaction_help_str = "\n"..gui_translations.click_to_view
+        interaction_help_str = interaction_help_str.."\n"..player_data.translations.gui.shift_click_to_view_technology
+      end
 
       return base_str..interaction_help_str
     end,
