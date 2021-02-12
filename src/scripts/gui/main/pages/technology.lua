@@ -4,35 +4,38 @@ local technology_page = {}
 
 function technology_page.build()
   local elems =  {
-    info_list_box.build({"rb-gui.research-units"}, 1, {"technology", "research_units"}),
-    info_list_box.build({"rb-gui.research-ingredients-per-unit"}, 1, {"technology", "research_ingredients_per_unit"}),
+    info_list_box.build(
+      {"rb-gui.research-units"},
+      1,
+      {"technology", "research_units"},
+      {
+        {
+          type = "button",
+          style = "rb_list_box_item",
+          tooltip = {"rb-gui.units-research-tooltip"},
+          enabled = false,
+          ref = {"technology", "research_units", "unit_item"}
+        }
+      }
+    ),
+    info_list_box.build(
+      {"rb-gui.research-ingredients-per-unit"},
+      1,
+      {"technology", "research_ingredients_per_unit"},
+      {
+        {
+          type = "button",
+          style = "rb_list_box_item",
+          tooltip = {"rb-gui.seconds-research-tooltip"},
+          enabled = false,
+          ref = {"technology", "research_ingredients_per_unit", "time_item"}
+        }
+      }
+    ),
     info_list_box.build({"rb-gui.unlocks-recipes"}, 1, {"technology", "associated_recipes"}),
     info_list_box.build({"rb-gui.prerequisites"}, 1, {"technology", "prerequisites"}),
     info_list_box.build({"rb-gui.prerequisite-of"}, 1, {"technology", "prerequisite_of"}),
   }
-
-    -- add time item to ingredients
-    elems[1].children[2].children[1].children = {
-      {
-        type = "button",
-        name = "rb_list_box_item__1",
-        style = "rb_list_box_item",
-        tooltip = {"rb-gui.units-research-tooltip"},
-        enabled = false,
-        ref = {"technology", "research_units", "unit_item"}
-      }
-    }
-
-    elems[2].children[2].children[1].children = {
-      {
-        type = "button",
-        name = "rb_list_box_item__1",
-        style = "rb_list_box_item",
-        tooltip = {"rb-gui.seconds-research-tooltip"},
-        enabled = false,
-        ref = {"technology", "research_ingredients_per_unit", "time_item"}
-      }
-    }
 
   return elems
 end

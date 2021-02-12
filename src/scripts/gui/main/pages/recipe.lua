@@ -4,22 +4,23 @@ local recipe_page = {}
 
 function recipe_page.build()
   local elems =  {
-    info_list_box.build({"rb-gui.ingredients"}, 1, {"recipe", "ingredients"}),
+    info_list_box.build(
+      {"rb-gui.ingredients"},
+      1,
+      {"recipe", "ingredients"},
+      {
+        {
+          type = "button",
+          style = "rb_list_box_item",
+          tooltip = {"rb-gui.seconds-tooltip"},
+          enabled = false,
+          ref = {"recipe", "ingredients", "time_item"}
+        }
+      }
+    ),
     info_list_box.build({"rb-gui.products"}, 1, {"recipe", "products"}),
     info_list_box.build({"rb-gui.made-in"}, 1, {"recipe", "made_in"}),
     info_list_box.build({"rb-gui.unlocked-by"}, 1, {"recipe", "unlocked_by"})
-  }
-
-  -- add time item to ingredients
-  elems[1].children[2].children[1].children = {
-    {
-      type = "button",
-      name = "rb_list_box_item__1",
-      style = "rb_list_box_item",
-      tooltip = {"rb-gui.seconds-tooltip"},
-      enabled = false,
-      ref = {"recipe", "ingredients", "time_item"}
-    }
   }
 
   return elems
