@@ -192,7 +192,7 @@ constants.main_pages = {
 constants.interface_classes = table.invert(constants.main_pages)
 constants.interface_classes.home = nil
 
-constants.max_listbox_height = 6
+constants.max_listbox_height = 8
 
 constants.nav_event_properties = {
   ["rb-jump-to-front"] = {action_name = "navigate_forward", shift = true},
