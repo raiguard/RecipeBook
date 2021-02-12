@@ -117,6 +117,15 @@ function main_gui.build(player, player_table)
                   {
                     type = "sprite-button",
                     style = "tool_button",
+                    sprite = "rb_technology_gui_black",
+                    tooltip = {"rb-gui.view-in-technology-gui"},
+                    mouse_button_filter = {"left"},
+                    ref = {"base", "info_bar", "technology_gui_button"}
+                    -- the action is set and changed in the open_page function
+                  },
+                  {
+                    type = "sprite-button",
+                    style = "tool_button",
                     sprite = "rb_fluid_black",
                     tooltip = {"rb-gui.view-base-fluid"},
                     mouse_button_filter = {"left"},
@@ -520,6 +529,17 @@ function main_gui.open_page(player, player_table, class, name, options)
       base_button.visible = false
     end
 
+    local technology_gui_button = info_bar.technology_gui_button
+    if class == "technology" then
+      technology_gui_button.visible = true
+      gui.update_tags(
+        technology_gui_button,
+        {flib = {on_click = {gui = "main", action = "open_technology_gui", technology = obj_data.prototype_name}}}
+      )
+    else
+      technology_gui_button.visible = false
+    end
+
     if player_table.favorites[class.."."..name] then
       info_bar.favorite_button.style = "flib_selected_tool_button"
       info_bar.favorite_button.tooltip = {"rb-gui.remove-from-favorites"}
@@ -676,6 +696,9 @@ function main_gui.handle_action(msg, e)
         refs.base.titlebar.settings_button.style = "flib_selected_frame_action_button"
         refs.base.titlebar.settings_button.sprite = "rb_settings_black"
       end
+    elseif msg.action == "open_technology_gui" then
+      player_table.flags.technology_gui_open = true
+      player.open_technology_gui(msg.technology)
     end
   end
 end

@@ -20,5 +20,6 @@ data:extend{
   -- tool icons
   data_util.build_sprite("rb_favorite_black", {0, 0}, tool_icons, 32, 2),
   data_util.build_sprite("rb_clipboard_black", {0, 32}, tool_icons, 32, 2),
-  data_util.build_sprite("rb_fluid_black", {0, 64}, tool_icons, 32, 2)
+  data_util.build_sprite("rb_fluid_black", {0, 64}, tool_icons, 32, 2),
+  data_util.build_sprite("rb_technology_gui_black", {0, 96}, tool_icons, 32, 2)
 }

@@ -135,7 +135,11 @@ function info_list_box.handle_click(e, player, player_table)
   local element = e.element
   local tags = gui.get_tags(element)
   local obj = tags.obj
-  if player_table.settings.highlight_last_selected and tags.is_search_item and not (e.shift and obj.class == "technology") then
+  if
+    player_table.settings.highlight_last_selected
+    and tags.is_search_item
+    and not (e.shift and obj.class == "technology")
+  then
     local search_refs = player_table.guis.main.refs.search
     local last_selected = search_refs.last_selected_item
     if last_selected and last_selected.valid then
