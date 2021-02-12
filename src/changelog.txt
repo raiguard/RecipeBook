@@ -17,6 +17,7 @@ Date: ????
   Changes:
     - Adjusted glyph sizing to fix alignment
     - Adjusted titlebar styling to match the base game
+    - Moderatly increased the size of the main GUI
     - Improved interaction help formatting
     - Put the settings gear icon on a diet
     - Recipes and materials that are available at the beginning of the game are now treated as such
