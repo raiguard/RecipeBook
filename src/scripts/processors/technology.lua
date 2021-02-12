@@ -1,3 +1,5 @@
+local math = require("__flib__.math")
+
 local util = require("scripts.util")
 
 local fluid_proc = require("scripts.processors.fluid")
@@ -86,10 +88,26 @@ return function(recipe_book, strings, metadata)
         upgrade = prototype.upgrade
       }
 
+      -- assemble name
+      local level = prototype.level
+      local max_level = prototype.max_level
+
+      local localised_name
+
+      if level ~= max_level then
+        localised_name = {
+          "",
+          prototype.localised_name,
+          " ("..level.."-"..(max_level == math.max_uint and "∞" or max_level)..")"
+        }
+      else
+        localised_name = prototype.localised_name
+      end
+
       util.add_string(strings, {
         dictionary = "technology",
         internal = prototype.name,
-        localised = prototype.localised_name
+        localised = localised_name
       })
       util.add_string(strings, {
         dictionary = "technology_description",
