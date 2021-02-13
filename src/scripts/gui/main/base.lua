@@ -261,6 +261,7 @@ function main_gui.build(player, player_table)
                       type = "label",
                       style = "heading_1_label",
                       style_mods = {
+                        horizontal_align = "center",
                         single_line = false,
                         font_color = {36, 35, 36}
                       },
@@ -270,6 +271,7 @@ function main_gui.build(player, player_table)
                       type = "label",
                       style = "heading_2_label",
                       style_mods = {
+                        horizontal_align = "center",
                         single_line = false,
                         font_color = {36, 35, 36}
                       },
