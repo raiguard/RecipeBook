@@ -33,21 +33,13 @@ function global_data.build_recipe_book()
   -- data that is needed for generation but will not be saved
   local metadata = {}
 
-  -- CRAFTERS
   crafter_proc(recipe_book, strings, metadata)
-  -- FLUIDS
   fluid_proc(recipe_book, strings, metadata)
-  -- ITEMS
   item_proc(recipe_book, strings, metadata)
-  -- LABS
   lab_proc(recipe_book, strings)
-  -- OFFSHORE PUMPS
   offshore_pump_proc(recipe_book, strings)
-  -- RECIPES
   recipe_proc(recipe_book, strings, metadata)
-  -- RESOURCES
   resource_proc(recipe_book, strings)
-  -- TECHNOLOGIES
   technology_proc(recipe_book, strings)
 
   strings.__index = nil
