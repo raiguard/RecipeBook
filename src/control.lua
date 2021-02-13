@@ -226,23 +226,6 @@ event.on_player_left_game(function(e)
   end
 end)
 
--- SETTINGS
-
-event.on_runtime_mod_setting_changed(function(e)
-  if string.sub(e.setting, 1, 3) == "rb-" then
-    local player = game.get_player(e.player_index)
-    local player_table = global.players[e.player_index]
-    if not player_table.flags.updating_setting then
-      formatter.purge_cache(e.player_index)
-      player_data.update_settings(player, player_table)
-      if player_table.flags.can_open_gui then
-        main_gui.refresh_contents(player, player_table)
-        main_gui.update_settings(player_table)
-      end
-    end
-  end
-end)
-
 -- TICK
 
 local function on_tick(e)

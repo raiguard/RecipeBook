@@ -36,5 +36,8 @@ return {
   end,
   ["2.5.0"] = function()
     global.translation_data = nil
+    for _, player_table in pairs(global.players) do
+      player_table.flags.updating_setting = nil
+    end
   end
 }

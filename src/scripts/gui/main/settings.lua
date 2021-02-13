@@ -111,10 +111,7 @@ function settings_page.handle_action(msg, e)
     if tags.category_name then
       player_table.settings.recipe_categories[tags.category_name] = checked_state
     else
-      -- set a flag to avoid iterating over all settings
-      player_table.flags.updating_setting = true
       player_table.settings[tags.setting_name] = checked_state
-      player_table.flags.updating_setting = false
     end
     shared.refresh_contents(player, player_table)
   end
