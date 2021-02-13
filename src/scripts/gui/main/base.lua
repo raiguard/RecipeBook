@@ -132,6 +132,7 @@ function main_gui.build(player, player_table)
                             style = "tool_button",
                             style_mods = {size = 14, padding = 0},
                             sprite = "rb_plus_black",
+                            tooltip = {"rb-gui.increase-tech-level"},
                             ref = {"base", "info_bar", "tech_level", "plus_button"},
                             actions = {
                               on_click = {gui = "main", action = "change_tech_level", delta = 1}
@@ -142,6 +143,7 @@ function main_gui.build(player, player_table)
                             style = "tool_button",
                             style_mods = {size = 14, padding = 0},
                             sprite = "rb_minus_black",
+                            tooltip = {"rb-gui.decrease-tech-level"},
                             ref = {"base", "info_bar", "tech_level", "minus_button"},
                             actions = {
                               on_click = {gui = "main", action = "change_tech_level", delta = -1}
@@ -735,6 +737,8 @@ function main_gui.handle_action(msg, e)
       tech_level.label.caption = {"rb-gui.tech-level", new_level}
       tech_level.plus_button.enabled = new_level < obj_data.max_level
       tech_level.minus_button.enabled = new_level > obj_data.min_level
+
+      pages.technology.update_unit_count(obj_data, refs, state, player_table.settings)
     end
   end
 end

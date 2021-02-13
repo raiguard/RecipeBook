@@ -41,6 +41,7 @@ function technology_page.build()
 end
 
 function technology_page.update(int_name, gui_data, player_data)
+  local state = gui_data.state
   local refs = gui_data.refs
 
   local obj_data = global.recipe_book.technology[int_name]
@@ -48,10 +49,14 @@ function technology_page.update(int_name, gui_data, player_data)
   -- set units item
   local units_item_prefix = player_data.settings.show_glyphs and "[font=RecipeBook]Z[/font]   " or ""
   local units_item = refs.technology.research_units.unit_item
+  local unit_count = obj_data.research_unit_count or game.evaluate_expression(
+    obj_data.research_unit_count_formula,
+    {L = state.tech_level, l = state.tech_level}
+  )
   units_item.caption = {
     "",
     units_item_prefix.."[img=quantity-multiplier]   [font=default-bold]",
-    obj_data.research_unit_amount,
+    unit_count,
     "[/font]"
   }
 
@@ -75,6 +80,22 @@ function technology_page.update(int_name, gui_data, player_data)
     + info_list_box.update(obj_data.associated_recipes, refs.technology.associated_recipes, player_data)
     + info_list_box.update(obj_data.prerequisites, refs.technology.prerequisites, player_data)
     + info_list_box.update(obj_data.prerequisite_of, refs.technology.prerequisite_of, player_data)
+end
+
+function technology_page.update_unit_count(obj_data, refs, state, settings)
+  -- set units item
+  local units_item_prefix = settings.show_glyphs and "[font=RecipeBook]Z[/font]   " or ""
+  local units_item = refs.technology.research_units.unit_item
+  local unit_count = obj_data.research_unit_count or game.evaluate_expression(
+    obj_data.research_unit_count_formula,
+    {L = state.tech_level, l = state.tech_level}
+  )
+  units_item.caption = {
+    "",
+    units_item_prefix.."[img=quantity-multiplier]   [font=default-bold]",
+    unit_count,
+    "[/font]"
+  }
 end
 
 return technology_page

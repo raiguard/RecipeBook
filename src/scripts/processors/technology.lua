@@ -9,7 +9,6 @@ return function(recipe_book, strings, metadata)
     if prototype.enabled then
       local associated_recipes = {}
       local research_ingredients_per_unit = {}
-      local research_unit_amount
 
       -- research units and ingredients per unit
       for _, ingredient in ipairs(prototype.research_unit_ingredients) do
@@ -20,13 +19,10 @@ return function(recipe_book, strings, metadata)
         }
       end
 
-      if not prototype.research_unit_count_formula then
-        research_unit_amount = prototype.research_unit_count
-      else
-        research_unit_amount = game.evaluate_expression(
-          prototype.research_unit_count_formula,
-          {L = prototype.level, l = prototype.level}
-        )
+      local research_unit_count
+      local formula = prototype.research_unit_count_formula
+      if not formula then
+        research_unit_count = prototype.research_unit_count
       end
 
       -- unlocks recipes, materials, crafter / lab
@@ -74,7 +70,6 @@ return function(recipe_book, strings, metadata)
         end
       end
 
-      -- assemble name
       local level = prototype.level
       local max_level = prototype.max_level
 
@@ -87,15 +82,17 @@ return function(recipe_book, strings, metadata)
         prerequisite_of = {},
         prerequisites = {},
         prototype_name = name,
+        research_ingredients_per_unit = research_ingredients_per_unit,
+        research_unit_count = research_unit_count,
+        research_unit_count_formula = formula,
         research_unit_energy = prototype.research_unit_energy / 60,
-        research_unit_amount = research_unit_amount,
-        research_ingredients_per_unit= research_ingredients_per_unit,
         researched_forces = {},
         upgrade = prototype.upgrade
       }
 
       local localised_name
 
+      -- assemble name
       if level ~= max_level then
         localised_name = {
           "",
