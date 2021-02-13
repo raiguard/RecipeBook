@@ -2,6 +2,7 @@ local data_util = require("__flib__.data-util")
 
 local frame_action_icons = "__RecipeBook__/graphics/frame-action-icons.png"
 local tool_icons = "__RecipeBook__/graphics/tool-icons.png"
+local small_tool_icons = "__RecipeBook__/graphics/small-tool-icons.png"
 
 data:extend{
   -- frame action icons
@@ -21,5 +22,8 @@ data:extend{
   data_util.build_sprite("rb_favorite_black", {0, 0}, tool_icons, 32, 2),
   data_util.build_sprite("rb_clipboard_black", {0, 32}, tool_icons, 32, 2),
   data_util.build_sprite("rb_fluid_black", {0, 64}, tool_icons, 32, 2),
-  data_util.build_sprite("rb_technology_gui_black", {0, 96}, tool_icons, 32, 2)
+  data_util.build_sprite("rb_technology_gui_black", {0, 96}, tool_icons, 32, 2),
+  -- small tool icons
+  data_util.build_sprite("rb_plus_black", {0, 0}, small_tool_icons, 16, 2),
+  data_util.build_sprite("rb_minus_black", {0, 16}, small_tool_icons, 16, 2)
 }

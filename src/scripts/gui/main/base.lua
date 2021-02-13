@@ -117,6 +117,41 @@ function main_gui.build(player, player_table)
                   {type = "label", style = "rb_toolbar_label", ref = {"base", "info_bar", "label"}},
                   {type = "empty-widget", style = "flib_horizontal_pusher"},
                   {
+                    type = "flow",
+                    style_mods = {vertical_align = "center"},
+                    ref = {"base", "info_bar", "tech_level", "flow"},
+                    children = {
+                      {type = "label", style = "bold_label", ref = {"base", "info_bar", "tech_level", "label"}},
+                      {
+                        type = "flow",
+                        style_mods = {left_margin = 4, vertical_spacing = 0},
+                        direction = "vertical",
+                        children = {
+                          {
+                            type = "sprite-button",
+                            style = "tool_button",
+                            style_mods = {size = 14, padding = 0},
+                            sprite = "rb_plus_black",
+                            ref = {"base", "info_bar", "tech_level", "plus_button"},
+                            actions = {
+                              on_click = {gui = "main", action = "change_tech_level", delta = 1}
+                            }
+                          },
+                          {
+                            type = "sprite-button",
+                            style = "tool_button",
+                            style_mods = {size = 14, padding = 0},
+                            sprite = "rb_minus_black",
+                            ref = {"base", "info_bar", "tech_level", "minus_button"},
+                            actions = {
+                              on_click = {gui = "main", action = "change_tech_level", delta = -1}
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
                     type = "sprite-button",
                     style = "tool_button",
                     sprite = "rb_technology_gui_black",
@@ -224,8 +259,6 @@ function main_gui.build(player, player_table)
                       type = "label",
                       style = "heading_1_label",
                       style_mods = {
-                        horizontal_align = "center",
-                        vertical_align = "center",
                         single_line = false,
                         font_color = {36, 35, 36}
                       },
@@ -235,8 +268,6 @@ function main_gui.build(player, player_table)
                       type = "label",
                       style = "heading_2_label",
                       style_mods = {
-                        horizontal_align = "center",
-                        vertical_align = "center",
                         single_line = false,
                         font_color = {36, 35, 36}
                       },
@@ -350,6 +381,7 @@ function main_gui.open_page(player, player_table, class, name, options)
   options = options or {}
   name = name or ""
   local gui_data = player_table.guis.main
+  local state = gui_data.state
   local refs = gui_data.refs
   local translations = player_table.translations
 
@@ -512,14 +544,27 @@ function main_gui.open_page(player, player_table, class, name, options)
     end
 
     local technology_gui_button = info_bar.technology_gui_button
+    local tech_level = info_bar.tech_level
     if class == "technology" then
       technology_gui_button.visible = true
       gui.update_tags(
         technology_gui_button,
         {flib = {on_click = {gui = "main", action = "open_technology_gui", technology = obj_data.prototype_name}}}
       )
+      if obj_data.min_level ~= obj_data.max_level then
+        tech_level.flow.visible = true
+        -- set the tech level to the current tech level on the force
+        local current_level = player.force.technologies[obj_data.prototype_name].level
+        tech_level.label.caption = {"rb-gui.tech-level", current_level}
+        tech_level.plus_button.enabled = current_level < obj_data.max_level
+        tech_level.minus_button.enabled = current_level > obj_data.min_level
+        state.tech_level = current_level
+      else
+        tech_level.flow.visible = false
+      end
     else
       technology_gui_button.visible = false
+      tech_level.flow.visible = false
     end
 
     if player_table.favorites[class.."."..name] then
@@ -681,6 +726,15 @@ function main_gui.handle_action(msg, e)
     elseif msg.action == "open_technology_gui" then
       player_table.flags.technology_gui_open = true
       player.open_technology_gui(msg.technology)
+    elseif msg.action == "change_tech_level" then
+      local tech_level = refs.base.info_bar.tech_level
+      local new_level = state.tech_level + msg.delta
+      state.tech_level = new_level
+
+      local obj_data = global.recipe_book.technology[state.open_page.name]
+      tech_level.label.caption = {"rb-gui.tech-level", new_level}
+      tech_level.plus_button.enabled = new_level < obj_data.max_level
+      tech_level.minus_button.enabled = new_level > obj_data.min_level
     end
   end
 end

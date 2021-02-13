@@ -74,10 +74,16 @@ return function(recipe_book, strings, metadata)
         end
       end
 
+      -- assemble name
+      local level = prototype.level
+      local max_level = prototype.max_level
+
       recipe_book.technology[name] = {
         associated_recipes = associated_recipes,
         class = "technology",
         hidden = prototype.hidden,
+        max_level = max_level,
+        min_level = level,
         prerequisite_of = {},
         prerequisites = {},
         prototype_name = name,
@@ -87,10 +93,6 @@ return function(recipe_book, strings, metadata)
         researched_forces = {},
         upgrade = prototype.upgrade
       }
-
-      -- assemble name
-      local level = prototype.level
-      local max_level = prototype.max_level
 
       local localised_name
 
