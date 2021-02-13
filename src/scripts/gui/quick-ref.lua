@@ -118,11 +118,6 @@ function quick_ref_gui.build(player, player_table, name, location)
         i = i + 1
         local button_style = formatter_data.is_researched and "flib_slot_button_default" or "flib_slot_button_red"
         local tooltip = build_tooltip(formatter_data.tooltip, obj.amount_string)
-        local shown_string = (
-          obj.avg_amount_string
-          and "~"..obj.avg_amount_string
-          or string.gsub(obj.amount_string, "^.-%(?(.+)[sx]%)?$", "%1")
-        )
 
         gui.build(group.table, {
           {
@@ -137,7 +132,7 @@ function quick_ref_gui.build(player, player_table, name, location)
               {
                 type = "label",
                 style = "rb_slot_label",
-                caption = shown_string,
+                caption = obj.quick_ref_amount_string,
                 ignored_by_interaction = true
               },
               {

@@ -28,12 +28,12 @@ return function(recipe_book, strings, metadata)
     for lookup_type, io_type in pairs{ingredient_in = "ingredients", product_of = "products"} do
       local output = {}
       for i, material in ipairs(prototype[io_type]) do
-        local amount_string, avg_amount_string = util.build_amount_string(material)
+        local amount_string, quick_ref_amount_string = util.build_amount_string(material)
         local material_io_data = {
           class = material.type,
           name = material.name,
           amount_string = amount_string,
-          avg_amount_string = avg_amount_string
+          quick_ref_amount_string = quick_ref_amount_string
         }
         local material_data = recipe_book[material.type][material.name]
         local lookup_table = material_data[lookup_type]
@@ -70,10 +70,12 @@ return function(recipe_book, strings, metadata)
     for crafter_name, crafter_data in pairs(recipe_book.crafter) do
       if crafter_data.categories[category] then
         local rocket_parts_str = crafter_data.rocket_parts_required and crafter_data.rocket_parts_required.."x  " or ""
+        local crafting_time = math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
         data.made_in[#data.made_in + 1] = {
           class = "crafter",
           name = crafter_name,
-          amount_string = rocket_parts_str.."("..math.round_to(prototype.energy / crafter_data.crafting_speed, 2).."s)"
+          amount_string = rocket_parts_str.."("..crafting_time.."s)",
+          quick_ref_amount_string = tostring(math.round_to(crafting_time, 1))
         }
         crafter_data.compatible_recipes[#crafter_data.compatible_recipes + 1] = {class = "recipe", name = name}
       end

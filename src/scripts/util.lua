@@ -24,8 +24,15 @@ function util.build_amount_string(material)
     amount_string = (probability * 100).."% "..amount_string
   end
 
-  -- second return is the "average" amount
-  return amount_string, amount == nil and ((material.amount_min + material.amount_max) / 2) or nil
+  -- quick ref string
+  local quick_ref_string = (
+    amount == nil
+    and "~"..((material.amount_min + material.amount_max) / 2)
+    or tostring(math.round_to(amount, 1))
+  )
+
+  -- first return is the standard, second return is what is shown in the quick ref GUI
+  return amount_string, quick_ref_string
 end
 
 function util.build_temperature_data(fluid)
