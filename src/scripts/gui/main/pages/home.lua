@@ -4,9 +4,9 @@ local home_page = {}
 
 function home_page.build()
   return {
-    info_list_box.build({"rb-gui.favorites"}, 7, {"home", "favorites"}),
+    info_list_box.build({"rb-gui.favorites"}, 8, {"home", "favorites"}),
     {type = "empty-widget", style = "flib_vertical_pusher"},
-    info_list_box.build({"rb-gui.history"}, 8, {"home", "history"})
+    info_list_box.build({"rb-gui.history"}, 10, {"home", "history"})
   }
 end
 

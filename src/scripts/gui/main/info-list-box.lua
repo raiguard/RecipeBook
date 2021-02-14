@@ -7,14 +7,13 @@ local util = require("scripts.util")
 
 local info_list_box = {}
 
-function info_list_box.build(caption, rows, save_location, tooltip)
+function info_list_box.build(caption, rows, save_location, children)
   return (
     {type = "flow", direction = "vertical", ref = util.append(save_location, "flow"), children = {
       {
         type = "label",
         style = "rb_info_list_box_label",
         caption = caption,
-        tooltip = tooltip,
         ref = util.append(save_location, "label")
       },
       {type = "frame", style = "deep_frame_in_shallow_frame", ref = util.append(save_location, "frame"),  children = {
@@ -22,7 +21,8 @@ function info_list_box.build(caption, rows, save_location, tooltip)
           type = "scroll-pane",
           style = "rb_list_box_scroll_pane",
           style_mods = {height = (rows * 28)},
-          ref = util.append(save_location, "scroll_pane")
+          ref = util.append(save_location, "scroll_pane"),
+          children = children
         }
       }}
     }}
@@ -135,7 +135,11 @@ function info_list_box.handle_click(e, player, player_table)
   local element = e.element
   local tags = gui.get_tags(element)
   local obj = tags.obj
-  if player_table.settings.highlight_last_selected and tags.is_search_item then
+  if
+    player_table.settings.highlight_last_selected
+    and tags.is_search_item
+    and not (e.shift and obj.class == "technology")
+  then
     local search_refs = player_table.guis.main.refs.search
     local last_selected = search_refs.last_selected_item
     if last_selected and last_selected.valid then
@@ -206,8 +210,12 @@ function info_list_box.handle_click(e, player, player_table)
       end
     end
   elseif obj.class == "technology" then
-    player_table.flags.technology_gui_open = true
-    player.open_technology_gui(obj.name)
+    if e.shift then
+      player_table.flags.technology_gui_open = true
+      player.open_technology_gui(obj.name)
+    else
+      return obj.class, obj.name
+    end
   else
     return obj.class, obj.name
   end

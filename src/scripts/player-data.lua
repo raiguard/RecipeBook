@@ -18,8 +18,7 @@ function player_data.init(player_index)
       gui_open = false,
       technology_gui_open = false,
       show_message_after_translation = false,
-      translate_on_join = false,
-      updating_setting = false,
+      translate_on_join = false
     },
     guis = {
       quick_ref = {}

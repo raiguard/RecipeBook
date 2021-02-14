@@ -9,6 +9,7 @@ local caches = {}
 
 -- upvalues (for optimization)
 local class_to_font_glyph = constants.class_to_font_glyph
+local class_to_type = constants.class_to_type
 local colors = constants.colors
 local concat = table.concat
 
@@ -87,7 +88,7 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
     hidden_str = build_rich_text("font", "default-semibold", translations.gui.hidden_abbrev).."  "
   end
   -- icon
-  local icon_str = build_sprite(constants.class_to_type[class], obj_data.prototype_name).."  "
+  local icon_str = build_sprite(class_to_type[class], obj_data.prototype_name).."  "
   -- amount string
   local amount_str = ""
   if amount then
@@ -127,7 +128,7 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   -- title
   local name_str = use_internal_names and internal_name or name
   local title_str = (
-    build_sprite(constants.class_to_type[class], obj_data.prototype_name)
+    build_sprite(class_to_type[class], obj_data.prototype_name)
     .."  "
     ..build_rich_text(
       "font",
@@ -270,12 +271,12 @@ local formatters = {
     enabled = function() return true end
   },
   fluid = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label, temperature)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       -- locals
       local gui_translations = player_data.translations.gui
 
       -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, temperature)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       -- fuel value
       local fuel_value_str = ""
       if obj_data.fuel_value then
@@ -480,10 +481,15 @@ local formatters = {
     enabled = function(obj_data) return obj_data.required_fluid and true or false end
   },
   technology = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local gui_translations = player_data.translations.gui
       -- interaction help
-      local interaction_help_str = "\n"..player_data.translations.gui.click_to_view_technology
+      local interaction_help_str = ""
+      if not is_label then
+        interaction_help_str = "\n"..gui_translations.click_to_view
+        interaction_help_str = interaction_help_str.."\n"..player_data.translations.gui.shift_click_to_view_technology
+      end
 
       return base_str..interaction_help_str
     end,

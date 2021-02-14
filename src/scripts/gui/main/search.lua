@@ -69,9 +69,12 @@ function search_page.handle_action(msg, e)
   if msg.action == "change_category" then
     state.search.category = constants.search_categories[e.element.selected_index]
   elseif msg.action == "next_category" then
-    local new_index = refs.search.category_drop_down.selected_index + 1
+    local delta = e.shift and -1 or 1
+    local new_index = refs.search.category_drop_down.selected_index + delta
     if new_index > #constants.search_categories then
       new_index = 1
+    elseif new_index < 1 then
+      new_index = #constants.search_categories
     end
     state.search.category = constants.search_categories[new_index]
     refs.search.category_drop_down.selected_index = new_index

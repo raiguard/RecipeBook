@@ -6,6 +6,8 @@ local formatter = require("scripts.formatter")
 
 local info_list_box = require("scripts.gui.main.info-list-box")
 local quick_ref_gui = require("scripts.gui.quick-ref")
+local search_gui = require("scripts.gui.main.search")
+local settings_gui = require("scripts.gui.main.settings")
 
 local pages = {}
 for _, name in ipairs(constants.main_pages) do
@@ -115,7 +117,7 @@ function main_gui.build(player, player_table)
           }},
           {type = "flow", style = "rb_main_frame_flow", children = {
             -- search page
-            {type = "frame", style = "inside_shallow_frame", direction = "vertical", children = pages.search.build()},
+            {type = "frame", style = "inside_shallow_frame", direction = "vertical", children = search_gui.build()},
             -- info page
             {type = "frame", style = "rb_main_info_frame", direction = "vertical", children = {
               -- info bar
@@ -127,6 +129,52 @@ function main_gui.build(player, player_table)
                 children = {
                   {type = "label", style = "rb_toolbar_label", ref = {"base", "info_bar", "label"}},
                   {type = "empty-widget", style = "flib_horizontal_pusher"},
+                  {
+                    type = "flow",
+                    style_mods = {vertical_align = "center"},
+                    ref = {"base", "info_bar", "tech_level", "flow"},
+                    children = {
+                      {type = "label", style = "bold_label", ref = {"base", "info_bar", "tech_level", "label"}},
+                      {
+                        type = "flow",
+                        style_mods = {left_margin = 4, vertical_spacing = 0},
+                        direction = "vertical",
+                        children = {
+                          {
+                            type = "sprite-button",
+                            style = "tool_button",
+                            style_mods = {size = 14, padding = 0},
+                            sprite = "rb_plus_black",
+                            tooltip = {"rb-gui.increase-tech-level"},
+                            ref = {"base", "info_bar", "tech_level", "plus_button"},
+                            actions = {
+                              on_click = {gui = "main", action = "change_tech_level", delta = 1}
+                            }
+                          },
+                          {
+                            type = "sprite-button",
+                            style = "tool_button",
+                            style_mods = {size = 14, padding = 0},
+                            sprite = "rb_minus_black",
+                            tooltip = {"rb-gui.decrease-tech-level"},
+                            ref = {"base", "info_bar", "tech_level", "minus_button"},
+                            actions = {
+                              on_click = {gui = "main", action = "change_tech_level", delta = -1}
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    type = "sprite-button",
+                    style = "tool_button",
+                    sprite = "rb_technology_gui_black",
+                    tooltip = {"rb-gui.view-in-technology-gui"},
+                    mouse_button_filter = {"left"},
+                    ref = {"base", "info_bar", "technology_gui_button"}
+                    -- the action is set and changed in the open_page function
+                  },
                   {
                     type = "sprite-button",
                     style = "tool_button",
@@ -204,6 +252,14 @@ function main_gui.build(player, player_table)
                 },
                 {
                   type = "flow",
+                  style = "rb_main_info_pane_flow",
+                  direction = "vertical",
+                  visible = false,
+                  ref = {"technology", "flow"},
+                  children = pages.technology.build()
+                },
+                {
+                  type = "flow",
                   style_mods = {
                     horizontally_stretchable = true,
                     vertically_stretchable = true,
@@ -219,7 +275,6 @@ function main_gui.build(player, player_table)
                       style = "heading_1_label",
                       style_mods = {
                         horizontal_align = "center",
-                        vertical_align = "center",
                         single_line = false,
                         font_color = {36, 35, 36}
                       },
@@ -230,7 +285,6 @@ function main_gui.build(player, player_table)
                       style = "heading_2_label",
                       style_mods = {
                         horizontal_align = "center",
-                        vertical_align = "center",
                         single_line = false,
                         font_color = {36, 35, 36}
                       },
@@ -244,27 +298,7 @@ function main_gui.build(player, player_table)
         }
       }},
       -- settings window
-      {
-        type = "frame",
-        style = "inner_frame_in_outer_frame",
-        direction = "vertical",
-        visible = false,
-        ref = {"settings", "window"},
-        children = {
-          {type = "flow", style = "flib_titlebar_flow", ref = {"settings", "titlebar_flow"}, children = {
-            {type = "label", style = "frame_title", caption = {"gui-menu.settings"}, ignored_by_interaction = true},
-            {type = "empty-widget", style = "flib_dialog_titlebar_drag_handle", ignored_by_interaction = true},
-          }},
-          {type = "frame", style = "inside_shallow_frame", children = {
-            {
-              type = "scroll-pane",
-              style = "rb_settings_content_scroll_pane",
-              direction = "vertical",
-              children = pages.settings.build(player_table.settings)
-            }
-          }}
-        }
-      }
+      settings_gui.build(player_table.settings)
     }}
   })
 
@@ -281,8 +315,8 @@ function main_gui.build(player, player_table)
       },
       pinned = false,
       pinning = false,
-      search = pages.search.init(),
-      settings = pages.settings.init()
+      search = search_gui.init(),
+      settings = settings_gui.init()
     }
   }
 
@@ -423,6 +457,7 @@ function main_gui.open_page(player, player_table, class, name, options)
   options = options or {}
   name = name or ""
   local gui_data = player_table.guis.main
+  local state = gui_data.state
   local refs = gui_data.refs
   local translations = player_table.translations
 
@@ -584,6 +619,30 @@ function main_gui.open_page(player, player_table, class, name, options)
       base_button.visible = false
     end
 
+    local technology_gui_button = info_bar.technology_gui_button
+    local tech_level = info_bar.tech_level
+    if class == "technology" then
+      technology_gui_button.visible = true
+      gui.update_tags(
+        technology_gui_button,
+        {flib = {on_click = {gui = "main", action = "open_technology_gui", technology = obj_data.prototype_name}}}
+      )
+      if obj_data.min_level ~= obj_data.max_level then
+        tech_level.flow.visible = true
+        -- set the tech level to the current tech level on the force
+        local current_level = player.force.technologies[obj_data.prototype_name].level
+        tech_level.label.caption = {"rb-gui.tech-level", current_level}
+        tech_level.plus_button.enabled = current_level < obj_data.max_level
+        tech_level.minus_button.enabled = current_level > obj_data.min_level
+        state.tech_level = current_level
+      else
+        tech_level.flow.visible = false
+      end
+    else
+      technology_gui_button.visible = false
+      tech_level.flow.visible = false
+    end
+
     if player_table.favorites[class.."."..name] then
       info_bar.favorite_button.style = "flib_selected_tool_button"
       info_bar.favorite_button.tooltip = {"rb-gui.remove-from-favorites"}
@@ -622,9 +681,9 @@ function main_gui.handle_action(msg, e)
   local refs = gui_data.refs
 
   if msg.page == "search" then
-    pages.search.handle_action(msg, e)
+    search_gui.handle_action(msg, e)
   elseif msg.page == "settings" then
-    pages.settings.handle_action(msg, e)
+    settings_gui.handle_action(msg, e)
   else
     if msg.action == "open_page" then
       main_gui.open_page(player, player_table, msg.class, msg.name)
@@ -742,8 +801,20 @@ function main_gui.handle_action(msg, e)
       end
     elseif msg.action == "toggle_paused" then
       main_gui.toggle_paused(game.get_player(e.player_index), player_table, not game.tick_paused, false, true)
-    elseif msg.action == "dimmer_clicked" then
+    elseif msg.action == "open_technology_gui" then
+      player_table.flags.technology_gui_open = true
+      player.open_technology_gui(msg.technology)
+    elseif msg.action == "change_tech_level" then
+      local tech_level = refs.base.info_bar.tech_level
+      local new_level = state.tech_level + msg.delta
+      state.tech_level = new_level
 
+      local obj_data = global.recipe_book.technology[state.open_page.name]
+      tech_level.label.caption = {"rb-gui.tech-level", new_level}
+      tech_level.plus_button.enabled = new_level < obj_data.max_level
+      tech_level.minus_button.enabled = new_level > obj_data.min_level
+
+      pages.technology.update_unit_count(obj_data, refs, state, player_table.settings)
     end
   end
 end
@@ -776,7 +847,7 @@ function main_gui.update_quick_ref_button(player_table)
 end
 
 function main_gui.update_settings(player_table)
-  pages.settings.update(player_table.settings, player_table.guis.main.settings)
+  settings_gui.update(player_table.settings, player_table.guis.main.settings)
 end
 
 return main_gui

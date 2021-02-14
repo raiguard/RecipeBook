@@ -1,3 +1,5 @@
+local math = require("__flib__.math")
+
 local util = require("scripts.util")
 
 local fluid_proc = require("scripts.processors.fluid")
@@ -6,13 +8,30 @@ return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     if prototype.enabled then
       local associated_recipes = {}
+      local research_ingredients_per_unit = {}
 
+      -- research units and ingredients per unit
+      for _, ingredient in ipairs(prototype.research_unit_ingredients) do
+        research_ingredients_per_unit[#research_ingredients_per_unit + 1] = {
+          class = ingredient.type,
+          name = ingredient.name,
+          amount_string = ingredient.amount.."x"
+        }
+      end
+
+      local research_unit_count
+      local formula = prototype.research_unit_count_formula
+      if not formula then
+        research_unit_count = prototype.research_unit_count
+      end
+
+      -- unlocks recipes, materials, crafter / lab
       for _, modifier in ipairs(prototype.effects) do
         if modifier.type == "unlock-recipe" then
           local recipe_data = recipe_book.recipe[modifier.recipe]
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
           recipe_data.researched_forces = {}
-          associated_recipes[#associated_recipes + 1] = modifier.recipe
+          associated_recipes[#associated_recipes + 1] = {class = "recipe", name = modifier.recipe}
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
             local product_data = recipe_book[product.class][product_name]
@@ -51,23 +70,62 @@ return function(recipe_book, strings, metadata)
         end
       end
 
+      local level = prototype.level
+      local max_level = prototype.max_level
+
       recipe_book.technology[name] = {
         associated_recipes = associated_recipes,
         class = "technology",
         hidden = prototype.hidden,
+        max_level = max_level,
+        min_level = level,
+        prerequisite_of = {},
+        prerequisites = {},
         prototype_name = name,
-        researched_forces = {}
+        research_ingredients_per_unit = research_ingredients_per_unit,
+        research_unit_count = research_unit_count,
+        research_unit_count_formula = formula,
+        research_unit_energy = prototype.research_unit_energy / 60,
+        researched_forces = {},
+        upgrade = prototype.upgrade
       }
+
+      local localised_name
+
+      -- assemble name
+      if level ~= max_level then
+        localised_name = {
+          "",
+          prototype.localised_name,
+          " ("..level.."-"..(max_level == math.max_uint and "∞" or max_level)..")"
+        }
+      else
+        localised_name = prototype.localised_name
+      end
+
       util.add_string(strings, {
         dictionary = "technology",
         internal = prototype.name,
-        localised = prototype.localised_name
+        localised = localised_name
       })
       util.add_string(strings, {
         dictionary = "technology_description",
         internal = name,
         localised = prototype.localised_description
       })
+    end
+  end
+
+  -- generate prerequisites and prerequisite_of
+  for name, technology in pairs(recipe_book.technology) do
+    local prototype = game.technology_prototypes[name]
+
+    if prototype.prerequisites then
+      for prerequisite_name, _ in pairs(prototype.prerequisites) do
+        technology.prerequisites[#technology.prerequisites + 1] = {class = "technology", name = prerequisite_name}
+        local prerequisite_data = recipe_book.technology[prerequisite_name]
+        prerequisite_data.prerequisite_of[#prerequisite_data.prerequisite_of + 1] = {class = "technology", name = name}
+      end
     end
   end
 end

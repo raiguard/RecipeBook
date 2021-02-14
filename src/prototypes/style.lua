@@ -61,13 +61,13 @@ styles.rb_search_content_flow = {
 styles.rb_main_info_frame = {
   type = "frame_style",
   parent = "inside_shallow_frame",
-  width = 400
+  width = 450
 }
 
 styles.rb_search_results_frame = {
   type = "frame_style",
   parent = "deep_frame_in_shallow_frame",
-  height = 420,
+  height = 28 * 18,
   width = 250,
   horizontally_stretchable = "on"
 }
