@@ -103,6 +103,18 @@ styles.rb_settings_category_frame = {
   right_padding = 8
 }
 
+styles.rb_frame_semitransparent = {
+  type = "frame_style",
+  graphical_set = {
+      base = {
+          type = "composition",
+          filename = "__RecipeBook__/graphics/semitransparent-pixel.png",
+          corner_size = 1,
+          position = {0, 0}
+      }
+  }
+}
+
 -- LABEL STYLES
 
 styles.rb_toolbar_label = {

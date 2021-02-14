@@ -118,6 +118,17 @@ gui.hook_events(function(e)
     if gui_data then
       gui_data.refs.base.window.frame.bring_to_front()
     end
+  -- not so nice solution to catch game.tick_paused change from Factory Planner, depends on tags
+  -- also I haven't found way to catch game pause on Factory Planner window open
+  -- should be done by element name like dimmer frame, but for these elements it is not filled
+  -- or even better calling the remote_interface.tick_paused after game.tick_paused was changed
+  -- the best solution is if there was on_tick_paused_changed event which can be  
+  elseif e.name == defines.events.on_gui_click and e.element.tags and e.element.tags["on_gui_click"] and e.element.tags["on_gui_click"] == "toggle_pause_game" then
+    local player_table = global.players[e.player_index]
+    main_gui.toggle_paused(game.get_player(e.player_index), player_table, not game.tick_paused, true, false)
+  elseif e.name == defines.events.on_gui_click and e.element.tags and e.element.tags["on_gui_click"] and e.element.tags["on_gui_click"] == "close_main_dialog" then
+    local player_table = global.players[e.player_index]
+    main_gui.toggle_paused(game.get_player(e.player_index), player_table, false, true, false)
   end
 end)
 

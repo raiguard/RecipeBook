@@ -230,10 +230,6 @@ constants.settings = {
     open_fluid_hotkey = {
       default_value = true,
       has_tooltip = true
-    },
-    pause_game_on_open = {
-      default_value = false,
-      has_tooltip = true
     }
   },
   interface = {

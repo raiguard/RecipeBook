@@ -319,12 +319,63 @@ function main_gui.open(player, player_table, skip_focus)
     refs.search.textfield.focus()
     refs.search.textfield.select_all()
   end
+
+  main_gui.toggle_paused(player, player_table, gui_data.state.game_paused, false, false)
+end
+
+function main_gui.toggle_paused(player, player_table, paused, is_external_toggle, is_button_toggle)
+  local gui_data = player_table.guis.main
+  local refs = gui_data.refs
+
   if game.is_multiplayer() then
     refs.base.titlebar.pause_button.visible = false
-  elseif player_table.settings.pause_game_on_open then
-    game.tick_paused = true
+    return
+  end
+
+  if paused then
     refs.base.titlebar.pause_button.style = "flib_selected_frame_action_button"
     refs.base.titlebar.pause_button.sprite = "rb_pause_black"
+  else
+    refs.base.titlebar.pause_button.style = "frame_action_button"
+    refs.base.titlebar.pause_button.sprite = "rb_pause_white"
+  end
+
+  if is_button_toggle then
+    gui_data.state.game_paused = paused
+  end
+
+  if is_external_toggle then
+    gui_data.state.game_paused_external = paused
+  end
+
+  if is_button_toggle or not gui_data.state.game_paused_external then
+    
+    if not is_external_toggle then
+      game.tick_paused = paused
+    end
+
+    main_gui.toggle_dimmer(player, refs, paused)
+    
+    if paused then
+      refs.base.window.frame.bring_to_front()
+    end
+  end
+end
+
+function main_gui.toggle_dimmer(player, refs, show)
+  if refs.background_dimmer then
+    refs.background_dimmer.visible = false
+    refs.background_dimmer.destroy()
+    refs.background_dimmer = nil
+  end
+
+  if show then
+    local background_dimmer = player.gui.screen.add{type="frame", style="rb_frame_semitransparent",
+        visible = false,
+        tags={on_gui_click="re-layer_background_dimmer"}}
+    refs.background_dimmer = background_dimmer
+    refs.background_dimmer.style.size = player.display_resolution
+    refs.background_dimmer.visible = true
   end
 end
 
@@ -338,12 +389,7 @@ function main_gui.close(player, player_table)
         player.opened = nil
       end
     end
-    if game.tick_paused == true then
-      game.tick_paused = false
-      local refs = player_table.guis.main.refs
-      refs.base.titlebar.pause_button.style = "frame_action_button"
-      refs.base.titlebar.pause_button.sprite = "rb_pause_white"
-    end
+    main_gui.toggle_paused(player, player_table, false, false, false)
   end
   player_table.flags.gui_open = false
   player.set_shortcut_toggled("rb-toggle-gui", false)
@@ -695,15 +741,8 @@ function main_gui.handle_action(msg, e)
         refs.base.titlebar.settings_button.sprite = "rb_settings_black"
       end
     elseif msg.action == "toggle_paused" then
-      if game.tick_paused then
-        game.tick_paused = false
-        refs.base.titlebar.pause_button.style = "frame_action_button"
-        refs.base.titlebar.pause_button.sprite = "rb_pause_white"
-      elseif not game.is_multiplayer() then
-        game.tick_paused = true
-        refs.base.titlebar.pause_button.style = "flib_selected_frame_action_button"
-        refs.base.titlebar.pause_button.sprite = "rb_pause_black"
-      end
+      main_gui.toggle_paused(game.get_player(e.player_index), player_table, not game.tick_paused, false, true)
+    elseif msg.action == "dimmer_clicked" then
 
     end
   end

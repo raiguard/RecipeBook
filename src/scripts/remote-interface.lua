@@ -25,6 +25,15 @@ function remote_interface.open_page(player_index, class, name)
   return true
 end
 
+-- interface for other mods to signalize they changed game.tick_paused value
+-- only used to change the ipause icon in title bar
+function remote_interface.tick_paused(player_index)
+  local player = game.get_player(player_index)
+  local player_table = global.players[player_index]
+
+  main_gui.toggle_paused(player, player_table, game.tick_paused, true, false)
+end
+
 function remote_interface.version() return constants.interface_version end
 
 return remote_interface
