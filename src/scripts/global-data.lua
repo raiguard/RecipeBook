@@ -19,6 +19,7 @@ end
 function global_data.build_recipe_book()
   -- the data that will actually be saved and used
   local recipe_book = {
+    bonus = {},
     crafter = {},
     fluid = {},
     item = {},

@@ -7,6 +7,9 @@ local fluid_proc = require("scripts.processors.fluid")
 return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     if prototype.enabled then
+      local associated_bonuses = {}
+      local associated_fluids = {}
+      local associated_items = {}
       local associated_recipes = {}
       local research_ingredients_per_unit = {}
 
@@ -38,6 +41,8 @@ return function(recipe_book, strings, metadata)
 
             product_data.researched_forces = {}
 
+            local associated_product = {class = product_data.class, name = product_data.prototype_name}
+
             -- material
             if product_data.temperature_data then
               local base_fluid_data = recipe_book.fluid[product_data.prototype_name]
@@ -50,8 +55,22 @@ return function(recipe_book, strings, metadata)
                 product_data.temperature_data,
                 {unlocked_by = {class = "technology", name = name}}
               )
+              associated_product.name = associated_product.name..product_data.temperature_string
             else
               product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
+            end
+
+            if product_data.class == "item" then
+              if not associated_items[associated_product.name] then
+                associated_items[#associated_items+1] = associated_product
+                associated_items[associated_product.name] = true
+              end
+              
+            elseif product_data.class == "fluid" then
+              if not associated_fluids[associated_product.name] then
+                associated_fluids[#associated_fluids+1] = associated_product
+                associated_fluids[associated_product.name] = true
+              end
             end
 
             -- crafter / lab
@@ -67,6 +86,36 @@ return function(recipe_book, strings, metadata)
               end
             end
           end
+        else
+          if not recipe_book.bonus[modifier.type] then
+            recipe_book.bonus[modifier.type] = { class = "bonus", name = modifier.type, prototype_name = modifier.type:gsub( "-", "_").."_modifier_icon" }
+            
+            local bonus_amount_string = ""
+
+            if modifier.modifier ~= true then
+              if modifier.modifier > 1 then
+                bonus_amount_string = modifier.modifier
+              else
+                bonus_amount_string = (modifier.modifier * 100) .."%"
+              end
+            end
+
+            util.add_string(strings, {
+              dictionary = "bonus",
+              internal = modifier.type,
+              localised = { "modifier-description."..modifier.type, bonus_amount_string }
+            })            
+            util.add_string(strings, {
+              dictionary = "bonus_description",
+              internal = modifier.type,
+              localised =  { "modifier-description."..modifier.type, bonus_amount_string }
+            })
+
+          end
+          associated_bonuses[#associated_bonuses+1] = {
+            class = "bonus",
+            name = modifier.type      
+            }
         end
       end
 
@@ -74,6 +123,9 @@ return function(recipe_book, strings, metadata)
       local max_level = prototype.max_level
 
       recipe_book.technology[name] = {
+        associated_bonuses = associated_bonuses,
+        associated_fluids = associated_fluids,
+        associated_items = associated_items,
         associated_recipes = associated_recipes,
         class = "technology",
         hidden = prototype.hidden,

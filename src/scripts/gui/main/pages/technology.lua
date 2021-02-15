@@ -33,8 +33,11 @@ function technology_page.build()
       }
     ),
     info_list_box.build({"rb-gui.unlocks-recipes"}, 1, {"technology", "associated_recipes"}),
+    info_list_box.build({"rb-gui.unlocks-bonuses"}, 1, {"technology", "associated_bonuses"}),
     info_list_box.build({"rb-gui.prerequisites"}, 1, {"technology", "prerequisites"}),
     info_list_box.build({"rb-gui.prerequisite-of"}, 1, {"technology", "prerequisite_of"}),
+    info_list_box.build({"rb-gui.unlocks-items"}, 1, {"technology", "associated_items"}),
+    info_list_box.build({"rb-gui.unlocks-fluids"}, 1, {"technology", "associated_fluids"}),
   }
 
   return elems
@@ -78,8 +81,11 @@ function technology_page.update(int_name, gui_data, player_data)
       {always_show = true, starting_index = 1}
     )
     + info_list_box.update(obj_data.associated_recipes, refs.technology.associated_recipes, player_data)
+    + info_list_box.update(obj_data.associated_bonuses, refs.technology.associated_bonuses, player_data)
     + info_list_box.update(obj_data.prerequisites, refs.technology.prerequisites, player_data)
     + info_list_box.update(obj_data.prerequisite_of, refs.technology.prerequisite_of, player_data)
+    + info_list_box.update(obj_data.associated_items, refs.technology.associated_items, player_data)
+    + info_list_box.update(obj_data.associated_fluids, refs.technology.associated_fluids, player_data)
 end
 
 function technology_page.update_unit_count(obj_data, refs, state, settings)
