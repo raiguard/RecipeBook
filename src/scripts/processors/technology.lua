@@ -55,7 +55,7 @@ return function(recipe_book, strings, metadata)
                 product_data.temperature_data,
                 {unlocked_by = {class = "technology", name = name}}
               )
-              associated_product.name = associated_product.name..product_data.temperature_string
+              associated_product.name = product_data.name
             else
               product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
             end
@@ -65,7 +65,6 @@ return function(recipe_book, strings, metadata)
                 associated_items[#associated_items+1] = associated_product
                 associated_items[associated_product.name] = true
               end
-              
             elseif product_data.class == "fluid" then
               if not associated_fluids[associated_product.name] then
                 associated_fluids[#associated_fluids+1] = associated_product
@@ -88,7 +87,7 @@ return function(recipe_book, strings, metadata)
           end
         else
           if not recipe_book.bonus[modifier.type] then
-            recipe_book.bonus[modifier.type] = { class = "bonus", name = modifier.type, prototype_name = modifier.type:gsub( "-", "_").."_modifier_icon" }
+              recipe_book.bonus[modifier.type] = { class = "bonus", name = modifier.type, prototype_name = modifier.type:gsub( "-", "_").."_modifier_icon" }
             
             local bonus_amount_string = ""
 
