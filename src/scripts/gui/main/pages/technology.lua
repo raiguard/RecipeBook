@@ -32,7 +32,7 @@ function technology_page.build()
         }
       }
     ),
-    info_list_box.build({"rb-gui.unlocks-recipes"}, 1, {"technology", "associated_recipes"}),
+    info_list_box.build({"rb-gui.unlocks-recipes"}, 1, {"technology", "unlocks_recipes"}),
     info_list_box.build({"rb-gui.prerequisites"}, 1, {"technology", "prerequisites"}),
     info_list_box.build({"rb-gui.prerequisite-of"}, 1, {"technology", "prerequisite_of"}),
   }
@@ -77,7 +77,7 @@ function technology_page.update(int_name, gui_data, player_data)
       player_data,
       {always_show = true, starting_index = 1}
     )
-    + info_list_box.update(obj_data.associated_recipes, refs.technology.associated_recipes, player_data)
+    + info_list_box.update(obj_data.unlocks_recipes, refs.technology.unlocks_recipes, player_data)
     + info_list_box.update(obj_data.prerequisites, refs.technology.prerequisites, player_data)
     + info_list_box.update(obj_data.prerequisite_of, refs.technology.prerequisite_of, player_data)
 end

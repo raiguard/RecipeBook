@@ -7,7 +7,7 @@ local fluid_proc = require("scripts.processors.fluid")
 return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     if prototype.enabled then
-      local associated_recipes = {}
+      local unlocks_recipes = {}
       local research_ingredients_per_unit = {}
 
       -- research units and ingredients per unit
@@ -31,7 +31,7 @@ return function(recipe_book, strings, metadata)
           local recipe_data = recipe_book.recipe[modifier.recipe]
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
           recipe_data.researched_forces = {}
-          associated_recipes[#associated_recipes + 1] = {class = "recipe", name = modifier.recipe}
+          unlocks_recipes[#unlocks_recipes + 1] = {class = "recipe", name = modifier.recipe}
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
             local product_data = recipe_book[product.class][product_name]
@@ -74,7 +74,6 @@ return function(recipe_book, strings, metadata)
       local max_level = prototype.max_level
 
       recipe_book.technology[name] = {
-        associated_recipes = associated_recipes,
         class = "technology",
         hidden = prototype.hidden,
         max_level = max_level,
@@ -87,6 +86,7 @@ return function(recipe_book, strings, metadata)
         research_unit_count_formula = formula,
         research_unit_energy = prototype.research_unit_energy / 60,
         researched_forces = {},
+        unlocks_recipes = unlocks_recipes,
         upgrade = prototype.upgrade
       }
 
