@@ -7,7 +7,9 @@ local fluid_proc = require("scripts.processors.fluid")
 return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     if prototype.enabled then
-      local unlocks_recipes = {}
+      local associated_fluids = {}
+      local associated_items = {}
+      local associated_recipes = {}
       local research_ingredients_per_unit = {}
 
       -- research units and ingredients per unit
@@ -31,12 +33,14 @@ return function(recipe_book, strings, metadata)
           local recipe_data = recipe_book.recipe[modifier.recipe]
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
           recipe_data.researched_forces = {}
-          unlocks_recipes[#unlocks_recipes + 1] = {class = "recipe", name = modifier.recipe}
+          associated_recipes[#associated_recipes + 1] = {class = "recipe", name = modifier.recipe}
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
             local product_data = recipe_book[product.class][product_name]
 
             product_data.researched_forces = {}
+
+            local associated_product = {class = product_data.class, name = product_data.prototype_name}
 
             -- material
             if product_data.temperature_data then
@@ -50,8 +54,21 @@ return function(recipe_book, strings, metadata)
                 product_data.temperature_data,
                 {unlocked_by = {class = "technology", name = name}}
               )
+              associated_product.name = product_data.name
             else
               product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
+            end
+
+            if product_data.class == "item" then
+              if not associated_items[associated_product.name] then
+                associated_items[#associated_items+1] = associated_product
+                associated_items[associated_product.name] = true
+              end
+            elseif product_data.class == "fluid" then
+              if not associated_fluids[associated_product.name] then
+                associated_fluids[#associated_fluids+1] = associated_product
+                associated_fluids[associated_product.name] = true
+              end
             end
 
             -- crafter / lab
@@ -74,6 +91,9 @@ return function(recipe_book, strings, metadata)
       local max_level = prototype.max_level
 
       recipe_book.technology[name] = {
+        associated_fluids = associated_fluids,
+        associated_items = associated_items,
+        associated_recipes = associated_recipes,
         class = "technology",
         hidden = prototype.hidden,
         max_level = max_level,
@@ -86,7 +106,6 @@ return function(recipe_book, strings, metadata)
         research_unit_count_formula = formula,
         research_unit_energy = prototype.research_unit_energy / 60,
         researched_forces = {},
-        unlocks_recipes = unlocks_recipes,
         upgrade = prototype.upgrade
       }
 
