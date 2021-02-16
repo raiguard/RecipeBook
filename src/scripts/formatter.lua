@@ -1,9 +1,17 @@
 local formatter = {}
 
-local math = require("__flib__.math")
 local fixed_format = require("lib.fixed-precision-format")
 
 local constants = require("constants")
+
+local crafter_form = require("tooltip-formatters.crafter")
+local fluid_form = require("tooltip-formatters.fluid")
+local item_form = require("tooltip-formatters.item")
+local lab_form = require("tooltip-formatters.lab")
+local offshore_pump_form = require("tooltip-formatters.offshore-pump")
+local recipe_form = require("tooltip-formatters.recipe")
+local resource_form = require("tooltip-formatters.resource")
+local technology_form = require("tooltip-formatters.technology")
 
 local caches = {}
 
@@ -163,395 +171,54 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   return title_str..alternate_name_str..description_string..category_class_str..hidden_str..unresearched_str
 end
 
-local ingredients_products_keys = {ingredients = true, products = true}
+local functions = {
+  get_base_tooltip = get_base_tooltip,
+  build_rich_text = build_rich_text,
+  formatter = formatter,
+  concat = concat,
+  fixed_format = fixed_format
+}
+
+crafter_form.init(functions)
+fluid_form.init(functions)
+item_form.init(functions)
+lab_form.init(functions)
+offshore_pump_form.init(functions)
+recipe_form.init(functions)
+resource_form.init(functions)
+technology_form.init(functions)
 
 local formatters = {
-  bonus = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-
-      return base_str
-    end,
-    enabled = function() return false end
-  },
   crafter = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label, blueprint_recipe)
-      -- locals
-      local translations = player_data.translations
-      local gui_translations = translations.gui
-
-      -- object properties
-      local categories = obj_data.categories
-      local rocket_parts_required = obj_data.rocket_parts_required
-      local fixed_recipe = obj_data.fixed_recipe
-
-      -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- rocket parts
-      local rocket_parts_str = ""
-      if rocket_parts_required then
-        rocket_parts_str = (
-          "\n"
-          ..build_rich_text("font", "default-semibold", gui_translations.rocket_parts_required)
-          .." "
-          ..rocket_parts_required
-        )
-      end
-      -- fixed recipe
-      local fixed_recipe_str = ""
-      local fixed_recipe_help_str = ""
-      if fixed_recipe then
-        -- get fixed recipe data
-        local fixed_recipe_data = global.recipe_book.recipe[obj_data.fixed_recipe]
-        if fixed_recipe_data then
-          local title_str = ("\n"..build_rich_text("font", "default-semibold", gui_translations.fixed_recipe).."  ")
-          -- fixed recipe
-          local data = formatter(fixed_recipe_data, player_data, {always_show = true})
-          local label = data.caption
-          -- remove glyph from caption, since it's implied
-          if player_data.settings.show_glyphs then
-            label = string.gsub(label, "^.-nt%]  ", "")
-          end
-          if data.is_researched then
-            fixed_recipe_str = title_str..label
-          else
-            fixed_recipe_str = title_str..build_rich_text("color", "unresearched", label)
-          end
-          -- help text
-          if not is_label then
-            fixed_recipe_help_str = "\n"..gui_translations.control_click_to_view_fixed_recipe
-          end
-        end
-      end
-      -- crafting speed
-      local crafting_speed_str = (
-        "\n"
-        ..build_rich_text("font", "default-semibold", gui_translations.crafting_speed)
-        .." "
-        ..math.round_to(obj_data.crafting_speed, 2)
-      )
-      -- crafting categories
-      local crafting_categories_str_arr = {
-        "\n"
-        ..build_rich_text("font", "default-semibold", gui_translations.crafting_categories)
-      }
-      for i = 1, #categories do
-        crafting_categories_str_arr[#crafting_categories_str_arr+1] = "\n  "..categories[i]
-      end
-      local crafting_categories_str = concat(crafting_categories_str_arr)
-      -- fuel categories
-      local fuel_categories_str_arr = {}
-      local fuel_categories = obj_data.fuel_categories
-      if fuel_categories then
-        fuel_categories_str_arr[1] = "\n"..build_rich_text("font", "default-semibold", gui_translations.fuel_categories)
-        for i = 1, #fuel_categories do
-          fuel_categories_str_arr[#fuel_categories_str_arr+1] = "\n  "..fuel_categories[i]
-        end
-      end
-      local fuel_categories_str = concat(fuel_categories_str_arr)
-      local open_page_help_str = ""
-      local blueprintable_str = ""
-      if not is_label then
-        -- open page help
-        open_page_help_str = "\n"..gui_translations.click_to_view
-        -- blueprintable
-        if blueprint_recipe then
-          if obj_data.blueprintable then
-            blueprintable_str = "\n"..gui_translations.shift_click_to_get_blueprint
-          else
-            blueprintable_str = "\n"..build_rich_text("color", "error", gui_translations.blueprint_not_available)
-          end
-        end
-      end
-
-      return (
-        base_str
-        ..rocket_parts_str
-        ..fixed_recipe_str
-        ..crafting_speed_str
-        ..crafting_categories_str
-        ..fuel_categories_str
-        ..open_page_help_str
-        ..blueprintable_str
-        ..fixed_recipe_help_str
-      )
-    end,
+    tooltip = crafter_form.tooltip_formatter,
     enabled = function() return true end
   },
   fluid = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      -- locals
-      local gui_translations = player_data.translations.gui
-
-      -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- fuel value
-      local fuel_value_str = ""
-      if obj_data.fuel_value then
-        fuel_value_str = (
-          "\n"
-          ..build_rich_text("font", "default-semibold", gui_translations.fuel_value)
-          .." "
-          ..fixed_format(obj_data.fuel_value, 3, "2")
-          .."J"
-        )
-      end
-      -- interaction help
-      local interaction_help_str = ""
-      if not is_label then
-        interaction_help_str = "\n"..gui_translations.click_to_view
-        if obj_data.temperature_data then
-          interaction_help_str = interaction_help_str.."\n"..gui_translations.shift_click_to_view_base_fluid
-        end
-      end
-
-      return base_str..fuel_value_str..interaction_help_str
-    end,
+    tooltip = fluid_form.tooltip_formatter,
     enabled = function() return true end
   },
   item = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      -- locals
-      local gui_translations = player_data.translations.gui
-
-      -- object properties
-      local stack_size = obj_data.stack_size
-
-      -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- stack size
-      local stack_size_str = ""
-      if stack_size then
-        stack_size_str = "\n"..build_rich_text("font", "default-semibold", gui_translations.stack_size).." "..stack_size
-      end
-      -- fuel category
-      local fuel_category_str = ""
-      if obj_data.fuel_category then
-        fuel_category_str = (
-          "\n"
-          ..build_rich_text("font", "default-semibold", gui_translations.fuel_category)
-          .." "
-          ..obj_data.fuel_category
-        )
-      end
-      -- fuel value
-      local fuel_value_str = ""
-      if obj_data.fuel_value then
-        fuel_value_str = (
-          "\n"
-          ..build_rich_text("font", "default-semibold", gui_translations.fuel_value)
-          .." "
-          ..fixed_format(obj_data.fuel_value, 3, "2")
-          .."J"
-        )
-      end
-      -- interaction help
-      local interaction_help_str = ""
-      if not is_label then
-        interaction_help_str = "\n"..gui_translations.click_to_view
-      end
-
-      return base_str..stack_size_str..fuel_category_str..fuel_value_str..interaction_help_str
-    end,
+    tooltip = item_form.tooltip_formatter,
     enabled = function() return true end
   },
   lab = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- researching speed
-      local researching_speed_str = (
-        "\n"
-        ..build_rich_text("font", "default-semibold", player_data.translations.gui.researching_speed)
-        .." "
-        ..math.round_to(obj_data.researching_speed, 2)
-      )
-
-      return base_str..researching_speed_str
-    end,
+    tooltip = lab_form.tooltip_formatter,
     enabled = function() return false end
   },
   offshore_pump = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
-      -- locals
-      local gui_translations = player_data.translations.gui
-
-      -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- pumping speed
-      local pumping_speed_str = (
-        "\n"
-        ..build_rich_text("font", "default-semibold", gui_translations.pumping_speed)
-        .." "
-        ..math.round_to(obj_data.pumping_speed * 60, 0)
-        ..gui_translations.per_second
-      )
-
-      return base_str..pumping_speed_str
-    end,
+    tooltip = offshore_pump_form.tooltip_formatter,
     enabled = function() return false end
   },
   recipe = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      -- locals
-      local recipe_book = global.recipe_book
-      local gui_translations = player_data.translations.gui
-      local player_settings = player_data.settings
-
-      -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      -- crafting_category
-      local category_str = (
-        "\n"
-        ..build_rich_text("font", "default-semibold", gui_translations.category)
-        .." "
-        ..obj_data.category
-      )
-      -- crafting time, ingredients and products
-      local ip_str_arr = {}
-      if player_settings.show_detailed_recipe_tooltips and not is_label then
-        -- crafting time
-        ip_str_arr[1] = (
-          "\n"
-          ..build_rich_text("font", "default-semibold", gui_translations.crafting_time)
-          .." "..math.round_to(obj_data.energy, 2)
-          .." "
-          ..gui_translations.seconds_standalone
-        )
-        -- ingredients and products
-        for material_type in pairs(ingredients_products_keys) do
-          local materials = obj_data[material_type]
-          local materials_len = #materials
-          if materials_len > 0 then
-            ip_str_arr[#ip_str_arr+1] = (
-              "\n"
-              ..build_rich_text("font", "default-semibold", gui_translations[material_type.."_tooltip"])
-            )
-            for i = 1, #materials do
-              local material = materials[i]
-              local material_data = recipe_book[material.class][material.name]
-              if material_data then
-                local data = formatter(
-                  material_data,
-                  player_data,
-                  {amount_string = material.amount_string, always_show = true}
-                )
-                local label = data.caption
-                if data.is_researched then
-                  ip_str_arr[#ip_str_arr+1] = "\n  "..label
-                else
-                  ip_str_arr[#ip_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
-                end
-              end
-            end
-          end
-        end
-      end
-      local ip_str = concat(ip_str_arr)
-      -- interaction help
-      local interaction_help_str = ""
-      if not is_label then
-        interaction_help_str = "\n"..gui_translations.click_to_view
-      end
-
-      return base_str..category_str..ip_str..interaction_help_str
-    end,
+    tooltip = recipe_form.tooltip_formatter,
     enabled = function() return true end
   },
   resource = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      local required_fluid_str = ""
-      local interaction_help_str = ""
-      local required_fluid = obj_data.required_fluid
-      if required_fluid then
-        local fluid_data = global.recipe_book.fluid[required_fluid.name]
-        if fluid_data then
-          local data = formatter(fluid_data, player_data, {amount_string = required_fluid.amount_string})
-          local label = data.caption
-          -- remove glyph from caption, since it's implied
-          if player_data.settings.show_glyphs then
-            label = string.gsub(label, "^.-nt%]  ", "")
-          end
-          if not data.is_researched then
-            label = build_rich_text("color", "unresearched", label)
-          end
-          required_fluid_str = (
-            "\n"
-            ..build_rich_text("font", "default-semibold", player_data.translations.gui.required_fluid)
-            .."  "
-            ..label
-          )
-          interaction_help_str = "\n"..player_data.translations.gui.click_to_view_required_fluid
-        end
-      end
-      return base_str..required_fluid_str..interaction_help_str
-    end,
+    tooltip = resource_form.tooltip_formatter,
     enabled = function(obj_data) return obj_data.required_fluid and true or false end
   },
   technology = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
-      local gui_translations = player_data.translations.gui
-      local player_settings = player_data.settings
-      local recipe_book = global.recipe_book
-
-      -- units count, ingredients
-      local tech_str_arr = {}
-      if player_settings.show_detailed_recipe_tooltips and not is_label then
-        -- units count
-        local unit_count = obj_data.research_unit_count or game.evaluate_expression(
-          obj_data.research_unit_count_formula,
-          {L = obj_data.min_level, l = obj_data.min_level}
-        )
-
-        tech_str_arr[1] = (
-          "\n"
-          ..build_rich_text("font", "default-semibold", gui_translations.research_units_tooltip)
-          .." "..unit_count
-        )
-        tech_str_arr[#tech_str_arr+1] = (
-          "\n"
-          ..build_rich_text("font", "default-semibold", gui_translations.research_ingredients_per_unit_tooltip)
-        )
-
-        -- time ingredient
-        if obj_data.research_unit_energy then
-          local time_item_prefix = player_data.settings.show_glyphs and "[font=RecipeBook]Z[/font]   " or ""
-          tech_str_arr[#tech_str_arr+1] = "\n  ".. time_item_prefix.."[img=quantity-time]   "
-          ..obj_data.research_unit_energy.." "..gui_translations.seconds_standalone
-                    
-        end
-        -- ingredients
-        local ingredients = obj_data.research_ingredients_per_unit
-        for i = 1, #ingredients do
-          local ingredient = ingredients[i]
-          local ingredient_data = recipe_book[ingredient.class][ingredient.name]
-          if ingredient_data then
-            local data = formatter(
-              ingredient_data,
-              player_data,
-              {amount_string = ingredient.amount_string, always_show = true}
-            )
-            local label = data.caption
-            if data.is_researched then
-              tech_str_arr[#tech_str_arr+1] = "\n  "..label
-            else
-              tech_str_arr[#tech_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
-            end
-          end
-        end
-      end
-
-      local tech_str = concat(tech_str_arr)
-      -- interaction help
-      local interaction_help_str = ""
-      if not is_label then
-        interaction_help_str = "\n"..gui_translations.click_to_view
-        interaction_help_str = interaction_help_str.."\n"..player_data.translations.gui.shift_click_to_view_technology
-      end
-
-      return base_str..tech_str..interaction_help_str
-    end,
+    tooltip = technology_form.tooltip_formatter,
     enabled = function() return true end
   }
 }

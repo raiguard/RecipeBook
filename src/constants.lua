@@ -29,7 +29,6 @@ constants.disabled_recipe_categories = {
 }
 
 constants.class_to_font_glyph = {
-  bonus = "G",
   crafter = "D",
   fluid = "B",
   item = "C",
@@ -41,7 +40,6 @@ constants.class_to_font_glyph = {
 }
 
 constants.class_to_type = {
-  bonus = "utility",
   crafter = "entity",
   fluid = "fluid",
   item = "item",
@@ -80,8 +78,6 @@ constants.colors = {
 }
 
 constants.empty_translations_table = {
-  bonus = {},
-  bonus_description = {},
   gui = {},
   crafter = {},
   crafter_description = {},
@@ -103,7 +99,6 @@ constants.empty_translations_table = {
 
 constants.gui_strings = {
   -- internal classes
-  {dictionary = "gui", internal = "bonus", localised = {"rb-gui.bonus"}},
   {dictionary = "gui", internal = "crafter", localised = {"rb-gui.crafter"}},
   {dictionary = "gui", internal = "fluid", localised = {"rb-gui.fluid"}},
   {dictionary = "gui", internal = "item", localised = {"rb-gui.item"}},
@@ -144,9 +139,6 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "required_fluid", localised = {"rb-gui.required-fluid"}},
   {dictionary = "gui", internal = "research_units_tooltip", localised = {"rb-gui.research-units-tooltip"}},
   {dictionary = "gui", internal = "research_ingredients_per_unit_tooltip", localised = {"rb-gui.research-ingredients-per-unit-tooltip"}},
-
-  
-  
   {dictionary = "gui", internal = "researching_speed", localised = {"rb-gui.researching-speed"}},
   {dictionary = "gui", internal = "rocket_parts_required", localised = {"rb-gui.rocket-parts-required"}},
   {dictionary = "gui", internal = "seconds_standalone", localised = {"rb-gui.seconds-standalone"}},

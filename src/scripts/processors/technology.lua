@@ -7,7 +7,6 @@ local fluid_proc = require("scripts.processors.fluid")
 return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     if prototype.enabled then
-      local associated_bonuses = {}
       local associated_fluids = {}
       local associated_items = {}
       local associated_recipes = {}
@@ -85,36 +84,6 @@ return function(recipe_book, strings, metadata)
               end
             end
           end
-        else
-          if not recipe_book.bonus[modifier.type] then
-              recipe_book.bonus[modifier.type] = { class = "bonus", name = modifier.type, prototype_name = modifier.type:gsub( "-", "_").."_modifier_icon" }
-            
-            local bonus_amount_string = ""
-
-            if modifier.modifier ~= true then
-              if modifier.modifier > 1 then
-                bonus_amount_string = modifier.modifier
-              else
-                bonus_amount_string = (modifier.modifier * 100) .."%"
-              end
-            end
-
-            util.add_string(strings, {
-              dictionary = "bonus",
-              internal = modifier.type,
-              localised = { "modifier-description."..modifier.type, bonus_amount_string }
-            })            
-            util.add_string(strings, {
-              dictionary = "bonus_description",
-              internal = modifier.type,
-              localised =  { "modifier-description."..modifier.type, bonus_amount_string }
-            })
-
-          end
-          associated_bonuses[#associated_bonuses+1] = {
-            class = "bonus",
-            name = modifier.type      
-            }
         end
       end
 
@@ -122,7 +91,6 @@ return function(recipe_book, strings, metadata)
       local max_level = prototype.max_level
 
       recipe_book.technology[name] = {
-        associated_bonuses = associated_bonuses,
         associated_fluids = associated_fluids,
         associated_items = associated_items,
         associated_recipes = associated_recipes,
