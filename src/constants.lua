@@ -137,6 +137,8 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "products_tooltip", localised = {"rb-gui.products-tooltip"}},
   {dictionary = "gui", internal = "pumping_speed", localised = {"rb-gui.pumping-speed"}},
   {dictionary = "gui", internal = "required_fluid", localised = {"rb-gui.required-fluid"}},
+  {dictionary = "gui", internal = "research_units_tooltip", localised = {"rb-gui.research-units-tooltip"}},
+  {dictionary = "gui", internal = "research_ingredients_per_unit_tooltip", localised = {"rb-gui.research-ingredients-per-unit-tooltip"}},
   {dictionary = "gui", internal = "researching_speed", localised = {"rb-gui.researching-speed"}},
   {dictionary = "gui", internal = "rocket_parts_required", localised = {"rb-gui.rocket-parts-required"}},
   {dictionary = "gui", internal = "seconds_standalone", localised = {"rb-gui.seconds-standalone"}},

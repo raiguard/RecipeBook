@@ -7,6 +7,8 @@ local fluid_proc = require("scripts.processors.fluid")
 return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     if prototype.enabled then
+      local associated_fluids = {}
+      local associated_items = {}
       local associated_recipes = {}
       local research_ingredients_per_unit = {}
 
@@ -38,6 +40,8 @@ return function(recipe_book, strings, metadata)
 
             product_data.researched_forces = {}
 
+            local associated_product = {class = product_data.class, name = product_data.prototype_name}
+
             -- material
             if product_data.temperature_data then
               local base_fluid_data = recipe_book.fluid[product_data.prototype_name]
@@ -50,8 +54,21 @@ return function(recipe_book, strings, metadata)
                 product_data.temperature_data,
                 {unlocked_by = {class = "technology", name = name}}
               )
+              associated_product.name = product_data.name
             else
               product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
+            end
+
+            if product_data.class == "item" then
+              if not associated_items[associated_product.name] then
+                associated_items[#associated_items+1] = associated_product
+                associated_items[associated_product.name] = true
+              end
+            elseif product_data.class == "fluid" then
+              if not associated_fluids[associated_product.name] then
+                associated_fluids[#associated_fluids+1] = associated_product
+                associated_fluids[associated_product.name] = true
+              end
             end
 
             -- crafter / lab
@@ -74,6 +91,8 @@ return function(recipe_book, strings, metadata)
       local max_level = prototype.max_level
 
       recipe_book.technology[name] = {
+        associated_fluids = associated_fluids,
+        associated_items = associated_items,
         associated_recipes = associated_recipes,
         class = "technology",
         hidden = prototype.hidden,
