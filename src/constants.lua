@@ -256,7 +256,7 @@ constants.settings = {
       default_value = true,
       has_tooltip = true
     },
-    show_detailed_recipe_tooltips = {
+    show_detailed_tooltips = {
       default_value = true,
       has_tooltip = true
     },

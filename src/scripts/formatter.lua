@@ -400,7 +400,7 @@ local formatters = {
       )
       -- crafting time, ingredients and products
       local ip_str_arr = {}
-      if player_settings.show_detailed_recipe_tooltips and not is_label then
+      if player_settings.show_detailed_tooltips and not is_label then
         -- crafting time
         ip_str_arr[1] = (
           "\n"
@@ -489,7 +489,7 @@ local formatters = {
 
       -- units count, ingredients
       local tech_str_arr = {}
-      if player_settings.show_detailed_recipe_tooltips and not is_label then
+      if player_settings.show_detailed_tooltips and not is_label then
         -- units count
         local unit_count = obj_data.research_unit_count or game.evaluate_expression(
           obj_data.research_unit_count_formula,

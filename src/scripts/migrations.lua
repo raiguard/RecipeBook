@@ -38,6 +38,8 @@ return {
     global.translation_data = nil
     for _, player_table in pairs(global.players) do
       player_table.flags.updating_setting = nil
+      local settings = player_table.settings
+      settings.show_detailed_tooltips = settings.show_detailed_recipe_tooltips
     end
   end
 }
