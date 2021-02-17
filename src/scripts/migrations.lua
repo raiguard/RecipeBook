@@ -1,4 +1,3 @@
-local gui = require("__flib__.gui-beta")
 local translation = require("__flib__.translation")
 
 local global_data = require("scripts.global-data")
@@ -10,7 +9,6 @@ return {
     global = {}
 
     -- re-init
-    gui.init()
     translation.init()
     global_data.init()
     for i in pairs(game.players) do

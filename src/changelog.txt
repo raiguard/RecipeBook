@@ -26,6 +26,7 @@ Date: ????
     - Removed "burnable in" and "compatible fuels" sections, as they were inconsistent and only worked with crafters
   Bugfixes:
     - Fixed a crash with certain modded burner entities
+    - Fixed a crash when upgrading from a pre-2.0 version of the mod
     - Fixed a long-standing bug that materials would be marked as available when usable as an ingredient, even if it was not obtainable
     - Fixed crafter labels showing interaction helps
     - Fixed that even if a page was already open, it would be added again to the session history and re-opened
