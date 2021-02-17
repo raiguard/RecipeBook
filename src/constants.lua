@@ -17,6 +17,8 @@ constants.disabled_recipe_categories = {
   ["deep-storage-fluid-big"] = 0,
   ["deep-storage-item-mk2/3"] = 0,
   ["deep-storage-fluid-mk2/3"] = 0,
+  -- krastorio 2
+  ["void-crushing"] = 0, -- this doesn't actually exist yet, but will soon!
   -- mining drones
   ["mining-depot"] = 0,
   -- pyanodon's
