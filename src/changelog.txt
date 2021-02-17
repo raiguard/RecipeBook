@@ -1,7 +1,9 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.5.2
 Date: ????
-  Changes:
+  Bugfixes:
+    - Fixed a crash when an infinite technology only has one level (#44)
+    - Fixed a crash when researching a previously-disabled technology (#44)
 ---------------------------------------------------------------------------------------------------
 Version: 2.5.1
 Date: 2021-02-17
