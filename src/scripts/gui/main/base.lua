@@ -555,17 +555,14 @@ function main_gui.open_page(player, player_table, class, name, options)
         technology_gui_button,
         {flib = {on_click = {gui = "main", action = "open_technology_gui", technology = obj_data.prototype_name}}}
       )
-      if obj_data.min_level ~= obj_data.max_level then
-        tech_level.flow.visible = true
-        -- set the tech level to the current tech level on the force
-        local current_level = player.force.technologies[obj_data.prototype_name].level
-        tech_level.label.caption = {"rb-gui.tech-level", current_level}
-        tech_level.plus_button.enabled = current_level < obj_data.max_level
-        tech_level.minus_button.enabled = current_level > obj_data.min_level
-        state.tech_level = current_level
-      else
-        tech_level.flow.visible = false
-      end
+      -- set the tech level to the current tech level on the force
+      local current_level = player.force.technologies[obj_data.prototype_name].level
+      tech_level.label.caption = {"rb-gui.tech-level", current_level}
+      tech_level.plus_button.enabled = current_level < obj_data.max_level
+      tech_level.minus_button.enabled = current_level > obj_data.min_level
+      state.tech_level = current_level
+      -- show or hide tech level changer
+      tech_level.flow.visible = obj_data.min_level ~= obj_data.max_level
     else
       technology_gui_button.visible = false
       tech_level.flow.visible = false
