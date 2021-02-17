@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.5.0
-Date: ????
+Date: 2021-02-17
   Features:
     - Added controls for navigating the session history, bound by default to the back and forward buttons on the mouse
     - Added default recipe category excludes for Creative Mod and the PySuite
