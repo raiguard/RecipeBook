@@ -103,7 +103,7 @@ function player_data.refresh(player, player_table)
     session = {
       position = 1
     }
-  },
+  }
 
   -- update settings
   player_data.update_settings(player, player_table)

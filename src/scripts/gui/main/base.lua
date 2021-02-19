@@ -770,7 +770,7 @@ function main_gui.update_quick_ref_button(player_table)
 end
 
 function main_gui.update_settings(player_table)
-  settings_gui.update(player_table.settings, player_table.guis.main.settings)
+  settings_gui.update(player_table.settings, player_table.guis.main)
 end
 
 return main_gui

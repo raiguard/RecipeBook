@@ -84,7 +84,7 @@ event.register({defines.events.on_research_finished, defines.events.on_research_
   for _, player in pairs(e.research.force.players) do
     local player_table = global.players[player.index]
     if player_table and player_table.flags.can_open_gui then
-      if player_table.flags.gui_open then
+      if player_table.flags.gui_open or player_table.settings.preserve_session then
         main_gui.refresh_contents(player, player_table)
       end
       quick_ref_gui.refresh_all(player, player_table)
