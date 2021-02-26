@@ -77,19 +77,23 @@ local function update_recipe(recipe_book, recipe_data, force_index, to_value)
         end
       end
 
-      if to_value then
-        recipe_book.fluid[product_data.prototype_name].researched_forces[force_index] = to_value
-      else
-        local researched = false
+      local main_fluid = recipe_book.fluid[product_data.prototype_name]
 
-        for _, temperature in pairs(recipe_book.fluid[product_data.prototype_name].temperatures) do
-          if temperature.researched_forces[force_index] then
-            researched = true
-            break
+      if not main_fluid.enabled_at_start then
+        if to_value then
+          main_fluid.researched_forces[force_index] = to_value
+        else
+          local is_researched = false
+
+          for _, temperature in pairs(main_fluid.temperatures) do
+            if temperature.researched_forces[force_index] then
+              is_researched = true
+              break
+            end
           end
-        end
 
-        recipe_book.fluid[product_data.prototype_name].researched_forces[force_index] = researched
+          main_fluid.researched_forces[force_index] = is_researched
+        end
       end
     else
       product_data.researched_forces[force_index] = to_value
