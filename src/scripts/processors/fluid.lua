@@ -73,7 +73,7 @@ function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, 
   })
 end
 
-function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data, sets, is_product)
+function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data, sets)
   local fluid_name = fluid_data.prototype_name
   local main_data = recipe_book.fluid[fluid_name]
 
@@ -83,11 +83,10 @@ function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data,
     local combined_name = fluid_name.."."..temperature_data.string
   
     local data = recipe_book.fluid[combined_name]
-    
 
     for _, subfluid_data in pairs(fluid_data.temperatures) do
-      if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
-        for _, tbl_name in ipairs{"ingredient_in", "product_of", "unlocked_by"} do
+      for _, tbl_name in ipairs{"ingredient_in", "product_of", "unlocked_by"} do
+        if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data, tbl_name ~= "ingredient_in") then
           append(data[tbl_name], subfluid_data[tbl_name])
         end
       end
@@ -95,8 +94,8 @@ function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data,
   end
 
   for _, subfluid_data in pairs(fluid_data.temperatures) do
-    if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data, is_product) then
-      for lookup_type, obj in pairs(sets) do
+    for lookup_type, obj in pairs(sets) do
+      if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data, lookup_type ~= "ingredient_in") then
         if lookup_type == "unlocked_by" then
           subfluid_data.researched_forces = {}
           if not main_data.enabled_at_start then
@@ -105,12 +104,31 @@ function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data,
         end
         local list = subfluid_data[lookup_type]
         list[#list + 1] = obj
-      end
-      if fluid_data.enabled_at_start then
-        subfluid_data.enabled_at_start = true
+
+        if fluid_data.enabled_at_start then
+          subfluid_data.enabled_at_start = true
+        end
       end
     end
   end
+
+  -- for _, subfluid_data in pairs(fluid_data.temperatures) do
+  --   if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data, is_product) then
+  --     for lookup_type, obj in pairs(sets) do
+  --       if lookup_type == "unlocked_by" then
+  --         subfluid_data.researched_forces = {}
+  --         if not main_data.enabled_at_start then
+  --           main_data.researched_forces = {}
+  --         end
+  --       end
+  --       local list = subfluid_data[lookup_type]
+  --       list[#list + 1] = obj
+  --     end
+  --     if fluid_data.enabled_at_start then
+  --       subfluid_data.enabled_at_start = true
+  --     end
+  --   end
+  -- end
 end
 
 function fluid_proc.add_to_matching_temperatures(recipe_book, strings, metadata, fluid_data, temperature_data)
