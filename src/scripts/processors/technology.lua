@@ -50,9 +50,17 @@ return function(recipe_book, strings, metadata)
               strings,
               metadata,
               base_fluid_data,
-              product_data.temperature_data,
-              {unlocked_by = {class = "technology", name = name}}
+              product_data.temperature_data
             )
+
+            fluid_proc.import_properties(
+              recipe_book,
+              base_fluid_data,
+              product_data.temperature_data,
+              {unlocked_by = {class = "technology", name = name}},
+              true
+            )
+
             associated_product.name = product_data.name
           else
             product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}

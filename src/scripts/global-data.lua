@@ -37,7 +37,7 @@ function global_data.build_recipe_book()
   fluid_proc(recipe_book, strings, metadata)
   item_proc(recipe_book, strings, metadata)
   lab_proc(recipe_book, strings)
-  offshore_pump_proc(recipe_book, strings)
+  offshore_pump_proc(recipe_book, strings, metadata)
   recipe_proc(recipe_book, strings, metadata)
   resource_proc(recipe_book, strings)
   technology_proc(recipe_book, strings)
@@ -75,6 +75,21 @@ local function update_recipe(recipe_book, recipe_data, force_index, to_value)
         if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
           subfluid_data.researched_forces[force_index] = to_value
         end
+      end
+
+      if to_value then
+        recipe_book.fluid[product_data.prototype_name].researched_forces[force_index] = to_value
+      else
+        local researched = false
+
+        for _, temperature in pairs(recipe_book.fluid[product_data.prototype_name].temperatures) do
+          if temperature.researched_forces[force_index] then
+            researched = true
+            break
+          end
+        end
+
+        recipe_book.fluid[product_data.prototype_name].researched_forces[force_index] = researched
       end
     else
       product_data.researched_forces[force_index] = to_value

@@ -35,27 +35,45 @@ function util.build_amount_string(material)
   return amount_string, quick_ref_string
 end
 
-function util.build_temperature_data(fluid)
+function util.build_temperature_data(fluid, fluid_data, is_product)
   local temperature = fluid.temperature
   local temperature_min = fluid.minimum_temperature
   local temperature_max = fluid.maximum_temperature
   local temperature_string
+  local is_default
+
+  local fluid_min = fluid_data.default_temperature
+  local fluid_max = fluid_data.max_temperature or fluid_data.default_temperature
+
+  if not temperature and not temperature_min and not temperature_max then
+      if is_product then
+        temperature = fluid_min
+      else
+        temperature_min = fluid_min
+        temperature_max = fluid_max
+      end
+
+     is_default = true
+  end
+
   if temperature then
     temperature_string = tostring(math.round_to(temperature, 2))
     temperature_min = temperature
     temperature_max = temperature
   elseif temperature_min and temperature_max then
-    if temperature_min == math.min_double then
+    if (temperature_min == math.min_double or temperature_min == fluid_min) and (temperature_max == math.max_double or temperature_max == fluid_max) then
+      temperature_string = nil
+    elseif temperature_min == math.min_double or temperature_min == fluid_min then
       temperature_string = "≤"..math.round_to(temperature_max, 2)
-    elseif temperature_max == math.max_double then
+    elseif temperature_max == math.max_double or temperature_max == fluid_max then
       temperature_string = "≥"..math.round_to(temperature_min, 2)
     else
-      temperature_string = ""..math.round_to(temperature_min, 2).."-"..math.round_to(temperature_max, 2)
+      temperature_string = math.round_to(temperature_min, 2).."-"..math.round_to(temperature_max, 2)
     end
   end
 
-  if temperature_string then
-    return {string = temperature_string, min = temperature_min, max = temperature_max}
+  if temperature_string or is_default then
+    return {string = temperature_string, min = temperature_min, max = temperature_max, skip_add = is_default and not is_product}
   end
 end
 
