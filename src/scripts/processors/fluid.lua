@@ -99,7 +99,9 @@ function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data,
       for lookup_type, obj in pairs(sets) do
         if lookup_type == "unlocked_by" then
           subfluid_data.researched_forces = {}
-          main_data.researched_forces = {}
+          if not main_data.enabled_at_start then
+            main_data.researched_forces = {}
+          end
         end
         local list = subfluid_data[lookup_type]
         list[#list + 1] = obj
