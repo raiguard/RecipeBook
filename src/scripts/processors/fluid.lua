@@ -59,18 +59,7 @@ function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, 
   recipe_book.fluid[combined_name] = data
   fluid_data.temperatures[temperature_data.string] = data
 
-  -- strings
-  util.add_string(strings, {
-    dictionary = "fluid",
-    internal = combined_name,
-    localised = {
-      "",
-      metadata.localised_fluids[fluid_name],
-      " (",
-      {"format-degrees-c-compact", temperature_data.string},
-      ")"
-    }
-  })
+
 end
 
 function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data, sets)
@@ -111,24 +100,6 @@ function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data,
       end
     end
   end
-
-  -- for _, subfluid_data in pairs(fluid_data.temperatures) do
-  --   if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data, is_product) then
-  --     for lookup_type, obj in pairs(sets) do
-  --       if lookup_type == "unlocked_by" then
-  --         subfluid_data.researched_forces = {}
-  --         if not main_data.enabled_at_start then
-  --           main_data.researched_forces = {}
-  --         end
-  --       end
-  --       local list = subfluid_data[lookup_type]
-  --       list[#list + 1] = obj
-  --     end
-  --     if fluid_data.enabled_at_start then
-  --       subfluid_data.enabled_at_start = true
-  --     end
-  --   end
-  -- end
 end
 
 function fluid_proc.add_to_matching_temperatures(recipe_book, strings, metadata, fluid_data, temperature_data)

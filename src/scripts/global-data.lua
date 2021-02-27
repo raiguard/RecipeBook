@@ -8,7 +8,7 @@ local offshore_pump_proc = require("scripts.processors.offshore-pump")
 local recipe_proc = require("scripts.processors.recipe")
 local resource_proc = require("scripts.processors.resource")
 local technology_proc = require("scripts.processors.technology")
-
+local fluid_post_proc = require("scripts.processors.post.fluid")
 local global_data = {}
 
 function global_data.init()
@@ -41,6 +41,7 @@ function global_data.build_recipe_book()
   recipe_proc(recipe_book, strings, metadata)
   resource_proc(recipe_book, strings)
   technology_proc(recipe_book, strings)
+  fluid_post_proc(recipe_book, strings, metadata)
 
   strings.__index = nil
   global.recipe_book = recipe_book

@@ -129,8 +129,7 @@ return function(recipe_book, strings, metadata)
               recipe_book,  
               material_data,
               temperature_data,
-              {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category},
-              io_type == "products"
+              {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
             )
           end
         end
