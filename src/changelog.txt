@@ -1,7 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.5.3
 Date: ????
-  Changes:
+  Bugfixes:
+    - Fixed that changes to object availability would not apply when opening the GUI while preserve session is enabled (credit to kubiix)
 ---------------------------------------------------------------------------------------------------
 Version: 2.5.2
 Date: 2021-02-17
