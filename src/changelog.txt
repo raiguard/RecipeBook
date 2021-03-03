@@ -1,6 +1,9 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.5.3
 Date: ????
+  Features:
+    - Added generic object opening support
+      - Hovering over any crafter, fluid, item, recipe, or technology anywhere in the game and using the Recipe Book hotkey will open that object's page
   Bugfixes:
     - Fixed that changes to object availability would not apply when opening the GUI while preserve session is enabled (credit to kubiix)
 ---------------------------------------------------------------------------------------------------

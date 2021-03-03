@@ -52,6 +52,17 @@ constants.class_to_type = {
   technology = "technology"
 }
 
+constants.type_to_class = {
+  ["assembling-machine"] = "crafter",
+  ["fluid"] = "fluid",
+  ["furnace"] = "crafter",
+  ["item"] = "item",
+  ["lab"] = "lab",
+  ["recipe"] = "recipe",
+  ["rocket-silo"] = "crafter",
+  ["technology"] = "technology",
+}
+
 constants.colors = {
   error = {
     str = "255, 90, 90",
@@ -228,11 +239,7 @@ constants.search_results_limit = 150
 
 constants.settings = {
   general = {
-    open_item_hotkey = {
-      default_value = true,
-      has_tooltip = true
-    },
-    open_fluid_hotkey = {
+    open_selected_object = {
       default_value = true,
       has_tooltip = true
     }

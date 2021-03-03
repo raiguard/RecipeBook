@@ -103,13 +103,7 @@ function fluid_proc.add_to_matching_temperatures(recipe_book, strings, metadata,
 end
 
 function fluid_proc.is_within_range(temperature_data_1, temperature_data_2)
-  if
-    temperature_data_1.min >= temperature_data_2.min
-    and temperature_data_1.max <= temperature_data_2.max
-  then
-    return true
-  end
-  return false
+  return temperature_data_1.min >= temperature_data_2.min and temperature_data_1.max <= temperature_data_2.max
 end
 
 -- when calling the module directly, call fluid_proc.build
