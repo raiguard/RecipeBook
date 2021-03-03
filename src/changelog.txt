@@ -4,6 +4,7 @@ Date: ????
   Features:
     - Added generic object opening support
       - Hovering over any crafter, fluid, item, recipe, or technology anywhere in the game and using the Recipe Book hotkey will open that object's page
+    - Added fuel pollution, vehicle acceleration, and vehicle top speed multipliers to item tooltips
   Bugfixes:
     - Fixed that changes to object availability would not apply when opening the GUI while preserve session is enabled (credit to kubiix)
     - Fixed a crash when using "%" in search in some situations

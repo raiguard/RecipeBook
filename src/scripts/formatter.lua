@@ -337,13 +337,55 @@ local formatters = {
           .."J"
         )
       end
+      -- fuel acceleration
+      local fuel_acceleration_str = ""
+      if obj_data.fuel_acceleration_multiplier then
+        fuel_acceleration_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_acceleration_multiplier)
+          .." "
+          ..math.round_to(obj_data.fuel_acceleration_multiplier * 100, 2)
+          .."%"
+        )
+      end
+      -- fuel top speed
+      local fuel_top_speed_str = ""
+      if obj_data.fuel_top_speed_multiplier then
+        fuel_top_speed_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_top_speed_multiplier)
+          .." "
+          ..math.round_to(obj_data.fuel_top_speed_multiplier * 100, 2)
+          .."%"
+        )
+      end
+      -- fuel emissions
+      local fuel_emissions_str = ""
+      if obj_data.fuel_emissions_multiplier then
+        fuel_emissions_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_emissions_multiplier)
+          .." "
+          ..math.round_to(obj_data.fuel_emissions_multiplier * 100, 2)
+          .."%"
+        )
+      end
       -- interaction help
       local interaction_help_str = ""
       if not is_label then
         interaction_help_str = "\n"..gui_translations.click_to_view
       end
 
-      return base_str..stack_size_str..fuel_category_str..fuel_value_str..interaction_help_str
+      return (
+        base_str
+        ..stack_size_str
+        ..fuel_category_str
+        ..fuel_value_str
+        ..fuel_acceleration_str
+        ..fuel_top_speed_str
+        ..fuel_emissions_str
+        ..interaction_help_str
+      )
     end,
     enabled = function() return true end
   },
