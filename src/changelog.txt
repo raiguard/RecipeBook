@@ -6,6 +6,7 @@ Date: ????
       - Hovering over any crafter, fluid, item, recipe, or technology anywhere in the game and using the Recipe Book hotkey will open that object's page
   Bugfixes:
     - Fixed that changes to object availability would not apply when opening the GUI while preserve session is enabled (credit to kubiix)
+    - Fixed a crash when using "%" in search in some situations
 ---------------------------------------------------------------------------------------------------
 Version: 2.5.2
 Date: 2021-02-17

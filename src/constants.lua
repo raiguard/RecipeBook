@@ -175,6 +175,7 @@ constants.gui_strings = {
 }
 
 constants.input_sanitizers = {
+  ["%%"] = "%%%%",
   ["%("] = "%%(",
   ["%)"] = "%%)",
   ["%.^[%*]"] = "%%.",
