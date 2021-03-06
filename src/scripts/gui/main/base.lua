@@ -96,6 +96,7 @@ function main_gui.build(player, player_table)
               sprite = "utility/close_white",
               hovered_sprite = "utility/close_black",
               clicked_sprite = "utility/close_black",
+              tooltip = {"gui.close-instruction"},
               mouse_button_filter = {"left"},
               actions = {
                 on_click = {gui = "main", action = "close"}
