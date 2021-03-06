@@ -337,6 +337,17 @@ local formatters = {
           .."J"
         )
       end
+      -- fuel emissions
+      local fuel_emissions_str = ""
+      if obj_data.fuel_emissions_multiplier then
+        fuel_emissions_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_emissions_multiplier)
+          .." "
+          ..math.round_to(obj_data.fuel_emissions_multiplier * 100, 2)
+          .."%"
+        )
+      end
       -- fuel acceleration
       local fuel_acceleration_str = ""
       if obj_data.fuel_acceleration_multiplier then
@@ -359,17 +370,6 @@ local formatters = {
           .."%"
         )
       end
-      -- fuel emissions
-      local fuel_emissions_str = ""
-      if obj_data.fuel_emissions_multiplier then
-        fuel_emissions_str = (
-          "\n"
-          ..build_rich_text("font", "default-semibold", gui_translations.fuel_emissions_multiplier)
-          .." "
-          ..math.round_to(obj_data.fuel_emissions_multiplier * 100, 2)
-          .."%"
-        )
-      end
       -- interaction help
       local interaction_help_str = ""
       if not is_label then
@@ -381,9 +381,9 @@ local formatters = {
         ..stack_size_str
         ..fuel_category_str
         ..fuel_value_str
+        ..fuel_emissions_str
         ..fuel_acceleration_str
         ..fuel_top_speed_str
-        ..fuel_emissions_str
         ..interaction_help_str
       )
     end,
