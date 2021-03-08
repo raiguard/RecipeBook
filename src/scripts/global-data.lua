@@ -73,7 +73,7 @@ local function update_recipe(recipe_book, recipe_data, force_index, to_value)
     if product_data.temperature_data then
       -- add to matching fluid temperatures
       for _, subfluid_data in pairs(recipe_book.fluid[product_data.prototype_name].temperatures) do
-        if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
+        if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data, true) then
           subfluid_data.researched_forces[force_index] = to_value
         end
       end
@@ -96,7 +96,7 @@ local function update_recipe(recipe_book, recipe_data, force_index, to_value)
           main_fluid.researched_forces[force_index] = is_researched
         end
       end
-    else
+    elseif not product_data.enabled_at_start then
       product_data.researched_forces[force_index] = to_value
     end
 
