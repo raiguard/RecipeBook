@@ -96,6 +96,7 @@ function main_gui.build(player, player_table)
               sprite = "utility/close_white",
               hovered_sprite = "utility/close_black",
               clicked_sprite = "utility/close_black",
+              tooltip = {"gui.close-instruction"},
               mouse_button_filter = {"left"},
               actions = {
                 on_click = {gui = "main", action = "close"}
@@ -303,7 +304,8 @@ function main_gui.build(player, player_table)
       pinned = false,
       pinning = false,
       search = search_gui.init(),
-      settings = settings_gui.init()
+      settings = settings_gui.init(),
+      temp_opened = false
     }
   }
 
@@ -322,23 +324,31 @@ function main_gui.destroy(player_table)
   player_table.guis.main = nil
 end
 
-function main_gui.open(player, player_table, skip_focus)
+function main_gui.open(player, player_table, skip_focus, temp_open)
   local gui_data = player_table.guis.main
   local refs = gui_data.refs
+  local state = gui_data.state
   local window = refs.base.window.frame
   if window and window.valid then
     window.visible = true
     window.bring_to_front()
-  end
-  player_table.flags.gui_open = true
-  if not gui_data.state.pinned then
-    player.opened = window
-  end
-  player.set_shortcut_toggled("rb-toggle-gui", true)
 
-  if not skip_focus then
-    refs.search.textfield.focus()
-    refs.search.textfield.select_all()
+    player_table.flags.gui_open = true
+    if not state.pinned then
+      if temp_open and not state.temp_opened and (player.opened or player.opened_gui_type > 0) then
+        -- "open" the GUI without actually marking it as opened, and hijack `on_gui_closed` to close it without closing
+        -- the initial GUI
+        state.temp_opened = true
+      else
+        player.opened = window
+      end
+    end
+    player.set_shortcut_toggled("rb-toggle-gui", true)
+
+    if not skip_focus then
+      refs.search.textfield.focus()
+      refs.search.textfield.select_all()
+    end
   end
 end
 
@@ -707,10 +717,13 @@ function main_gui.handle_action(msg, e)
         refs.base.titlebar.pin_button.style = "flib_selected_frame_action_button"
         refs.base.titlebar.pin_button.sprite = "rb_pin_black"
         state.pinned = true
+        state.temp_opened = false -- in case it is currently set
         refs.base.window.frame.auto_center = false
-        state.pinning = true
-        player.opened = nil
-        state.pinning = false
+        if player.opened == refs.base.window.frame then
+          state.pinning = true
+          player.opened = nil
+          state.pinning = false
+        end
       end
     elseif msg.action == "toggle_settings" then
       if state.settings.open then
@@ -767,10 +780,6 @@ function main_gui.update_quick_ref_button(player_table)
       quick_ref_button.style = "tool_button"
     end
   end
-end
-
-function main_gui.update_settings(player_table)
-  settings_gui.update(player_table.settings, player_table.guis.main.settings)
 end
 
 return main_gui

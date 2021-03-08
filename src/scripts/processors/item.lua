@@ -39,9 +39,33 @@ return function(recipe_book, strings, metadata)
       end
     end
 
+    local fuel_value = prototype.fuel_value
+    local has_fuel_value = prototype.fuel_value > 0
+    local fuel_acceleration_multiplier = prototype.fuel_acceleration_multiplier
+    local fuel_emissions_multiplier = prototype.fuel_emissions_multiplier
+    local fuel_top_speed_multiplier = prototype.fuel_top_speed_multiplier
+
     recipe_book.item[name] = {
       class = "item",
-      fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
+      fuel_acceleration_multiplier = (
+        has_fuel_value
+        and fuel_acceleration_multiplier ~= 1
+        and fuel_acceleration_multiplier
+        or nil
+      ),
+      fuel_emissions_multiplier = (
+        has_fuel_value
+        and fuel_emissions_multiplier ~= 1
+        and fuel_emissions_multiplier
+        or nil
+      ),
+      fuel_top_speed_multiplier = (
+        has_fuel_value
+        and fuel_top_speed_multiplier ~= 1
+        and fuel_top_speed_multiplier
+        or nil
+      ),
+      fuel_value = has_fuel_value and fuel_value or nil,
       hidden = prototype.has_flag("hidden"),
       ingredient_in = {},
       mined_from = {},

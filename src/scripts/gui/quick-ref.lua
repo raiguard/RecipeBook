@@ -52,6 +52,7 @@ function quick_ref_gui.build(player, player_table, name, location)
           sprite = "utility/close_white",
           hovered_sprite = "utility/close_black",
           clicked_sprite = "utility/close_black",
+          tooltip = {"gui.close"},
           mouse_button_filter = {"left"},
           actions = {
             on_click = {gui = "quick_ref", action = "close", name = name}

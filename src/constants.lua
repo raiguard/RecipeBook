@@ -52,6 +52,17 @@ constants.class_to_type = {
   technology = "technology"
 }
 
+constants.type_to_class = {
+  ["assembling-machine"] = "crafter",
+  ["fluid"] = "fluid",
+  ["furnace"] = "crafter",
+  ["item"] = "item",
+  ["lab"] = "lab",
+  ["recipe"] = "recipe",
+  ["rocket-silo"] = "crafter",
+  ["technology"] = "technology",
+}
+
 constants.colors = {
   error = {
     str = "255, 90, 90",
@@ -130,8 +141,11 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "crafting_speed", localised = {"rb-gui.crafting-speed"}},
   {dictionary = "gui", internal = "crafting_time", localised = {"rb-gui.crafting-time"}},
   {dictionary = "gui", internal = "fixed_recipe", localised = {"rb-gui.fixed-recipe"}},
+  {dictionary = "gui", internal = "fuel_acceleration_multiplier", localised = {"rb-gui.fuel-acceleration-multiplier"}},
   {dictionary = "gui", internal = "fuel_categories", localised = {"rb-gui.fuel-categories"}},
   {dictionary = "gui", internal = "fuel_category", localised = {"rb-gui.fuel-category"}},
+  {dictionary = "gui", internal = "fuel_emissions_multiplier", localised = {"rb-gui.fuel-emissions-multiplier"}},
+  {dictionary = "gui", internal = "fuel_top_speed_multiplier", localised = {"rb-gui.fuel-top-speed-multiplier"}},
   {dictionary = "gui", internal = "fuel_value", localised = {"rb-gui.fuel-value"}},
   {dictionary = "gui", internal = "hidden", localised = {"rb-gui.hidden"}},
   {dictionary = "gui", internal = "ingredients_tooltip", localised = {"rb-gui.ingredients-tooltip"}},
@@ -139,8 +153,12 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "products_tooltip", localised = {"rb-gui.products-tooltip"}},
   {dictionary = "gui", internal = "pumping_speed", localised = {"rb-gui.pumping-speed"}},
   {dictionary = "gui", internal = "required_fluid", localised = {"rb-gui.required-fluid"}},
+  {
+    dictionary = "gui",
+    internal = "research_ingredients_per_unit_tooltip",
+    localised = {"rb-gui.research-ingredients-per-unit-tooltip"}
+  },
   {dictionary = "gui", internal = "research_units_tooltip", localised = {"rb-gui.research-units-tooltip"}},
-  {dictionary = "gui", internal = "research_ingredients_per_unit_tooltip", localised = {"rb-gui.research-ingredients-per-unit-tooltip"}},
   {dictionary = "gui", internal = "researching_speed", localised = {"rb-gui.researching-speed"}},
   {dictionary = "gui", internal = "rocket_parts_required", localised = {"rb-gui.rocket-parts-required"}},
   {dictionary = "gui", internal = "seconds_standalone", localised = {"rb-gui.seconds-standalone"}},
@@ -164,6 +182,7 @@ constants.gui_strings = {
 }
 
 constants.input_sanitizers = {
+  ["%%"] = "%%%%",
   ["%("] = "%%(",
   ["%)"] = "%%)",
   ["%.^[%*]"] = "%%.",
@@ -228,11 +247,7 @@ constants.search_results_limit = 150
 
 constants.settings = {
   general = {
-    open_item_hotkey = {
-      default_value = true,
-      has_tooltip = true
-    },
-    open_fluid_hotkey = {
+    open_selected_object = {
       default_value = true,
       has_tooltip = true
     }
