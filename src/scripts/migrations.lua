@@ -1,4 +1,3 @@
-local gui = require("__flib__.gui-beta")
 local translation = require("__flib__.translation")
 
 local global_data = require("scripts.global-data")
@@ -10,7 +9,6 @@ return {
     global = {}
 
     -- re-init
-    gui.init()
     translation.init()
     global_data.init()
     for i in pairs(game.players) do
@@ -38,6 +36,8 @@ return {
     global.translation_data = nil
     for _, player_table in pairs(global.players) do
       player_table.flags.updating_setting = nil
+      local settings = player_table.settings
+      settings.show_detailed_tooltips = settings.show_detailed_recipe_tooltips
     end
   end
 }

@@ -1,6 +1,28 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.5.0
+Version: 2.6.0
 Date: ????
+  Features:
+    - Added generic object opening support
+      - Hovering over any crafter, fluid, item, recipe, or technology anywhere in the game and using the Recipe Book hotkey will open that object's page
+    - Added fuel pollution, vehicle acceleration, and vehicle top speed multipliers to item tooltips
+    - Added tooltips to close buttons
+  Bugfixes:
+    - Fixed that changes to object availability would not apply when opening the GUI while preserve session is enabled (credit to kubiix)
+    - Fixed a crash when using "%" in search in some situations
+---------------------------------------------------------------------------------------------------
+Version: 2.5.2
+Date: 2021-02-17
+  Bugfixes:
+    - Fixed a crash when an infinite technology only has one level (#44)
+    - Fixed a crash when researching a previously-disabled technology (#44)
+---------------------------------------------------------------------------------------------------
+Version: 2.5.1
+Date: 2021-02-17
+  Bugfixes:
+    - Fixed a crash when a character entity had an item to place it (#43)
+---------------------------------------------------------------------------------------------------
+Version: 2.5.0
+Date: 2021-02-17
   Features:
     - Added controls for navigating the session history, bound by default to the back and forward buttons on the mouse
     - Added default recipe category excludes for Creative Mod and the PySuite
@@ -26,6 +48,7 @@ Date: ????
     - Removed "burnable in" and "compatible fuels" sections, as they were inconsistent and only worked with crafters
   Bugfixes:
     - Fixed a crash with certain modded burner entities
+    - Fixed a crash when upgrading from a pre-2.0 version of the mod
     - Fixed a long-standing bug that materials would be marked as available when usable as an ingredient, even if it was not obtainable
     - Fixed crafter labels showing interaction helps
     - Fixed that even if a page was already open, it would be added again to the session history and re-opened

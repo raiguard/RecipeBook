@@ -10,7 +10,9 @@ return function(recipe_book, strings, metadata)
       compatible_recipes = {},
       crafting_speed = 1,
       hidden = false,
-      prototype_name = name
+      placeable_by = {},
+      prototype_name = name,
+      unlocked_by = {}
     }
     util.add_string(strings, {dictionary = "crafter", internal = name, localised = prototype.localised_name})
     util.add_string(strings, {

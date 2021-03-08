@@ -84,7 +84,7 @@ event.register({defines.events.on_research_finished, defines.events.on_research_
   for _, player in pairs(e.research.force.players) do
     local player_table = global.players[player.index]
     if player_table and player_table.flags.can_open_gui then
-      if player_table.flags.gui_open then
+      if player_table.flags.gui_open or player_table.settings.preserve_session then
         main_gui.refresh_contents(player, player_table)
       end
       quick_ref_gui.refresh_all(player, player_table)
@@ -94,7 +94,7 @@ end)
 
 -- GUI
 
-gui.hook_events(function(e)
+local function read_action(e)
   local msg = gui.read_action(e)
   if msg then
     if msg.gui == "main" then
@@ -102,17 +102,48 @@ gui.hook_events(function(e)
     elseif msg.gui == "quick_ref" then
       quick_ref_gui.handle_action(msg, e)
     end
-  elseif e.name == defines.events.on_gui_closed and e.gui_type == defines.gui_type.research then
+    return true
+  end
+  return false
+end
+
+gui.hook_events(read_action)
+
+event.on_gui_opened(function(e)
+  if not read_action(e) then
+    local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
+    player_table.last_opened_gui = player.opened or player.opened_gui_type
+  end
+end)
+
+event.on_gui_closed(function(e)
+  if not read_action(e) then
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    local gui_data = player_table.guis.main
+    if gui_data and gui_data.state.temp_opened then
+      -- close RB
+      gui_data.state.temp_opened = false
+      main_gui.close(player, player_table)
+      -- re-open what was last open
+      local last_open = player_table.last_opened_gui
+      if last_open and (type(last_open) ~= "table" or last_open.valid) then
+        player.opened = last_open
+      end
+    end
     if player_table.flags.technology_gui_open then
       player_table.flags.technology_gui_open = false
-      local gui_data = player_table.guis.main
       if not gui_data.state.pinned then
         game.get_player(e.player_index).opened = gui_data.refs.base.window.frame
       end
     end
-  -- bring frame to front if clicking on Factory Planner dimmer frame
-  elseif e.name == defines.events.on_gui_click and e.element.name == "fp_frame_background_dimmer" then
+  end
+end)
+
+event.on_gui_click(function(e)
+  if not read_action(e) and e.element.name == "fp_frame_background_dimmer" then
+    -- bring frame to front if clicking on Factory Planner dimmer frame
     local player_table = global.players[e.player_index]
     local gui_data = player_table.guis.main
     if gui_data then
@@ -161,38 +192,24 @@ event.register("rb-toggle-gui", function(e)
 
   -- only bother if we actually can open the GUI
   if main_gui.check_can_open(player, player_table) then
-    -- check player's cursor stack for an item we can open
-    if player_table.settings.open_item_hotkey then
-      local item_to_open = player_data.check_cursor_stack(player)
-      if item_to_open then
-        main_gui.open_page(player, player_table, "item", item_to_open)
-        if not player_table.flags.gui_open then
-          main_gui.open(player, player_table, true)
-        end
-        return
-      end
-    end
-
-    -- get player's currently selected entity to check for a fluid filter
-    local selected = player.selected
-    if player_table.settings.open_fluid_hotkey then
-      if selected and selected.valid and constants.open_fluid_types[selected.type] then
-        local fluidbox = selected.fluidbox
-        if fluidbox and fluidbox.valid then
-          local locked_fluid = fluidbox.get_locked_fluid(1)
-          if locked_fluid then
-            -- check recipe book to see if this fluid has a material page
-            if global.recipe_book.fluid[locked_fluid] then
-              main_gui.open_page(player, player_table, "fluid", locked_fluid)
-              if not player_table.flags.gui_open then
-                main_gui.open(player, player_table, true)
-              end
-              return
-            end
+    local selected_prototype = e.selected_prototype
+    if selected_prototype and player_table.settings.open_selected_object then
+      local class = (
+        constants.type_to_class[selected_prototype.base_type]
+        or constants.type_to_class[selected_prototype.derived_type]
+      )
+      if class then
+        local obj_data = global.recipe_book[class][selected_prototype.name]
+        if obj_data then
+          main_gui.open_page(player, player_table, class, selected_prototype.name)
+          if not player_table.flags.gui_open then
+            main_gui.open(player, player_table, true, true)
           end
+          return
         end
       end
     end
+    -- if we're here, then toggle the GUI as normal
     main_gui.toggle(player, player_table)
   end
 end)
@@ -240,9 +257,14 @@ end)
 -- TICK
 
 local function on_tick(e)
+  local deregister = true
+
   if translation.translating_players_count() > 0 then
+    deregister = false
     translation.iterate_batch(e)
-  else
+  end
+
+  if deregister then
     event.on_tick(nil)
   end
 end

@@ -337,13 +337,55 @@ local formatters = {
           .."J"
         )
       end
+      -- fuel emissions
+      local fuel_emissions_str = ""
+      if obj_data.fuel_emissions_multiplier then
+        fuel_emissions_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_emissions_multiplier)
+          .." "
+          ..math.round_to(obj_data.fuel_emissions_multiplier * 100, 2)
+          .."%"
+        )
+      end
+      -- fuel acceleration
+      local fuel_acceleration_str = ""
+      if obj_data.fuel_acceleration_multiplier then
+        fuel_acceleration_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_acceleration_multiplier)
+          .." "
+          ..math.round_to(obj_data.fuel_acceleration_multiplier * 100, 2)
+          .."%"
+        )
+      end
+      -- fuel top speed
+      local fuel_top_speed_str = ""
+      if obj_data.fuel_top_speed_multiplier then
+        fuel_top_speed_str = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.fuel_top_speed_multiplier)
+          .." "
+          ..math.round_to(obj_data.fuel_top_speed_multiplier * 100, 2)
+          .."%"
+        )
+      end
       -- interaction help
       local interaction_help_str = ""
       if not is_label then
         interaction_help_str = "\n"..gui_translations.click_to_view
       end
 
-      return base_str..stack_size_str..fuel_category_str..fuel_value_str..interaction_help_str
+      return (
+        base_str
+        ..stack_size_str
+        ..fuel_category_str
+        ..fuel_value_str
+        ..fuel_emissions_str
+        ..fuel_acceleration_str
+        ..fuel_top_speed_str
+        ..interaction_help_str
+      )
     end,
     enabled = function() return true end
   },
@@ -400,7 +442,7 @@ local formatters = {
       )
       -- crafting time, ingredients and products
       local ip_str_arr = {}
-      if player_settings.show_detailed_recipe_tooltips and not is_label then
+      if player_settings.show_detailed_tooltips and not is_label then
         -- crafting time
         ip_str_arr[1] = (
           "\n"
@@ -484,6 +526,57 @@ local formatters = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
       local gui_translations = player_data.translations.gui
+      local player_settings = player_data.settings
+      local recipe_book = global.recipe_book
+
+      -- units count, ingredients
+      local tech_str_arr = {}
+      if player_settings.show_detailed_tooltips and not is_label then
+        -- units count
+        local unit_count = obj_data.research_unit_count or game.evaluate_expression(
+          obj_data.research_unit_count_formula,
+          {L = obj_data.min_level, l = obj_data.min_level}
+        )
+
+        tech_str_arr[1] = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.research_units_tooltip)
+          .." "..unit_count
+        )
+        tech_str_arr[#tech_str_arr+1] = (
+          "\n"
+          ..build_rich_text("font", "default-semibold", gui_translations.research_ingredients_per_unit_tooltip)
+        )
+
+        -- time ingredient
+        if obj_data.research_unit_energy then
+          local time_item_prefix = player_data.settings.show_glyphs and "[font=RecipeBook]Z[/font]   " or ""
+          tech_str_arr[#tech_str_arr+1] = "\n  ".. time_item_prefix.."[img=quantity-time]   "
+          ..obj_data.research_unit_energy.." "..gui_translations.seconds_standalone
+
+        end
+        -- ingredients
+        local ingredients = obj_data.research_ingredients_per_unit
+        for i = 1, #ingredients do
+          local ingredient = ingredients[i]
+          local ingredient_data = recipe_book[ingredient.class][ingredient.name]
+          if ingredient_data then
+            local data = formatter(
+              ingredient_data,
+              player_data,
+              {amount_string = ingredient.amount_string, always_show = true}
+            )
+            local label = data.caption
+            if data.is_researched then
+              tech_str_arr[#tech_str_arr+1] = "\n  "..label
+            else
+              tech_str_arr[#tech_str_arr+1] = "\n  "..build_rich_text("color", "unresearched", label)
+            end
+          end
+        end
+      end
+
+      local tech_str = concat(tech_str_arr)
       -- interaction help
       local interaction_help_str = ""
       if not is_label then
@@ -491,7 +584,7 @@ local formatters = {
         interaction_help_str = interaction_help_str.."\n"..player_data.translations.gui.shift_click_to_view_technology
       end
 
-      return base_str..interaction_help_str
+      return base_str..tech_str..interaction_help_str
     end,
     enabled = function() return true end
   }
@@ -566,3 +659,4 @@ end
 setmetatable(formatter, { __call = function(_, ...) return formatter.format(...) end })
 
 return formatter
+
