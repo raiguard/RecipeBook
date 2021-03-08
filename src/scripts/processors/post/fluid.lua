@@ -8,8 +8,20 @@ function fluid_post_proc.run(recipe_book, strings, metadata)
 
     local count = 0
 
-    for _, _ in pairs(fluid_data.temperatures) do
+    local need_research = true
+
+    for _, sub_fluid in pairs(fluid_data.temperatures) do
       count = count + 1
+
+      if sub_fluid.enabled_at_start then
+        need_research = false
+      end
+    end
+
+    if need_research then
+      fluid_data.researched_forces = {}
+    else
+      fluid_data.enabled_at_start = true
     end
 
     if count == 1 then

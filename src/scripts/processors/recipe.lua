@@ -20,7 +20,9 @@ return function(recipe_book, strings, metadata)
       enabled_at_start = enabled_at_start,
       energy = prototype.energy,
       hidden = prototype.hidden,
+      ingredients = {},
       made_in = {},
+      products = {},
       prototype_name = name,
       unlocked_by = {},
       used_as_fixed_recipe = metadata.fixed_recipes[name]
@@ -41,11 +43,12 @@ return function(recipe_book, strings, metadata)
         local lookup_table = material_data[lookup_type]
 
         lookup_table[#lookup_table + 1] = {class = "recipe", name = name }
-        
+
         output[i] = material_io_data
         material_data.recipe_categories[#material_data.recipe_categories + 1] = category
 
         if enabled_at_start and io_type == "products" then
+
           material_data.enabled_at_start = true
 
           local item = recipe_book.offshore_pump[name]
@@ -74,8 +77,7 @@ return function(recipe_book, strings, metadata)
               strings,
               metadata,
               material_data,
-              temperature_data,
-              {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
+              temperature_data
             )
           end
         end
@@ -118,7 +120,7 @@ return function(recipe_book, strings, metadata)
     local category = prototype.category
     -- ingredients / products
     for lookup_type, io_type in pairs{ingredient_in = "ingredients", product_of = "products"} do
-      for i, material in ipairs(prototype[io_type]) do
+      for _, material in ipairs(prototype[io_type]) do
         local material_data = recipe_book[material.type][material.name]
 
         -- fluid temperatures

@@ -64,7 +64,6 @@ end
 
 function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data, sets)
   local fluid_name = fluid_data.prototype_name
-  local main_data = recipe_book.fluid[fluid_name]
 
   -- import properties from other temperatures
   if not temperature_data.skip_add then
@@ -87,14 +86,11 @@ function fluid_proc.import_properties(recipe_book, fluid_data, temperature_data,
       if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data, lookup_type ~= "ingredient_in") then
         if lookup_type == "unlocked_by" then
           subfluid_data.researched_forces = {}
-          if not main_data.enabled_at_start then
-            main_data.researched_forces = {}
-          end
         end
         local list = subfluid_data[lookup_type]
         list[#list + 1] = obj
 
-        if fluid_data.enabled_at_start then
+        if lookup_type == "product_of" and fluid_data.enabled_at_start then
           subfluid_data.enabled_at_start = true
         end
       end
