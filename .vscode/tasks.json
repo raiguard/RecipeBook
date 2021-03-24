@@ -6,7 +6,7 @@
       "label": "Set minimal mods",
       "command": "adjustMods",
       // unfortunately tasks don't support environment variables... >:(
-      "modsPath": "c:/Files/Development/Factorio/Testbenches/1/mods",
+      "modsPath": "/home/rai/dev/factorio/1/mods",
       "adjustMods": {
         "EditorExtensions": true,
         "flib": true,
@@ -20,15 +20,15 @@
       "label": "Set mods - Krastorio2",
       "command": "adjustMods",
       // unfortunately tasks don't support environment variables... >:(
-        "modsPath": "c:/Files/Development/Factorio/Testbenches/1/mods",
-        "adjustMods": {
-          "EditorExtensions": true,
-          "flib": true,
-          "Krastorio2": true,
-          "RecipeBook": true,
-          "Sandbox": true
-        },
-        "disableExtraMods": true
+      "modsPath": "/home/rai/dev/factorio/1/mods",
+      "adjustMods": {
+        "EditorExtensions": true,
+        "flib": true,
+        "Krastorio2": true,
+        "RecipeBook": true,
+        "Sandbox": true
+      },
+      "disableExtraMods": true
     }
   ]
 }
