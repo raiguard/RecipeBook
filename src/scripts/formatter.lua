@@ -500,7 +500,11 @@ local formatters = {
       if required_fluid then
         local fluid_data = global.recipe_book.fluid[required_fluid.name]
         if fluid_data then
-          local data = formatter(fluid_data, player_data, {amount_string = required_fluid.amount_string})
+          local data = formatter(
+            fluid_data,
+            player_data,
+            {amount_string = required_fluid.amount_string, always_show = true}
+          )
           local label = data.caption
           -- remove glyph from caption, since it's implied
           if player_data.settings.show_glyphs then
