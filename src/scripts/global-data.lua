@@ -104,6 +104,8 @@ function global_data.handle_research_updated(technology, to_value)
   local recipe_book = global.recipe_book
   -- technology
   local technology_data = recipe_book.technology[technology.name]
+  -- other mods can update technolgies during on_configuration_changed before RB gets a chance to config change
+  if not technology_data then return end
   technology_data.researched_forces[force_index] = to_value
 
   for _, recipe in ipairs(technology_data.unlocks_recipes) do

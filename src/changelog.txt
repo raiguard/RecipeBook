@@ -7,6 +7,7 @@ Date: ????
     - Added fuel pollution, vehicle acceleration, and vehicle top speed multipliers to item tooltips
     - Added tooltips to close buttons
   Bugfixes:
+    - Fixed a crash if another mod updated a new technology in on_configuration_changed before Recipe Book refreshed its data
     - Fixed a crash when a required fluid for mining was unresearched and "show unresearched objects" was off
     - Fixed a crash when using "%" in search in some situations
     - Fixed that changes to object availability would not apply when opening the GUI while preserve session is enabled (credit to kubiix)
