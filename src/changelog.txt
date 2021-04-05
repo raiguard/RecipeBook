@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.6.0
-Date: ????
+Date: 2021-04-05
   Features:
     - Added generic object opening support
       - Hovering over any crafter, fluid, item, recipe, or technology anywhere in the game and using the Recipe Book hotkey will open that object's page
