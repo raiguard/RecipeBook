@@ -9,6 +9,7 @@ function settings_page.build(settings)
   local output = {}
 
   -- generic - auto-generated from constants
+  -- TODO: Auto-generate [img=info] icons
   for category_name, elements in pairs(constants.settings) do
     local category_output = (
       {type = "frame", style = "rb_settings_category_frame", direction = "vertical", children = {

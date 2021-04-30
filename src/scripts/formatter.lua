@@ -22,15 +22,26 @@ local function build_sprite(class, name)
 end
 
 local function get_properties(obj_data, force_index)
-  local researched
+  local is_researched
+  -- FIXME: This isn't necessarily true
   if obj_data.enabled_at_start then
-    researched = true
+    is_researched = true
   elseif obj_data.researched_forces then
-    researched = obj_data.researched_forces[force_index] or false
+    is_researched = obj_data.researched_forces[force_index] or false
   else
-    researched = true
+    is_researched = true
   end
-  return obj_data.hidden, researched
+
+  local is_enabled = true
+  -- FIXME: find a better way to do this
+  -- We have to get the current enabled status from the object itself
+  if obj_data.class == "recipe" then
+    is_enabled = game.forces[force_index].recipes[obj_data.prototype_name].enabled
+  elseif obj_data.class == "technology" then
+    is_enabled = game.forces[force_index].technologies[obj_data.prototype_name].enabled
+  end
+
+  return obj_data.hidden, is_researched, is_enabled
 end
 
 local function get_should_show(obj_data, player_data)
@@ -39,33 +50,38 @@ local function get_should_show(obj_data, player_data)
   local player_settings = player_data.settings
   local show_hidden = player_settings.show_hidden
   local show_unresearched = player_settings.show_unresearched
+  local show_disabled = player_settings.show_disabled
 
   -- check hidden and researched status
-  local is_hidden, is_researched = get_properties(obj_data, force_index)
-  if (show_hidden or not is_hidden) and (show_unresearched or is_researched) then
+  local is_hidden, is_researched, is_enabled = get_properties(obj_data, force_index)
+  if
+    (show_hidden or not is_hidden)
+    and (show_unresearched or is_researched)
+    and (show_disabled or is_enabled)
+  then
     -- for recipes - check category to see if it should be shown
     local category = obj_data.category
     local categories = obj_data.recipe_categories
     if category then
       if player_settings.recipe_categories[category] then
-        return true, is_hidden, is_researched
+        return true, is_hidden, is_researched, is_enabled
       end
     -- for materials - check if any of their categories are enabled
     elseif categories then
       local category_settings = player_settings.recipe_categories
       for _, category_name in ipairs(categories) do
         if category_settings[category_name] then
-          return true, is_hidden, is_researched
+          return true, is_hidden, is_researched, is_enabled
         end
       end
     else
-      return true, is_hidden, is_researched
+      return true, is_hidden, is_researched, is_enabled
     end
   end
-  return false, is_hidden, is_researched
+  return false, is_hidden, is_researched, is_enabled
 end
 
-local function get_caption(obj_data, player_data, is_hidden, amount)
+local function get_caption(obj_data, player_data, is_hidden, is_enabled, amount)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
@@ -87,6 +103,11 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
   if is_hidden then
     hidden_str = build_rich_text("font", "default-semibold", translations.gui.hidden_abbrev).."  "
   end
+  -- disabled
+  local disabled_str = ""
+  if not is_enabled then
+    disabled_str = build_rich_text("font", "default-semibold", translations.gui.disabled_abbrev).."  "
+  end
   -- icon
   local icon_str = build_sprite(class_to_type[class], obj_data.prototype_name).."  "
   -- amount string
@@ -103,10 +124,10 @@ local function get_caption(obj_data, player_data, is_hidden, amount)
   )
 
   -- output
-  return glyph_str..hidden_str..icon_str..amount_str..name_str
+  return glyph_str..hidden_str..disabled_str..icon_str..amount_str..name_str
 end
 
-local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
@@ -154,20 +175,25 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
   if is_hidden then
     hidden_str = "  |  "..gui_translations.hidden
   end
+  -- disabled
+  local disabled_str = ""
+  if not is_enabled then
+    disabled_str = "  |  "..gui_translations.disabled
+  end
   -- unresearched
   local unresearched_str = ""
   if not is_researched then
     unresearched_str = "  |  "..build_rich_text("color", "unresearched", gui_translations.unresearched)
   end
 
-  return title_str..alternate_name_str..description_string..category_class_str..hidden_str..unresearched_str
+  return title_str..alternate_name_str..description_string..category_class_str..hidden_str..disabled_str..unresearched_str
 end
 
 local ingredients_products_keys = {ingredients = true, products = true}
 
 local formatters = {
   crafter = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label, blueprint_recipe)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label, blueprint_recipe)
       -- locals
       local translations = player_data.translations
       local gui_translations = translations.gui
@@ -178,7 +204,7 @@ local formatters = {
       local fixed_recipe = obj_data.fixed_recipe
 
       -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       -- rocket parts
       local rocket_parts_str = ""
       if rocket_parts_required then
@@ -271,12 +297,12 @@ local formatters = {
     enabled = function() return true end
   },
   fluid = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
       -- locals
       local gui_translations = player_data.translations.gui
 
       -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       -- fuel value
       local fuel_value_str = ""
       if obj_data.fuel_value then
@@ -302,7 +328,7 @@ local formatters = {
     enabled = function() return true end
   },
   item = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
       -- locals
       local gui_translations = player_data.translations.gui
 
@@ -310,7 +336,7 @@ local formatters = {
       local stack_size = obj_data.stack_size
 
       -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       -- stack size
       local stack_size_str = ""
       if stack_size then
@@ -390,8 +416,8 @@ local formatters = {
     enabled = function() return true end
   },
   lab = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       -- researching speed
       local researching_speed_str = (
         "\n"
@@ -405,12 +431,12 @@ local formatters = {
     enabled = function() return false end
   },
   offshore_pump = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
       -- locals
       local gui_translations = player_data.translations.gui
 
       -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       -- pumping speed
       local pumping_speed_str = (
         "\n"
@@ -425,14 +451,14 @@ local formatters = {
     enabled = function() return false end
   },
   recipe = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
       -- locals
       local recipe_book = global.recipe_book
       local gui_translations = player_data.translations.gui
       local player_settings = player_data.settings
 
       -- build string
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       -- crafting_category
       local category_str = (
         "\n"
@@ -492,8 +518,8 @@ local formatters = {
     enabled = function() return true end
   },
   resource = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, _)
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       local required_fluid_str = ""
       local interaction_help_str = ""
       local required_fluid = obj_data.required_fluid
@@ -527,8 +553,8 @@ local formatters = {
     enabled = function(obj_data) return obj_data.required_fluid and true or false end
   },
   technology = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_label)
-      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       local gui_translations = player_data.translations.gui
       local player_settings = player_data.settings
       local recipe_book = global.recipe_book
@@ -595,12 +621,12 @@ local formatters = {
 }
 
 local function format_item(obj_data, player_data, options)
-  local should_show, is_hidden, is_researched = get_should_show(obj_data, player_data)
+  local should_show, is_hidden, is_researched, is_enabled = get_should_show(obj_data, player_data)
   if options.always_show or should_show then
     -- format and return
     local formatter_subtable = formatters[obj_data.class]
     return {
-      caption = get_caption(obj_data, player_data, is_hidden, options.amount_string),
+      caption = get_caption(obj_data, player_data, is_hidden, is_enabled, options.amount_string),
       is_enabled = formatter_subtable.enabled(obj_data),
       is_researched = is_researched,
       tooltip = formatter_subtable.tooltip(
@@ -608,6 +634,7 @@ local function format_item(obj_data, player_data, options)
         player_data,
         is_hidden,
         is_researched,
+        is_enabled,
         options.is_label,
         options.blueprint_recipe
       )
@@ -623,11 +650,12 @@ function formatter.format(obj_data, player_data, options)
 
   local player_index = player_data.player_index
   local cache = caches[player_index]
-  local _, is_researched = get_properties(obj_data, player_data.force_index)
+  local _, is_researched, is_enabled = get_properties(obj_data, player_data.force_index)
   local cache_key = (
     obj_data.class
     .."."..(obj_data.name or obj_data.prototype_name)
     .."."..tostring(is_researched)
+    .."."..tostring(is_enabled)
     .."."..tostring(options.amount_string)
     .."."..tostring(options.always_show)
     .."."..tostring(options.is_label)

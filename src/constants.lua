@@ -140,6 +140,8 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "crafting_categories", localised = {"rb-gui.crafting-categories"}},
   {dictionary = "gui", internal = "crafting_speed", localised = {"rb-gui.crafting-speed"}},
   {dictionary = "gui", internal = "crafting_time", localised = {"rb-gui.crafting-time"}},
+  {dictionary = "gui", internal = "disabled_abbrev", localised = {"rb-gui.disabled-abbrev"}},
+  {dictionary = "gui", internal = "disabled", localised = {"rb-gui.disabled"}},
   {dictionary = "gui", internal = "fixed_recipe", localised = {"rb-gui.fixed-recipe"}},
   {dictionary = "gui", internal = "fuel_acceleration_multiplier", localised = {"rb-gui.fuel-acceleration-multiplier"}},
   {dictionary = "gui", internal = "fuel_categories", localised = {"rb-gui.fuel-categories"}},
@@ -258,6 +260,10 @@ constants.settings = {
       has_tooltip = true
     },
     show_unresearched = {
+      default_value = false,
+      has_tooltip = true
+    },
+    show_disabled = {
       default_value = false,
       has_tooltip = true
     },
