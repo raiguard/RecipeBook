@@ -1,7 +1,13 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.6.1
 Date: ????
+  Features:
+    - Added an option to show disabled recipes and technologies
+    - Added indicators for when a recipe or technology is disabled
   Changes:
+    - Disabled recipes and technologies are hidden by default
+  Bugfixes:
+    - Fixed a crash when using the hotkey on a science lab
 ---------------------------------------------------------------------------------------------------
 Version: 2.6.0
 Date: 2021-04-05

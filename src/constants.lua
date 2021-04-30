@@ -57,7 +57,6 @@ constants.type_to_class = {
   ["fluid"] = "fluid",
   ["furnace"] = "crafter",
   ["item"] = "item",
-  ["lab"] = "lab",
   ["recipe"] = "recipe",
   ["rocket-silo"] = "crafter",
   ["technology"] = "technology",
