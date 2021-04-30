@@ -23,7 +23,6 @@ end
 
 local function get_properties(obj_data, force_index)
   local is_researched
-  -- FIXME: this isn't necessarily true
   if obj_data.enabled_at_start then
     is_researched = true
   elseif obj_data.researched_forces then
@@ -35,7 +34,8 @@ local function get_properties(obj_data, force_index)
   local is_enabled = true
   -- FIXME: find a better way to do this
   -- we have to get the current enabled status from the object itself
-  if obj_data.class == "recipe" then
+  -- recipes are unlocked by "enabling" them, so only check if a recipe is actually disabled if it's researched
+  if obj_data.class == "recipe" and is_researched then
     is_enabled = game.forces[force_index].recipes[obj_data.prototype_name].enabled
   elseif obj_data.class == "technology" then
     is_enabled = game.forces[force_index].technologies[obj_data.prototype_name].enabled
