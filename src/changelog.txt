@@ -4,6 +4,7 @@ Date: ????
   Features:
     - Added an option to show disabled recipes and technologies
     - Added indicators for when a recipe or technology is disabled
+    - Added researched state for labs and offshore pumps
   Changes:
     - Disabled recipes and technologies are hidden by default
   Bugfixes:

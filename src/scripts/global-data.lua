@@ -40,6 +40,9 @@ function global_data.build_recipe_book()
   offshore_pump_proc(recipe_book, strings)
   recipe_proc(recipe_book, strings, metadata)
   resource_proc(recipe_book, strings)
+
+  item_proc.place_results(recipe_book, strings, metadata)
+
   technology_proc(recipe_book, strings)
 
   strings.__index = nil
@@ -96,6 +99,12 @@ local function update_recipe(recipe_book, recipe_data, force_index, to_value)
   for _, lab_name in ipairs(recipe_data.associated_labs) do
     local lab_data = recipe_book.lab[lab_name]
     lab_data.researched_forces[force_index] = to_value
+  end
+
+  -- offshore pumps
+  for _, offshore_pump_name in ipairs(recipe_data.associated_offshore_pumps) do
+    local offshore_pump_data = recipe_book.offshore_pump[offshore_pump_name]
+    offshore_pump_data.researched_forces[force_index] = to_value
   end
 end
 

@@ -2,8 +2,12 @@ local table = require("__flib__.table")
 
 local util = require("scripts.util")
 
-return function(recipe_book, strings, metadata)
+local item_proc = {}
+
+function item_proc.build(recipe_book, strings, metadata)
+  local place_results = {}
   local rocket_launch_payloads = {}
+
   for name, prototype in pairs(game.item_prototypes) do
     -- rocket launch products
     local launch_products = {}
@@ -31,12 +35,7 @@ return function(recipe_book, strings, metadata)
     local place_result = prototype.place_result
     if place_result then
       place_result = place_result.name
-      local result_data = recipe_book.crafter[place_result] or recipe_book.lab[place_result]
-      if result_data then
-        result_data.placeable_by[#result_data.placeable_by + 1] = {class = "item", name = name}
-      else
-        place_result = nil
-      end
+      place_results[name] = place_result
     end
 
     local fuel_value = prototype.fuel_value
@@ -100,4 +99,24 @@ return function(recipe_book, strings, metadata)
       end
     end
   end
+
+  metadata.place_results = place_results
 end
+
+function item_proc.place_results(recipe_book, strings, metadata)
+  for item_name, result_name in pairs(metadata.place_results) do
+    local result_data = recipe_book.crafter[result_name]
+      or recipe_book.lab[result_name]
+      or recipe_book.offshore_pump[result_name]
+    if result_data then
+      result_data.placeable_by[#result_data.placeable_by + 1] = {class = "item", name = item_name}
+    else
+      place_result = nil
+    end
+  end
+end
+
+-- when calling the module directly, call fluid_proc.build
+setmetatable(item_proc, { __call = function(_, ...) return item_proc.build(...) end })
+
+return item_proc

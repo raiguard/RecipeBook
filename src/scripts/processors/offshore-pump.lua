@@ -14,8 +14,10 @@ return function(recipe_book, strings)
       class = "offshore_pump",
       fluid = fluid.name,
       hidden = prototype.has_flag("hidden"),
+      placeable_by = {},
       prototype_name = name,
-      pumping_speed = prototype.pumping_speed
+      pumping_speed = prototype.pumping_speed,
+      unlocked_by = {}
     }
     util.add_string(strings, {
       dictionary = "offshore_pump",

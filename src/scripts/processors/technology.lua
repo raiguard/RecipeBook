@@ -70,15 +70,17 @@ return function(recipe_book, strings, metadata)
             end
           end
 
-          -- crafter / lab
+          -- crafter / lab / offshore pump
           local place_result = product_data.place_result
           if place_result then
-            local machine_data = recipe_book.crafter[place_result] or recipe_book.lab[place_result]
+            local machine_data = recipe_book.crafter[place_result]
+              or recipe_book.lab[place_result]
+              or recipe_book.offshore_pump[place_result]
             if machine_data then
               machine_data.researched_forces = {}
               machine_data.unlocked_by[#machine_data.unlocked_by + 1] = {class = "technology", name = name}
 
-              local subtable_name = machine_data.class == "crafter" and "associated_crafters" or "associated_labs"
+              local subtable_name = "associated_"..machine_data.class.."s"
               recipe_data[subtable_name][#recipe_data[subtable_name] + 1] = place_result
             end
           end

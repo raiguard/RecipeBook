@@ -13,6 +13,7 @@ return function(recipe_book, strings, metadata)
     local data = {
       associated_crafters = {},
       associated_labs = {},
+      associated_offshore_pumps = {},
       category = category,
       class = "recipe",
       enabled_at_start = enabled_at_start,
