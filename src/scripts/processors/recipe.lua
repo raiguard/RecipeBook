@@ -5,6 +5,9 @@ local util = require("scripts.util")
 local fluid_proc = require("scripts.processors.fluid")
 
 return function(recipe_book, strings, metadata)
+  -- a list of recipes, keyed by fluid name, that output that fluid at the default temperature
+  local default_temp_products = {}
+
   for name, prototype in pairs(game.recipe_prototypes) do
     local category = prototype.category
 
@@ -59,6 +62,13 @@ return function(recipe_book, strings, metadata)
               temperature_data,
               {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
             )
+          else
+            local default_products_list = default_temp_products[material.name]
+            if not default_products_list then
+              default_products_list = {}
+              default_temp_products[material.name] = default_products_list
+            end
+            default_products_list[#default_products_list + 1] = name
           end
         end
       end
@@ -94,4 +104,6 @@ return function(recipe_book, strings, metadata)
       localised = prototype.localised_description
     })
   end
+
+  metadata.default_temp_products = default_temp_products
 end

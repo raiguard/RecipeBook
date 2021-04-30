@@ -56,7 +56,7 @@ function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, 
   -- import properties from other temperatures
   for _, subfluid_data in pairs(fluid_data.temperatures) do
     if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
-      for _, tbl_name in ipairs{"ingredient_in", "product_of", "unlocked_by"} do
+      for _, tbl_name in ipairs{"ingredient_in", "product_of", "recipe_categories", "unlocked_by"} do
         append(data[tbl_name], subfluid_data[tbl_name])
       end
     end
@@ -78,6 +78,9 @@ function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, 
       ")"
     }
   })
+
+  -- return
+  return data
 end
 
 function fluid_proc.add_to_matching_temperatures(recipe_book, strings, metadata, fluid_data, temperature_data, sets)
@@ -104,6 +107,43 @@ end
 
 function fluid_proc.is_within_range(temperature_data_1, temperature_data_2)
   return temperature_data_1.min >= temperature_data_2.min and temperature_data_1.max <= temperature_data_2.max
+end
+
+function fluid_proc.check_temperatures(recipe_book, strings, metadata)
+  for name, fluid in pairs(recipe_book.fluid) do
+    if fluid.temperatures and table_size(fluid.temperatures) > 0 then
+      -- Create a default temperature variant and assign all temperatureless products to output that temperature
+      local default_temperature_data = util.build_temperature_data({temperature = fluid.default_temperature})
+      local default_temperature = fluid.temperatures[default_temperature_data.string]
+      if not default_temperature then
+        default_temperature = fluid_proc.add_temperature(
+          recipe_book,
+          strings,
+          metadata,
+          fluid,
+          default_temperature_data
+        )
+      end
+
+      local combined_name = name.."."..default_temperature_data.string
+
+      -- Iterate all recipes that produce this fluid at the default temperature
+      local recipes = metadata.default_temp_products[name]
+      if recipes then
+        for _, recipe_name in ipairs(recipes) do
+          local recipe = recipe_book.recipe[recipe_name]
+          -- Find this product in the list
+          for _, product in ipairs(recipe.products) do
+            if product.name == name then
+              -- Set that product's name to be the default temperature object
+              product.name = combined_name
+              break
+            end
+          end
+        end
+      end
+    end
+  end
 end
 
 -- when calling the module directly, call fluid_proc.build

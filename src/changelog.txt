@@ -7,9 +7,11 @@ Date: ????
     - Added researched state for labs and offshore pumps
   Changes:
     - Disabled recipes and technologies are hidden by default
+    - When a fluid has multiple temperatures, the default temperature will be displayed for fluid products that usually have no temperature
   Bugfixes:
     - Fixed a crash when using the hotkey on a science lab
     - Fixed fluids not being enabled at start even if their offshore pump was
+    - Fixed fluid temperature variants not copying recipe categories from their parents
 ---------------------------------------------------------------------------------------------------
 Version: 2.6.0
 Date: 2021-04-05

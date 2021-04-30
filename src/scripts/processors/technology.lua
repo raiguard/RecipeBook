@@ -26,7 +26,7 @@ return function(recipe_book, strings, metadata)
       research_unit_count = prototype.research_unit_count
     end
 
-    -- unlocks recipes, materials, crafter / lab
+    -- unlocks recipes, materials, crafter / lab / offshore pump
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
         local recipe_data = recipe_book.recipe[modifier.recipe]

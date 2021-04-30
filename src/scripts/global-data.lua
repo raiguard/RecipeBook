@@ -43,6 +43,8 @@ function global_data.build_recipe_book()
 
   item_proc.place_results(recipe_book, metadata)
 
+  fluid_proc.check_temperatures(recipe_book, strings, metadata)
+
   technology_proc(recipe_book, strings)
 
   offshore_pump_proc.check_enabled_at_start(recipe_book)
@@ -122,7 +124,7 @@ function global_data.handle_research_updated(technology, to_value)
   local recipe_book = global.recipe_book
   -- technology
   local technology_data = recipe_book.technology[technology.name]
-  -- other mods can update technolgies during on_configuration_changed before RB gets a chance to config change
+  -- other mods can update technologies during on_configuration_changed before RB gets a chance to config change
   if not technology_data then return end
   technology_data.researched_forces[force_index] = to_value
 
