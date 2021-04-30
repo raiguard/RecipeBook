@@ -9,6 +9,7 @@ Date: ????
     - Disabled recipes and technologies are hidden by default
   Bugfixes:
     - Fixed a crash when using the hotkey on a science lab
+    - Fixed fluids not being enabled at start even if their offshore pump was
 ---------------------------------------------------------------------------------------------------
 Version: 2.6.0
 Date: 2021-04-05

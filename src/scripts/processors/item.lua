@@ -103,7 +103,7 @@ function item_proc.build(recipe_book, strings, metadata)
   metadata.place_results = place_results
 end
 
-function item_proc.place_results(recipe_book, strings, metadata)
+function item_proc.place_results(recipe_book, metadata)
   for item_name, result_name in pairs(metadata.place_results) do
     local result_data = recipe_book.crafter[result_name]
       or recipe_book.lab[result_name]

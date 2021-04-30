@@ -41,9 +41,11 @@ function global_data.build_recipe_book()
   recipe_proc(recipe_book, strings, metadata)
   resource_proc(recipe_book, strings)
 
-  item_proc.place_results(recipe_book, strings, metadata)
+  item_proc.place_results(recipe_book, metadata)
 
   technology_proc(recipe_book, strings)
+
+  offshore_pump_proc.check_enabled_at_start(recipe_book)
 
   strings.__index = nil
   global.recipe_book = recipe_book
@@ -72,7 +74,7 @@ local function update_recipe(recipe_book, recipe_data, force_index, to_value)
     local product_data = recipe_book[product.class][product.name]
 
     local temperature_data = product_data.temperature_data
-    if product_data.temperature_data then
+    if temperature_data then
       -- add to matching fluid temperatures
       for _, subfluid_data in pairs(recipe_book.fluid[product_data.prototype_name].temperatures) do
         if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
@@ -105,6 +107,13 @@ local function update_recipe(recipe_book, recipe_data, force_index, to_value)
   for _, offshore_pump_name in ipairs(recipe_data.associated_offshore_pumps) do
     local offshore_pump_data = recipe_book.offshore_pump[offshore_pump_name]
     offshore_pump_data.researched_forces[force_index] = to_value
+
+    -- research pump fluid if it's not already
+    local fluid = offshore_pump_data.fluid
+    local fluid_data = recipe_book.fluid[fluid]
+    if fluid_data.researched_forces then
+      fluid_data.researched_forces[force_index] = to_value
+    end
   end
 end
 

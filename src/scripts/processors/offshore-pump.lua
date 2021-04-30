@@ -1,6 +1,8 @@
 local util = require("scripts.util")
 
-return function(recipe_book, strings)
+local offshore_pump_proc = {}
+
+function offshore_pump_proc.build(recipe_book, strings)
   -- iterate offshore pumps
   for name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "offshore-pump"}}) do
     -- add to material
@@ -31,3 +33,18 @@ return function(recipe_book, strings)
     })
   end
 end
+
+function offshore_pump_proc.check_enabled_at_start(recipe_book)
+  for _, data in pairs(recipe_book.offshore_pump) do
+    if not data.researched_forces then
+      local fluid_data = recipe_book.fluid[data.fluid]
+      fluid_data.researched_forces = nil
+      fluid_data.unlocked_by = {} -- TODO: Maybe broken?
+    end
+  end
+end
+
+-- when calling the module directly, call fluid_proc.build
+setmetatable(offshore_pump_proc, { __call = function(_, ...) return offshore_pump_proc.build(...) end })
+
+return offshore_pump_proc
