@@ -13,6 +13,14 @@
     {
       "type": "factoriomod",
       "request": "launch",
+      "name": "Debug (no scenario)",
+      "factorioPath": "/home/rai/dev/factorio/1/bin/x64/factorio",
+      "hookMode": "debug",
+      "hookControl": ["RecipeBook", "Sandbox"],
+    },
+    {
+      "type": "factoriomod",
+      "request": "launch",
       "name": "Debug (data)",
       "factorioPath": "/home/rai/dev/factorio/1/bin/x64/factorio",
       "hookMode": "debug",
