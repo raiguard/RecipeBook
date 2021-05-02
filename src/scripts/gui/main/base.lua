@@ -547,7 +547,7 @@ function main_gui.open_page(player, player_table, class, name, options)
     end
 
     local base_button = info_bar.view_base_fluid_button
-    if class == "fluid" and obj_data.temperature_data then
+    if class == "fluid" and obj_data.temperature_ident then
       base_button.visible = true
       gui.update_tags(
         base_button,

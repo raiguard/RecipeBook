@@ -39,35 +39,19 @@ return function(recipe_book, strings, metadata)
 
           product_data.researched_forces = {}
 
-          local associated_product = {class = product_data.class, name = product_data.prototype_name}
+          local product_ident = {class = product_data.class, name = product_data.prototype_name}
 
-          -- material
-          if product_data.temperature_data then
-            local base_fluid_data = recipe_book.fluid[product_data.prototype_name]
-            base_fluid_data.unlocked_by[#base_fluid_data.unlocked_by + 1] = {class = "technology", name = name}
-            -- TODO:
-            -- fluid_proc.add_to_matching_temperatures(
-            --   recipe_book,
-            --   strings,
-            --   metadata,
-            --   base_fluid_data,
-            --   product_data.temperature_data,
-            --   {unlocked_by = {class = "technology", name = name}}
-            -- )
-            associated_product.name = product_data.name
-          else
-            product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
-          end
+          product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
 
           if product_data.class == "item" then
-            if not unlocks_items[associated_product.name] then
-              unlocks_items[#unlocks_items+1] = associated_product
-              unlocks_items[associated_product.name] = true
+            if not unlocks_items[product_ident.name] then
+              unlocks_items[#unlocks_items+1] = product_ident
+              unlocks_items[product_ident.name] = true
             end
           elseif product_data.class == "fluid" then
-            if not unlocks_fluids[associated_product.name] then
-              unlocks_fluids[#unlocks_fluids+1] = associated_product
-              unlocks_fluids[associated_product.name] = true
+            if not unlocks_fluids[product_ident.name] then
+              unlocks_fluids[#unlocks_fluids+1] = product_ident
+              unlocks_fluids[product_ident.name] = true
             end
           end
 

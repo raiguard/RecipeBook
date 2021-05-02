@@ -5,7 +5,7 @@ local util = require("scripts.util")
 local fluid_proc = require("scripts.processors.fluid")
 
 return function(recipe_book, strings, metadata)
-  local fluid_temperatures = {}
+  -- local fluid_temperatures = {}
 
   for name, prototype in pairs(game.recipe_prototypes) do
     local category = prototype.category
@@ -52,16 +52,24 @@ return function(recipe_book, strings, metadata)
         if material.type == "fluid" then
           local temperature_ident = util.build_temperature_ident(material)
           if temperature_ident then
-            local temperatures = fluid_temperatures[material.name]
-            if not temperatures then
-              temperatures  = {}
-              fluid_temperatures[material.name] = temperatures
-            end
+            material_io_data.temperature_ident = temperature_ident
+            fluid_proc.add_temperature(
+              recipe_book,
+              strings,
+              metadata,
+              recipe_book.fluid[material.name],
+              temperature_ident
+            )
+            -- local temperatures = fluid_temperatures[material.name]
+            -- if not temperatures then
+            --   temperatures  = {}
+            --   fluid_temperatures[material.name] = temperatures
+            -- end
 
-            local temperature_ident_string = temperature_ident.string
-            if not temperatures[temperature_ident_string] then
-              temperatures[temperature_ident_string] = temperature_ident
-            end
+            -- local temperature_ident_string = temperature_ident.string
+            -- if not temperatures[temperature_ident_string] then
+            --   temperatures[temperature_ident_string] = temperature_ident
+            -- end
           end
         end
       end
@@ -97,5 +105,5 @@ return function(recipe_book, strings, metadata)
     })
   end
 
-  metadata.fluid_temperatures = fluid_temperatures
+  -- metadata.fluid_temperatures = fluid_temperatures
 end

@@ -1,4 +1,5 @@
 local math = require("__flib__.math")
+local misc = require("__flib__.misc")
 local table = require("__flib__.table")
 
 local util = {}
@@ -35,22 +36,26 @@ function util.build_amount_string(material)
   return amount_string, quick_ref_string
 end
 
+local function format_number(number)
+  return misc.delineate_number(math.round_to(number, 2))
+end
+
 function util.build_temperature_ident(fluid)
   local temperature = fluid.temperature
   local temperature_min = fluid.minimum_temperature
   local temperature_max = fluid.maximum_temperature
   local temperature_string
   if temperature then
-    temperature_string = tostring(math.round_to(temperature, 2))
+    temperature_string = format_number(temperature)
     temperature_min = temperature
     temperature_max = temperature
   elseif temperature_min and temperature_max then
     if temperature_min == math.min_double then
-      temperature_string = "≤"..math.round_to(temperature_max, 2)
+      temperature_string = "≤"..format_number(temperature_max)
     elseif temperature_max == math.max_double then
-      temperature_string = "≥"..math.round_to(temperature_min, 2)
+      temperature_string = "≥"..format_number(temperature_min)
     else
-      temperature_string = ""..math.round_to(temperature_min, 2).."-"..math.round_to(temperature_max, 2)
+      temperature_string = ""..format_number(temperature_min).."-"..format_number(temperature_max)
     end
   end
 
