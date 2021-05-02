@@ -45,14 +45,15 @@ return function(recipe_book, strings, metadata)
           if product_data.temperature_data then
             local base_fluid_data = recipe_book.fluid[product_data.prototype_name]
             base_fluid_data.unlocked_by[#base_fluid_data.unlocked_by + 1] = {class = "technology", name = name}
-            fluid_proc.add_to_matching_temperatures(
-              recipe_book,
-              strings,
-              metadata,
-              base_fluid_data,
-              product_data.temperature_data,
-              {unlocked_by = {class = "technology", name = name}}
-            )
+            -- TODO:
+            -- fluid_proc.add_to_matching_temperatures(
+            --   recipe_book,
+            --   strings,
+            --   metadata,
+            --   base_fluid_data,
+            --   product_data.temperature_data,
+            --   {unlocked_by = {class = "technology", name = name}}
+            -- )
             associated_product.name = product_data.name
           else
             product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}

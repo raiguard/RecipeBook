@@ -54,14 +54,15 @@ return function(recipe_book, strings, metadata)
           local temperature_data = util.build_temperature_data(material)
           if temperature_data then
             material_io_data.name = material.name.."."..temperature_data.string
-            fluid_proc.add_to_matching_temperatures(
-              recipe_book,
-              strings,
-              metadata,
-              material_data,
-              temperature_data,
-              {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
-            )
+            -- TODO:
+            -- fluid_proc.add_to_matching_temperatures(
+            --   recipe_book,
+            --   strings,
+            --   metadata,
+            --   material_data,
+            --   temperature_data,
+            --   {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
+            -- )
           elseif io_type == "products" then
             local default_products_list = default_temp_products[material.name]
             if not default_products_list then
