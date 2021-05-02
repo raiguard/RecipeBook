@@ -1,6 +1,9 @@
 local math = require("__flib__.math")
 local misc = require("__flib__.misc")
 local table = require("__flib__.table")
+local translation = require("__flib__.translation-new")
+
+local constants = require("constants")
 
 local util = {}
 
@@ -99,6 +102,14 @@ function util.unique_obj_array(initial_tbl)
       end
     end
   })
+end
+
+function util.build_initial_dictionaries()
+  local output = {}
+  for dictionary_name, initial_contents in pairs(constants.initial_dictionaries) do
+    output[dictionary_name] = translation.new(dictionary_name, initial_contents)
+  end
+  return output
 end
 
 return util

@@ -1,5 +1,7 @@
 local constants = require("constants")
 
+local util = require("scripts.util")
+
 local crafter_proc = require("scripts.processors.crafter")
 local fluid_proc = require("scripts.processors.fluid")
 local item_proc = require("scripts.processors.item")
@@ -29,8 +31,8 @@ function global_data.build_recipe_book()
     resource = {},
     technology = {}
   }
-  -- localised strings for translation
-  local strings = {__index = 0}
+  -- localised strings for translations
+  local strings = util.build_initial_dictionaries()
   -- data that is needed for generation but will not be saved
   local metadata = {}
 
@@ -50,9 +52,8 @@ function global_data.build_recipe_book()
 
   fluid_proc.process_temperatures(recipe_book, strings, metadata)
 
-  strings.__index = nil
   global.recipe_book = recipe_book
-  global.strings = strings
+  global.translation_strings = strings
 
   profiler.stop()
   log(profiler)

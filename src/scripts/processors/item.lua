@@ -1,4 +1,5 @@
 local table = require("__flib__.table")
+local translation = require("__flib__.translation-new")
 
 local util = require("scripts.util")
 
@@ -78,12 +79,8 @@ function item_proc.build(recipe_book, strings, metadata)
       unlocked_by = util.unique_obj_array(),
       usable_in = {}
     }
-    util.add_string(strings, {dictionary = "item", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "item_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    translation.add(strings.item, name, prototype.localised_name)
+    translation.add(strings.item_description, name, prototype.localised_description)
   end
 
   -- add rocket launch payloads to their material tables

@@ -1,3 +1,5 @@
+local translation = require("__flib__.translation-new")
+
 local math = require("__flib__.math")
 
 local util = require("scripts.util")
@@ -83,16 +85,8 @@ return function(recipe_book, strings, metadata)
     end
 
     recipe_book.recipe[name] = data
-    util.add_string(strings, {
-      dictionary = "recipe",
-      internal = name,
-      localised = prototype.localised_name
-    })
-    util.add_string(strings, {
-      dictionary = "recipe_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    translation.add(strings.recipe, name, prototype.localised_name)
+    translation.add(strings.recipe_description, name, prototype.localised_description)
   end
 
   -- metadata.fluid_temperatures = fluid_temperatures

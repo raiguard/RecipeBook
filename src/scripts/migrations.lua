@@ -1,5 +1,3 @@
-local translation = require("__flib__.translation")
-
 local global_data = require("scripts.global-data")
 local player_data = require("scripts.player-data")
 
@@ -9,7 +7,6 @@ return {
     global = {}
 
     -- re-init
-    translation.init()
     global_data.init()
     for i in pairs(game.players) do
       player_data.init(i)
@@ -39,5 +36,8 @@ return {
       local settings = player_table.settings
       settings.show_detailed_tooltips = settings.show_detailed_recipe_tooltips
     end
+  end,
+  ["2.7.0"] = function()
+    global.__flib = nil
   end
 }

@@ -1,4 +1,5 @@
 local math = require("__flib__.math")
+local translation = require("__flib__.translation-new")
 
 local util = require("scripts.util")
 
@@ -108,16 +109,8 @@ return function(recipe_book, strings, metadata)
       localised_name = prototype.localised_name
     end
 
-    util.add_string(strings, {
-      dictionary = "technology",
-      internal = prototype.name,
-      localised = localised_name
-    })
-    util.add_string(strings, {
-      dictionary = "technology_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    translation.add(strings.technology, prototype.name, localised_name)
+    translation.add(strings.technology_description, name, prototype.localised_description)
   end
 
   -- generate prerequisites and prerequisite_of

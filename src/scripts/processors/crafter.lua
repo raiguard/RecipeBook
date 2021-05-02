@@ -1,3 +1,5 @@
+local translation = require("__flib__.translation-new")
+
 local util = require("scripts.util")
 
 return function(recipe_book, strings, metadata)
@@ -14,12 +16,8 @@ return function(recipe_book, strings, metadata)
       prototype_name = name,
       unlocked_by = {}
     }
-    util.add_string(strings, {dictionary = "crafter", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "crafter_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    translation.add(strings.crafter, name, prototype.localised_name)
+    translation.add(strings.crafter_description, name, prototype.localised_description)
   end
 
   -- actual crafters
@@ -56,11 +54,7 @@ return function(recipe_book, strings, metadata)
       rocket_parts_required = prototype.rocket_parts_required,
       unlocked_by = {}
     }
-    util.add_string(strings, {dictionary = "crafter", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "crafter_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    translation.add(strings.crafter, name, prototype.localised_name)
+    translation.add(strings.crafter_description, name, prototype.localised_description)
   end
 end

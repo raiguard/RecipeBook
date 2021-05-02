@@ -1,3 +1,5 @@
+local translation = require("__flib__.translation-new")
+
 local util = require("scripts.util")
 
 local fluid_proc = {}
@@ -19,12 +21,8 @@ function fluid_proc.build(recipe_book, strings, metadata)
       temperatures = {},
       unlocked_by = util.unique_obj_array()
     }
-    util.add_string(strings, {dictionary = "fluid", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "fluid_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    translation.add(strings.fluid, name, prototype.localised_name)
+    translation.add(strings.fluid_description, name, prototype.localised_description)
     localised_fluids[name] = prototype.localised_name
   end
   metadata.localised_fluids = localised_fluids
@@ -53,16 +51,12 @@ function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, 
     }
     temperatures[temperature_string] = temperature_data
     recipe_book.fluid[combined_name] = temperature_data
-    util.add_string(strings, {
-      dictionary = "fluid",
-      internal = combined_name,
-      localised = {
-        "",
-        metadata.localised_fluids[fluid_data.prototype_name],
-        " (",
-        {"format-degrees-c-compact", temperature_string},
-        ")"
-      }
+    translation.add(strings.fluid, combined_name, {
+      "",
+      metadata.localised_fluids[fluid_data.prototype_name],
+      " (",
+      {"format-degrees-c-compact", temperature_string},
+      ")"
     })
   end
 end

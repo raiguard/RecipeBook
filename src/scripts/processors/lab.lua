@@ -1,3 +1,5 @@
+local translation = require("__flib__.translation-new")
+
 local table = require("__flib__.table")
 
 local util = require("scripts.util")
@@ -21,11 +23,7 @@ return function(recipe_book, strings)
       researching_speed = prototype.researching_speed,
       unlocked_by = {}
     }
-    util.add_string(strings, {dictionary = "lab", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "lab_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    translation.add(strings.lab, name, prototype.localised_name)
+    translation.add(strings.lab_description, name, prototype.localised_description)
   end
 end
