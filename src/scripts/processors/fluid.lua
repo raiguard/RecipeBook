@@ -117,7 +117,7 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
 
           -- Get the matching fluid
           local fluid_ident
-          -- TODO: Find a way to do this without iterating all of the materials again
+          -- SLOW: Find a way to do this without iterating all of the materials again
           for _, material_ident in pairs(recipe_data[recipe_tbl_name]) do
             if material_ident.name == fluid_name then
               fluid_ident = material_ident

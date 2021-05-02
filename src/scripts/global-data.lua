@@ -87,7 +87,7 @@ local function update_recipe(recipe_book, recipe_data, technology_name, force_in
         base_fluid_data.researched_forces[force_index] = to_value
 
         -- Unlock all temperature variants that have this technology
-        -- TODO: Add a lookup table for unlocked_by so we don't have to iterate them like this
+        -- SLOW: Add a lookup table for unlocked_by so we don't have to iterate them like this
         for _, temperature_data in pairs(base_fluid_data.temperatures) do
           if temperature_data.researched_forces then
             for _, technology_ident in pairs(temperature_data.unlocked_by) do

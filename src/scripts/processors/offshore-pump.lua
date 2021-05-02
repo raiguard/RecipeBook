@@ -39,7 +39,7 @@ function offshore_pump_proc.check_enabled_at_start(recipe_book)
     if not data.researched_forces then
       local fluid_data = recipe_book.fluid[data.fluid]
       fluid_data.researched_forces = nil
-      fluid_data.unlocked_by = {} -- TODO: Maybe broken?
+      fluid_data.unlocked_by = {}
     end
   end
 end
