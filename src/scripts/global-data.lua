@@ -75,21 +75,23 @@ local function update_recipe(recipe_book, recipe_data, force_index, to_value)
   for _, product in ipairs(recipe_data.products) do
     local product_data = recipe_book[product.class][product.name]
 
-    local temperature_data = product_data.temperature_data
-    if temperature_data then
-      -- add to matching fluid temperatures
-      for _, subfluid_data in pairs(recipe_book.fluid[product_data.prototype_name].temperatures) do
-        if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
-          subfluid_data.researched_forces[force_index] = to_value
+    if product_data.researched_forces then
+      local temperature_data = product_data.temperature_data
+      if temperature_data then
+        -- add to matching fluid temperatures
+        for _, subfluid_data in pairs(recipe_book.fluid[product_data.prototype_name].temperatures) do
+          if fluid_proc.is_within_range(temperature_data, subfluid_data.temperature_data) then
+            subfluid_data.researched_forces[force_index] = to_value
+          end
         end
+      else
+        product_data.researched_forces[force_index] = to_value
       end
-    else
-      product_data.researched_forces[force_index] = to_value
-    end
 
-    if product.class == "item" then
-      -- rocket launch products
-      update_launch_products(recipe_book, product_data.rocket_launch_products, force_index, to_value)
+      if product.class == "item" then
+        -- rocket launch products
+        update_launch_products(recipe_book, product_data.rocket_launch_products, force_index, to_value)
+      end
     end
   end
 
