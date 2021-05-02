@@ -62,7 +62,7 @@ return function(recipe_book, strings, metadata)
               temperature_data,
               {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
             )
-          else
+          elseif io_type == "products" then
             local default_products_list = default_temp_products[material.name]
             if not default_products_list then
               default_products_list = {}
