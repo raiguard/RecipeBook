@@ -35,7 +35,7 @@ function util.build_amount_string(material)
   return amount_string, quick_ref_string
 end
 
-function util.build_temperature_data(fluid)
+function util.build_temperature_ident(fluid)
   local temperature = fluid.temperature
   local temperature_min = fluid.minimum_temperature
   local temperature_max = fluid.maximum_temperature

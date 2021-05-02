@@ -5,8 +5,7 @@ local util = require("scripts.util")
 local fluid_proc = require("scripts.processors.fluid")
 
 return function(recipe_book, strings, metadata)
-  -- a list of recipes, keyed by fluid name, that output that fluid at the default temperature
-  local default_temp_products = {}
+  local fluid_temperatures = {}
 
   for name, prototype in pairs(game.recipe_prototypes) do
     local category = prototype.category
@@ -51,29 +50,21 @@ return function(recipe_book, strings, metadata)
 
         -- fluid temperatures
         if material.type == "fluid" then
-          local temperature_data = util.build_temperature_data(material)
-          if temperature_data then
-            material_io_data.name = material.name.."."..temperature_data.string
-            -- TODO:
-            -- fluid_proc.add_to_matching_temperatures(
-            --   recipe_book,
-            --   strings,
-            --   metadata,
-            --   material_data,
-            --   temperature_data,
-            --   {[lookup_type] = {class = "recipe", name = name}, recipe_categories = category}
-            -- )
-          elseif io_type == "products" then
-            local default_products_list = default_temp_products[material.name]
-            if not default_products_list then
-              default_products_list = {}
-              default_temp_products[material.name] = default_products_list
+          local temperature_ident = util.build_temperature_ident(material)
+          if temperature_ident then
+            local temperatures = fluid_temperatures[material.name]
+            if not temperatures then
+              temperatures  = {}
+              fluid_temperatures[material.name] = temperatures
             end
-            default_products_list[#default_products_list + 1] = name
+
+            local temperature_ident_string = temperature_ident.string
+            if not temperatures[temperature_ident_string] then
+              temperatures[temperature_ident_string] = temperature_ident
+            end
           end
         end
       end
-
 
       data[io_type] = output
     end
@@ -106,5 +97,5 @@ return function(recipe_book, strings, metadata)
     })
   end
 
-  metadata.default_temp_products = default_temp_products
+  metadata.fluid_temperatures = fluid_temperatures
 end
