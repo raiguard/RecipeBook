@@ -123,31 +123,31 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
             -- Change the name of the material and remove the identifier
             fluid_ident.name = fluid_ident.name.."."..temperature_ident.string
             fluid_ident.temperature_ident = nil
-          end
-
-          if temperature_ident or recipe_tbl_name == "ingredients" then
-            -- Iterate over all temperature variants and compare their constraints
-            for _, temperature_data in pairs(temperatures) do
-              if not temperature_ident
-                or fluid_proc.is_within_range(
-                  temperature_data.temperature_ident,
-                  temperature_ident,
-                  fluid_tbl_name == "ingredient_in"
-                )
-              then
-                -- log(temperature_ident.string.." is within "..temperature_data.temperature_ident.string)
-                -- Add to recipes table
-                temperature_data[fluid_tbl_name][#temperature_data[fluid_tbl_name] + 1] = recipe_ident
-                -- Merge recipe categories and unlocked by
-                temperature_data.recipe_categories[#temperature_data.recipe_categories + 1] = recipe_data.category
-                append(temperature_data.unlocked_by, recipe_data.unlocked_by)
-              else
-                -- log(temperature_ident.string.." is not within "..temperature_data.temperature_ident.string)
-              end
-            end
           elseif recipe_tbl_name == "products" then
             -- Change the name of the material to the default temperature
             fluid_ident.name = fluid_ident.name.."."..default_temperature_ident.string
+            -- Use the default temperature for matching
+            temperature_ident = default_temperature_ident
+          end
+
+          -- Iterate over all temperature variants and compare their constraints
+          for _, temperature_data in pairs(temperatures) do
+            if not temperature_ident
+              or fluid_proc.is_within_range(
+                temperature_data.temperature_ident,
+                temperature_ident,
+                fluid_tbl_name == "ingredient_in"
+              )
+            then
+              -- log(temperature_ident.string.." is within "..temperature_data.temperature_ident.string)
+              -- Add to recipes table
+              temperature_data[fluid_tbl_name][#temperature_data[fluid_tbl_name] + 1] = recipe_ident
+              -- Merge recipe categories and unlocked by
+              temperature_data.recipe_categories[#temperature_data.recipe_categories + 1] = recipe_data.category
+              append(temperature_data.unlocked_by, recipe_data.unlocked_by)
+            else
+              -- log(temperature_ident.string.." is not within "..temperature_data.temperature_ident.string)
+            end
           end
         end
       end

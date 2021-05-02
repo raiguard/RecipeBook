@@ -12,6 +12,7 @@ Date: ????
     - Fixed a crash when using the hotkey on a science lab
     - Fixed fluids not being enabled at start even if their offshore pump was
     - Fixed fluid temperature variants not copying recipe categories from their parents
+    - Fixed fluid variant ingredient in lists being completely wrong in most cases
 ---------------------------------------------------------------------------------------------------
 Version: 2.6.0
 Date: 2021-04-05
