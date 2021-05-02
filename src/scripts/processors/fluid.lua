@@ -99,6 +99,14 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
         )
       end
 
+      -- Step 2: Add researched properties to temperature variants
+      for _, temperature_data in pairs(fluid_data.temperatures) do
+        temperature_data.enabled_at_start = fluid_data.enabled_at_start
+        if fluid_data.researched_forces then
+          temperature_data.researched_forces = {}
+        end
+      end
+
       -- Step 2: Add properties from base fluid to temperature variants
       for recipe_tbl_name, fluid_tbl_name in pairs{
         ingredients = "ingredient_in",
@@ -139,14 +147,15 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
                 fluid_tbl_name == "ingredient_in"
               )
             then
-              -- log(temperature_ident.string.." is within "..temperature_data.temperature_ident.string)
               -- Add to recipes table
               temperature_data[fluid_tbl_name][#temperature_data[fluid_tbl_name] + 1] = recipe_ident
-              -- Merge recipe categories and unlocked by
+              -- Add recipe category
               temperature_data.recipe_categories[#temperature_data.recipe_categories + 1] = recipe_data.category
-              append(temperature_data.unlocked_by, recipe_data.unlocked_by)
-            else
-              -- log(temperature_ident.string.." is not within "..temperature_data.temperature_ident.string)
+              -- If in product_of, append to unlocked_by
+              -- This is to avoid variants being "unlocked" when you can't actually get them
+              if fluid_tbl_name == "product_of" then
+                append(temperature_data.unlocked_by, recipe_data.unlocked_by)
+              end
             end
           end
         end

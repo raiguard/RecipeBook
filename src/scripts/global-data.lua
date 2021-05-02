@@ -17,6 +17,7 @@ function global_data.init()
 end
 
 function global_data.build_recipe_book()
+  local profiler = game.create_profiler()
   -- the data that will actually be saved and used
   local recipe_book = {
     crafter = {},
@@ -52,6 +53,9 @@ function global_data.build_recipe_book()
   strings.__index = nil
   global.recipe_book = recipe_book
   global.strings = strings
+
+  profiler.stop()
+  log(profiler)
 end
 
 local function update_launch_products(recipe_book, launch_products, force_index, to_value)
@@ -64,7 +68,7 @@ local function update_launch_products(recipe_book, launch_products, force_index,
   end
 end
 
-local function update_recipe(recipe_book, recipe_data, force_index, to_value)
+local function update_recipe(recipe_book, recipe_data, technology_name, force_index, to_value)
   -- check if the category should be ignored for recipe availability
   local disabled = constants.disabled_recipe_categories[recipe_data.category]
   if disabled and disabled == 0 then return end
@@ -78,19 +82,29 @@ local function update_recipe(recipe_book, recipe_data, force_index, to_value)
     if product_data.researched_forces then
       local temperature_ident = product_data.temperature_ident
       if temperature_ident then
-        -- add to matching fluid temperatures
-        for _, subfluid_data in pairs(recipe_book.fluid[product_data.prototype_name].temperatures) do
-          if fluid_proc.is_within_range(subfluid_data.temperature_ident, temperature_ident) then
-            subfluid_data.researched_forces[force_index] = to_value
+        -- Unlock base fluid
+        local base_fluid_data = recipe_book.fluid[product_data.prototype_name]
+        base_fluid_data.researched_forces[force_index] = to_value
+
+        -- Unlock all temperature variants that have this technology
+        -- TODO: Add a lookup table for unlocked_by so we don't have to iterate them like this
+        for _, temperature_data in pairs(base_fluid_data.temperatures) do
+          if temperature_data.researched_forces then
+            for _, technology_ident in pairs(temperature_data.unlocked_by) do
+              if technology_ident.name == technology_name then
+                temperature_data.researched_forces[force_index] = to_value
+                break
+              end
+            end
           end
         end
       else
         product_data.researched_forces[force_index] = to_value
-      end
 
-      if product.class == "item" then
-        -- rocket launch products
-        update_launch_products(recipe_book, product_data.rocket_launch_products, force_index, to_value)
+        if product.class == "item" then
+          -- rocket launch products
+          update_launch_products(recipe_book, product_data.rocket_launch_products, force_index, to_value)
+        end
       end
     end
   end
@@ -132,7 +146,7 @@ function global_data.handle_research_updated(technology, to_value)
 
   for _, recipe in ipairs(technology_data.unlocks_recipes) do
     local recipe_data = recipe_book.recipe[recipe.name]
-    update_recipe(recipe_book, recipe_data, force_index, to_value)
+    update_recipe(recipe_book, recipe_data, technology.name, force_index, to_value)
   end
 end
 

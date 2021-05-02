@@ -60,16 +60,6 @@ return function(recipe_book, strings, metadata)
               recipe_book.fluid[material.name],
               temperature_ident
             )
-            -- local temperatures = fluid_temperatures[material.name]
-            -- if not temperatures then
-            --   temperatures  = {}
-            --   fluid_temperatures[material.name] = temperatures
-            -- end
-
-            -- local temperature_ident_string = temperature_ident.string
-            -- if not temperatures[temperature_ident_string] then
-            --   temperatures[temperature_ident_string] = temperature_ident
-            -- end
           end
         end
       end
