@@ -1,7 +1,7 @@
 local event = require("__flib__.event")
 local gui = require("__flib__.gui-beta")
 local migration = require("__flib__.migration")
-local translation = require("__flib__.translation-new")
+local translation = require("__flib__.translation")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
@@ -37,6 +37,9 @@ end)
 -- BOOTSTRAP
 
 event.on_init(function()
+  translation.init()
+  shared.register_on_tick()
+
   global_data.init()
   global_data.build_recipe_book()
   global_data.check_forces()
@@ -48,10 +51,14 @@ end)
 
 event.on_load(function()
   formatter.create_all_caches()
+  shared.register_on_tick()
 end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
+    translation.init()
+    shared.register_on_tick()
+
     global_data.build_recipe_book()
     global_data.check_forces()
 
@@ -225,44 +232,66 @@ event.on_player_joined_game(function(e)
   local player_table = global.players[e.player_index]
   if player_table.flags.translate_on_join then
     player_table.flags.translate_on_join = false
-    player_data.request_translations(game.get_player(e.player_index))
+    player_data.start_translations(e.player_index)
   end
 end)
+
+event.on_player_left_game(function(e)
+  if translation.is_translating(e.player_index) then
+    translation.cancel(e.player_index)
+    global.players[e.player_index].flags.translate_on_join = true
+  end
+end)
+
+-- TICK
+
+local function on_tick(e)
+  local deregister = true
+
+  if translation.translating_players_count() > 0 then
+    deregister = false
+    translation.iterate_batch(e)
+  end
+
+  if deregister then
+    event.on_tick(nil)
+  end
+end
 
 -- TRANSLATIONS
 
 event.on_string_translated(function(e)
-  -- Parse dictionary from string
-  local dictionary_name, dictionary = translation.split_results(e, function(dict_name)
-    if string.find(dict_name, "_description") then
-      return translation.include_failed_type.no
-    else
-      return translation.include_failed_type.key
-    end
-  end)
-
-  if dictionary_name then
-    -- Save to player table
+  local names, finished = translation.process_result(e)
+  if names then
     local player_table = global.players[e.player_index]
-    player_table.translations[dictionary_name] = dictionary
-
-    -- Enable GUI if it is finished
-    if table_size(player_table.translations) == table_size(constants.initial_dictionaries) then
-      local player = game.get_player(e.player_index)
-      local player_table = global.players[e.player_index]
-      -- Show message if needed
-      if player_table.flags.show_message_after_translation then
-        player.print{'rb-message.can-open-gui'}
+    local translations = player_table.translations
+    for dictionary_name, internal_names in pairs(names) do
+      local is_name = not string.find(dictionary_name, "description")
+      local dictionary = translations[dictionary_name]
+      for i = 1, #internal_names do
+        local internal_name = internal_names[i]
+        local result = e.translated and e.result or (is_name and internal_name or nil)
+        dictionary[internal_name] = result
       end
-      -- Create GUI
-      main_gui.build(player, player_table)
-      -- Update flags
-      player_table.flags.can_open_gui = true
-      player_table.flags.translate_on_join = false -- not really needed, but is here just in case
-      player_table.flags.show_message_after_translation = false
-      -- Enable shortcut
-      player.set_shortcut_available("rb-toggle-gui", true)
     end
+  end
+  if finished then
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    -- show message if needed
+    if player_table.flags.show_message_after_translation then
+      player.print{'rb-message.can-open-gui'}
+    end
+    -- create GUI
+    main_gui.build(player, player_table)
+    -- update flags
+    player_table.flags.can_open_gui = true
+    player_table.flags.translate_on_join = false -- not really needed, but is here just in case
+    player_table.flags.show_message_after_translation = false
+    -- enable shortcut
+    player.set_shortcut_available("rb-toggle-gui", true)
+    -- update on_tick
+    shared.register_on_tick()
   end
 end)
 
@@ -287,6 +316,12 @@ function shared.refresh_contents(player, player_table)
   formatter.purge_cache(player.index)
   main_gui.refresh_contents(player, player_table)
   quick_ref_gui.refresh_all(player, player_table)
+end
+
+function shared.register_on_tick()
+  if global.__flib and translation.translating_players_count() > 0 then
+    event.on_tick(on_tick)
+  end
 end
 
 function shared.update_quick_ref_button(player_table)

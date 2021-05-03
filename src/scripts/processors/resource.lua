@@ -1,5 +1,3 @@
-local translation = require("__flib__.translation-new")
-
 local util = require("scripts.util")
 
 return function(recipe_book, strings)
@@ -36,7 +34,15 @@ return function(recipe_book, strings)
       prototype_name = name,
       required_fluid = required_fluid
     }
-    translation.add(strings.resource, name, prototype.localised_name)
-    translation.add(strings.resource_description, name, prototype.localised_description)
+    util.add_string(strings, {
+      dictionary = "resource",
+      internal = name,
+      localised = prototype.localised_name
+    })
+    util.add_string(strings, {
+      dictionary = "resource_description",
+      internal = name,
+      localised = prototype.localised_description
+    })
   end
 end

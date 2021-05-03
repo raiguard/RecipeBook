@@ -1,10 +1,9 @@
 local table = require("__flib__.table")
-local translation = require("__flib__.translation-new")
+local translation = require("__flib__.translation")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
 local shared = require("scripts.shared")
-local util = require("scripts.util")
 
 local main_gui = require("scripts.gui.main.base")
 local quick_ref_gui = require("scripts.gui.quick-ref")
@@ -58,10 +57,10 @@ function player_data.update_settings(player, player_table)
   formatter.purge_cache(player.index)
 end
 
-function player_data.request_translations(player)
-  for _, string in pairs(global.translation_strings) do
-    player.request_translation(string)
-  end
+function player_data.start_translations(player_index)
+  translation.add_requests(player_index, constants.gui_strings)
+  translation.add_requests(player_index, global.strings)
+  shared.register_on_tick()
 end
 
 function player_data.validate_favorites(favorites)
@@ -104,15 +103,15 @@ function player_data.refresh(player, player_table)
     session = {
       position = 1
     }
-  }
+  },
 
   -- update settings
   player_data.update_settings(player, player_table)
 
   -- run translations
-  player_table.translations = {}
+  player_table.translations = table.deep_copy(constants.empty_translations_table)
   if player.connected then
-    player_data.request_translations(player)
+    player_data.start_translations(player.index)
   else
     player_table.flags.translate_on_join = true
   end

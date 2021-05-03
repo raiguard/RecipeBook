@@ -1,5 +1,3 @@
-local translation = require("__flib__.translation-new")
-
 local util = require("scripts.util")
 
 local offshore_pump_proc = {}
@@ -23,8 +21,16 @@ function offshore_pump_proc.build(recipe_book, strings)
       pumping_speed = prototype.pumping_speed,
       unlocked_by = {}
     }
-    translation.add(strings.offshore_pump, name, prototype.localised_name)
-    translation.add(strings.offshore_pump_description, name, prototype.localised_description)
+    util.add_string(strings, {
+      dictionary = "offshore_pump",
+      internal = name,
+      localised = prototype.localised_name
+    })
+    util.add_string(strings, {
+      dictionary = "offshore_pump_description",
+      internal = name,
+      localised = prototype.localised_description
+    })
   end
 end
 
