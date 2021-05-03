@@ -1,6 +1,15 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.7.0
+Version: 2.7.2
 Date: ????
+  Changes:
+---------------------------------------------------------------------------------------------------
+Version: 2.7.1
+Date: 2021-05-03
+  Bugfixes:
+    - Fixed a crash when a new force was created
+---------------------------------------------------------------------------------------------------
+Version: 2.7.0
+Date: 2021-05-03
   Features:
     - Added an option to show disabled recipes and technologies
     - Added indicators for when a recipe or technology is disabled

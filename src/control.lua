@@ -72,8 +72,7 @@ end)
 
 event.on_force_created(function(e)
   local force = e.force
-  global_data.check_force_recipes(force)
-  global_data.check_force_technologies(force)
+  global_data.check_force(force)
 end)
 
 event.register({defines.events.on_research_finished, defines.events.on_research_reversed}, function(e)
