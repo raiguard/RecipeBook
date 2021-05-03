@@ -5,7 +5,7 @@ local constants = require("constants")
 local formatter = require("scripts.formatter")
 local shared = require("scripts.shared")
 
-local main_gui = require("scripts.gui.main.base")
+local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref")
 
 local player_data = {}
@@ -21,6 +21,9 @@ function player_data.init(player_index)
       translate_on_join = false
     },
     guis = {
+      info = {
+        _nextid = 1
+      },
       quick_ref = {}
     },
     history = {
@@ -83,8 +86,7 @@ end
 
 function player_data.refresh(player, player_table)
   -- destroy GUIs
-  main_gui.close(player, player_table)
-  main_gui.destroy(player_table)
+  info_gui.destroy_all(player_table)
   quick_ref_gui.destroy_all(player_table)
 
   -- set flag
@@ -97,13 +99,9 @@ function player_data.refresh(player, player_table)
   -- validate favorites
   player_data.validate_favorites(player_table.favorites)
 
-  -- destroy histories
-  player_table.history = {
-    global = {},
-    session = {
-      position = 1
-    }
-  },
+  -- destroy global history
+  -- TODO: Validate instead of destroy
+  player_table.global_history = {}
 
   -- update settings
   player_data.update_settings(player, player_table)

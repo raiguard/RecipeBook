@@ -11,7 +11,7 @@ local player_data = require("scripts.player-data")
 local remote_interface = require("scripts.remote-interface")
 local shared = require("scripts.shared")
 
-local main_gui = require("scripts.gui.main.base")
+local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref")
 
 -- -----------------------------------------------------------------------------
@@ -84,7 +84,8 @@ event.register({defines.events.on_research_finished, defines.events.on_research_
     local player_table = global.players[player.index]
     if player_table and player_table.flags.can_open_gui then
       if player_table.flags.gui_open or player_table.settings.preserve_session then
-        main_gui.refresh_contents(player, player_table)
+        -- FIXME:
+        -- main_gui.refresh_contents(player, player_table)
       end
       quick_ref_gui.refresh_all(player, player_table)
     end
@@ -97,7 +98,8 @@ local function read_action(e)
   local msg = gui.read_action(e)
   if msg then
     if msg.gui == "main" then
-      main_gui.handle_action(msg, e)
+      -- FIXME:
+      -- main_gui.handle_action(msg, e)
     elseif msg.gui == "quick_ref" then
       quick_ref_gui.handle_action(msg, e)
     end
@@ -124,7 +126,8 @@ event.on_gui_closed(function(e)
     if gui_data and gui_data.state.temp_opened then
       -- close RB
       gui_data.state.temp_opened = false
-      main_gui.close(player, player_table)
+      -- FIXME:
+      -- main_gui.close(player, player_table)
       -- re-open what was last open
       local last_open = player_table.last_opened_gui
       if last_open and (type(last_open) ~= "table" or last_open.valid) then
@@ -159,18 +162,19 @@ event.on_lua_shortcut(function(e)
     local player_table = global.players[e.player_index]
 
     -- only bother if we actually can open the GUI
-    if main_gui.check_can_open(player, player_table) then
-      -- check player's cursor stack for an item we can open
-      local item_to_open = player_data.check_cursor_stack(player)
-      if item_to_open then
-        main_gui.open_page(player, player_table, "item", item_to_open)
-        if not player_table.flags.gui_open then
-          main_gui.open(player, player_table, true)
-        end
-      else
-        main_gui.toggle(player, player_table)
-      end
-    end
+    -- FIXME:
+    -- if main_gui.check_can_open(player, player_table) then
+    --   -- check player's cursor stack for an item we can open
+    --   local item_to_open = player_data.check_cursor_stack(player)
+    --   if item_to_open then
+    --     main_gui.open_page(player, player_table, "item", item_to_open)
+    --     if not player_table.flags.gui_open then
+    --       main_gui.open(player, player_table, true)
+    --     end
+    --   else
+    --     main_gui.toggle(player, player_table)
+    --   end
+    -- end
   end
 end)
 
@@ -179,37 +183,39 @@ event.register("rb-toggle-gui", function(e)
   local player_table = global.players[e.player_index]
 
   -- only bother if we actually can open the GUI
-  if main_gui.check_can_open(player, player_table) then
-    local selected_prototype = e.selected_prototype
-    if selected_prototype and player_table.settings.open_selected_object then
-      local class = (
-        constants.type_to_class[selected_prototype.base_type]
-        or constants.type_to_class[selected_prototype.derived_type]
-      )
-      if class then
-        local obj_data = global.recipe_book[class][selected_prototype.name]
-        if obj_data then
-          main_gui.open_page(player, player_table, class, selected_prototype.name)
-          if not player_table.flags.gui_open then
-            main_gui.open(player, player_table, true, true)
-          end
-          return
-        end
-      end
-    end
-    -- if we're here, then toggle the GUI as normal
-    main_gui.toggle(player, player_table)
-  end
+  -- FIXME:
+  -- if main_gui.check_can_open(player, player_table) then
+  --   local selected_prototype = e.selected_prototype
+  --   if selected_prototype and player_table.settings.open_selected_object then
+  --     local class = (
+  --       constants.type_to_class[selected_prototype.base_type]
+  --       or constants.type_to_class[selected_prototype.derived_type]
+  --     )
+  --     if class then
+  --       local obj_data = global.recipe_book[class][selected_prototype.name]
+  --       if obj_data then
+  --         main_gui.open_page(player, player_table, class, selected_prototype.name)
+  --         if not player_table.flags.gui_open then
+  --           main_gui.open(player, player_table, true, true)
+  --         end
+  --         return
+  --       end
+  --     end
+  --   end
+  --   -- if we're here, then toggle the GUI as normal
+  --   main_gui.toggle(player, player_table)
+  -- end
 end)
 
 event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front"}, function(e)
   local player_table = global.players[e.player_index]
   if player_table.flags.can_open_gui and player_table.flags.gui_open and not player_table.flags.technology_gui_open then
     local event_properties = constants.nav_event_properties[e.input_name]
-    main_gui.handle_action(
-      {gui = "main", action = event_properties.action_name},
-      {player_index = e.player_index, shift = event_properties.shift}
-    )
+    -- FIXME:
+    -- main_gui.handle_action(
+    --   {gui = "main", action = event_properties.action_name},
+    --   {player_index = e.player_index, shift = event_properties.shift}
+    -- )
   end
 end)
 
@@ -282,7 +288,8 @@ event.on_string_translated(function(e)
       player.print{'rb-message.can-open-gui'}
     end
     -- create GUI
-    main_gui.build(player, player_table)
+    -- FIXME:
+    -- main_gui.build(player, player_table)
     -- update flags
     player_table.flags.can_open_gui = true
     player_table.flags.translate_on_join = false -- not really needed, but is here just in case
@@ -303,17 +310,19 @@ remote.add_interface("RecipeBook", remote_interface)
 -- SHARED FUNCTIONS
 
 function shared.open_page(player, player_table, class, name)
-  if main_gui.check_can_open(player, player_table) then
-    main_gui.open_page(player, player_table, class, name)
-    if not player_table.flags.gui_open then
-      main_gui.open(player, player_table)
-    end
-  end
+  -- FIXME:
+  -- if main_gui.check_can_open(player, player_table) then
+  --   main_gui.open_page(player, player_table, class, name)
+  --   if not player_table.flags.gui_open then
+  --     main_gui.open(player, player_table)
+  --   end
+  -- end
 end
 
 function shared.refresh_contents(player, player_table)
   formatter.purge_cache(player.index)
-  main_gui.refresh_contents(player, player_table)
+  -- FIXME:
+  -- main_gui.refresh_contents(player, player_table)
   quick_ref_gui.refresh_all(player, player_table)
 end
 
@@ -324,5 +333,6 @@ function shared.register_on_tick()
 end
 
 function shared.update_quick_ref_button(player_table)
-  main_gui.update_quick_ref_button(player_table)
+  -- FIXME:
+  -- main_gui.update_quick_ref_button(player_table)
 end

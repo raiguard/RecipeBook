@@ -39,5 +39,13 @@ return {
       local settings = player_table.settings
       settings.show_detailed_tooltips = settings.show_detailed_recipe_tooltips
     end
+  end,
+  ["3.0.0"] = function()
+    for _, player_table in pairs(global.players) do
+      player_table.guis.info = {
+        _nextid = 1
+      }
+      player_table.history = nil
+    end
   end
 }

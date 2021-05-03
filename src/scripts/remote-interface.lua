@@ -1,5 +1,4 @@
 local constants = require("constants")
-local main_gui = require("scripts.gui.main.base")
 
 local remote_interface = {}
 
@@ -16,10 +15,12 @@ function remote_interface.open_page(player_index, class, name)
   local player = game.get_player(player_index)
   local player_table = global.players[player_index]
 
-  main_gui.open_page(player, player_table, class, name)
+  -- FIXME:
+  -- main_gui.open_page(player, player_table, class, name)
 
   if not player_table.flags.gui_open then
-    main_gui.open(player, player_table, true)
+    -- FIXME:
+    -- main_gui.open(player, player_table, true)
   end
 
   return true
