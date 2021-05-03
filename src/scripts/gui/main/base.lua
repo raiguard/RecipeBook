@@ -105,7 +105,7 @@ function main_gui.build(player, player_table)
           }},
           {type = "flow", style = "rb_main_frame_flow", children = {
             -- search page
-            {type = "frame", style = "inside_shallow_frame", direction = "vertical", children = search_gui.build()},
+            {type = "frame", style = "inside_shallow_frame", direction = "vertical", visible = false, children = search_gui.build()},
             -- info page
             {type = "frame", style = "rb_main_info_frame", direction = "vertical", children = {
               -- info bar

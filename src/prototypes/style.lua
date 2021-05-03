@@ -154,7 +154,7 @@ styles.rb_naked_scroll_pane = {
   type = "scroll_pane_style",
   extra_padding_when_activated = 0,
   padding = 0,
-  vertically_stretchable = "on",
+  -- vertically_stretchable = "on",
   graphical_set = {
     shadow = default_inner_shadow
   },
