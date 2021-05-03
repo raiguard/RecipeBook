@@ -274,6 +274,10 @@ constants.settings = {
       default_value = false,
       has_tooltip = true
     },
+    use_internal_names = {
+      default_value = false,
+      has_tooltip = true
+    },
     show_descriptions = {
       default_value = true,
       has_tooltip = true
@@ -297,10 +301,6 @@ constants.settings = {
   },
   search = {
     use_fuzzy_search = {
-      default_value = false,
-      has_tooltip = true
-    },
-    use_internal_names = {
       default_value = false,
       has_tooltip = true
     },
