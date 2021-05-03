@@ -96,9 +96,8 @@ return function(recipe_book, strings, metadata)
       upgrade = prototype.upgrade
     }
 
-    local localised_name
-
     -- assemble name
+    local localised_name
     if level ~= max_level then
       localised_name = {
         "",

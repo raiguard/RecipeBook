@@ -19,7 +19,6 @@ function global_data.init()
 end
 
 function global_data.build_recipe_book()
-  local profiler = game.create_profiler()
   -- the data that will actually be saved and used
   local recipe_book = {
     crafter = {},
@@ -54,9 +53,6 @@ function global_data.build_recipe_book()
 
   global.recipe_book = recipe_book
   global.translation_strings = strings
-
-  profiler.stop()
-  log(profiler)
 end
 
 local function update_launch_products(recipe_book, launch_products, force_index, to_value)
@@ -151,35 +147,16 @@ function global_data.handle_research_updated(technology, to_value)
   end
 end
 
-function global_data.check_force_recipes(force)
-  local recipe_book = global.recipe_book
-  local force_index = force.index
-  for name, recipe in pairs(force.recipes) do
-    if recipe.enabled then
-      local recipe_data = recipe_book.recipe[name]
-      if recipe_data.researched_forces then
-        update_recipe(recipe_book, recipe_data, force_index, true)
-      end
-    end
-  end
-end
-
 function global_data.check_force_technologies(force)
-  local force_index = force.index
-  local technologies = global.recipe_book.technology
-  for name, technology in pairs(force.technologies) do
+  for _, technology in pairs(force.technologies) do
     if technology.enabled and technology.researched then
-      local technology_data = technologies[name]
-      if technology_data then
-        technology_data.researched_forces[force_index] = true
-      end
+      global_data.handle_research_updated(technology, true)
     end
   end
 end
 
 function global_data.check_forces()
   for _, force in pairs(game.forces) do
-    global_data.check_force_recipes(force)
     global_data.check_force_technologies(force)
   end
 end
