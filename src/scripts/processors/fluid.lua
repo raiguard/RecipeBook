@@ -79,7 +79,7 @@ end
 function fluid_proc.process_temperatures(recipe_book, strings, metadata)
   for fluid_name, fluid_data in pairs(recipe_book.fluid) do
     local temperatures = fluid_data.temperatures
-    if temperatures and table_size(temperatures) > 1 then
+    if temperatures and table_size(temperatures) > 0 then
       -- Step 1: Add a variant for the default temperature if one does not exist
       local default_temperature = fluid_data.default_temperature
       local default_temperature_ident = util.build_temperature_ident{temperature = default_temperature}
