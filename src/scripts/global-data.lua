@@ -52,9 +52,6 @@ function global_data.build_recipe_book()
   strings.__index = nil
   global.recipe_book = recipe_book
   global.strings = strings
-
-  profiler.stop()
-  log(profiler)
 end
 
 local function update_launch_products(recipe_book, launch_products, force_index, to_value)
