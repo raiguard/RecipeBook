@@ -134,9 +134,9 @@ function search_page.handle_action(msg, e)
 
       -- check temperature settings
       if category == "fluid" then
-        local temperature_data = obj_data.temperature_data
-        if temperature_data then
-          if not (show_temperatures and (temperature_data.min == temperature_data.max or show_temp_ranges)) then
+        local temperature_ident = obj_data.temperature_ident
+        if temperature_ident then
+          if not (show_temperatures and (temperature_ident.min == temperature_ident.max or show_temp_ranges)) then
             goto continue
           end
         end
