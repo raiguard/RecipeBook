@@ -146,7 +146,7 @@ function global_data.handle_research_updated(technology, to_value)
   end
 end
 
-function global_data.check_force_technologies(force)
+function global_data.check_force(force)
   for _, technology in pairs(force.technologies) do
     if technology.enabled and technology.researched then
       global_data.handle_research_updated(technology, true)
@@ -156,7 +156,7 @@ end
 
 function global_data.check_forces()
   for _, force in pairs(game.forces) do
-    global_data.check_force_technologies(force)
+    global_data.check_force(force)
   end
 end
 
