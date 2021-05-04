@@ -22,7 +22,7 @@ function player_data.init(player_index)
     },
     guis = {
       info = {
-        _nextid = 1
+        _next_id = 1
       },
       quick_ref = {}
     },

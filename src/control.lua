@@ -97,9 +97,8 @@ end)
 local function read_action(e)
   local msg = gui.read_action(e)
   if msg then
-    if msg.gui == "main" then
-      -- FIXME:
-      -- main_gui.handle_action(msg, e)
+    if msg.gui == "info" then
+      info_gui.handle_action(msg, e)
     elseif msg.gui == "quick_ref" then
       quick_ref_gui.handle_action(msg, e)
     end
@@ -162,6 +161,7 @@ event.on_lua_shortcut(function(e)
     local player_table = global.players[e.player_index]
 
     -- TODO: Open search GUI
+    -- NOTE: Perhaps we should re-introduce holding an item to open it?
   end
 end)
 
@@ -169,8 +169,7 @@ event.register("rb-toggle-gui", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
-  -- TODO: Read selected prototype and open a temporary info GUI
-
+  -- Open the selected prototype
   if player_table.flags.can_open_gui then
     local selected_prototype = e.selected_prototype
     if selected_prototype then
@@ -178,13 +177,19 @@ event.register("rb-toggle-gui", function(e)
         constants.type_to_class[selected_prototype.base_type]
         or constants.type_to_class[selected_prototype.derived_type]
       )
+      -- Not everything will have a Recipe Book entry
       if class then
         local name = selected_prototype.name
         local obj_data = global.recipe_book[class][name]
         if obj_data then
-          -- TODO: Check for and update an already existing temporary window
-          -- TODO: Check if a window already has the object open
-          info_gui.build(player, player_table, {class = class, name = name})
+          local context = {class = class, name = name}
+          local existing_id = info_gui.find_open_context(player_table, context)
+          if existing_id then
+            info_gui.handle_action({id = existing_id, action = "bring_to_front"}, {player_index = e.player_index})
+          else
+            -- TODO: Check for and update an already existing temporary window
+            info_gui.build(player, player_table, {class = class, name = name})
+          end
           return
         end
       end

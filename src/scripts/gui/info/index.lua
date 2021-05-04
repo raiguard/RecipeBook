@@ -21,8 +21,8 @@ local function frame_action_button(sprite, tooltip, action, ref)
 end
 
 function info_gui.build(player, player_table, context)
-  local id = player_table.guis.info._nextid
-  player_table.guis.info._nextid = id + 1
+  local id = player_table.guis.info._next_id
+  player_table.guis.info._next_id = id + 1
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
@@ -72,12 +72,12 @@ function info_gui.build(player, player_table, context)
           {gui = "info", id = id, action = "toggle_search"},
           {"titlebar", "search_button"}
         ),
-        frame_action_button(
-          "rb_pin",
-          {"gui.rb-pin-instruction"},
-          {gui = "info", id = id, action = "toggle_pinned"},
-          {"titlebar", "pin_button"}
-        ),
+        -- frame_action_button(
+        --   "rb_pin",
+        --   {"gui.rb-pin-instruction"},
+        --   {gui = "info", id = id, action = "toggle_pinned"},
+        --   {"titlebar", "pin_button"}
+        -- ),
         -- frame_action_button(
         --   "rb_settings",
         --   {"gui.rb-settings-instruction"},
@@ -119,7 +119,7 @@ function info_gui.build(player, player_table, context)
     settings = player_table.settings,
     translations = player_table.translations
   }
-  local info = formatter(obj_data, player_data, {always_show = true})
+  local info = formatter(obj_data, player_data, {always_show = true, is_label = true})
   local label = refs.info_bar.label
   label.caption = info.caption
   label.tooltip = info.tooltip
@@ -134,15 +134,46 @@ function info_gui.build(player, player_table, context)
 end
 
 function info_gui.destroy(player_table, id)
-
+  local gui_data = player_table.guis.info[id]
+  if gui_data then
+    gui_data.refs.window.frame.destroy()
+    -- TODO: Unset player.opened if it's not pinned
+    player_table.guis.info[id] = nil
+  end
 end
 
 function info_gui.destroy_all(player_table)
+  for id in pairs(player_table.guis.info) do
+    if id ~= "_next_id" then
+      info_gui.destroy(player_table, id)
+    end
+  end
+end
 
+function info_gui.find_open_context(player_table, context)
+  for id, gui_data in pairs(player_table.guis.info) do
+    if id ~= "_next_id" then
+      local opened_context = gui_data.state.opened_context
+      if opened_context.class == context.class and opened_context.name == context.name then
+        return id
+      end
+    end
+  end
 end
 
 function info_gui.handle_action(msg, e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
 
+  local gui_data = player_table.guis.info[msg.id]
+  local state = gui_data.state
+  local refs = gui_data.refs
+
+  if msg.action == "close" then
+    info_gui.destroy(player_table, msg.id)
+  elseif msg.action == "bring_to_front" then
+    refs.window.frame.bring_to_front()
+  end
 end
 
 return info_gui
