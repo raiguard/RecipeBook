@@ -5,21 +5,16 @@ local fixed_format = require("lib.fixed-precision-format")
 
 local constants = require("constants")
 
+local util = require("scripts.util")
+
 local caches = {}
 
 -- upvalues (for optimization)
 local class_to_font_glyph = constants.class_to_font_glyph
 local class_to_type = constants.class_to_type
-local colors = constants.colors
 local concat = table.concat
-
--- string builders
-local function build_rich_text(key, value, inner)
-  return "["..key.."="..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
-end
-local function build_sprite(class, name)
-  return "[img="..class.."/"..name.."]"
-end
+local build_rich_text = util.build_rich_text
+local build_sprite = util.build_sprite
 
 local function get_properties(obj_data, force_index)
   local is_researched

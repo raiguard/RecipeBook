@@ -2,6 +2,8 @@ local math = require("__flib__.math")
 local misc = require("__flib__.misc")
 local table = require("__flib__.table")
 
+local constants = require("constants")
+
 local util = {}
 
 function util.append(tbl, name)
@@ -99,6 +101,15 @@ function util.unique_obj_array(initial_tbl)
       end
     end
   })
+end
+
+-- string builders
+local colors = constants.colors
+function util.build_rich_text(key, value, inner)
+  return "["..key.."="..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
+end
+function util.build_sprite(class, name)
+  return "[img="..class.."/"..name.."]"
 end
 
 return util

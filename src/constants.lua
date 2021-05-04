@@ -79,6 +79,10 @@ constants.colors = {
     str = "128, 206, 240",
     tbl = {128, 206, 240}
   },
+  invisible = {
+    str = "0, 0, 0, 0",
+    tbl = {0, 0, 0, 0}
+  },
   yellow = {
     str = "255, 240, 69",
     tbl = {255, 240, 69}
@@ -150,6 +154,8 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "fuel_value", localised = {"rb-gui.fuel-value"}},
   {dictionary = "gui", internal = "hidden", localised = {"rb-gui.hidden"}},
   {dictionary = "gui", internal = "ingredients_tooltip", localised = {"rb-gui.ingredients-tooltip"}},
+  {dictionary = "gui", internal = "nav_backward_tooltip", localised = {"gui.rb-nav-backward-tooltip"}},
+  {dictionary = "gui", internal = "nav_forward_tooltip", localised = {"gui.rb-nav-forward-tooltip"}},
   {dictionary = "gui", internal = "per_second", localised = {"rb-gui.per-second"}},
   {dictionary = "gui", internal = "products_tooltip", localised = {"rb-gui.products-tooltip"}},
   {dictionary = "gui", internal = "pumping_speed", localised = {"rb-gui.pumping-speed"}},
@@ -178,6 +184,7 @@ constants.gui_strings = {
     internal = "shift_click_to_view_technology",
     localised = {"rb-gui.shift-click-to-view-technology"}
   },
+  {dictionary = "gui", internal = "session_history", localised = {"gui.rb-session-history"}},
   {dictionary = "gui", internal = "stack_size", localised = {"rb-gui.stack-size"}},
   {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
 }

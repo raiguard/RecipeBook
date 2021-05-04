@@ -1,6 +1,10 @@
 local gui = require("__flib__.gui-beta")
+local math = require("__flib__.math")
+
+local constants = require("constants")
 
 local formatter = require("scripts.formatter")
+local util = require("scripts.util")
 
 local info_gui = {}
 
@@ -35,13 +39,13 @@ function info_gui.build(player, player_table, context)
         frame_action_button(
           "rb_nav_backward",
           nil,
-          {gui = "info", id = id, action = "navigate_backward"},
+          {gui = "info", id = id, action = "navigate", delta = -1},
           {"titlebar", "nav_backward_button"}
         ),
         frame_action_button(
           "rb_nav_forward",
           nil,
-          {gui = "info", id = id, action = "navigate_forward"},
+          {gui = "info", id = id, action = "navigate", delta = 1},
           {"titlebar", "nav_forward_button"}
         ),
         {
@@ -100,9 +104,23 @@ function info_gui.build(player, player_table, context)
           {
             type = "label",
             style = "rb_toolbar_label",
-            ref = {"info_bar", "label"}
+            ref = {"info_bar", "label"},
+            actions = {
+              on_click = {gui = "info", id = id, action = "demo"}
+            }
           },
-          {type = "empty-widget", style = "flib_horizontal_pusher"}
+          {type = "empty-widget", style = "flib_horizontal_pusher"},
+          {
+            type = "sprite-button",
+            style = "tool_button",
+            sprite = "rb_favorite_black",
+            tooltip = {"gui.rb-add-to-favorites"},
+            mouse_button_filter = {"left"},
+            ref = {"info_bar", "favorite_button"},
+            actions = {
+              on_click = {gui = "info", id = id, action = "toggle_favorite"}
+            }
+          }
         }
       }
     }
@@ -111,32 +129,16 @@ function info_gui.build(player, player_table, context)
   refs.titlebar.flow.drag_target = refs.window.frame
   refs.window.frame.force_auto_center()
 
-  -- TEMPORARY: Populate info bar label to distinguish GUIs
-  local obj_data = global.recipe_book[context.class][context.name]
-  local player_data = {
-    favorites = player_table.favorites,
-    force_index = player.force.index,
-    history = player_table.history.global,
-    -- TODO: Rename to `context`
-    open_page_data = context,
-    player_index = player.index,
-    settings = player_table.settings,
-    translations = player_table.translations
-  }
-  local info = formatter(obj_data, player_data, {always_show = true, is_label = true})
-  local label = refs.info_bar.label
-  label.caption = info.caption
-  label.tooltip = info.tooltip
-
   player_table.guis.info[id] = {
     refs = refs,
     state = {
-      history = {},
-      opened_context = context,
+      history = {_index = 1, context},
       search_opened = false,
       search_query = ""
     }
   }
+
+  info_gui.update_contents(player, player_table, id)
 end
 
 function info_gui.destroy(player_table, id)
@@ -158,12 +160,104 @@ end
 function info_gui.find_open_context(player_table, context)
   for id, gui_data in pairs(player_table.guis.info) do
     if id ~= "_next_id" then
-      local opened_context = gui_data.state.opened_context
-      if opened_context.class == context.class and opened_context.name == context.name then
+      local state = gui_data.state
+      local opened_context = state.history[state.history._index]
+      -- TODO: Shouldn't ever be `nil`
+      if opened_context and opened_context.class == context.class and opened_context.name == context.name then
         return id
       end
     end
   end
+end
+
+function info_gui.update_contents(player, player_table, id, new_context)
+  local gui_data = player_table.guis.info[id]
+  local state = gui_data.state
+  local refs = gui_data.refs
+
+  local player_data = {
+    favorites = player_table.favorites,
+    force_index = player.force.index,
+    history = player_table.history.global,
+    -- TODO: Rename to `context`
+    open_page_data = context,
+    player_index = player.index,
+    settings = player_table.settings,
+    translations = player_table.translations
+  }
+
+  -- Add new history if needed
+  local history = state.history
+  if new_context then
+    -- Remove all entries after this
+    local history_len = #history
+    for i = history._index + 1, #history do
+      history[i] = nil
+    end
+    -- Insert new entry
+    history_len = #history
+    history[history_len + 1] = new_context
+    history._index = history_len + 1
+  end
+
+  -- Nav button tooltips
+  local history_index = history._index
+  local history_len = #history
+  local entries = {}
+  for i, history_context in ipairs(history) do
+    local obj_data = global.recipe_book[history_context.class][history_context.name]
+    local info = formatter(obj_data, player_data, {always_show = true, is_label = true})
+    local caption = info.caption
+    if not info.is_researched then
+      caption = util.build_rich_text("color", "unresearched", caption)
+    end
+    entries[history_len - (i - 1)] = util.build_rich_text(
+      "font",
+      "default-semibold",
+      util.build_rich_text("color", history_index == i and "green" or "invisible", ">")
+    ).."   "..caption
+  end
+  local entries = table.concat(entries, "\n")
+
+  -- Nav buttons
+  local gui_translations = player_data.translations.gui
+  local nav_backward_button = refs.titlebar.nav_backward_button
+  if history._index == 1 then
+    nav_backward_button.enabled = false
+    nav_backward_button.sprite = "rb_nav_backward_disabled"
+  else
+    nav_backward_button.enabled = true
+    nav_backward_button.sprite = "rb_nav_backward_white"
+  end
+  nav_backward_button.tooltip = util.build_rich_text(
+    "font",
+    "default-bold",
+    util.build_rich_text("color", "heading", gui_translations.session_history)
+  ).."\n"..entries.."\n"..gui_translations.nav_backward_tooltip
+
+  local nav_forward_button = refs.titlebar.nav_forward_button
+  if history._index == #history then
+    nav_forward_button.enabled = false
+    nav_forward_button.sprite = "rb_nav_forward_disabled"
+  else
+    nav_forward_button.enabled = true
+    nav_forward_button.sprite = "rb_nav_forward_white"
+  end
+  nav_forward_button.tooltip = util.build_rich_text(
+    "font",
+    "default-bold",
+    util.build_rich_text("color", "heading", gui_translations.session_history)
+  ).."\n"..entries.."\n"..gui_translations.nav_forward_tooltip
+
+  -- Data
+  local context = new_context or history[history._index]
+  local obj_data = global.recipe_book[context.class][context.name]
+
+  -- Info bar
+  local info = formatter(obj_data, player_data, {always_show = true, is_label = true})
+  local label = refs.info_bar.label
+  label.caption = info.caption
+  label.tooltip = info.tooltip
 end
 
 function info_gui.handle_action(msg, e)
@@ -196,6 +290,23 @@ function info_gui.handle_action(msg, e)
       search_textfield.visible = true
       search_textfield.focus()
     end
+  elseif msg.action == "navigate" then
+    -- Update position in history
+    local delta = msg.delta
+    local history = state.history
+    if e.shift then
+      if delta < 0 then
+        history._index = 1
+      else
+        history._index = #history
+      end
+    else
+      history._index = math.clamp(history._index + delta, 1, #history)
+    end
+    -- Update contents
+    info_gui.update_contents(player, player_table, msg.id)
+  elseif msg.action == "demo" then
+    info_gui.update_contents(player, player_table, msg.id, {class = "fluid", name = "crude-oil"})
   end
 end
 
