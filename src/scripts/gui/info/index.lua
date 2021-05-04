@@ -71,7 +71,7 @@ function info_gui.build(player, player_table, context)
           visible = false,
           ref = {"titlebar", "search_textfield"},
           actions = {
-            on_text_changed = {gui = "info", id = id, action = "update_search"}
+            on_text_changed = {gui = "info", id = id, action = "update_search_query"}
           }
         },
         frame_action_button(
@@ -304,6 +304,10 @@ function info_gui.handle_action(msg, e)
       history._index = math.clamp(history._index + delta, 1, #history)
     end
     -- Update contents
+    info_gui.update_contents(player, player_table, msg.id)
+  elseif msg.action == "update_search_query" then
+    state.search_query = e.element.text
+    -- TODO: This is overkill, perhaps make another function specifically for the page?
     info_gui.update_contents(player, player_table, msg.id)
   elseif msg.action == "demo" then
     info_gui.update_contents(player, player_table, msg.id, {class = "fluid", name = "crude-oil"})
