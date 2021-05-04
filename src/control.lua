@@ -161,20 +161,7 @@ event.on_lua_shortcut(function(e)
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
 
-    -- only bother if we actually can open the GUI
-    -- FIXME:
-    -- if main_gui.check_can_open(player, player_table) then
-    --   -- check player's cursor stack for an item we can open
-    --   local item_to_open = player_data.check_cursor_stack(player)
-    --   if item_to_open then
-    --     main_gui.open_page(player, player_table, "item", item_to_open)
-    --     if not player_table.flags.gui_open then
-    --       main_gui.open(player, player_table, true)
-    --     end
-    --   else
-    --     main_gui.toggle(player, player_table)
-    --   end
-    -- end
+    -- TODO: Open search GUI
   end
 end)
 
@@ -182,29 +169,36 @@ event.register("rb-toggle-gui", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
-  -- only bother if we actually can open the GUI
-  -- FIXME:
-  -- if main_gui.check_can_open(player, player_table) then
-  --   local selected_prototype = e.selected_prototype
-  --   if selected_prototype and player_table.settings.open_selected_object then
-  --     local class = (
-  --       constants.type_to_class[selected_prototype.base_type]
-  --       or constants.type_to_class[selected_prototype.derived_type]
-  --     )
-  --     if class then
-  --       local obj_data = global.recipe_book[class][selected_prototype.name]
-  --       if obj_data then
-  --         main_gui.open_page(player, player_table, class, selected_prototype.name)
-  --         if not player_table.flags.gui_open then
-  --           main_gui.open(player, player_table, true, true)
-  --         end
-  --         return
-  --       end
-  --     end
-  --   end
-  --   -- if we're here, then toggle the GUI as normal
-  --   main_gui.toggle(player, player_table)
-  -- end
+  -- TODO: Read selected prototype and open a temporary info GUI
+
+  if player_table.flags.can_open_gui then
+    local selected_prototype = e.selected_prototype
+    if selected_prototype then
+      local class = (
+        constants.type_to_class[selected_prototype.base_type]
+        or constants.type_to_class[selected_prototype.derived_type]
+      )
+      if class then
+        local name = selected_prototype.name
+        local obj_data = global.recipe_book[class][name]
+        if obj_data then
+          -- TODO: Check for and update an already existing temporary window
+          -- TODO: Check if a window already has the object open
+          info_gui.build(player, player_table, {class = class, name = name})
+          return
+        end
+      end
+
+      -- If we're here, the selected object has no page in RB
+      player.create_local_flying_text{
+        text = {"message.rb-object-has-no-page"},
+        create_at_cursor = true
+      }
+      player.play_sound{path = "utility/cannot_build"}
+    else
+      -- TODO: Open search GUI
+    end
+  end
 end)
 
 event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front"}, function(e)
@@ -288,7 +282,7 @@ event.on_string_translated(function(e)
       player.print{'rb-message.can-open-gui'}
     end
     -- create GUI
-    -- FIXME:
+    -- FIXME: Create search GUI - info GUIs are created on demand
     -- main_gui.build(player, player_table)
     -- update flags
     player_table.flags.can_open_gui = true
