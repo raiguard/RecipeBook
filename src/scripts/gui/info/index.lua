@@ -52,13 +52,17 @@ function info_gui.build(player, player_table, context)
           caption = {"mod-name.RecipeBook"},
           ignored_by_interaction = true
         },
-        {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
+        {
+          type = "empty-widget",
+          style = "flib_titlebar_drag_handle",
+          ignored_by_interaction = true,
+          ref = {"titlebar", "drag_handle"}
+        },
         {
           type = "textfield",
-          style = "flib_widthless_textfield",
           style_mods = {
-            horizontally_stretchable = true,
-            top_margin = -3
+            top_margin = -3,
+            right_padding = 3,
           },
           visible = false,
           ref = {"titlebar", "search_textfield"},
@@ -128,7 +132,9 @@ function info_gui.build(player, player_table, context)
     refs = refs,
     state = {
       history = {},
-      opened_context = context
+      opened_context = context,
+      search_opened = false,
+      search_query = ""
     }
   }
 end
@@ -137,7 +143,6 @@ function info_gui.destroy(player_table, id)
   local gui_data = player_table.guis.info[id]
   if gui_data then
     gui_data.refs.window.frame.destroy()
-    -- TODO: Unset player.opened if it's not pinned
     player_table.guis.info[id] = nil
   end
 end
@@ -173,6 +178,24 @@ function info_gui.handle_action(msg, e)
     info_gui.destroy(player_table, msg.id)
   elseif msg.action == "bring_to_front" then
     refs.window.frame.bring_to_front()
+  elseif msg.action == "toggle_search" then
+    local opened = state.search_opened
+    state.search_opened = not opened
+
+    local search_button = refs.titlebar.search_button
+    local search_textfield = refs.titlebar.search_textfield
+    if opened then
+      search_button.sprite = "utility/search_white"
+      search_button.style = "frame_action_button"
+      search_textfield.text = ""
+      state.search_query = ""
+      search_textfield.visible = false
+    else
+      search_button.sprite = "utility/search_black"
+      search_button.style = "flib_selected_frame_action_button"
+      search_textfield.visible = true
+      search_textfield.focus()
+    end
   end
 end
 
