@@ -232,7 +232,7 @@ constants.open_fluid_types = {
 
 constants.pages = {
   crafter = {
-    {type = "list_box", source = "compatible_recipes", build_options = {max_rows = 10}},
+    {type = "list_box", source = "compatible_recipes", max_rows = 10},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },
