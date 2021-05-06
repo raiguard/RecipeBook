@@ -211,18 +211,6 @@ constants.list_box_item_styles = {
   unresearched = "rb_unresearched_list_box_item"
 }
 
-constants.main_pages = {
-  "home",
-  "crafter",
-  "fluid",
-  "item",
-  "recipe",
-  "technology"
-}
--- interface can open any page but home
-constants.interface_classes = table.invert(constants.main_pages)
-constants.interface_classes.home = nil
-
 constants.max_listbox_height = 8
 
 constants.nav_event_properties = {
@@ -240,6 +228,46 @@ constants.open_fluid_types = {
   ["pipe"] = true,
   ["pump"] = true,
   ["storage-tank"] = true
+}
+
+constants.pages = {
+  crafter = {
+    {type = "list_box", source = "compatible_recipes", build_options = {max_rows = 10}},
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "placeable_by"}
+  },
+  fluid = {
+    {type = "list_box", source = "ingredient_in"},
+    {type = "list_box", source = "product_of"},
+    {type = "list_box", source = "mined_from"},
+    {type = "list_box", source = "pumped_by"},
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "temperatures"}
+  },
+  item = {
+    {type = "list_box", source = "ingredient_in"},
+    {type = "list_box", source = "product_of"},
+    {type = "list_box", source = "rocket_launch_payloads"},
+    {type = "list_box", source = "rocket_launch_products"},
+    {type = "list_box", source = "mined_from"},
+    {type = "list_box", source = "usable_in"},
+    {type = "list_box", source = "unlocked_by"}
+  },
+  recipe = {
+    {type = "list_box", source = "ingredients", always_show = true},
+    {type = "list_box", source = "products", always_show = true},
+    {type = "list_box", source = "made_in"},
+    {type = "list_box", source = "unlocked_by"}
+  },
+  technology = {
+    {type = "list_box", source = "research_units"},
+    {type = "list_box", source = "research_ingredients_per_unit"},
+    {type = "list_box", source = "unlocks_fluids"},
+    {type = "list_box", source = "unlocks_items"},
+    {type = "list_box", source = "unlocks_recipes"},
+    {type = "list_box", source = "prerequisites"},
+    {type = "list_box", source = "prerequisite_of"}
+  }
 }
 
 constants.search_categories = {"crafter", "fluid", "item", "recipe", "technology"}
@@ -262,15 +290,18 @@ constants.settings = {
   },
   interface = {
     show_hidden = {
-      default_value = false,
+      -- FIXME:
+      default_value = true,
       has_tooltip = true
     },
     show_unresearched = {
-      default_value = false,
+      -- FIXME:
+      default_value = true,
       has_tooltip = true
     },
     show_disabled = {
-      default_value = false,
+      -- FIXME:
+      default_value = true,
       has_tooltip = true
     },
     show_glyphs = {

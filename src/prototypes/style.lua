@@ -129,7 +129,7 @@ styles.rb_slot_label_top = {
   top_padding = 3
 }
 
-styles.rb_info_list_box_label = {
+styles.rb_list_box_label = {
   type = "label_style",
   parent = "bold_label",
   bottom_padding = 2
@@ -150,14 +150,9 @@ styles.rb_list_box_scroll_pane = {
   }
 }
 
-styles.rb_naked_scroll_pane = {
+styles.rb_page_scroll_pane = {
   type = "scroll_pane_style",
-  extra_padding_when_activated = 0,
-  padding = 0,
-  -- vertically_stretchable = "on",
-  graphical_set = {
-    shadow = default_inner_shadow
-  },
+  parent = "flib_naked_scroll_pane_no_padding",
   vertical_flow_style = {
     type = "vertical_flow_style",
     padding = 12,
@@ -165,20 +160,20 @@ styles.rb_naked_scroll_pane = {
   }
 }
 
-styles.rb_search_results_scroll_pane = {
-  type = "scroll_pane_style",
-  parent = "rb_list_box_scroll_pane",
-  vertically_stretchable = "on"
-}
+-- styles.rb_search_results_scroll_pane = {
+--   type = "scroll_pane_style",
+--   parent = "rb_list_box_scroll_pane",
+--   vertically_stretchable = "on"
+-- }
 
-styles.rb_settings_content_scroll_pane = {
-  type = "scroll_pane_style",
-  parent = "rb_naked_scroll_pane",
-  vertical_flow_style = {
-    type = "vertical_flow_style",
-    padding = 4
-  }
-}
+-- styles.rb_settings_content_scroll_pane = {
+--   type = "scroll_pane_style",
+--   parent = "rb_naked_scroll_pane",
+--   vertical_flow_style = {
+--     type = "vertical_flow_style",
+--     padding = 4
+--   }
+-- }
 
 styles.rb_slot_table_scroll_pane = {
   type = "scroll_pane_style",

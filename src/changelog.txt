@@ -1,6 +1,11 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.0
 Date: ????
+  Features:
+    - Complete GUI redesign
+      - Separated search from information
+      - You can open as many information windows as you want simultaneously
+      - Middle-clicking an object will open that object in a new window
   Changes:
 ---------------------------------------------------------------------------------------------------
 Version: 2.7.2
