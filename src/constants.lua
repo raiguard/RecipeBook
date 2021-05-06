@@ -242,7 +242,7 @@ constants.pages = {
     {type = "list_box", source = "mined_from"},
     {type = "list_box", source = "pumped_by"},
     {type = "list_box", source = "unlocked_by"},
-    {type = "list_box", source = "temperatures"}
+    {type = "list_box", source = "temperatures", use_pairs = true}
   },
   item = {
     {type = "list_box", source = "ingredient_in"},

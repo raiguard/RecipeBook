@@ -47,7 +47,8 @@ function list_box.update(component, refs, objects, player_data, variables)
 
   -- Add items
   local i = 0
-  for _, obj in pairs(objects) do
+  local iterator = component.use_pairs and pairs or ipairs
+  for _, obj in iterator(objects) do
     -- Match against search string
     -- TODO: Sanitize in event handler, and get rid of the plaintext switch
     local translation = player_data.translations[obj.class][obj.name]
