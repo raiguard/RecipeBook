@@ -110,10 +110,7 @@ function info_gui.build(player, player_table, context)
           {
             type = "label",
             style = "rb_toolbar_label",
-            ref = {"header", "label"},
-            actions = {
-              on_click = {gui = "info", id = id, action = "demo"}
-            }
+            ref = {"header", "label"}
           },
           {type = "empty-widget", style = "flib_horizontal_pusher"},
           {
