@@ -10,6 +10,7 @@ return function(recipe_book, strings, metadata)
       compatible_recipes = {},
       crafting_speed = 1,
       hidden = false,
+      ingredient_limit = prototype.ingredient_count,
       placeable_by = {},
       prototype_name = name,
       unlocked_by = {}

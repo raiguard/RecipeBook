@@ -7,7 +7,8 @@ Date: ????
       - You can open as many information windows as you want simultaneously
   - Middle-clicking an object will open that object in a new window
   - Added search to information pages
-  Changes:
+  Bugfixes:
+    - Fixed that recipe "made in" didn't account for ingredient count limits on assemblers
 ---------------------------------------------------------------------------------------------------
 Version: 2.7.2
 Date: ????
