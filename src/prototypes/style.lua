@@ -56,6 +56,15 @@ styles.rb_search_content_flow = {
   vertical_spacing = 10
 }
 
+styles.rb_warning_flow = {
+  type = "vertical_flow_style",
+  padding = 12,
+  horizontal_align = "center",
+  vertical_align = "center",
+  vertical_spacing = 8,
+  horizontally_stretchable = "on"
+}
+
 -- FRAME STYLES
 
 styles.rb_main_info_frame = {
@@ -101,6 +110,19 @@ styles.rb_settings_category_frame = {
   parent = "bordered_frame",
   horizontally_stretchable = "on",
   right_padding = 8
+}
+
+styles.rb_inside_warning_frame = {
+  type = "frame_style",
+  parent = "inside_shallow_frame",
+  graphical_set = {
+    base = {
+      position = {17, 0}, corner_size = 8,
+      center = {position = {411, 25}, size = {1, 1}},
+      draw_type = "outer"
+    },
+    shadow = default_inner_shadow
+  }
 }
 
 -- LABEL STYLES

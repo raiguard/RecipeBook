@@ -120,7 +120,12 @@ function info_gui.build(player, player_table, context)
           {gui = "info", id = id, action = "close"}
         )
       },
-      {type = "frame", style = "inside_shallow_frame", style_mods = {width = 400}, direction = "vertical",
+      {
+        type = "frame",
+        style = "inside_shallow_frame",
+        style_mods = {width = 400},
+        direction = "vertical",
+        ref = {"page_frame"},
         {type = "frame", style = "subheader_frame",
           {
             type = "label",
@@ -159,6 +164,9 @@ function info_gui.build(player, player_table, context)
           style = "rb_page_scroll_pane",
           style_mods = {maximal_height = 900},
           ref = {"page_scroll_pane"}
+        },
+        {type = "flow", style = "rb_warning_flow", direction = "vertical", visible = false, ref = {"warning_flow"},
+          {type = "label", style = "bold_label", caption = {"gui.rb-no-content-warning"}, ref = {"warning_text"}}
         }
       }
     }
@@ -174,7 +182,8 @@ function info_gui.build(player, player_table, context)
     state = {
       history = {_index = 1, context},
       search_opened = false,
-      search_query = ""
+      search_query = "",
+      warning_shown = false
     }
   }
 
@@ -315,6 +324,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
   local page_refs = refs.page_components
 
   local i = 0
+  local visible = false
   -- Add or update relevant components
   for _, component_data in pairs(constants.pages[context.class]) do
     i = i + 1
@@ -333,18 +343,42 @@ function info_gui.update_contents(player, player_table, id, new_context)
 
     local objects = obj_data[component_data.source]
 
-    component.update(
+    local comp_visible = component.update(
       component_data,
       component_refs,
       objects,
       player_data,
       {context = context, gui_id = id, search_query = state.search_query}
     )
+
+    visible = visible or comp_visible
   end
   -- Destroy extraneous components
   for j = i + 1, #page_refs do
     page_refs[j].flow.destroy()
     page_refs[j] = nil
+  end
+
+  -- Show error frame if nothing is visible
+  if not visible and not state.warning_shown then
+    state.warning_shown = true
+    pane.visible = false
+    refs.page_frame.style = "rb_inside_warning_frame"
+    -- TODO: Make this a configurable setting
+    refs.page_frame.style.width = 400
+    refs.warning_flow.visible = true
+    if state.search_query == "" then
+      refs.warning_text.caption = {"gui.rb-no-content-warning"}
+    else
+      refs.warning_text.caption = {"gui.rb-no-results"}
+    end
+  elseif visible and state.warning_shown then
+    state.warning_shown = false
+    pane.visible = true
+    refs.page_frame.style = "inside_shallow_frame"
+    -- TODO: Make this a configurable setting
+    refs.page_frame.style.width = 400
+    refs.warning_flow.visible = false
   end
 end
 

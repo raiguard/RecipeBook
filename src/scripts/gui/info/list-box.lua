@@ -117,6 +117,8 @@ function list_box.update(component, refs, objects, player_data, variables)
   else
     refs.flow.visible = false
   end
+
+  return i > 0
 end
 
 return list_box
