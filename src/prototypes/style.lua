@@ -156,7 +156,8 @@ styles.rb_page_scroll_pane = {
   vertical_flow_style = {
     type = "vertical_flow_style",
     padding = 12,
-    top_padding = 8
+    top_padding = 8,
+    vertical_spacing = 8
   }
 }
 
