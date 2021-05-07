@@ -13,7 +13,7 @@ local components = {
 
 local info_gui = {}
 
-local function frame_action_button(sprite, tooltip, action, ref)
+local function frame_action_button(sprite, tooltip, ref, action)
   return {
     type = "sprite-button",
     style = "frame_action_button",
@@ -27,6 +27,21 @@ local function frame_action_button(sprite, tooltip, action, ref)
       on_click = action
     }
   }
+end
+
+local function tool_button(sprite, tooltip, ref, action)
+  return {
+      type = "sprite-button",
+      style = "tool_button",
+      sprite = sprite,
+      tooltip = tooltip,
+      mouse_button_filter = {"left"},
+      ref = ref,
+      actions = {
+        on_click = action
+      }
+    }
+
 end
 
 function info_gui.build(player, player_table, context)
@@ -44,14 +59,14 @@ function info_gui.build(player, player_table, context)
         frame_action_button(
           "rb_nav_backward",
           nil,
-          {gui = "info", id = id, action = "navigate", delta = -1},
-          {"titlebar", "nav_backward_button"}
+          {"titlebar", "nav_backward_button"},
+          {gui = "info", id = id, action = "navigate", delta = -1}
         ),
         frame_action_button(
           "rb_nav_forward",
           nil,
-          {gui = "info", id = id, action = "navigate", delta = 1},
-          {"titlebar", "nav_forward_button"}
+          {"titlebar", "nav_forward_button"},
+          {gui = "info", id = id, action = "navigate", delta = 1}
         ),
         {
           type = "label",
@@ -83,26 +98,26 @@ function info_gui.build(player, player_table, context)
         frame_action_button(
           "utility/search",
           {"gui.rb-search-instruction"},
-          {gui = "info", id = id, action = "toggle_search"},
-          {"titlebar", "search_button"}
+          {"titlebar", "search_button"},
+          {gui = "info", id = id, action = "toggle_search"}
         ),
         -- frame_action_button(
         --   "rb_pin",
         --   {"gui.rb-pin-instruction"},
-        --   {gui = "info", id = id, action = "toggle_pinned"},
-        --   {"titlebar", "pin_button"}
+        --   {"titlebar", "pin_button"},
+        --   {gui = "info", id = id, action = "toggle_pinned"}
         -- ),
         -- frame_action_button(
         --   "rb_settings",
         --   {"gui.rb-settings-instruction"},
-        --   {gui = "info", id = id, action = "toggle_settings"},
-        --   {"titlebar", "settings_button"}
+        --   {"titlebar", "settings_button"},
+        --   {gui = "info", id = id, action = "toggle_settings"}
         -- ),
         frame_action_button(
           "utility/close",
           {"gui.close-instruction"},
-          {gui = "info", id = id, action = "close"},
-          {"titlebar", "close_button"}
+          {"titlebar", "close_button"},
+          {gui = "info", id = id, action = "close"}
         )
       },
       {type = "frame", style = "inside_shallow_frame", style_mods = {width = 400}, direction = "vertical",
@@ -113,17 +128,31 @@ function info_gui.build(player, player_table, context)
             ref = {"header", "label"}
           },
           {type = "empty-widget", style = "flib_horizontal_pusher"},
-          {
-            type = "sprite-button",
-            style = "tool_button",
-            sprite = "rb_favorite_black",
-            tooltip = {"gui.rb-add-to-favorites"},
-            mouse_button_filter = {"left"},
-            ref = {"header", "favorite_button"},
-            actions = {
-              on_click = {gui = "info", id = id, action = "toggle_favorite"}
-            }
-          }
+          tool_button(
+            "rb_technology_gui_black",
+            {"gui.rb-open-in-technology-window"},
+            {"header", "open_in_tech_window_button"},
+            {gui = "info", id = id, action = "open_in_tech_window"}
+          ),
+          tool_button(
+            "rb_fluid_black",
+            {"gui.rb-go-to-base-fluid"},
+            {"header", "go_to_base_fluid_button"},
+            -- TODO: Make a generic open action?
+            {gui = "info", id = id, action = "go_to_base_fluid"}
+          ),
+          tool_button(
+            "rb_clipboard_black",
+            {"gui.rb-toggle-quick-ref-window"},
+            {"header", "quick_ref_button"},
+            {gui = "info", id = id, action = "toggle_quick_ref"}
+          ),
+          tool_button(
+            "rb_favorite_black",
+            {"gui.rb-add-to-favorites"},
+            {"header", "favorite_button"},
+            {gui = "info", id = id, action = "toggle_favorite"}
+          )
         },
         {
           type = "scroll-pane",
