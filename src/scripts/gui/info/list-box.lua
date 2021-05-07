@@ -19,8 +19,7 @@ function list_box.build(parent, index, component)
         {
           type = "scroll-pane",
           style = "rb_list_box_scroll_pane",
-          -- TODO: Make a constant
-          style_mods = {maximal_height = ((component.max_rows or 8) * 28)},
+          style_mods = {maximal_height = ((component.max_rows or constants.default_max_rows) * 28)},
           ref = {"scroll_pane"}
         }
       }

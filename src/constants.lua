@@ -93,6 +93,8 @@ constants.colors = {
   }
 }
 
+constants.default_max_rows = 8
+
 constants.empty_translations_table = {
   gui = {},
   crafter = {},
