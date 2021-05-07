@@ -291,7 +291,7 @@ constants.settings = {
   interface = {
     show_hidden = {
       -- FIXME:
-      default_value = true,
+      default_value = false,
       has_tooltip = true
     },
     show_unresearched = {

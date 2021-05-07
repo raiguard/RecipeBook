@@ -52,7 +52,7 @@ function list_box.update(component, refs, objects, player_data, variables)
     -- Match against search string
     -- TODO: Sanitize in event handler, and get rid of the plaintext switch
     local translation = player_data.translations[obj.class][obj.name]
-    if string.find(string.lower(translation), search_query, 1, true) then
+    if string.find(string.lower(translation), search_query) then
       local obj_data = recipe_book[obj.class][obj.name]
       local info = formatter(
         obj_data,

@@ -125,7 +125,12 @@ function info_gui.build(player, player_table, context)
             }
           }
         },
-        {type = "scroll-pane", style = "rb_page_scroll_pane", ref = {"page_scroll_pane"}}
+        {
+          type = "scroll-pane",
+          style = "rb_page_scroll_pane",
+          style_mods = {maximal_height = 900},
+          ref = {"page_scroll_pane"}
+        }
       }
     }
   })
@@ -280,7 +285,10 @@ function info_gui.update_contents(player, player_table, id, new_context)
   local pane = refs.page_scroll_pane
   local page_refs = refs.page_components
 
-  for i, component_data in pairs(constants.pages[context.class]) do
+  local i = 0
+  -- Add or update relevant components
+  for _, component_data in pairs(constants.pages[context.class]) do
+    i = i + 1
     local component = components[component_data.type]
     local component_refs = page_refs[i]
     if not component_refs or component_refs.type ~= component.type then
@@ -290,6 +298,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
       end
       -- Create new elements
       component_refs = component.build(pane, i, component_data)
+      component_refs.type = component.type
       page_refs[i] = component_refs
     end
 
@@ -302,6 +311,11 @@ function info_gui.update_contents(player, player_table, id, new_context)
       player_data,
       {context = context, gui_id = id, search_query = state.search_query}
     )
+  end
+  -- Destroy extraneous components
+  for j = i + 1, #page_refs do
+    page_refs[j].flow.destroy()
+    page_refs[j] = nil
   end
 end
 
@@ -355,8 +369,19 @@ function info_gui.handle_action(msg, e)
     -- Update contents
     info_gui.update_contents(player, player_table, msg.id)
   elseif msg.action == "update_search_query" then
-    -- TODO: Sanitize search input
-    state.search_query = string.lower(e.element.text)
+    local query = string.lower(e.element.text)
+    -- Fuzzy search
+    if player_table.settings.use_fuzzy_search then
+      query = string.gsub(query, ".", "%1.*")
+    end
+    -- Input sanitization
+    for pattern, replacement in pairs(constants.input_sanitizers) do
+      query = string.gsub(query, pattern, replacement)
+    end
+    -- Save query
+    state.search_query = query
+
+    -- Update based on query
     info_gui.update_contents(player, player_table, msg.id)
   elseif msg.action == "navigate_to" then
     local context = info_gui.navigate_to(msg, e)
