@@ -70,7 +70,7 @@ return function(recipe_book, strings, metadata)
     -- made in
     local num_ingredients = #data.ingredients
     for crafter_name, crafter_data in pairs(recipe_book.crafter) do
-      if crafter_data.ingredient_limit >= num_ingredients and crafter_data.categories[category] then
+      if (crafter_data.ingredient_limit or 255) >= num_ingredients and crafter_data.categories[category] then
         local rocket_parts_str = crafter_data.rocket_parts_required and crafter_data.rocket_parts_required.."x  " or ""
         local crafting_time = math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
         data.made_in[#data.made_in + 1] = {
