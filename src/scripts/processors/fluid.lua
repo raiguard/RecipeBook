@@ -89,7 +89,7 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
       -- Step 1: Add a variant for the default temperature if one does not exist
       local default_temperature = fluid_data.default_temperature
       local default_temperature_ident = util.build_temperature_ident{temperature = default_temperature}
-      if not temperatures[tostring(default_temperature)] then
+      if not temperatures[default_temperature_ident.string] then
         fluid_proc.add_temperature(
           recipe_book,
           strings,
