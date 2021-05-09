@@ -123,10 +123,9 @@ function info_gui.build(player, player_table, context)
       {
         type = "frame",
         style = "inside_shallow_frame",
-        style_mods = {width = 400},
         direction = "vertical",
         ref = {"page_frame"},
-        {type = "frame", style = "subheader_frame",
+        {type = "frame", style = "subheader_frame", style_mods = {width = 400},
           {
             type = "label",
             style = "rb_toolbar_label",
@@ -143,7 +142,6 @@ function info_gui.build(player, player_table, context)
             "rb_fluid_black",
             {"gui.rb-go-to-base-fluid"},
             {"header", "go_to_base_fluid_button"},
-            -- TODO: Make a generic open action?
             {gui = "info", id = id, action = "go_to_base_fluid"}
           ),
           tool_button(
@@ -315,7 +313,34 @@ function info_gui.update_contents(player, player_table, id, new_context)
   local label = refs.header.label
   label.caption = title_info.caption
   label.tooltip = title_info.tooltip
-  -- TODO: Header buttons
+
+
+  -- Buttons
+  if context.class == "technology" then
+    refs.header.open_in_tech_window_button.visible = true
+    -- TODO: Tech level
+  else
+    refs.header.open_in_tech_window_button.visible = false
+  end
+  if context.class == "fluid" and obj_data.temperature_ident then
+    refs.header.go_to_base_fluid_button.visible = true
+  else
+    refs.header.go_to_base_fluid_button.visible = false
+  end
+  if context.class == "recipe" then
+    -- TODO: Detect quick ref windows
+    refs.header.quick_ref_button.visible = true
+  else
+    refs.header.quick_ref_button.visible = false
+  end
+  local favorite_button = refs.header.favorite_button
+  if player_table.favorites[context.class.."."..context.name] then
+    favorite_button.style = "flib_selected_tool_button"
+    favorite_button.tooltip = {"gui.rb-remove-from-favorites"}
+  else
+    favorite_button.style = "tool_button"
+    favorite_button.tooltip = {"gui.rb-add-to-favorites"}
+  end
 
   -- PAGE
   -- TODO: Dual-pane option?
@@ -364,8 +389,6 @@ function info_gui.update_contents(player, player_table, id, new_context)
     state.warning_shown = true
     pane.visible = false
     refs.page_frame.style = "rb_inside_warning_frame"
-    -- TODO: Make this a configurable setting
-    refs.page_frame.style.width = 400
     refs.warning_flow.visible = true
     if state.search_query == "" then
       refs.warning_text.caption = {"gui.rb-no-content-warning"}
@@ -376,8 +399,6 @@ function info_gui.update_contents(player, player_table, id, new_context)
     state.warning_shown = false
     pane.visible = true
     refs.page_frame.style = "inside_shallow_frame"
-    -- TODO: Make this a configurable setting
-    refs.page_frame.style.width = 400
     refs.warning_flow.visible = false
   end
 end
@@ -389,6 +410,8 @@ function info_gui.handle_action(msg, e)
   local gui_data = player_table.guis.info[msg.id]
   local state = gui_data.state
   local refs = gui_data.refs
+
+  local context = state.history[state.history._index]
 
   if msg.action == "close" then
     info_gui.destroy(player_table, msg.id)
@@ -454,6 +477,27 @@ function info_gui.handle_action(msg, e)
       else
         info_gui.update_contents(player, player_table, msg.id, context)
       end
+    end
+  elseif msg.action == "open_in_tech_window" then
+    player.open_technology_gui(context.name)
+  elseif msg.action == "go_to_base_fluid" then
+    local base_fluid = global.recipe_book.fluid[context.name].prototype_name
+    info_gui.update_contents(player, player_table, msg.id, {class = "fluid", name = base_fluid})
+  elseif msg.action == "toggle_quick_ref" then
+
+  elseif msg.action == "toggle_favorite" then
+    local favorites = player_table.favorites
+    local combined_name = context.class.."."..context.name
+    local favorite_button = refs.header.favorite_button
+    if favorites[combined_name] then
+      favorites[combined_name] = nil
+      favorite_button.style = "tool_button"
+      favorite_button.tooltip = {"gui.rb-add-to-favorites"}
+    else
+      -- Copy the table instead of passing a reference
+      favorites[combined_name] = {class = context.class, name = context.name}
+      favorite_button.style = "flib_selected_tool_button"
+      favorite_button.tooltip = {"gui.rb-remove-from-favorites"}
     end
   end
 end
@@ -542,7 +586,6 @@ function info_gui.navigate_to(msg, e)
     end
   elseif obj.class == "technology" then
     if e.shift then
-      player_table.flags.technology_gui_open = true
       player.open_technology_gui(obj.name)
     else
       return {class = obj.class, name = obj.name}
