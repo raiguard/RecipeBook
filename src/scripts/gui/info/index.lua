@@ -1,4 +1,3 @@
-local area = require("__flib__.area")
 local gui = require("__flib__.gui-beta")
 local math = require("__flib__.math")
 
@@ -460,7 +459,7 @@ function info_gui.handle_action(msg, e)
     -- Update based on query
     info_gui.update_contents(player, player_table, msg.id)
   elseif msg.action == "navigate_to" then
-    local context = util.navigate_to(msg, e)
+    local context = util.navigate_to(e)
     if context then
       if e.button == defines.mouse_button_type.middle then
         info_gui.build(player, player_table, context)
@@ -478,7 +477,6 @@ function info_gui.handle_action(msg, e)
   elseif msg.action == "toggle_favorite" then
     local favorites = player_table.favorites
     local combined_name = context.class.."."..context.name
-    local favorite_button = refs.header.favorite_button
     local to_state
     if favorites[combined_name] then
       to_state = false

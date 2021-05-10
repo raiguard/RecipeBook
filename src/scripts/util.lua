@@ -130,9 +130,8 @@ function util.frame_action_button(sprite, tooltip, ref, action)
   }
 end
 
-function util.navigate_to(msg, e)
+function util.navigate_to(e)
   local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
 
   local element = e.element
   local tags = gui.get_tags(element)

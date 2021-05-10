@@ -1,9 +1,7 @@
-local area = require("__flib__.area")
 local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
-local util = require("scripts.util")
 
 local list_box = {}
 
@@ -28,10 +26,7 @@ function list_box.build(parent, index, component)
 end
 
 function list_box.update(component, refs, object_data, player_data, variables)
-  -- TODO: Why is this needed?
-  objects = objects or {}
-
-  local recipe_book = global.recipe_book
+   local recipe_book = global.recipe_book
 
   -- Scroll pane
   local scroll = refs.scroll_pane

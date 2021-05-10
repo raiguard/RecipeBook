@@ -80,7 +80,6 @@ end
 function quick_ref_gui.update_contents(player, player_table, recipe_name)
   local gui_data = player_table.guis.quick_ref[recipe_name]
   local refs = gui_data.refs
-  local state = gui_data.state
 
   local show_made_in = player_table.settings.show_made_in_in_quick_ref
 
@@ -204,7 +203,7 @@ function quick_ref_gui.handle_action(msg, e)
         button.style = "flib_slot_button_green"
       end
     else
-      local context = util.navigate_to(msg, e)
+      local context = util.navigate_to(e)
       if context then
         shared.open_page(player, player_table, context)
       end
