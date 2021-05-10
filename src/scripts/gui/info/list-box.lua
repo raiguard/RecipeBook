@@ -99,7 +99,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
   if i > 0 then
     refs.root.visible = true
     -- Update label caption
-    refs.label.caption = {"gui.rb-list-box-"..string.gsub(component.source, "_", "-"), i}
+    refs.label.caption = {"gui.rb-list-box-label", {"gui.rb-"..string.gsub(component.source, "_", "-")}, i}
   else
     refs.root.visible = false
   end

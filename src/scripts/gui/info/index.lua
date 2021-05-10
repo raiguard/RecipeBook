@@ -1,5 +1,6 @@
 local gui = require("__flib__.gui-beta")
 local math = require("__flib__.math")
+local locale = require("lib.locale")
 
 local constants = require("constants")
 
@@ -239,6 +240,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
     settings = player_table.settings,
     translations = player_table.translations
   }
+  local gui_translations = player_data.translations.gui
 
   -- TITLEBAR
 
@@ -253,18 +255,22 @@ function info_gui.update_contents(player, player_table, id, new_context)
     local info = formatter(obj_data, player_data, {always_show = true})
     local caption = info.caption
     if not info.is_researched then
-      caption = util.build_rich_text("color", "unresearched", caption)
+      caption = locale.rich_text("color", "unresearched", caption)
     end
-    entries[history_len - (i - 1)] = util.build_rich_text(
+    entries[history_len - (i - 1)] = locale.rich_text(
       "font",
       "default-semibold",
-      util.build_rich_text("color", history_index == i and "green" or "invisible", ">")
+      locale.rich_text("color", history_index == i and "green" or "invisible", ">")
     ).."   "..caption
   end
   local entries = table.concat(entries, "\n")
+  local base_tooltip = locale.rich_text(
+    "font",
+    "default-bold",
+    locale.rich_text("color", "heading", gui_translations.session_history)
+  ).."\n"..entries
 
   -- Apply button properties
-  local gui_translations = player_data.translations.gui
   local nav_backward_button = refs.titlebar.nav_backward_button
   if history._index == 1 then
     nav_backward_button.enabled = false
@@ -273,11 +279,9 @@ function info_gui.update_contents(player, player_table, id, new_context)
     nav_backward_button.enabled = true
     nav_backward_button.sprite = "rb_nav_backward_white"
   end
-  nav_backward_button.tooltip = util.build_rich_text(
-    "font",
-    "default-bold",
-    util.build_rich_text("color", "heading", gui_translations.session_history)
-  ).."\n"..entries.."\n"..gui_translations.nav_backward_tooltip
+  nav_backward_button.tooltip = base_tooltip
+    ..locale.control(gui_translations.click, gui_translations.go_backward)
+    ..locale.control(gui_translations.shift_click, gui_translations.go_to_the_back)
 
   local nav_forward_button = refs.titlebar.nav_forward_button
   if history._index == #history then
@@ -287,11 +291,9 @@ function info_gui.update_contents(player, player_table, id, new_context)
     nav_forward_button.enabled = true
     nav_forward_button.sprite = "rb_nav_forward_white"
   end
-  nav_forward_button.tooltip = util.build_rich_text(
-    "font",
-    "default-bold",
-    util.build_rich_text("color", "heading", gui_translations.session_history)
-  ).."\n"..entries.."\n"..gui_translations.nav_forward_tooltip
+  nav_forward_button.tooltip = base_tooltip
+    ..locale.control(gui_translations.click, gui_translations.go_forward)
+    ..locale.control(gui_translations.shift_click, gui_translations.go_to_the_front)
 
   -- Label
   local label = refs.titlebar.label

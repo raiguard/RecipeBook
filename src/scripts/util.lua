@@ -109,15 +109,6 @@ function util.unique_obj_array(initial_tbl)
   })
 end
 
--- string builders
-local colors = constants.colors
-function util.build_rich_text(key, value, inner)
-  return "["..key.."="..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
-end
-function util.build_sprite(class, name)
-  return "[img="..class.."/"..name.."]"
-end
-
 function util.frame_action_button(sprite, tooltip, ref, action)
   return {
     type = "sprite-button",

@@ -170,7 +170,7 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
       end
 
       -- Label
-      box.label.caption = {"gui.rb-list-box-"..string.gsub(source, "_", "-"), i}
+      box.label.caption = {"gui.rb-list-box-label", {"gui.rb-"..string.gsub(source, "_", "-")}, i}
     end
   end
 end
