@@ -26,7 +26,7 @@ function list_box.build(parent, index, component)
 end
 
 function list_box.update(component, refs, object_data, player_data, variables)
-   local recipe_book = global.recipe_book
+  local recipe_book = global.recipe_book
 
   -- Scroll pane
   local scroll = refs.scroll_pane
