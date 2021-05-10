@@ -63,17 +63,6 @@ constants.class_to_type = {
   technology = "technology"
 }
 
-constants.type_to_class = {
-  ["assembling-machine"] = "crafter",
-  ["fluid"] = "fluid",
-  ["furnace"] = "crafter",
-  ["item"] = "item",
-  ["lab"] = "lab",
-  ["recipe"] = "recipe",
-  ["rocket-silo"] = "crafter",
-  ["technology"] = "technology",
-}
-
 constants.colors = {
   error = {
     str = "255, 90, 90",
@@ -245,16 +234,6 @@ constants.nav_event_properties = {
   ["rb-return-to-home"] = {action_name = "navigate_backward", shift = true}
 }
 
-constants.open_fluid_types = {
-  ["fluid-wagon"] = true,
-  ["infinity-pipe"] = true,
-  ["offshore-pump"] = true,
-  ["pipe-to-ground"] = true,
-  ["pipe"] = true,
-  ["pump"] = true,
-  ["storage-tank"] = true
-}
-
 constants.pages = {
   crafter = {
     {type = "table", rows = {
@@ -355,15 +334,6 @@ constants.pages = {
   }
 }
 
-constants.search_categories = {"crafter", "fluid", "item", "recipe", "technology"}
-
-constants.search_categories_lookup = {}
-constants.search_categories_localised = {}
-for i, category in ipairs(constants.search_categories) do
-  constants.search_categories_lookup[category] = i
-  constants.search_categories_localised[i] = {"rb-gui."..category}
-end
-
 constants.search_results_limit = 150
 
 constants.settings = {
@@ -436,6 +406,17 @@ constants.settings = {
       has_tooltip = true
     }
   }
+}
+
+constants.type_to_class = {
+  ["assembling-machine"] = "crafter",
+  ["fluid"] = "fluid",
+  ["furnace"] = "crafter",
+  ["item"] = "item",
+  ["lab"] = "lab",
+  ["recipe"] = "recipe",
+  ["rocket-silo"] = "crafter",
+  ["technology"] = "technology",
 }
 
 return constants
