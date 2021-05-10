@@ -2,8 +2,6 @@ local constants = require("constants")
 
 local styles = data.raw["gui-style"].default
 
--- -----
-
 styles.rb_list_box_item = {
   type = "button_style",
   parent = "list_box_item",
@@ -211,7 +209,7 @@ styles.rb_info_table = {
   type = "table_style",
   parent = "mods_table",
   top_margin = -6, -- To hide the strange first row styling
-  -- bottom_margin = 2,
+  bottom_margin = 1,
   top_cell_padding = 1,
   bottom_cell_padding = 3,
   column_alignments = {
