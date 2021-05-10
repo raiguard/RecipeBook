@@ -128,6 +128,21 @@ styles.rb_inside_warning_frame = {
 
 -- LABEL STYLES
 
+styles.rb_table_label = {
+  type = "label_style",
+  parent = "bold_label",
+  horizontally_stretchable = "on",
+  vertical_align = "center",
+  height = 22
+}
+
+styles.rb_table_value_label = {
+  type = "label_style",
+  font = "default-semibold",
+  vertical_align = "center",
+  height = 22
+}
+
 styles.rb_toolbar_label = {
   type = "label_style",
   parent = "subheader_caption_label",
@@ -198,6 +213,19 @@ styles.rb_page_scroll_pane = {
 --     padding = 4
 --   }
 -- }
+
+-- TABLE STYLES
+
+styles.rb_info_table = {
+  type = "table_style",
+  parent = "mods_table",
+  top_margin = -6, -- To hide the strange first row styling
+  bottom_margin = 2,
+  column_alignments = {
+    {column = 1, alignment = "middle-left"},
+    {column = 2, alignment = "middle-right"},
+  }
+}
 
 -- TEXTFIELD STYLES
 

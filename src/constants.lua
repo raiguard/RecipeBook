@@ -284,13 +284,14 @@ constants.pages = {
     {type = "list_box", source = "placeable_by"}
   },
   recipe = {
+    {type = "table", rows = {{type = "plain", name = "category"}, {type = "plain", name = "energy"}}},
     {type = "list_box", source = "ingredients", always_show = true},
     {type = "list_box", source = "products", always_show = true},
     {type = "list_box", source = "made_in"},
     {type = "list_box", source = "unlocked_by"}
   },
   technology = {
-    {type = "list_box", source = "research_units"},
+    {type = "table", rows = {{type = "plain", name = "research_unit_count"}}},
     {type = "list_box", source = "research_ingredients_per_unit"},
     {type = "list_box", source = "unlocks_fluids"},
     {type = "list_box", source = "unlocks_items"},

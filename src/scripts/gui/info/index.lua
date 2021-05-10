@@ -9,7 +9,8 @@ local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 local components = {
-  list_box = require("scripts.gui.info.list-box")
+  list_box = require("scripts.gui.info.list-box"),
+  table = require("scripts.gui.info.table")
 }
 
 local info_gui = {}
@@ -349,20 +350,18 @@ function info_gui.update_contents(player, player_table, id, new_context)
     if not component_refs or component_refs.type ~= component.type then
       -- Destroy old elements
       if component_refs then
-        component_refs.flow.destroy()
+        component_refs.root.destroy()
       end
       -- Create new elements
       component_refs = component.build(pane, i, component_data)
-      component_refs.type = component.type
+      component_refs.type = component_data.type
       page_refs[i] = component_refs
     end
-
-    local objects = obj_data[component_data.source]
 
     local comp_visible = component.update(
       component_data,
       component_refs,
-      objects,
+      obj_data,
       player_data,
       {context = context, gui_id = id, search_query = state.search_query}
     )
@@ -371,7 +370,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
   end
   -- Destroy extraneous components
   for j = i + 1, #page_refs do
-    page_refs[j].flow.destroy()
+    page_refs[j].root.destroy()
     page_refs[j] = nil
   end
 

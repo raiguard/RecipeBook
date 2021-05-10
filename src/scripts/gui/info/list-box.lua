@@ -9,7 +9,7 @@ local list_box = {}
 
 function list_box.build(parent, index, component)
   return gui.build(parent, {
-    {type = "flow", direction = "vertical", index = index, ref = {"flow"},
+    {type = "flow", direction = "vertical", index = index, ref = {"root"},
       {
         type = "label",
         style = "rb_list_box_label",
@@ -27,7 +27,7 @@ function list_box.build(parent, index, component)
   })
 end
 
-function list_box.update(component, refs, objects, player_data, variables)
+function list_box.update(component, refs, object_data, player_data, variables)
   -- TODO: Why is this needed?
   objects = objects or {}
 
@@ -47,6 +47,7 @@ function list_box.update(component, refs, objects, player_data, variables)
   -- Add items
   local i = 0
   local iterator = component.use_pairs and pairs or ipairs
+  local objects = object_data[component.source]
   for _, obj in iterator(objects) do
     -- Match against search string
     -- TODO: Sanitize in event handler, and get rid of the plaintext switch
@@ -110,11 +111,11 @@ function list_box.update(component, refs, objects, player_data, variables)
 
   -- Set listbox properties
   if i > 0 then
-    refs.flow.visible = true
+    refs.root.visible = true
     -- Update label caption
     refs.label.caption = {"gui.rb-list-box-"..string.gsub(component.source, "_", "-"), i}
   else
-    refs.flow.visible = false
+    refs.root.visible = false
   end
 
   return i > 0
