@@ -164,7 +164,7 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
   end
 end
 
--- when calling the module directly, call fluid_proc.build
+-- When calling the module directly, call fluid_proc.build
 setmetatable(fluid_proc, { __call = function(_, ...) return fluid_proc.build(...) end })
 
 return fluid_proc

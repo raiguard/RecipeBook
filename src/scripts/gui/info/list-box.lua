@@ -45,7 +45,6 @@ function list_box.update(component, refs, object_data, player_data, variables)
   local objects = object_data[component.source]
   for _, obj in iterator(objects) do
     -- Match against search string
-    -- TODO: Sanitize in event handler, and get rid of the plaintext switch
     local translation = player_data.translations[obj.class][obj.name]
     if string.find(string.lower(translation), search_query) then
       local obj_data = recipe_book[obj.class][obj.name]
@@ -62,14 +61,6 @@ function list_box.update(component, refs, object_data, player_data, variables)
       if info then
         i = i + 1
         local style = info.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
-        -- TODO:
-        -- if highlight_last_selected
-        --   and obj.class == last_context.class
-        --   and (obj.name == last_context.name or obj_data.prototype_name == last_context.name)
-        -- then
-        --   style = "rb_last_selected_list_box_item"
-        -- else
-        -- end
         local item = children[i]
         if item then
           item.style = style
