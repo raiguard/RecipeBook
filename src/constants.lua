@@ -272,10 +272,10 @@ constants.pages = {
   item = {
     {type = "table", rows = {
       {type = "plain", name = "stack_size"},
-      {type = "plain", name = "fuel_value"},
-      {type = "plain", name = "fuel_acceleration_multiplier", label = {"gui.rb-vehicle-acceleration"}},
-      {type = "plain", name = "fuel_emissions_multiplier", label = {"gui.rb-emissions"}},
-      {type = "plain", name = "fuel_top_speed_multiplier", label = {"gui.rb-vehicle-top-speed"}}
+      {type = "plain", name = "fuel_value", label = {"description.fuel-value"}},
+      {type = "plain", name = "fuel_emissions_multiplier", label = {"description.fuel-pollution"}},
+      {type = "plain", name = "fuel_acceleration_multiplier", label = {"description.fuel-acceleration"}},
+      {type = "plain", name = "fuel_top_speed_multiplier", label = {"description.fuel-top-speed"}}
     }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
@@ -286,7 +286,9 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"}
   },
   lab = {
-    {type = "table", rows = {{type = "plain", name = "researching_speed"}}},
+    {type = "table", rows = {
+      {type = "plain", name = "researching_speed", label = {"description.research-speed"}}
+    }},
     {type = "list_box", source = "inputs"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
