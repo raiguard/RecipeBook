@@ -1,6 +1,19 @@
+local fixed_format = require("lib.fixed-precision-format")
 local gui = require("__flib__.gui-beta")
 
 local table_comp = {}
+
+local formatters = {
+  fuel_value = function(value, _)
+    return {"", fixed_format(value, 3, "2"), {"si-unit-symbol-joule"}}
+  end,
+  percent = function(value, _)
+    return {"format-percent", value * 100}
+  end,
+  seconds = function(value, _)
+    return {"time-symbol-seconds", value}
+  end
+}
 
 function table_comp.build(parent, index, component)
   return gui.build(parent, {
@@ -28,6 +41,12 @@ function table_comp.update(component, refs, object_data, player_data, variables)
     if row.type == "plain" then
       local value = object_data[row.name]
       if value then
+        -- Format value
+        local formatter = row.formatter
+        if formatter then
+          value = formatters[formatter](value, object_data)
+        end
+
         -- Label
         i = i + 1
         local label_label = children[i]

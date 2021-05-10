@@ -272,10 +272,25 @@ constants.pages = {
   item = {
     {type = "table", rows = {
       {type = "plain", name = "stack_size"},
-      {type = "plain", name = "fuel_value", label = {"description.fuel-value"}},
-      {type = "plain", name = "fuel_emissions_multiplier", label = {"description.fuel-pollution"}},
-      {type = "plain", name = "fuel_acceleration_multiplier", label = {"description.fuel-acceleration"}},
-      {type = "plain", name = "fuel_top_speed_multiplier", label = {"description.fuel-top-speed"}}
+      {type = "plain", name = "fuel_value", label = {"description.fuel-value"}, formatter = "fuel_value"},
+      {
+        type = "plain",
+        name = "fuel_emissions_multiplier",
+        label = {"description.fuel-pollution"},
+        formatter = "percent"
+      },
+      {
+        type = "plain",
+        name = "fuel_acceleration_multiplier",
+        label = {"description.fuel-acceleration"},
+        formatter = "percent"
+      },
+      {
+        type = "plain",
+        name = "fuel_top_speed_multiplier",
+        label = {"description.fuel-top-speed"},
+        formatter = "percent"
+      }
     }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
@@ -296,7 +311,7 @@ constants.pages = {
   recipe = {
     {type = "table", rows = {
       {type = "plain", name = "category"},
-      {type = "plain", name = "energy", label = {"gui.rb-crafting-time"}}
+      {type = "plain", name = "energy", label = {"gui.rb-crafting-time"}, formatter = "seconds"}
     }},
     {type = "list_box", source = "ingredients", always_show = true},
     {type = "list_box", source = "products", always_show = true},
@@ -305,7 +320,8 @@ constants.pages = {
   },
   technology = {
     {type = "table", rows = {
-      {type = "plain", name = "research_unit_count", label = {"gui.rb-required-units"}}
+      {type = "plain", name = "research_unit_count", label = {"gui.rb-required-units"}},
+      {type = "plain", name = "research_unit_energy", label = {"gui.rb-time-per-unit"}, formatter = "seconds"}
     }},
     {type = "list_box", source = "research_ingredients_per_unit"},
     {type = "list_box", source = "unlocks_fluids"},
