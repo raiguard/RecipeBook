@@ -270,6 +270,9 @@ constants.pages = {
     {type = "list_box", source = "temperatures", use_pairs = true}
   },
   item = {
+    {type = "table", rows = {
+      {type = "plain", name = "stack_size"}
+    }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
     {type = "list_box", source = "rocket_launch_payloads"},
@@ -322,17 +325,17 @@ constants.settings = {
   },
   interface = {
     show_hidden = {
-      -- FIXME:
+      -- TEMPORARY:
       default_value = false,
       has_tooltip = true
     },
     show_unresearched = {
-      -- FIXME:
+      -- TEMPORARY:
       default_value = true,
       has_tooltip = true
     },
     show_disabled = {
-      -- FIXME:
+      -- TEMPORARY:
       default_value = true,
       has_tooltip = true
     },
