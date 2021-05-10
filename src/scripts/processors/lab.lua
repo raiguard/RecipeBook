@@ -8,7 +8,7 @@ return function(recipe_book, strings)
     for _, item_name in ipairs(prototype.lab_inputs) do
       local item_data = recipe_book.item[item_name]
       if item_data then
-        item_data.usable_in[#item_data.usable_in + 1] = {class = "lab", name = name}
+        item_data.researched_in[#item_data.researched_in + 1] = {class = "lab", name = name}
       end
     end
 

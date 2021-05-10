@@ -75,9 +75,9 @@ function item_proc.build(recipe_book, strings, metadata)
       recipe_categories = default_categories,
       rocket_launch_payloads = {},
       rocket_launch_products = launch_products,
+      researched_in = {},
       stack_size = prototype.stack_size,
-      unlocked_by = util.unique_obj_array(),
-      usable_in = {}
+      unlocked_by = util.unique_obj_array()
     }
     util.add_string(strings, {dictionary = "item", internal = name, localised = prototype.localised_name})
     util.add_string(strings, {

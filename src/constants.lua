@@ -275,7 +275,7 @@ constants.pages = {
     {type = "list_box", source = "rocket_launch_payloads"},
     {type = "list_box", source = "rocket_launch_products"},
     {type = "list_box", source = "mined_from"},
-    {type = "list_box", source = "usable_in"},
+    {type = "list_box", source = "researched_in"},
     {type = "list_box", source = "unlocked_by"}
   },
   lab = {
