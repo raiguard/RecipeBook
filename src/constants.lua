@@ -262,6 +262,9 @@ constants.pages = {
     {type = "list_box", source = "placeable_by"}
   },
   fluid = {
+    {type = "table", rows = {
+      {type = "plain", name = "fuel_value", label = {"description.fuel-value"}, formatter = "fuel_value"}
+    }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
     {type = "list_box", source = "mined_from"},
