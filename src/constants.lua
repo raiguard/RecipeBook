@@ -191,6 +191,17 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "unresearched", localised = {"rb-gui.unresearched"}}
 }
 
+constants.header_button_tooltips = {
+  quick_ref_button = {
+    selected = {"gui.rb-close-quick-ref-window"},
+    unselected = {"gui.rb-open-quick-ref-window"}
+  },
+  favorite_button = {
+    selected = {"gui.rb-remove-from-favorites"},
+    unselected = {"gui.rb-add-to-favorites"}
+  },
+}
+
 constants.input_sanitizers = {
   ["%%"] = "%%%%",
   ["%("] = "%%(",

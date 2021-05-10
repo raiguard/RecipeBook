@@ -179,7 +179,7 @@ function quick_ref_gui.handle_action(msg, e)
   if msg.action == "close" then
     refs.window.destroy()
     player_table.guis.quick_ref[msg.id] = nil
-    shared.update_quick_ref_button(player, player_table, msg.id)
+    shared.update_header_button(player, player_table, msg.id, "quick_ref_button", false)
   elseif msg.action == "view_details" then
     shared.open_page(player, player_table, {class = "recipe", name = msg.id})
   elseif msg.action == "handle_button_click" then

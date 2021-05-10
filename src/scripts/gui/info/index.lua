@@ -478,24 +478,24 @@ function info_gui.handle_action(msg, e)
     local favorites = player_table.favorites
     local combined_name = context.class.."."..context.name
     local favorite_button = refs.header.favorite_button
+    local to_state
     if favorites[combined_name] then
+      to_state = false
       favorites[combined_name] = nil
-      favorite_button.style = "tool_button"
-      favorite_button.tooltip = {"gui.rb-add-to-favorites"}
     else
       -- Copy the table instead of passing a reference
       favorites[combined_name] = {class = context.class, name = context.name}
-      favorite_button.style = "flib_selected_tool_button"
-      favorite_button.tooltip = {"gui.rb-remove-from-favorites"}
+      to_state = true
     end
-  elseif msg.action == "update_quick_ref_button" then
-    local button = refs.header.quick_ref_button
+    shared.update_header_button(player, player_table, context, "favorite_button", to_state)
+  elseif msg.action == "update_header_button" then
+    local button = refs.header[msg.button]
     if msg.to_state then
       button.style = "flib_selected_tool_button"
-      button.tooltip = {"gui.rb-close-quick-ref-window"}
+      button.tooltip = constants.header_button_tooltips[msg.button].selected
     else
       button.style = "tool_button"
-      button.tooltip = {"gui.rb-open-quick-ref-window"}
+      button.tooltip = constants.header_button_tooltips[msg.button].unselected
     end
   end
 end

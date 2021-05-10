@@ -316,17 +316,17 @@ end
 function shared.toggle_quick_ref(player, player_table, recipe_name)
   if player_table.guis.quick_ref[recipe_name] then
     quick_ref_gui.destroy(player_table, recipe_name)
-    shared.update_quick_ref_button(player, player_table, recipe_name, false)
+    shared.update_header_button(player, player_table, {class = "recipe", name = recipe_name}, "quick_ref_button", false)
   else
     quick_ref_gui.build(player, player_table, recipe_name)
-    shared.update_quick_ref_button(player, player_table, recipe_name, true)
+    shared.update_header_button(player, player_table, {class = "recipe", name = recipe_name}, "quick_ref_button", true)
   end
 end
 
-function shared.update_quick_ref_button(player, player_table, recipe_name, to_state)
-  for _, id in pairs(info_gui.find_open_context(player_table, {class = "recipe", name = recipe_name})) do
+function shared.update_header_button(player, player_table, context, button, to_state)
+  for _, id in pairs(info_gui.find_open_context(player_table, context)) do
     info_gui.handle_action(
-      {id = id, action = "update_quick_ref_button", to_state = to_state},
+      {id = id, action = "update_header_button", button = button, to_state = to_state},
       {player_index = player.index}
     )
   end
