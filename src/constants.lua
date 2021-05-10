@@ -68,6 +68,7 @@ constants.type_to_class = {
   ["fluid"] = "fluid",
   ["furnace"] = "crafter",
   ["item"] = "item",
+  ["lab"] = "lab",
   ["recipe"] = "recipe",
   ["rocket-silo"] = "crafter",
   ["technology"] = "technology",
@@ -276,6 +277,11 @@ constants.pages = {
     {type = "list_box", source = "mined_from"},
     {type = "list_box", source = "usable_in"},
     {type = "list_box", source = "unlocked_by"}
+  },
+  lab = {
+    {type = "list_box", source = "inputs"},
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "placeable_by"}
   },
   recipe = {
     {type = "list_box", source = "ingredients", always_show = true},

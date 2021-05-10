@@ -423,7 +423,7 @@ local formatters = {
 
       return base_str..researching_speed_str
     end,
-    enabled = function() return false end
+    enabled = function() return true end
   },
   offshore_pump = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)

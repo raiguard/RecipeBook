@@ -335,7 +335,6 @@ function info_gui.update_contents(player, player_table, id, new_context)
   end
 
   -- PAGE
-  -- TODO: Dual-pane option?
 
   local pane = refs.page_scroll_pane
   local page_refs = refs.page_components
