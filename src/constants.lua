@@ -298,7 +298,7 @@ constants.pages = {
   },
   technology = {
     {type = "table", rows = {
-      {type = "plain", name = "research_unit_count", label_tooltip = {"gui.rb-required-units-desc"}},
+      {type = "plain", name = "research_unit_count", label = {"gui.rb-required-units"}},
       {
         type = "plain",
         name = "research_unit_energy",
