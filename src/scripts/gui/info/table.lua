@@ -59,6 +59,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
           }
         end
         label_label.caption = row.label or {"gui.rb-"..string.gsub(row.name, "_", "-")}
+        label_label.tooltip = row.label_tooltip or ""
 
         -- Value
         i = i + 1

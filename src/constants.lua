@@ -308,7 +308,12 @@ constants.pages = {
   },
   lab = {
     {type = "table", rows = {
-      {type = "plain", name = "researching_speed", label = {"description.research-speed"}}
+      {
+        type = "plain",
+        name = "researching_speed",
+        label = {"description.research-speed"},
+        label_tooltip = {"gui.rb-research-speed-desc"}
+      }
     }},
     {type = "list_box", source = "inputs"},
     {type = "list_box", source = "unlocked_by"},
@@ -317,7 +322,13 @@ constants.pages = {
   recipe = {
     {type = "table", rows = {
       {type = "plain", name = "category"},
-      {type = "plain", name = "energy", label = {"gui.rb-crafting-time"}, formatter = "seconds"}
+      {
+        type = "plain",
+        name = "energy",
+        label = {"gui.rb-crafting-time"},
+        label_tooltip = {"gui.rb-crafting-time-desc"},
+        formatter = "seconds"
+      }
     }},
     {type = "list_box", source = "ingredients", always_show = true},
     {type = "list_box", source = "products", always_show = true},
@@ -326,8 +337,14 @@ constants.pages = {
   },
   technology = {
     {type = "table", rows = {
-      {type = "plain", name = "research_unit_count", label = {"gui.rb-required-units"}},
-      {type = "plain", name = "research_unit_energy", label = {"gui.rb-time-per-unit"}, formatter = "seconds"}
+      {type = "plain", name = "research_unit_count", label_tooltip = {"gui.rb-required-units-desc"}},
+      {
+        type = "plain",
+        name = "research_unit_energy",
+        label = {"gui.rb-time-per-unit"},
+        label_tooltip = {"gui.rb-time-per-unit-desc"},
+        formatter = "seconds"
+      }
     }},
     {type = "list_box", source = "research_ingredients_per_unit"},
     {type = "list_box", source = "unlocks_fluids"},
