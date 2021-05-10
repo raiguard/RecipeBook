@@ -11,6 +11,7 @@ Date: ????
     - Middle-clicking an object will open that object in a new window
   Bugfixes:
     - Fixed that recipe "made in" didn't account for ingredient count limits on assemblers
+    - Fixed that rocket launch products were always marked as their own payload
     - Fixed that rocket launch products weren't being shown in many places due to invalid recipe categories
 ---------------------------------------------------------------------------------------------------
 Version: 2.7.2

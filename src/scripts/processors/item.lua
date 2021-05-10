@@ -22,10 +22,11 @@ function item_proc.build(recipe_book, strings, metadata)
       }
       -- add to payloads table
       local product_payloads = rocket_launch_payloads[product.name]
+      local ident = {class = "item", name = name}
       if product_payloads then
-        product_payloads[#product_payloads + 1] = {class = product.type, name = product.name}
+        product_payloads[#product_payloads + 1] = ident
       else
-        rocket_launch_payloads[product.name] = {{class = product.type, name = product.name}}
+        rocket_launch_payloads[product.name] = {ident}
       end
     end
     local default_categories = util.unique_string_array(
