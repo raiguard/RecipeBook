@@ -30,7 +30,7 @@ return function(recipe_book, strings, metadata)
     {filter = "type", type = "rocket-silo"}
   }
   metadata.fixed_recipes = {}
-  metadata.rocket_silo_categories = {}
+  local rocket_silo_categories = {}
   for name, prototype in pairs(crafter_prototypes) do
     -- fixed recipe
     if prototype.fixed_recipe then
@@ -39,7 +39,7 @@ return function(recipe_book, strings, metadata)
     -- rocket silo categories
     if prototype.rocket_parts_required then
       for category in pairs(prototype.crafting_categories) do
-        metadata.rocket_silo_categories[category] = true
+        rocket_silo_categories[category] = true
       end
     end
 
@@ -64,4 +64,10 @@ return function(recipe_book, strings, metadata)
       localised = prototype.localised_description
     })
   end
+
+  local processed_rocket_silo_categories = {}
+  for category in pairs(rocket_silo_categories) do
+    processed_rocket_silo_categories[#processed_rocket_silo_categories + 1] = category
+  end
+  metadata.rocket_silo_categories = processed_rocket_silo_categories
 end

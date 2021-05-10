@@ -82,8 +82,12 @@ function util.add_string(strings, tbl)
 end
 
 function util.unique_string_array(initial_tbl)
+  initial_tbl = initial_tbl or {}
   local hash = {}
-  return setmetatable(initial_tbl or {}, {
+  for _, value in pairs(initial_tbl) do
+    hash[value] = true
+  end
+  return setmetatable(initial_tbl, {
     __newindex = function(tbl, key, value)
       if not hash[value] then
         hash[value] = true
