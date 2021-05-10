@@ -68,6 +68,17 @@ function table_comp.update(component, refs, object_data, player_data, variables)
       end
     end
   end
+  for j = i + 1, #children do
+    children[j].destroy()
+  end
+
+  if i > 3 then
+    refs.root.visible = true
+  else
+    refs.root.visible = false
+  end
+
+  return i > 3
 end
 
 return table_comp
