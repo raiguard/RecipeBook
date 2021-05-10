@@ -43,7 +43,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
   local i = 0
   local iterator = component.use_pairs and pairs or ipairs
   local objects = object_data[component.source]
-  for _, obj in iterator(objects) do
+  for _, obj in iterator(objects or {}) do
     -- Match against search string
     local translation = player_data.translations[obj.class][obj.name]
     if string.find(string.lower(translation), search_query) then

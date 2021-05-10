@@ -32,12 +32,14 @@ function table_comp.build(parent, index, component)
   })
 end
 
+-- TODO: Implement search
 function table_comp.update(component, refs, object_data, player_data, variables)
   local table = refs.table
   local children = table.children
 
   local i = 3
   for _, row in ipairs(component.rows) do
+    -- TODO: Implement 'goto' type with an object
     if row.type == "plain" then
       local value = object_data[row.name]
       if value then
