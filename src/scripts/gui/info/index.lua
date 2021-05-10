@@ -35,6 +35,7 @@ function info_gui.build(player, player_table, context)
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
+      style_mods = {width = 430},
       direction = "vertical",
       ref = {"window", "frame"},
       actions = {
@@ -109,7 +110,7 @@ function info_gui.build(player, player_table, context)
         style = "inside_shallow_frame",
         direction = "vertical",
         ref = {"page_frame"},
-        {type = "frame", style = "subheader_frame", style_mods = {width = 400},
+        {type = "frame", style = "subheader_frame",
           {
             type = "label",
             style = "rb_toolbar_label",
