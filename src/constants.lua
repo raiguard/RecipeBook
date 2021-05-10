@@ -279,6 +279,7 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"}
   },
   lab = {
+    {type = "table", rows = {{type = "plain", name = "researching_speed"}}},
     {type = "list_box", source = "inputs"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
