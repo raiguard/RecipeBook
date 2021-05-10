@@ -133,14 +133,14 @@ styles.rb_table_label = {
   parent = "bold_label",
   horizontally_stretchable = "on",
   vertical_align = "center",
-  height = 22
+  -- height = 20
 }
 
 styles.rb_table_value_label = {
   type = "label_style",
   font = "default-semibold",
   vertical_align = "center",
-  height = 22
+  -- height = 22
 }
 
 styles.rb_toolbar_label = {

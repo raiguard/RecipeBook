@@ -24,26 +24,29 @@ function table_comp.update(component, refs, object_data, player_data, variables)
   local children = table.children
 
   local i = 3
-  for _, source in ipairs(component.rows) do
-    -- Label
-    i = i + 1
-    local label = children[i]
-    if not label then
-      label = table.add{
-        type = "label",
-        style = "rb_table_label",
-      }
-    end
-    label.caption = {"gui.rb-table-label-"..string.gsub(source.name, "_", "-")}
+  for _, row in ipairs(component.rows) do
+    if row.type == "plain" then
+      local value = object_data[row.name]
+      if value then
+        -- Label
+        i = i + 1
+        local label_label = children[i]
+        if not label_label then
+          label_label = table.add{
+            type = "label",
+            style = "rb_table_label",
+          }
+        end
+        label_label.caption = row.label or {"gui.rb-"..string.gsub(row.name, "_", "-")}
 
-    -- Value
-    i = i + 1
-    if source.type == "plain" then
-      local value = children[i]
-      if not value then
-        value = table.add{type = "label", style = "rb_table_value_label"}
+        -- Value
+        i = i + 1
+        local value_label = children[i]
+        if not value_label then
+          value_label = table.add{type = "label", style = "rb_table_value_label"}
+        end
+        value_label.caption = value
       end
-      value.caption = object_data[source.name]
     end
   end
 end
