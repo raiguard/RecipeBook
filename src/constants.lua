@@ -41,6 +41,17 @@ constants.class_to_font_glyph = {
   technology = "A"
 }
 
+constants.class_to_titlebar_label = {
+  crafter = {"gui.rb-crafter"},
+  fluid = {"gui.rb-fluid"},
+  item = {"gui.rb-item"},
+  lab = {"gui.rb-lab"},
+  offshore_pump = {"gui.rb-offshore-pump"},
+  recipe = {"gui.rb-recipe"},
+  resource = {"gui.rb-resource"},
+  technology = {"gui.rb-technology"}
+}
+
 constants.class_to_type = {
   crafter = "entity",
   fluid = "fluid",

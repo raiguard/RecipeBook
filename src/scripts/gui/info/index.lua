@@ -57,9 +57,8 @@ function info_gui.build(player, player_table, context)
           type = "label",
           style = "frame_title",
           style_mods = {left_margin = 4},
-          -- TODO: Dynamic title?
-          caption = {"mod-name.RecipeBook"},
-          ignored_by_interaction = true
+          ignored_by_interaction = true,
+          ref = {"titlebar", "label"}
         },
         {
           type = "empty-widget",
@@ -240,7 +239,9 @@ function info_gui.update_contents(player, player_table, id, new_context)
     translations = player_table.translations
   }
 
-  -- NAV BUTTONS
+  -- TITLEBAR
+
+  -- Nav buttons
 
   -- Generate tooltips
   local history_index = history._index
@@ -291,6 +292,9 @@ function info_gui.update_contents(player, player_table, id, new_context)
     util.build_rich_text("color", "heading", gui_translations.session_history)
   ).."\n"..entries.."\n"..gui_translations.nav_forward_tooltip
 
+  -- Label
+  local label = refs.titlebar.label
+  label.caption = constants.class_to_titlebar_label[context.class]
 
   -- HEADER
 
@@ -299,7 +303,6 @@ function info_gui.update_contents(player, player_table, id, new_context)
   local label = refs.header.label
   label.caption = title_info.caption
   label.tooltip = title_info.tooltip
-
 
   -- Buttons
   if context.class == "technology" then

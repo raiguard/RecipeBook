@@ -76,7 +76,7 @@ local function get_should_show(obj_data, player_data)
   return false, is_hidden, is_researched, is_enabled
 end
 
-local function get_caption(obj_data, player_data, is_hidden, is_enabled, amount)
+local function get_caption(obj_data, player_data, is_hidden, is_enabled, is_label, amount)
   -- locals
   local player_settings = player_data.settings
   local translations = player_data.translations
@@ -86,7 +86,7 @@ local function get_caption(obj_data, player_data, is_hidden, is_enabled, amount)
 
   -- glyph
   local glyph_str = ""
-  if player_settings.show_glyphs then
+  if player_settings.show_glyphs and not is_label then
     glyph_str = build_rich_text(
       "font",
       "RecipeBook",
@@ -621,7 +621,7 @@ local function format_item(obj_data, player_data, options)
     -- format and return
     local formatter_subtable = formatters[obj_data.class]
     return {
-      caption = get_caption(obj_data, player_data, is_hidden, is_enabled, options.amount_string),
+      caption = get_caption(obj_data, player_data, is_hidden, is_enabled, options.is_label, options.amount_string),
       is_enabled = formatter_subtable.enabled(obj_data),
       is_researched = is_researched,
       tooltip = formatter_subtable.tooltip(
