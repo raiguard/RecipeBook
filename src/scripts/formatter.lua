@@ -682,6 +682,17 @@ function formatter.destroy_cache(player_index)
   caches[player_index] = nil
 end
 
+function formatter.build_player_data(player, player_table)
+  return {
+    favorites = player_table.favorites,
+    force_index = player.force.index,
+    history = player_table.history.global,
+    player_index = player.index,
+    settings = player_table.settings,
+    translations = player_table.translations
+  }
+end
+
 -- when calling the module directly, call formatter.format
 setmetatable(formatter, { __call = function(_, ...) return formatter.format(...) end })
 

@@ -184,13 +184,7 @@ event.register("rb-toggle-gui", function(e)
         local obj_data = global.recipe_book[class][name]
         if obj_data then
           local context = {class = class, name = name}
-          local existing_id = info_gui.find_open_context(player_table, context)
-          if existing_id then
-            info_gui.handle_action({id = existing_id, action = "bring_to_front"}, {player_index = e.player_index})
-          else
-            -- TODO: Check for and update an already existing temporary window
-            info_gui.build(player, player_table, {class = class, name = name})
-          end
+          shared.open_page(player, player_table, context)
           return
         end
       end
@@ -309,30 +303,46 @@ remote.add_interface("RecipeBook", remote_interface)
 -- -----------------------------------------------------------------------------
 -- SHARED FUNCTIONS
 
-function shared.open_page(player, player_table, class, name)
-  -- FIXME:
-  -- if main_gui.check_can_open(player, player_table) then
-  --   main_gui.open_page(player, player_table, class, name)
-  --   if not player_table.flags.gui_open then
-  --     main_gui.open(player, player_table)
-  --   end
-  -- end
+function shared.open_page(player, player_table, context)
+  local existing_id = info_gui.find_open_context(player_table, context)[1]
+  if existing_id then
+    info_gui.handle_action({id = existing_id, action = "bring_to_front"}, {player_index = player.index})
+  else
+    -- TODO: Check for and update an already existing temporary window
+    info_gui.build(player, player_table, context)
+  end
+end
+
+function shared.toggle_quick_ref(player, player_table, recipe_name)
+  if player_table.guis.quick_ref[recipe_name] then
+    quick_ref_gui.destroy(player_table, recipe_name)
+    shared.update_quick_ref_button(player, player_table, recipe_name, false)
+  else
+    quick_ref_gui.build(player, player_table, recipe_name)
+    shared.update_quick_ref_button(player, player_table, recipe_name, true)
+  end
+end
+
+function shared.update_quick_ref_button(player, player_table, recipe_name, to_state)
+  for _, id in pairs(info_gui.find_open_context(player_table, {class = "recipe", name = recipe_name})) do
+    info_gui.handle_action(
+      {id = id, action = "update_quick_ref_button", to_state = to_state},
+      {player_index = player.index}
+    )
+  end
 end
 
 function shared.refresh_contents(player, player_table)
   formatter.purge_cache(player.index)
   -- FIXME:
-  -- main_gui.refresh_contents(player, player_table)
+  -- main_gui.refresh_all(player, player_table)
   quick_ref_gui.refresh_all(player, player_table)
 end
 
+-- FIXME: Potential desync
 function shared.register_on_tick()
   if global.__flib and translation.translating_players_count() > 0 then
     event.on_tick(on_tick)
   end
 end
 
-function shared.update_quick_ref_button(player_table)
-  -- FIXME:
-  -- main_gui.update_quick_ref_button(player_table)
-end

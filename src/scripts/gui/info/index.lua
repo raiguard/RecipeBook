@@ -5,6 +5,7 @@ local math = require("__flib__.math")
 local constants = require("constants")
 
 local formatter = require("scripts.formatter")
+local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 local components = {
@@ -12,22 +13,6 @@ local components = {
 }
 
 local info_gui = {}
-
-local function frame_action_button(sprite, tooltip, ref, action)
-  return {
-    type = "sprite-button",
-    style = "frame_action_button",
-    sprite = sprite.."_white",
-    hovered_sprite = sprite.."_black",
-    clicked_sprite = sprite.."_black",
-    tooltip = tooltip,
-    mouse_button_filter = {"left"},
-    ref = ref,
-    actions = {
-      on_click = action
-    }
-  }
-end
 
 local function tool_button(sprite, tooltip, ref, action)
   return {
@@ -56,13 +41,13 @@ function info_gui.build(player, player_table, context)
         on_closed = {gui = "info", id = id, action = "close"}
       },
       {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
-        frame_action_button(
+        util.frame_action_button(
           "rb_nav_backward",
           nil,
           {"titlebar", "nav_backward_button"},
           {gui = "info", id = id, action = "navigate", delta = -1}
         ),
-        frame_action_button(
+        util.frame_action_button(
           "rb_nav_forward",
           nil,
           {"titlebar", "nav_forward_button"},
@@ -95,25 +80,25 @@ function info_gui.build(player, player_table, context)
             on_text_changed = {gui = "info", id = id, action = "update_search_query"}
           }
         },
-        frame_action_button(
+        util.frame_action_button(
           "utility/search",
           {"gui.rb-search-instruction"},
           {"titlebar", "search_button"},
           {gui = "info", id = id, action = "toggle_search"}
         ),
-        -- frame_action_button(
+        -- util.frame_action_button(
         --   "rb_pin",
         --   {"gui.rb-pin-instruction"},
         --   {"titlebar", "pin_button"},
         --   {gui = "info", id = id, action = "toggle_pinned"}
         -- ),
-        -- frame_action_button(
+        -- util.frame_action_button(
         --   "rb_settings",
         --   {"gui.rb-settings-instruction"},
         --   {"titlebar", "settings_button"},
         --   {gui = "info", id = id, action = "toggle_settings"}
         -- ),
-        frame_action_button(
+        util.frame_action_button(
           "utility/close",
           {"gui.close-instruction"},
           {"titlebar", "close_button"},
@@ -205,16 +190,19 @@ function info_gui.destroy_all(player_table)
 end
 
 function info_gui.find_open_context(player_table, context)
+  local open = {}
   for id, gui_data in pairs(player_table.guis.info) do
     if id ~= "_next_id" then
       local state = gui_data.state
       local opened_context = state.history[state.history._index]
       -- TODO: Shouldn't ever be `nil`
       if opened_context and opened_context.class == context.class and opened_context.name == context.name then
-        return id
+        open[#open + 1] = id
       end
     end
   end
+
+  return open
 end
 
 function info_gui.update_contents(player, player_table, id, new_context)
@@ -247,8 +235,6 @@ function info_gui.update_contents(player, player_table, id, new_context)
     favorites = player_table.favorites,
     force_index = player.force.index,
     history = player_table.history.global,
-    -- TODO: Rename to `context`
-    open_page_data = context,
     player_index = player.index,
     settings = player_table.settings,
     translations = player_table.translations
@@ -262,7 +248,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
   local entries = {}
   for i, history_context in ipairs(history) do
     local obj_data = global.recipe_book[history_context.class][history_context.name]
-    local info = formatter(obj_data, player_data, {always_show = true, is_label = true})
+    local info = formatter(obj_data, player_data, {always_show = true})
     local caption = info.caption
     if not info.is_researched then
       caption = util.build_rich_text("color", "unresearched", caption)
@@ -328,8 +314,11 @@ function info_gui.update_contents(player, player_table, id, new_context)
     refs.header.go_to_base_fluid_button.visible = false
   end
   if context.class == "recipe" then
-    -- TODO: Detect quick ref windows
-    refs.header.quick_ref_button.visible = true
+    local button = refs.header.quick_ref_button
+    button.visible = true
+    local is_selected = player_table.guis.quick_ref[context.name]
+    button.style = is_selected and "flib_selected_tool_button" or "tool_button"
+    button.tooltip = {"gui.rb-"..(is_selected and "close" or "open").."-quick-ref-window"}
   else
     refs.header.quick_ref_button.visible = false
   end
@@ -470,7 +459,7 @@ function info_gui.handle_action(msg, e)
     -- Update based on query
     info_gui.update_contents(player, player_table, msg.id)
   elseif msg.action == "navigate_to" then
-    local context = info_gui.navigate_to(msg, e)
+    local context = util.navigate_to(msg, e)
     if context then
       if e.button == defines.mouse_button_type.middle then
         info_gui.build(player, player_table, context)
@@ -484,7 +473,7 @@ function info_gui.handle_action(msg, e)
     local base_fluid = global.recipe_book.fluid[context.name].prototype_name
     info_gui.update_contents(player, player_table, msg.id, {class = "fluid", name = base_fluid})
   elseif msg.action == "toggle_quick_ref" then
-
+    shared.toggle_quick_ref(player, player_table, context.name)
   elseif msg.action == "toggle_favorite" then
     local favorites = player_table.favorites
     local combined_name = context.class.."."..context.name
@@ -499,99 +488,15 @@ function info_gui.handle_action(msg, e)
       favorite_button.style = "flib_selected_tool_button"
       favorite_button.tooltip = {"gui.rb-remove-from-favorites"}
     end
-  end
-end
-
-function info_gui.navigate_to(msg, e)
-  -- TODO: This is duplicated, deduplicate it!
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-
-  local element = e.element
-  local tags = gui.get_tags(element)
-  local obj = tags.obj
-  -- TODO:
-  -- if player_table.settings.highlight_last_selected
-  --   and tags.is_search_item
-  --   and not (e.shift and obj.class == "technology")
-  -- then
-  --   local search_refs = player_table.guis.main.refs.search
-  --   local last_selected = search_refs.last_selected_item
-  --   if last_selected and last_selected.valid then
-  --     local is_researched = gui.get_tags(last_selected).is_researched
-  --     last_selected.style = is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
-  --   end
-  --   element.style = "rb_last_selected_list_box_item"
-  --   search_refs.last_selected_item = element
-  -- end
-  if obj.class == "crafter" then
-    local crafter_data = global.recipe_book.crafter[obj.name]
-    if crafter_data then
-      if e.control then
-        if crafter_data.fixed_recipe then
-          return {class = "recipe", name = crafter_data.fixed_recipe}
-        end
-      elseif e.shift then
-        local blueprint_recipe = gui.get_tags(e.element).blueprint_recipe
-        if blueprint_recipe then
-          if crafter_data.blueprintable then
-            local cursor_stack = player.cursor_stack
-            player.clear_cursor()
-            if cursor_stack and cursor_stack.valid then
-              local CollisionBox = area.load(game.entity_prototypes[obj.name].collision_box)
-              local height = CollisionBox:height()
-              local width = CollisionBox:width()
-              cursor_stack.set_stack{name = "blueprint", count = 1}
-              cursor_stack.set_blueprint_entities{
-                {
-                  entity_number = 1,
-                  name = obj.name,
-                  position = {
-                    -- Entities with an even number of tiles to a side need to be set at -0.5 instead of 0
-                    math.ceil(width) % 2 == 0 and -0.5 or 0,
-                    math.ceil(height) % 2 == 0 and -0.5 or 0
-                  },
-                  recipe = blueprint_recipe
-                }
-              }
-              player.add_to_clipboard(cursor_stack)
-              player.activate_paste()
-            end
-          else
-            player.create_local_flying_text{
-              text = {"rb-message.cannot-create-blueprint"},
-              create_at_cursor = true
-            }
-            player.play_sound{path = "utility/cannot_build"}
-          end
-        end
-      else
-        return {class = obj.class, name = obj.name}
-      end
-    end
-  elseif obj.class == "fluid" then
-    local fluid_data = global.recipe_book.fluid[obj.name]
-    if e.shift and fluid_data.temperature_data then
-      return {class = "fluid", name = fluid_data.prototype_name}
+  elseif msg.action == "update_quick_ref_button" then
+    local button = refs.header.quick_ref_button
+    if msg.to_state then
+      button.style = "flib_selected_tool_button"
+      button.tooltip = {"gui.rb-close-quick-ref-window"}
     else
-      return {class = "fluid", name = obj.name}
+      button.style = "tool_button"
+      button.tooltip = {"gui.rb-open-quick-ref-window"}
     end
-  elseif obj.class == "resource" then
-    local resource_data = global.recipe_book.resource[obj.name]
-    if resource_data then
-      local required_fluid = resource_data.required_fluid
-      if required_fluid then
-        return {class = "fluid", name = required_fluid.name}
-      end
-    end
-  elseif obj.class == "technology" then
-    if e.shift then
-      player.open_technology_gui(obj.name)
-    else
-      return {class = obj.class, name = obj.name}
-    end
-  else
-    return {class = obj.class, name = obj.name}
   end
 end
 

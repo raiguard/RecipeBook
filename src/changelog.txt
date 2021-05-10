@@ -5,8 +5,9 @@ Date: ????
     - Complete GUI redesign
       - Separated search from information
       - You can open as many information windows as you want simultaneously
-  - Middle-clicking an object will open that object in a new window
-  - Added search to information pages
+    - Middle-clicking an object will open that object in a new window
+    - Added search to information pages
+    - Alt-clicking an ingredient or product in a quick ref window will mark it green
   Bugfixes:
     - Fixed that recipe "made in" didn't account for ingredient count limits on assemblers
 ---------------------------------------------------------------------------------------------------

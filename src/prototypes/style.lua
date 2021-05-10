@@ -100,9 +100,10 @@ styles.rb_quick_ref_content_frame = {
 
 styles.rb_slot_table_frame = {
   type = "frame_style",
-  parent = "deep_frame_in_shallow_frame",
+  parent = "slot_button_deep_frame",
   maximal_height = 200,
-  natural_height = 40
+  natural_height = 40,
+  width = 40 * 5
 }
 
 styles.rb_settings_category_frame = {
@@ -197,26 +198,6 @@ styles.rb_page_scroll_pane = {
 --     padding = 4
 --   }
 -- }
-
-styles.rb_slot_table_scroll_pane = {
-  type = "scroll_pane_style",
-  extra_padding_when_activated = 0,
-  padding = 0,
-  minimal_width = 200,
-  horizontally_squashable = "off",
-  background_graphical_set = {
-    base = {
-      position = {282, 17},
-      corner_size = 8,
-      overall_tiling_horizontal_padding = 4,
-      overall_tiling_horizontal_size = 32,
-      overall_tiling_horizontal_spacing = 8,
-      overall_tiling_vertical_padding = 4,
-      overall_tiling_vertical_size = 32,
-      overall_tiling_vertical_spacing = 8
-    }
-  }
-}
 
 -- TEXTFIELD STYLES
 
