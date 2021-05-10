@@ -83,7 +83,7 @@ function info_gui.build(player, player_table, context)
         },
         util.frame_action_button(
           "utility/search",
-          {"gui.rb-search-instruction"},
+          {"gui.rb-search"},
           {"titlebar", "search_button"},
           {gui = "info", id = id, action = "toggle_search"}
         ),
@@ -101,7 +101,7 @@ function info_gui.build(player, player_table, context)
         -- ),
         util.frame_action_button(
           "utility/close",
-          {"gui.close-instruction"},
+          {"gui.close"},
           {"titlebar", "close_button"},
           {gui = "info", id = id, action = "close"}
         )
