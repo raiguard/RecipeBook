@@ -146,7 +146,7 @@ function util.navigate_to(msg, e)
           return {class = "recipe", name = crafter_data.fixed_recipe}
         end
       elseif e.shift then
-        local blueprint_recipe = gui.get_tags(e.element).blueprint_recipe
+        local blueprint_recipe = tags.blueprint_recipe
         if blueprint_recipe then
           if crafter_data.blueprintable then
             local cursor_stack = player.cursor_stack

@@ -94,6 +94,7 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
   label.tooltip = recipe_info.tooltip
   -- TODO: Append tooltip to talk about alt+clicking
 
+
   -- Slot boxes
   for _, source in ipairs{"ingredients", "products", "made_in"} do
     local box = refs[source]
@@ -105,6 +106,8 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
       box.flow.visible = true
     end
 
+    local blueprint_recipe = source == "made_in" and recipe_name or nil
+
     local table = box.table
     local buttons = table.children
     local i = 0
@@ -113,7 +116,7 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
       local object_info = formatter(
         object_data,
         player_data,
-        {always_show = source ~= "made_in", blueprint_recipe = source == "made_in" and recipe_name or nil}
+        {always_show = source ~= "made_in", blueprint_recipe = blueprint_recipe}
       )
       if object_info then
         i = i + 1
@@ -127,7 +130,11 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
           button.style = button_style
           button.sprite = constants.class_to_type[object.class].."/"..object.name
           button.tooltip = tooltip
-          gui.update_tags(button, {obj = object, researched = object_data.is_researched})
+          gui.update_tags(button, {
+            blueprint_recipe = blueprint_recipe,
+            obj = object,
+            researched = object_data.is_researched
+          })
         else
           gui.build(table, {
             {
@@ -135,7 +142,11 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
               style = button_style,
               sprite = constants.class_to_type[object.class].."/"..object.name,
               tooltip = tooltip,
-              tags = {obj = object, researched = object_data.is_researched},
+              tags = {
+                blueprint_recipe = blueprint_recipe,
+                obj = object,
+                researched = object_data.is_researched
+              },
               actions = {
                 on_click = {gui = "quick_ref", id = recipe_name, action = "handle_button_click", source = source}
               },
