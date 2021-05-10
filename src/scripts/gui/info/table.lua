@@ -43,7 +43,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
         i = i + 1
         local value_label = children[i]
         if not value_label then
-          value_label = table.add{type = "label", style = "rb_table_value_label"}
+          value_label = table.add{type = "label"}
         end
         value_label.caption = value
       end
