@@ -138,6 +138,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "control_click", localised = {"gui.rb-control-click"}},
   {dictionary = "gui", internal = "crafting_categories", localised = {"gui.rb-crafting-categories"}},
   {dictionary = "gui", internal = "crafting_speed", localised = {"description.crafting-speed"}},
+  {dictionary = "gui", internal = "crafting_time_desc", localised = {"gui.rb-crafting-time-desc"}},
   {dictionary = "gui", internal = "crafting_time", localised = {"gui.rb-crafting-time"}},
   {dictionary = "gui", internal = "disabled", localised = {"entity-status.disabled"}},
   {dictionary = "gui", internal = "fixed_recipe", localised = {"gui.rb-fixed-recipe"}},
@@ -167,6 +168,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "required_units", localised = {"gui.rb-required-units"}},
   {dictionary = "gui", internal = "researched_in", localised = {"gui.rb-researched-in"}},
   {dictionary = "gui", internal = "research_ingredients_per_unit", localised = {"gui.rb-research-ingredients-per-unit"}},
+  {dictionary = "gui", internal = "research_speed_desc", localised = {"gui.rb-research-speed-desc"}},
   {dictionary = "gui", internal = "research_speed", localised = {"description.research-speed"}},
   {dictionary = "gui", internal = "rocket_launch_payloads", localised = {"gui.rb-rocket-launch-payloads"}},
   {dictionary = "gui", internal = "rocket_launch_products", localised = {"gui.rb-rocket-launch-products"}},
@@ -177,6 +179,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "si_joule", localised = {"si-unit-symbol-joule"}},
   {dictionary = "gui", internal = "stack_size", localised = {"gui.rb-stack-size"}},
   {dictionary = "gui", internal = "temperatures", localised = {"gui.rb-temperatures"}},
+  {dictionary = "gui", internal = "time_per_unit_desc", localised = {"gui.rb-time-per-unit-desc"}},
   {dictionary = "gui", internal = "time_per_unit", localised = {"gui.rb-time-per-unit"}},
   {dictionary = "gui", internal = "unlocked_by", localised = {"gui.rb-unlocked-by"}},
   {dictionary = "gui", internal = "unlocks_fluids", localised = {"gui.rb-unlocks-fluids"}},
@@ -237,7 +240,7 @@ constants.nav_event_properties = {
 constants.pages = {
   crafter = {
     {type = "table", rows = {
-      {type = "plain", name = "crafting_speed", label = {"description.crafting-speed"}}
+      {type = "plain", name = "crafting_speed"}
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     {type = "list_box", source = "unlocked_by"},
@@ -245,7 +248,7 @@ constants.pages = {
   },
   fluid = {
     {type = "table", rows = {
-      {type = "plain", name = "fuel_value", label = {"description.fuel-value"}, formatter = "fuel_value"}
+      {type = "plain", name = "fuel_value", formatter = "fuel_value"}
     }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
@@ -257,23 +260,23 @@ constants.pages = {
   item = {
     {type = "table", rows = {
       {type = "plain", name = "stack_size"},
-      {type = "plain", name = "fuel_value", label = {"description.fuel-value"}, formatter = "fuel_value"},
+      {type = "plain", name = "fuel_value", formatter = "fuel_value"},
       {
         type = "plain",
         name = "fuel_emissions_multiplier",
-        label = {"description.fuel-pollution"},
+        label = "fuel_pollution",
         formatter = "percent"
       },
       {
         type = "plain",
         name = "fuel_acceleration_multiplier",
-        label = {"description.fuel-acceleration"},
+        label = "vehicle_acceleration",
         formatter = "percent"
       },
       {
         type = "plain",
         name = "fuel_top_speed_multiplier",
-        label = {"description.fuel-top-speed"},
+        label = "vehicle_top_speed",
         formatter = "percent"
       }
     }},
@@ -290,8 +293,8 @@ constants.pages = {
       {
         type = "plain",
         name = "researching_speed",
-        label = {"description.research-speed"},
-        label_tooltip = {"gui.rb-research-speed-desc"}
+        label = "research_speed",
+        label_tooltip = "research_speed_desc"
       }
     }},
     {type = "list_box", source = "inputs"},
@@ -304,8 +307,8 @@ constants.pages = {
       {
         type = "plain",
         name = "energy",
-        label = {"gui.rb-crafting-time"},
-        label_tooltip = {"gui.rb-crafting-time-desc"},
+        label = "crafting_time",
+        label_tooltip = "crafting_time_desc",
         formatter = "seconds"
       }
     }},
@@ -316,12 +319,12 @@ constants.pages = {
   },
   technology = {
     {type = "table", rows = {
-      {type = "plain", name = "research_unit_count", label = {"gui.rb-required-units"}},
+      {type = "plain", name = "research_unit_count", label = "required_units"},
       {
         type = "plain",
         name = "research_unit_energy",
-        label = {"gui.rb-time-per-unit"},
-        label_tooltip = {"gui.rb-time-per-unit-desc"},
+        label = "time_per_unit",
+        label_tooltip = "time_per_unit_desc",
         formatter = "seconds"
       }
     }},

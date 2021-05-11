@@ -37,6 +37,8 @@ function table_comp.update(component, refs, object_data, player_data, variables)
   local table = refs.table
   local children = table.children
 
+  local gui_translations = player_data.translations.gui
+
   local i = 3
   for _, row in ipairs(component.rows) do
     -- TODO: Implement 'goto' type with an object
@@ -58,8 +60,8 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             style = "rb_table_label",
           }
         end
-        label_label.caption = row.label or {"gui.rb-"..string.gsub(row.name, "_", "-")}
-        label_label.tooltip = row.label_tooltip or ""
+        label_label.caption = gui_translations[row.label or row.name]
+        label_label.tooltip = row.label_tooltip and gui_translations[row.label_tooltip] or ""
 
         -- Value
         i = i + 1
