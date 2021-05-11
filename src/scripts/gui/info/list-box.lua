@@ -98,8 +98,9 @@ function list_box.update(component, refs, object_data, player_data, variables)
   -- Set listbox properties
   if i > 0 then
     refs.root.visible = true
+    local translations = player_data.translations.gui
     -- Update label caption
-    refs.label.caption = {"gui.rb-list-box-label", {"gui.rb-"..string.gsub(component.source, "_", "-")}, i}
+    refs.label.caption = formatter.expand_string(translations.list_box_label, translations[component.source], i)
   else
     refs.root.visible = false
   end

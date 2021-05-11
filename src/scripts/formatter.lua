@@ -1,4 +1,3 @@
-
 local math = require("__flib__.math")
 local fixed_format = require("lib.fixed-precision-format")
 
@@ -29,8 +28,16 @@ local function control(control, action)
     ..action
 end
 
-local function tooltip_kv(label, value)
+local function tooltip_kv(label, value);
   return "\n"..rich_text("font", "default-semibold", label..":").." "..(value or "")
+end
+
+local function expand_string(source, ...)
+  local arg = {...}
+  for i = 1, #arg do
+    source = string.gsub(source, "__"..i.."__", arg[i])
+  end
+  return source
 end
 
 local function get_properties(obj_data, force_index)
@@ -625,6 +632,7 @@ function formatter.build_player_data(player, player_table)
 end
 
 formatter.control = control
+formatter.expand_string = expand_string
 formatter.rich_text = rich_text
 formatter.sprite = sprite
 formatter.tooltip_kv = tooltip_kv
