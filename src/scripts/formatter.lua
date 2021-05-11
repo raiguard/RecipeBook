@@ -1,21 +1,37 @@
-local formatter = {}
 
 local math = require("__flib__.math")
 local fixed_format = require("lib.fixed-precision-format")
-local locale = require("lib.locale")
 
 local constants = require("constants")
+
+local formatter = {}
 
 local caches = {}
 
 -- Upvalues (for optimization)
 local class_to_font_glyph = constants.class_to_font_glyph
 local class_to_type = constants.class_to_type
+local colors = constants.colors
 local concat = table.concat
-local control = locale.control
-local rich_text = locale.rich_text
-local sprite = locale.sprite
-local tooltip_kv = locale.tooltip_kv
+
+local function rich_text(key, value, inner)
+  return "["..key.."="..(key == "color" and colors[value].str or value).."]"..inner.."[/"..key.."]"
+end
+
+local function sprite(class, name)
+  return "[img="..class.."/"..name.."]"
+end
+
+local function control(control, action)
+  return "\n"
+    ..rich_text("color", "info", rich_text("font", "default-semibold", control..":"))
+    .." "
+    ..action
+end
+
+local function tooltip_kv(label, value)
+  return "\n"..rich_text("font", "default-semibold", label..":").." "..(value or "")
+end
 
 local function get_properties(obj_data, force_index)
   local is_researched
@@ -607,6 +623,11 @@ function formatter.build_player_data(player, player_table)
     translations = player_table.translations
   }
 end
+
+formatter.control = control
+formatter.rich_text = rich_text
+formatter.sprite = sprite
+formatter.tooltip_kv = tooltip_kv
 
 -- When calling the module directly, call formatter.format
 setmetatable(formatter, { __call = function(_, ...) return formatter.format(...) end })
