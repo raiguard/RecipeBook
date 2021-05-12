@@ -90,6 +90,13 @@ styles.rb_search_results_subheader_frame = {
   }
 }
 
+styles.rb_subheader_frame = {
+  type = "frame_style",
+  parent = "subheader_frame",
+  height = 0, -- Negate the height requirement
+  minimal_height = 36
+}
+
 styles.rb_quick_ref_content_frame = {
   type = "frame_style",
   parent = "inside_shallow_frame",
@@ -160,6 +167,21 @@ styles.rb_list_box_label = {
   type = "label_style",
   parent = "bold_label",
   bottom_padding = 2
+}
+
+-- LINE STYLES
+
+styles.rb_dark_line = {
+  type = "line_style",
+  horizontally_stretchable = "on",
+  left_margin = -8,
+  right_margin = -8,
+  top_margin = -2,
+  bottom_margin = -2,
+  border = {
+    border_width = 8,
+    horizontal_line = {filename = "__RecipeBook__/graphics/dark-line.png", size = {1, 8}}
+  }
 }
 
 -- SCROLL PANE STYLES

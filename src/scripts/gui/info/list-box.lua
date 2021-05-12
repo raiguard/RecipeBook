@@ -8,10 +8,14 @@ local list_box = {}
 function list_box.build(parent, index, component)
   return gui.build(parent, {
     {type = "flow", direction = "vertical", index = index, ref = {"root"},
-      {
-        type = "label",
-        style = "rb_list_box_label",
-        ref = {"label"}
+      {type = "flow", style_mods = {vertical_align = "center"},
+        {
+          type = "label",
+          style = "rb_list_box_label",
+          ref = {"label"}
+        },
+        {type = "empty-widget", style = "flib_horizontal_pusher"},
+        {type = "sprite-button", style = "mini_button_aligned_to_text_vertically_when_centered"}
       },
       {type = "frame", style = "deep_frame_in_shallow_frame", ref = {"frame"},
         {

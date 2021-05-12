@@ -14,6 +14,12 @@ local components = {
 
 local info_gui = {}
 
+-- TEMPORARY:
+local demo_caption = formatter.rich_text("font", "RecipeBook", constants.class_to_font_glyph.fluid)
+  ..formatter.rich_text("color", "heading", " [fluid=light-oil] Light oil (-50°C)")
+  .."  -  Product of  "
+  ..formatter.rich_text("color", "info", "(3 / 36)")
+
 local function tool_button(sprite, tooltip, ref, action)
   return {
       type = "sprite-button",
@@ -109,37 +115,53 @@ function info_gui.build(player, player_table, context)
         style = "inside_shallow_frame",
         direction = "vertical",
         ref = {"page_frame"},
-        {type = "frame", style = "subheader_frame",
-          {
-            type = "label",
-            style = "rb_toolbar_label",
-            ref = {"header", "label"}
+        {type = "frame", style = "rb_subheader_frame", direction = "vertical",
+          {type = "flow", style_mods = {vertical_align = "center"},
+            tool_button(
+              "rb_nav_backward_black",
+              {"gui.rb-go-backward"},
+              {"header", "nav_backward_button"},
+              {gui = "info", id = id, action = "navigate_list", delta = -1}
+            ),
+            {type = "empty-widget", style = "flib_horizontal_pusher"},
+            {type = "label", style = "bold_label", caption = demo_caption},
+            {type = "empty-widget", style = "flib_horizontal_pusher"},
+            tool_button(
+              "rb_nav_forward_black",
+              {"gui.rb-go-forward"},
+              {"header", "nav_forward_button"},
+              {gui = "info", id = id, action = "navigate_list", delta = -1}
+            ),
           },
-          {type = "empty-widget", style = "flib_horizontal_pusher"},
-          tool_button(
-            "rb_technology_gui_black",
-            {"gui.rb-open-in-technology-window"},
-            {"header", "open_in_tech_window_button"},
-            {gui = "info", id = id, action = "open_in_tech_window"}
-          ),
-          tool_button(
-            "rb_fluid_black",
-            {"gui.rb-go-to-base-fluid"},
-            {"header", "go_to_base_fluid_button"},
-            {gui = "info", id = id, action = "go_to_base_fluid"}
-          ),
-          tool_button(
-            "rb_clipboard_black",
-            {"gui.rb-toggle-quick-ref-window"},
-            {"header", "quick_ref_button"},
-            {gui = "info", id = id, action = "toggle_quick_ref"}
-          ),
-          tool_button(
-            "rb_favorite_black",
-            {"gui.rb-add-to-favorites"},
-            {"header", "favorite_button"},
-            {gui = "info", id = id, action = "toggle_favorite"}
-          )
+          {type = "line", style = "rb_dark_line", direction = "horizontal"},
+          {type = "flow", style_mods = {vertical_align = "center"},
+            {type = "label", style = "rb_toolbar_label", ref = {"header", "label"}},
+            {type = "empty-widget", style = "flib_horizontal_pusher"},
+            tool_button(
+              "rb_technology_gui_black",
+              {"gui.rb-open-in-technology-window"},
+              {"header", "open_in_tech_window_button"},
+              {gui = "info", id = id, action = "open_in_tech_window"}
+            ),
+            tool_button(
+              "rb_fluid_black",
+              {"gui.rb-go-to-base-fluid"},
+              {"header", "go_to_base_fluid_button"},
+              {gui = "info", id = id, action = "go_to_base_fluid"}
+            ),
+            tool_button(
+              "rb_clipboard_black",
+              {"gui.rb-toggle-quick-ref-window"},
+              {"header", "quick_ref_button"},
+              {gui = "info", id = id, action = "toggle_quick_ref"}
+            ),
+            tool_button(
+              "rb_favorite_black",
+              {"gui.rb-add-to-favorites"},
+              {"header", "favorite_button"},
+              {gui = "info", id = id, action = "toggle_favorite"}
+            )
+          }
         },
         {
           type = "scroll-pane",
