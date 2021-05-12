@@ -22,12 +22,13 @@ function table_comp.build(parent, index, component)
   })
 end
 
--- TODO: Implement search
 function table_comp.update(component, refs, object_data, player_data, variables)
   local table = refs.table
   local children = table.children
 
   local gui_translations = player_data.translations.gui
+
+  local search_query = variables.search_query
 
   local i = 3
   for _, row in ipairs(component.rows) do
@@ -35,31 +36,32 @@ function table_comp.update(component, refs, object_data, player_data, variables)
     if row.type == "plain" then
       local value = object_data[row.name]
       if value then
-        -- Format value
-        local fmt = row.formatter
-        if fmt then
-          value = formatter[fmt](value, gui_translations)
-        end
+        local label_caption = gui_translations[row.label or row.name]
+        if string.find(string.lower(label_caption), search_query) then
+          -- Label
+          i = i + 1
+          local label_label = children[i]
+          if not label_label then
+            label_label = table.add{
+              type = "label",
+              style = "rb_table_label",
+            }
+          end
+          label_label.caption = label_caption
+          label_label.tooltip = row.label_tooltip and gui_translations[row.label_tooltip] or ""
 
-        -- Label
-        i = i + 1
-        local label_label = children[i]
-        if not label_label then
-          label_label = table.add{
-            type = "label",
-            style = "rb_table_label",
-          }
+          -- Value
+          local fmt = row.formatter
+          if fmt then
+            value = formatter[fmt](value, gui_translations)
+          end
+          i = i + 1
+          local value_label = children[i]
+          if not value_label then
+            value_label = table.add{type = "label"}
+          end
+          value_label.caption = value
         end
-        label_label.caption = gui_translations[row.label or row.name]
-        label_label.tooltip = row.label_tooltip and gui_translations[row.label_tooltip] or ""
-
-        -- Value
-        i = i + 1
-        local value_label = children[i]
-        if not value_label then
-          value_label = table.add{type = "label"}
-        end
-        value_label.caption = value
       end
     end
   end
