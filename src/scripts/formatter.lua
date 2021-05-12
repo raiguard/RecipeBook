@@ -40,6 +40,22 @@ local function expand_string(source, ...)
   return source
 end
 
+local function fuel_value(value, gui_translations)
+  return fixed_format(value, 3, "2")..gui_translations.si_joule
+end
+
+local function percent(value, gui_translations)
+  return expand_string(gui_translations.format_percent, math.round_to(value * 100, 2))
+end
+
+local function seconds(value, gui_translations)
+  return expand_string(gui_translations.format_seconds, math.round_to(value * 100, 2))
+end
+
+local function per_second(value, gui_translations)
+  return math.round_to(value, 2)..gui_translations.per_second_suffix
+end
+
 local function get_properties(obj_data, force_index)
   local is_researched
   if obj_data.enabled_at_start then
@@ -308,7 +324,7 @@ local formatters = {
       -- Fuel value
       local fuel_value_str = ""
       if obj_data.fuel_value then
-        fuel_value_string = tooltip_kv(gui_translations.fuel_value, fixed_format(obj_data.fuel_value, 3, "2").."J")
+        fuel_value_string = tooltip_kv(gui_translations.fuel_value, fuel_value(obj_data.fuel_value, gui_translations))
       end
       -- Interaction help
       local interaction_help_str = ""
@@ -342,13 +358,13 @@ local formatters = {
       -- Fuel value
       local fuel_value_str = ""
       if obj_data.fuel_value then
-        fuel_value_str = tooltip_kv(gui_translations.fuel_value, fixed_format(obj_data.fuel_value, 3, "2").."J")
+        fuel_value_str = tooltip_kv(gui_translations.fuel_value, fuel_value(obj_data.fuel_value, gui_translations))
       end
       -- Fuel emissions
       local fuel_pollution_str = ""
       local fuel_pollution = obj_data.fuel_emissions_multiplier
       if fuel_pollution then
-        fuel_pollution_str = tooltip_kv(gui_translations.fuel_pollution, math.round_to(fuel_pollution * 100, 2))
+        fuel_pollution_str = tooltip_kv(gui_translations.fuel_pollution, percent(fuel_pollution, gui_translations))
       end
       -- Fuel acceleration
       local vehicle_acceleration_str = ""
@@ -356,7 +372,7 @@ local formatters = {
       if vehicle_acceleration then
         vehicle_acceleration_str = tooltip_kv(
           gui_translations.vehicle_acceleration,
-          math.round_to(vehicle_acceleration * 100, 2)
+          percent(vehicle_acceleration, gui_translations)
         )
       end
       -- Fuel top speed
@@ -365,7 +381,7 @@ local formatters = {
       if vehicle_top_speed then
         vehicle_top_speed_str = tooltip_kv(
           gui_translations.vehicle_top_speed,
-          math.round_to(vehicle_top_speed * 100, 2)
+          percent(vehicle_top_speed, gui_translations)
         )
       end
       -- Interaction help
@@ -409,7 +425,7 @@ local formatters = {
       -- Pumping speed
       local pumping_speed_str = tooltip_kv(
         gui_translations.pumping_speed,
-        math.round(obj_data.pumping_speed * 60).." "..gui_translations.per_second
+        per_second(obj_data.pumping_speed * 60, gui_translations)
       )
 
       return base_str..pumping_speed_str
@@ -431,8 +447,7 @@ local formatters = {
       local ip_str_arr = {}
       if player_settings.show_detailed_tooltips and not is_label then
         -- Crafting time
-        -- TODO: Unify `seconds` translation somehow
-        ip_str_arr[1] = tooltip_kv(gui_translations.crafting_time, math.round_to(obj_data.energy, 2).." s")
+        ip_str_arr[1] = tooltip_kv(gui_translations.crafting_time, seconds(obj_data.energy, gui_translations))
         -- Ingredients and products
         for material_type in pairs(ingredients_products_keys) do
           local materials = obj_data[material_type]
@@ -515,7 +530,10 @@ local formatters = {
 
         tech_str_arr[1] = tooltip_kv(gui_translations.required_units, unit_count)
         -- TODO: Standardize `per second` translation somehow
-        tech_str_arr[2] = tooltip_kv(gui_translations.time_per_unit, obj_data.research_unit_energy.." s")
+        tech_str_arr[2] = tooltip_kv(
+          gui_translations.time_per_unit,
+          seconds(obj_data.research_unit_energy, gui_translations)
+        )
         tech_str_arr[3] = tooltip_kv(gui_translations.research_ingredients_per_unit)
 
         -- Ingredients
@@ -633,7 +651,10 @@ end
 
 formatter.control = control
 formatter.expand_string = expand_string
+formatter.fuel_value = fuel_value
+formatter.percent = percent
 formatter.rich_text = rich_text
+formatter.seconds = seconds
 formatter.sprite = sprite
 formatter.tooltip_kv = tooltip_kv
 
