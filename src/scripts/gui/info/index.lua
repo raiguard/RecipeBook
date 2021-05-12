@@ -1,5 +1,6 @@
 local gui = require("__flib__.gui-beta")
 local math = require("__flib__.math")
+local table = require("__flib__.table")
 
 local constants = require("constants")
 
@@ -14,11 +15,6 @@ local components = {
 
 local info_gui = {}
 
--- TEMPORARY:
-local demo_caption = formatter.rich_text("font", "RecipeBook", constants.class_to_font_glyph.fluid)
-  ..formatter.rich_text("color", "heading", " [fluid=light-oil] Light oil (-50°C)")
-  .."  -  Product of  "
-  ..formatter.rich_text("color", "info", "(3 / 36)")
 
 local function tool_button(sprite, tooltip, ref, action)
   return {
@@ -42,7 +38,7 @@ function info_gui.build(player, player_table, context)
       type = "frame",
       style_mods = {width = 430},
       direction = "vertical",
-      ref = {"window", "frame"},
+      ref = {"window"},
       actions = {
         on_closed = {gui = "info", id = id, action = "close"}
       },
@@ -116,24 +112,37 @@ function info_gui.build(player, player_table, context)
         direction = "vertical",
         ref = {"page_frame"},
         {type = "frame", style = "rb_subheader_frame", direction = "vertical",
-          {type = "flow", style_mods = {vertical_align = "center"},
+          {
+            type = "flow",
+            style_mods = {vertical_align = "center"},
+            visible = false,
+            ref = {"header", "list_nav", "flow"},
             tool_button(
               "rb_nav_backward_black",
               {"gui.rb-go-backward"},
-              {"header", "nav_backward_button"},
-              {gui = "info", id = id, action = "navigate_list", delta = -1}
+              {"header", "list_nav", "back_button"}
             ),
             {type = "empty-widget", style = "flib_horizontal_pusher"},
-            {type = "label", style = "bold_label", caption = demo_caption},
+            {
+              type = "label",
+              style = "bold_label",
+              style_mods = {horizontally_squashable = true},
+              ref = {"header", "list_nav", "source_label"}
+            },
+            {
+              type = "label",
+              style = "bold_label",
+              style_mods = {font_color = constants.colors.info.tbl},
+              ref = {"header", "list_nav", "position_label"}
+            },
             {type = "empty-widget", style = "flib_horizontal_pusher"},
             tool_button(
               "rb_nav_forward_black",
               {"gui.rb-go-forward"},
-              {"header", "nav_forward_button"},
-              {gui = "info", id = id, action = "navigate_list", delta = -1}
+              {"header", "list_nav", "forward_button"}
             ),
           },
-          {type = "line", style = "rb_dark_line", direction = "horizontal"},
+          {type = "line", style = "rb_dark_line", direction = "horizontal", visible = false, ref = {"header", "line"}},
           {type = "flow", style_mods = {vertical_align = "center"},
             {type = "label", style = "rb_toolbar_label", ref = {"header", "label"}},
             {type = "empty-widget", style = "flib_horizontal_pusher"},
@@ -176,8 +185,8 @@ function info_gui.build(player, player_table, context)
     }
   })
 
-  refs.titlebar.flow.drag_target = refs.window.frame
-  refs.window.frame.force_auto_center()
+  refs.titlebar.flow.drag_target = refs.window
+  refs.window.force_auto_center()
 
   refs.page_components = {}
 
@@ -197,7 +206,7 @@ end
 function info_gui.destroy(player_table, id)
   local gui_data = player_table.guis.info[id]
   if gui_data then
-    gui_data.refs.window.frame.destroy()
+    gui_data.refs.window.destroy()
     player_table.guis.info[id] = nil
   end
 end
@@ -269,6 +278,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
   -- Generate tooltips
   local history_index = history._index
   local history_len = #history
+  -- TODO: Limit number of entries shown
   local entries = {}
   for i, history_context in ipairs(history) do
     local obj_data = global.recipe_book[history_context.class][history_context.name]
@@ -321,6 +331,59 @@ function info_gui.update_contents(player, player_table, id, new_context)
 
   -- HEADER
 
+  -- List navigation
+  local list_context = context.list
+  if list_context then
+    local list = list_context.list
+    local list_len = #list
+    local index = list_context.index
+    local source = list_context.context
+
+    local list_refs = refs.header.list_nav
+    list_refs.flow.visible = true
+
+    -- Labels
+    local source_data = global.recipe_book[source.class][source.name]
+    local source_info = formatter(source_data, player_data, {always_show = true})
+    local source_label = list_refs.source_label
+    source_label.caption = formatter.rich_text("color", "heading", source_info.caption)
+      .."  -  "
+      ..gui_translations[list_context.source]
+    local position_label = list_refs.position_label
+    position_label.caption = " ("..index.." / "..list_len..")"
+
+    -- Buttons
+    for delta, button in pairs{[-1] = list_refs.back_button, [1] = list_refs.forward_button} do
+      local new_index = index + delta
+      if new_index < 1 then
+        new_index = list_len
+      elseif new_index > list_len then
+        new_index = 1
+      end
+      local ident = list[new_index]
+      gui.set_action(button, "on_click", {
+        gui = "info",
+        id = id,
+        action = "navigate_to_plain",
+        context = {
+          class = ident.class,
+          name = ident.name,
+          list = {
+            context = source,
+            list = list,
+            index = new_index,
+            source = list_context.source
+          }
+        }
+      })
+    end
+
+    refs.header.line.visible = true
+  else
+    refs.header.list_nav.flow.visible = false
+    refs.header.line.visible = false
+  end
+
   -- Label
   local title_info = formatter(obj_data, player_data, {always_show = true, is_label = true})
   local label = refs.header.label
@@ -364,6 +427,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
 
   local i = 0
   local visible = false
+  local component_variables = {context = context, gui_id = id, search_query = state.search_query}
   -- Add or update relevant components
   for _, component_data in pairs(constants.pages[context.class]) do
     i = i + 1
@@ -375,7 +439,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
         component_refs.root.destroy()
       end
       -- Create new elements
-      component_refs = component.build(pane, i, component_data)
+      component_refs = component.build(pane, i, component_data, component_variables)
       component_refs.type = component_data.type
       page_refs[i] = component_refs
     end
@@ -385,7 +449,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
       component_refs,
       obj_data,
       player_data,
-      {context = context, gui_id = id, search_query = state.search_query}
+      component_variables
     )
 
     visible = visible or comp_visible
@@ -428,7 +492,7 @@ function info_gui.handle_action(msg, e)
   if msg.action == "close" then
     info_gui.destroy(player_table, msg.id)
   elseif msg.action == "bring_to_front" then
-    refs.window.frame.bring_to_front()
+    refs.window.bring_to_front()
   elseif msg.action == "toggle_search" then
     local opened = state.search_opened
     state.search_opened = not opened
@@ -490,6 +554,8 @@ function info_gui.handle_action(msg, e)
         info_gui.update_contents(player, player_table, msg.id, context)
       end
     end
+  elseif msg.action == "navigate_to_plain" then
+    info_gui.update_contents(player, player_table, msg.id, msg.context)
   elseif msg.action == "open_in_tech_window" then
     player.open_technology_gui(context.name)
   elseif msg.action == "go_to_base_fluid" then
@@ -518,6 +584,28 @@ function info_gui.handle_action(msg, e)
     else
       button.style = "tool_button"
       button.tooltip = constants.header_button_tooltips[msg.button].unselected
+    end
+  elseif msg.action == "open_list" then
+    local list_context = msg.context
+    local source = msg.source
+    -- TODO: Add `nil` checks
+    local list = global.recipe_book[list_context.class][list_context.name][source]
+    if list and #list > 0 then
+      local first_obj = list[1]
+      shared.open_page(
+        player,
+        player_table,
+        {
+          class = first_obj.class,
+          name = first_obj.name,
+          list = {
+            context = list_context,
+            index = 1,
+            list = list,
+            source = source,
+          }
+        }
+      )
     end
   end
 end

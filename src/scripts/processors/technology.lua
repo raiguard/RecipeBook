@@ -28,6 +28,7 @@ return function(recipe_book, strings, metadata)
     end
 
     -- unlocks recipes, materials, crafter / lab / offshore pump
+    -- TODO: This breaks the list navigation system
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
         local recipe_data = recipe_book.recipe[modifier.recipe]
