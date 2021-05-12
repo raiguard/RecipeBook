@@ -1,4 +1,5 @@
 local math = require("__flib__.math")
+local misc = require("__flib__.misc")
 local fixed_format = require("lib.fixed-precision-format")
 
 local constants = require("constants")
@@ -40,20 +41,24 @@ local function expand_string(source, ...)
   return source
 end
 
+local function number(value)
+  return misc.delineate_number(math.round_to(value, 2))
+end
+
 local function fuel_value(value, gui_translations)
   return fixed_format(value, 3, "2")..gui_translations.si_joule
 end
 
 local function percent(value, gui_translations)
-  return expand_string(gui_translations.format_percent, math.round_to(value * 100, 2))
+  return expand_string(gui_translations.format_percent, number(value * 100))
 end
 
 local function seconds(value, gui_translations)
-  return expand_string(gui_translations.format_seconds, math.round_to(value * 100, 2))
+  return expand_string(gui_translations.format_seconds, number(value * 60))
 end
 
 local function per_second(value, gui_translations)
-  return math.round_to(value, 2)..gui_translations.per_second_suffix
+  return number(value)..gui_translations.per_second_suffix
 end
 
 local function get_properties(obj_data, force_index)
@@ -529,7 +534,6 @@ local formatters = {
         )
 
         tech_str_arr[1] = tooltip_kv(gui_translations.required_units, unit_count)
-        -- TODO: Standardize `per second` translation somehow
         tech_str_arr[2] = tooltip_kv(
           gui_translations.time_per_unit,
           seconds(obj_data.research_unit_energy, gui_translations)
@@ -652,6 +656,7 @@ end
 formatter.control = control
 formatter.expand_string = expand_string
 formatter.fuel_value = fuel_value
+formatter.number = number
 formatter.percent = percent
 formatter.rich_text = rich_text
 formatter.seconds = seconds

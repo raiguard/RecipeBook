@@ -76,7 +76,8 @@ return function(recipe_book, strings, metadata)
         data.made_in[#data.made_in + 1] = {
           class = "crafter",
           name = crafter_name,
-          amount_string = rocket_parts_str.."("..crafting_time.."s)",
+          -- TODO: Locale-specific amount strings
+          amount_string = rocket_parts_str.."("..crafting_time.." s)",
           quick_ref_amount_string = tostring(math.round_to(crafting_time, 1))
         }
         crafter_data.compatible_recipes[#crafter_data.compatible_recipes + 1] = {class = "recipe", name = name}

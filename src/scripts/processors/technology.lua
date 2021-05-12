@@ -16,7 +16,8 @@ return function(recipe_book, strings, metadata)
       research_ingredients_per_unit[#research_ingredients_per_unit + 1] = {
         class = ingredient.type,
         name = ingredient.name,
-        amount_string = ingredient.amount.."x"
+        -- TODO: Locale-specific amount strings
+        amount_string = ingredient.amount.." x"
       }
     end
 

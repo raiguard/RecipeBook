@@ -36,8 +36,8 @@ function table_comp.update(component, refs, object_data, player_data, variables)
     if row.type == "plain" then
       local value = object_data[row.name]
       if value then
-        local label_caption = gui_translations[row.label or row.name]
-        if string.find(string.lower(label_caption), search_query) then
+        local caption = gui_translations[row.label or row.name]
+        if string.find(string.lower(caption), search_query) then
           -- Label
           i = i + 1
           local label_label = children[i]
@@ -47,8 +47,15 @@ function table_comp.update(component, refs, object_data, player_data, variables)
               style = "rb_table_label",
             }
           end
-          label_label.caption = label_caption
-          label_label.tooltip = row.label_tooltip and gui_translations[row.label_tooltip] or ""
+          local tooltip = row.label_tooltip
+          if tooltip then
+            caption = caption.." [img=info]"
+            tooltip = gui_translations[row.label_tooltip]
+          else
+            tooltip = ""
+          end
+          label_label.caption = caption
+          label_label.tooltip = tooltip
 
           -- Value
           local fmt = row.formatter

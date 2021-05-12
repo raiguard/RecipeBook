@@ -19,7 +19,7 @@ local function quick_ref_panel(ref)
 end
 
 local function build_tooltip(tooltip, amount_string)
-  -- TODO: Add shift+click to toggle green status
+  -- TODO: Add alt+click to toggle green status
   return string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(amount_string, "%%", "%%%%").." ")
 end
 
@@ -91,8 +91,6 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
   local label = refs.label
   label.caption = recipe_info.caption
   label.tooltip = recipe_info.tooltip
-  -- TODO: Append tooltip to talk about alt+clicking
-
 
   -- Slot boxes
   for _, source in ipairs{"ingredients", "products", "made_in"} do

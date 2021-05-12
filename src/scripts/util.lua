@@ -6,6 +6,8 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
+local formatter = require("scripts.formatter")
+
 local util = {}
 
 function util.append(tbl, name)
@@ -14,13 +16,14 @@ function util.append(tbl, name)
   return new_tbl
 end
 
+-- TODO: Locale-specific amount strings
 function util.build_amount_string(material)
   -- amount
   local amount = material.amount
   local amount_string = (
     amount
-    and math.round_to(amount, 2).."x"
-    or material.amount_min.." - "..material.amount_max.."x"
+    and math.round_to(amount, 2).." x"
+    or material.amount_min.." - "..material.amount_max.." x"
   )
 
   -- probability
@@ -40,26 +43,22 @@ function util.build_amount_string(material)
   return amount_string, quick_ref_string
 end
 
-local function format_number(number)
-  return misc.delineate_number(math.round_to(number, 2))
-end
-
 function util.build_temperature_ident(fluid)
   local temperature = fluid.temperature
   local temperature_min = fluid.minimum_temperature
   local temperature_max = fluid.maximum_temperature
   local temperature_string
   if temperature then
-    temperature_string = format_number(temperature)
+    temperature_string = formatter.number(temperature)
     temperature_min = temperature
     temperature_max = temperature
   elseif temperature_min and temperature_max then
     if temperature_min == math.min_double then
-      temperature_string = "≤"..format_number(temperature_max)
+      temperature_string = "≤"..formatter.number(temperature_max)
     elseif temperature_max == math.max_double then
-      temperature_string = "≥"..format_number(temperature_min)
+      temperature_string = "≥"..formatter.number(temperature_min)
     else
-      temperature_string = ""..format_number(temperature_min).."-"..format_number(temperature_max)
+      temperature_string = ""..formatter.number(temperature_min).."-"..formatter.number(temperature_max)
     end
   end
 

@@ -143,7 +143,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "disabled", localised = {"entity-status.disabled"}},
   {dictionary = "gui", internal = "fixed_recipe", localised = {"gui.rb-fixed-recipe"}},
   {dictionary = "gui", internal = "format_percent", localised = {"format-percent"}},
-  {dictionary = "gui", internal = "format_seconds", localised = {"time-symbol-seconds-short"}},
+  {dictionary = "gui", internal = "format_seconds", localised = {"time-symbol-seconds"}},
   {dictionary = "gui", internal = "fuel_pollution", localised = {"description.fuel-pollution"}},
   {dictionary = "gui", internal = "fuel_value", localised = {"description.fuel-value"}},
   {dictionary = "gui", internal = "get_blueprint", localised = {"gui.rb-get-blueprint"}},
