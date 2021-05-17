@@ -291,12 +291,7 @@ constants.pages = {
   },
   lab = {
     {type = "table", rows = {
-      {
-        type = "plain",
-        name = "researching_speed",
-        label = "research_speed",
-        label_tooltip = "research_speed_desc"
-      }
+      {type = "plain", name = "researching_speed", label = "research_speed", label_tooltip = "research_speed_desc"}
     }},
     {type = "list_box", source = "inputs"},
     {type = "list_box", source = "unlocked_by"},
@@ -326,7 +321,7 @@ constants.pages = {
         name = "research_unit_energy",
         label = "time_per_unit",
         label_tooltip = "time_per_unit_desc",
-        formatter = "seconds"
+        formatter = "seconds_from_ticks"
       }
     }},
     {type = "list_box", source = "research_ingredients_per_unit"},

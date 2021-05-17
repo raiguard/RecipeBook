@@ -456,7 +456,10 @@ local formatters = {
       local ip_str_arr = {}
       if player_settings.show_detailed_tooltips and not is_label then
         -- Crafting time
-        ip_str_arr[1] = tooltip_kv(gui_translations.crafting_time, seconds(obj_data.energy, gui_translations))
+        ip_str_arr[1] = tooltip_kv(
+          gui_translations.crafting_time,
+          seconds_from_ticks(obj_data.energy, gui_translations)
+        )
         -- Ingredients and products
         for material_type in pairs(ingredients_products_keys) do
           local materials = obj_data[material_type]
@@ -540,7 +543,7 @@ local formatters = {
         tech_str_arr[1] = tooltip_kv(gui_translations.required_units, unit_count)
         tech_str_arr[2] = tooltip_kv(
           gui_translations.time_per_unit,
-          seconds(obj_data.research_unit_energy, gui_translations)
+          seconds_from_ticks(obj_data.research_unit_energy, gui_translations)
         )
         tech_str_arr[3] = tooltip_kv(gui_translations.research_ingredients_per_unit)
 
