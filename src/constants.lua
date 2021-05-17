@@ -310,7 +310,7 @@ constants.pages = {
         name = "energy",
         label = "crafting_time",
         label_tooltip = "crafting_time_desc",
-        formatter = "seconds"
+        formatter = "seconds_from_ticks"
       }
     }},
     {type = "list_box", source = "ingredients", always_show = true},

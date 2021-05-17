@@ -370,6 +370,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
           name = ident.name,
           list = {
             context = source,
+            -- FIXME: DO NOT store the list in the msg, it will serialize it every time!
             list = list,
             index = new_index,
             source = list_context.source

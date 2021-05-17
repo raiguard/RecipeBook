@@ -57,6 +57,10 @@ local function seconds(value, gui_translations)
   return expand_string(gui_translations.format_seconds, number(value * 60))
 end
 
+local function seconds_from_ticks(value, gui_translations)
+  return seconds(value / 60, gui_translations)
+end
+
 local function per_second(value, gui_translations)
   return number(value)..gui_translations.per_second_suffix
 end
@@ -659,6 +663,7 @@ formatter.fuel_value = fuel_value
 formatter.number = number
 formatter.percent = percent
 formatter.rich_text = rich_text
+formatter.seconds_from_ticks = seconds_from_ticks
 formatter.seconds = seconds
 formatter.sprite = sprite
 formatter.tooltip_kv = tooltip_kv
