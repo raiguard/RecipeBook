@@ -106,50 +106,17 @@ end
 
 gui.hook_events(read_action)
 
--- TODO:
--- event.on_gui_opened(function(e)
---   if not read_action(e) then
---     local player = game.get_player(e.player_index)
---     local player_table = global.players[e.player_index]
---     player_table.last_opened_gui = player.opened or player.opened_gui_type
---   end
--- end)
-
--- event.on_gui_closed(function(e)
---   if not read_action(e) then
---     local player = game.get_player(e.player_index)
---     local player_table = global.players[e.player_index]
---     local gui_data = player_table.guis.main
---     if gui_data and gui_data.state.temp_opened then
---       -- close RB
---       gui_data.state.temp_opened = false
---       -- FIXME:
---       -- main_gui.close(player, player_table)
---       -- re-open what was last open
---       local last_open = player_table.last_opened_gui
---       if last_open and (type(last_open) ~= "table" or last_open.valid) then
---         player.opened = last_open
---       end
---     end
---     if player_table.flags.technology_gui_open then
---       player_table.flags.technology_gui_open = false
---       if not gui_data.state.pinned then
---         game.get_player(e.player_index).opened = gui_data.refs.base.window.frame
---       end
---     end
---   end
--- end)
-
--- event.on_gui_click(function(e)
---   if not read_action(e) and e.element.name == "fp_frame_background_dimmer" then
---     -- bring frame to front if clicking on Factory Planner dimmer frame
---     local player_table = global.players[e.player_index]
---     local gui_data = player_table.guis.main
---     if gui_data then
---       gui_data.refs.base.window.frame.bring_to_front()
---     end
---   end
--- end)
+event.on_gui_click(function(e)
+  -- If clicking on the Factory Planner dimmer frame
+  if not read_action(e) and e.element.style.name == "fp_frame_semitransparent" then
+    -- Bring all GUIs to the front
+    local player_table = global.players[e.player_index]
+    if player_table.flags.can_open_gui then
+      info_gui.bring_all_to_front(player_table)
+      quick_ref_gui.bring_all_to_front(player_table)
+    end
+  end
+end)
 
 -- INTERACTION
 

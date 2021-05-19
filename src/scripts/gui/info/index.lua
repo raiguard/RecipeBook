@@ -15,7 +15,6 @@ local components = {
 
 local info_gui = {}
 
-
 local function tool_button(sprite, tooltip, ref, action)
   return {
       type = "sprite-button",
@@ -483,6 +482,14 @@ end
 function info_gui.update_all(player, player_table)
   for id in pairs(player_table.guis.info) do
     info_gui.update_contents(player, player_table, id)
+  end
+end
+
+function info_gui.bring_all_to_front(player_table)
+  for id, gui_data in pairs(player_table.guis.info) do
+    if id ~= "_next_id" then
+      gui_data.refs.window.bring_to_front()
+    end
   end
 end
 

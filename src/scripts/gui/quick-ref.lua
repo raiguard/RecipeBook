@@ -179,6 +179,12 @@ function quick_ref_gui.update_all(player, player_table)
   end
 end
 
+function quick_ref_gui.bring_all_to_front(player_table)
+  for _, gui_data in pairs(player_table.guis.quick_ref) do
+    gui_data.refs.window.bring_to_front()
+  end
+end
+
 function quick_ref_gui.handle_action(msg, e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
