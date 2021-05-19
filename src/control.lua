@@ -169,7 +169,7 @@ event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-hom
   local player_table = global.players[e.player_index]
   if player_table.flags.can_open_gui and player_table.flags.gui_open and not player_table.flags.technology_gui_open then
     local event_properties = constants.nav_event_properties[e.input_name]
-    -- TODO:
+    -- TODO: Find a way to handle these shortcuts
     -- main_gui.handle_action(
     --   {gui = "main", action = event_properties.action_name},
     --   {player_index = e.player_index, shift = event_properties.shift}

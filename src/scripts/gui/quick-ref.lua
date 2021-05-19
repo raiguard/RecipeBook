@@ -18,9 +18,10 @@ local function quick_ref_panel(ref)
     }
 end
 
-local function build_tooltip(tooltip, amount_string)
-  -- TODO: Add alt+click to toggle green status
-  return string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(amount_string, "%%", "%%%%").." ")
+local function build_tooltip(tooltip, amount_string, gui_translations)
+  return
+    string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(amount_string, "%%", "%%%%").." ")
+    ..formatter.control(gui_translations.alt_click, gui_translations.toggle_completed)
 end
 
 function quick_ref_gui.build(player, player_table, recipe_name)
@@ -119,7 +120,7 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
         i = i + 1
 
         local button_style = object_info.is_researched and "flib_slot_button_default" or "flib_slot_button_red"
-        local tooltip = build_tooltip(object_info.tooltip, object.amount_string)
+        local tooltip = build_tooltip(object_info.tooltip, object.amount_string, player_data.translations.gui)
 
         local button = buttons[i]
 

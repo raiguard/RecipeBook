@@ -182,6 +182,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "temperatures", localised = {"gui.rb-temperatures"}},
   {dictionary = "gui", internal = "time_per_unit_desc", localised = {"gui.rb-time-per-unit-desc"}},
   {dictionary = "gui", internal = "time_per_unit", localised = {"gui.rb-time-per-unit"}},
+  {dictionary = "gui", internal = "toggle_completed", localised = {"gui.rb-toggle-completed"}},
   {dictionary = "gui", internal = "unlocked_by", localised = {"gui.rb-unlocked-by"}},
   {dictionary = "gui", internal = "unlocks_fluids", localised = {"gui.rb-unlocks-fluids"}},
   {dictionary = "gui", internal = "unlocks_items", localised = {"gui.rb-unlocks-items"}},
