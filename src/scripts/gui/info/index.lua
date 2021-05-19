@@ -480,6 +480,12 @@ function info_gui.update_contents(player, player_table, id, new_context)
   end
 end
 
+function info_gui.update_all(player, player_table)
+  for id in pairs(player_table.guis.info) do
+    info_gui.update_contents(player, player_table, id)
+  end
+end
+
 function info_gui.handle_action(msg, e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]

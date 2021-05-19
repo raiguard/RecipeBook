@@ -174,7 +174,9 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
 end
 
 function quick_ref_gui.update_all(player, player_table)
-
+  for recipe_name in pairs(player_table.guis.quick_ref) do
+    quick_ref_gui.update_contents(player, player_table, recipe_name)
+  end
 end
 
 function quick_ref_gui.handle_action(msg, e)

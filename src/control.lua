@@ -83,11 +83,8 @@ event.register({defines.events.on_research_finished, defines.events.on_research_
   for _, player in pairs(e.research.force.players) do
     local player_table = global.players[player.index]
     if player_table and player_table.flags.can_open_gui then
-      if player_table.flags.gui_open or player_table.settings.preserve_session then
-        -- FIXME:
-        -- main_gui.refresh_contents(player, player_table)
-      end
-      quick_ref_gui.refresh_all(player, player_table)
+      info_gui.update_all(player, player_table)
+      quick_ref_gui.update_all(player, player_table)
     end
   end
 end)
@@ -205,7 +202,7 @@ event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-hom
   local player_table = global.players[e.player_index]
   if player_table.flags.can_open_gui and player_table.flags.gui_open and not player_table.flags.technology_gui_open then
     local event_properties = constants.nav_event_properties[e.input_name]
-    -- FIXME:
+    -- TODO:
     -- main_gui.handle_action(
     --   {gui = "main", action = event_properties.action_name},
     --   {player_index = e.player_index, shift = event_properties.shift}
@@ -282,7 +279,7 @@ event.on_string_translated(function(e)
       player.print{'rb-message.can-open-gui'}
     end
     -- create GUI
-    -- FIXME: Create search GUI - info GUIs are created on demand
+    -- TODO: Create search GUI - info GUIs are created on demand
     -- main_gui.build(player, player_table)
     -- update flags
     player_table.flags.can_open_gui = true
@@ -334,9 +331,8 @@ end
 
 function shared.refresh_contents(player, player_table)
   formatter.purge_cache(player.index)
-  -- FIXME:
-  -- main_gui.refresh_all(player, player_table)
-  quick_ref_gui.refresh_all(player, player_table)
+  info_gui.update_all(player, player_table)
+  quick_ref_gui.update_all(player, player_table)
 end
 
 -- FIXME: Potential desync
