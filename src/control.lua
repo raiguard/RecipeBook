@@ -205,11 +205,11 @@ end)
 
 -- TICK
 
-function event.on_tick(e)
+event.on_tick(function(e)
   if translation.translating_players_count() > 0 then
     translation.iterate_batch(e)
   end
-end
+end)
 
 -- TRANSLATIONS
 
