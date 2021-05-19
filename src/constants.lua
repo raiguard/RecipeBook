@@ -315,7 +315,7 @@ constants.pages = {
   },
   technology = {
     {type = "table", rows = {
-      {type = "plain", name = "research_unit_count", label = "required_units"},
+      {type = "plain", name = "research_unit_count", label = "required_units", formatter = "number"},
       {
         type = "plain",
         name = "research_unit_energy",

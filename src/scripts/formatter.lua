@@ -22,9 +22,9 @@ local function sprite(class, name)
   return "[img="..class.."/"..name.."]"
 end
 
-local function control(control, action)
+local function control(content, action)
   return "\n"
-    ..rich_text("color", "info", rich_text("font", "default-semibold", control..":"))
+    ..rich_text("color", "info", rich_text("font", "default-semibold", content..":"))
     .." "
     ..action
 end
@@ -333,7 +333,7 @@ local formatters = {
       -- Fuel value
       local fuel_value_str = ""
       if obj_data.fuel_value then
-        fuel_value_string = tooltip_kv(gui_translations.fuel_value, fuel_value(obj_data.fuel_value, gui_translations))
+        fuel_value_str = tooltip_kv(gui_translations.fuel_value, fuel_value(obj_data.fuel_value, gui_translations))
       end
       -- Interaction help
       local interaction_help_str = ""
@@ -540,7 +540,7 @@ local formatters = {
           {L = obj_data.min_level, l = obj_data.min_level}
         )
 
-        tech_str_arr[1] = tooltip_kv(gui_translations.required_units, unit_count)
+        tech_str_arr[1] = tooltip_kv(gui_translations.required_units, number(unit_count))
         tech_str_arr[2] = tooltip_kv(
           gui_translations.time_per_unit,
           seconds_from_ticks(obj_data.research_unit_energy, gui_translations)
