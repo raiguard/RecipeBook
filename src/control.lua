@@ -38,7 +38,6 @@ end)
 
 event.on_init(function()
   translation.init()
-  shared.register_on_tick()
 
   global_data.init()
   global_data.build_recipe_book()
@@ -51,13 +50,11 @@ end)
 
 event.on_load(function()
   formatter.create_all_caches()
-  shared.register_on_tick()
 end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
     translation.init()
-    shared.register_on_tick()
 
     global_data.build_recipe_book()
     global_data.check_forces()
@@ -208,16 +205,9 @@ end)
 
 -- TICK
 
-local function on_tick(e)
-  local deregister = true
-
+function event.on_tick(e)
   if translation.translating_players_count() > 0 then
-    deregister = false
     translation.iterate_batch(e)
-  end
-
-  if deregister then
-    event.on_tick(nil)
   end
 end
 
@@ -254,8 +244,6 @@ event.on_string_translated(function(e)
     player_table.flags.show_message_after_translation = false
     -- enable shortcut
     player.set_shortcut_available("rb-toggle-gui", true)
-    -- update on_tick
-    shared.register_on_tick()
   end
 end)
 
@@ -300,12 +288,5 @@ function shared.refresh_contents(player, player_table)
   formatter.purge_cache(player.index)
   info_gui.update_all(player, player_table)
   quick_ref_gui.update_all(player, player_table)
-end
-
--- FIXME: Potential desync
-function shared.register_on_tick()
-  if global.__flib and translation.translating_players_count() > 0 then
-    event.on_tick(on_tick)
-  end
 end
 
