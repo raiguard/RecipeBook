@@ -100,6 +100,7 @@ function player_data.refresh(player, player_table)
 
   -- destroy global history
   -- TODO: Validate instead of destroy
+  -- TODO: Implement global history
   player_table.global_history = {}
 
   -- update settings

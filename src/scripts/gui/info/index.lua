@@ -224,7 +224,6 @@ function info_gui.find_open_context(player_table, context)
     if id ~= "_next_id" then
       local state = gui_data.state
       local opened_context = state.history[state.history._index]
-      -- TODO: Shouldn't ever be `nil`
       if opened_context and opened_context.class == context.class and opened_context.name == context.name then
         open[#open + 1] = id
       end
@@ -333,18 +332,19 @@ function info_gui.update_contents(player, player_table, id, new_context)
   -- List navigation
   local list_context = context.list
   if list_context then
-    local list = list_context.list
+    local source = list_context.context
+    local source_data = global.recipe_book[source.class][source.name]
+    local list = source_data[list_context.source]
     local list_len = #list
     local index = list_context.index
-    local source = list_context.context
 
     local list_refs = refs.header.list_nav
     list_refs.flow.visible = true
 
     -- Labels
-    local source_data = global.recipe_book[source.class][source.name]
     local source_info = formatter(source_data, player_data, {always_show = true})
     local source_label = list_refs.source_label
+
     source_label.caption = formatter.rich_text("color", "heading", source_info.caption)
       .."  -  "
       ..gui_translations[list_context.source]
@@ -369,8 +369,6 @@ function info_gui.update_contents(player, player_table, id, new_context)
           name = ident.name,
           list = {
             context = source,
-            -- FIXME: DO NOT store the list in the msg, it will serialize it every time!
-            list = list,
             index = new_index,
             source = list_context.source
           }
@@ -615,7 +613,6 @@ function info_gui.handle_action(msg, e)
           list = {
             context = list_context,
             index = 1,
-            list = list,
             source = source,
           }
         }
