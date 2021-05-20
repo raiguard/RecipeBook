@@ -9,10 +9,14 @@ function item_proc.build(recipe_book, strings, metadata)
   local rocket_launch_payloads = {}
 
   for name, prototype in pairs(game.item_prototypes) do
-    -- rocket launch products
+    -- Group
+    local group = prototype.group
+    local group_data = recipe_book.group[group.name]
+    group_data.items[#group_data.items + 1] = {class = "item", name = name}
+    -- Rocket launch products
     local launch_products = {}
     for i, product in ipairs(prototype.rocket_launch_products or {}) do
-      -- add to products table w/ amount string
+      -- Add to products table w/ amount string
       local amount_string, quick_ref_amount_string = util.build_amount_string(product)
       launch_products[i] = {
         class = product.type,
@@ -20,7 +24,7 @@ function item_proc.build(recipe_book, strings, metadata)
         amount_string = amount_string,
         quick_ref_amount_string = quick_ref_amount_string
       }
-      -- add to payloads table
+      -- Add to payloads table
       local product_payloads = rocket_launch_payloads[product.name]
       local ident = {class = "item", name = name}
       if product_payloads then
@@ -87,7 +91,7 @@ function item_proc.build(recipe_book, strings, metadata)
     })
   end
 
-  -- add rocket launch payloads to their material tables
+  -- Add rocket launch payloads to their material tables
   for product, payloads in pairs(rocket_launch_payloads) do
     local product_data = recipe_book.item[product]
     product_data.rocket_launch_payloads = table.array_copy(payloads)
@@ -118,7 +122,7 @@ function item_proc.place_results(recipe_book, metadata)
   end
 end
 
--- when calling the module directly, call fluid_proc.build
+-- When calling the module directly, call fluid_proc.build
 setmetatable(item_proc, { __call = function(_, ...) return item_proc.build(...) end })
 
 return item_proc

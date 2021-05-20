@@ -35,7 +35,7 @@ constants.class_to_font_glyph = {
   fluid = "B",
   item = "C",
   -- TODO: Add a glyph
-  item_group = "Z",
+  group = "Z",
   lab = "D",
   offshore_pump = "D",
   recipe = "E",
@@ -47,7 +47,7 @@ constants.class_to_type = {
   crafter = "entity",
   fluid = "fluid",
   item = "item",
-  item_group = "item-group",
+  group = "item-group",
   lab = "entity",
   offshore_pump = "entity",
   recipe = "recipe",
@@ -96,8 +96,8 @@ constants.empty_translations_table = {
   fluid_description = {},
   item = {},
   item_description = {},
-  item_group = {},
-  item_group_description = {},
+  group = {},
+  group_description = {},
   lab = {},
   lab_description = {},
   offshore_pump = {},
@@ -126,6 +126,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "disabled", localised = {"entity-status.disabled"}},
   {dictionary = "gui", internal = "fixed_recipe", localised = {"gui.rb-fixed-recipe"}},
   {dictionary = "gui", internal = "fluid", localised = {"gui.rb-fluid"}},
+  {dictionary = "gui", internal = "fluids", localised = {"gui.rb-fluids"}},
   {dictionary = "gui", internal = "format_percent", localised = {"format-percent"}},
   {dictionary = "gui", internal = "format_seconds", localised = {"time-symbol-seconds"}},
   {dictionary = "gui", internal = "fuel_pollution", localised = {"description.fuel-pollution"}},
@@ -135,13 +136,14 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "go_forward", localised = {"gui.rb-go-forward"}},
   {dictionary = "gui", internal = "go_to_the_back", localised = {"gui.rb-go-to-the-back"}},
   {dictionary = "gui", internal = "go_to_the_front", localised = {"gui.rb-go-to-the-front"}},
+  {dictionary = "gui", internal = "group", localised = {"gui.rb-group"}},
   {dictionary = "gui", internal = "hidden_abbrev", localised = {"gui.rb-hidden-abbrev"}},
   {dictionary = "gui", internal = "hidden", localised = {"gui.rb-hidden"}},
   {dictionary = "gui", internal = "ingredient_in", localised = {"gui.rb-ingredient-in"}},
   {dictionary = "gui", internal = "ingredients", localised = {"gui.rb-ingredients"}},
   {dictionary = "gui", internal = "inputs", localised = {"gui.rb-inputs"}},
-  {dictionary = "gui", internal = "item_group", localised = {"gui.rb-item-group"}},
   {dictionary = "gui", internal = "item", localised = {"gui.rb-item"}},
+  {dictionary = "gui", internal = "items", localised = {"gui.rb-items"}},
   {dictionary = "gui", internal = "lab", localised = {"gui.rb-lab"}},
   {dictionary = "gui", internal = "list_box_label", localised = {"gui.rb-list-box-label"}},
   {dictionary = "gui", internal = "made_in", localised = {"gui.rb-made-in"}},
@@ -252,6 +254,11 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "temperatures", use_pairs = true}
   },
+  group = {
+    {type = "list_box", source = "fluids"},
+    {type = "list_box", source = "items"},
+    {type = "list_box", source = "recipes"}
+  },
   item = {
     {type = "table", rows = {
       {type = "plain", name = "stack_size"},
@@ -282,9 +289,6 @@ constants.pages = {
     {type = "list_box", source = "mined_from"},
     {type = "list_box", source = "researched_in"},
     {type = "list_box", source = "unlocked_by"}
-  },
-  item_group = {
-    {type = "list_box", source = "recipes"}
   },
   lab = {
     {type = "table", rows = {
@@ -409,6 +413,7 @@ constants.type_to_class = {
   ["fluid"] = "fluid",
   ["furnace"] = "crafter",
   ["item"] = "item",
+  ["item-group"] = "group",
   ["lab"] = "lab",
   ["recipe"] = "recipe",
   ["rocket-silo"] = "crafter",

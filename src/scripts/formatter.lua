@@ -411,7 +411,7 @@ local formatters = {
     end,
     enabled = function() return true end
   },
-  item_group = {
+  group = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       if is_label then

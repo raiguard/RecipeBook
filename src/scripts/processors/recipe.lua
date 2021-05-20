@@ -12,7 +12,7 @@ return function(recipe_book, strings, metadata)
 
     local group = prototype.group
 
-    local group_data = recipe_book.item_group[group.name]
+    local group_data = recipe_book.group[group.name]
     group_data.recipes[#group_data.recipes + 1] = {class = "recipe", name = name}
 
     local data = {
@@ -23,7 +23,7 @@ return function(recipe_book, strings, metadata)
       class = "recipe",
       enabled_at_start = enabled_at_start,
       energy = prototype.energy,
-      group = {class = "item_group", name = group.name},
+      group = {class = "group", name = group.name},
       hidden = prototype.hidden,
       made_in = {},
       prototype_name = name,

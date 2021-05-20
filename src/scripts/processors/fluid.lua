@@ -5,6 +5,11 @@ local fluid_proc = {}
 function fluid_proc.build(recipe_book, strings, metadata)
   local localised_fluids = {}
   for name, prototype in pairs(game.fluid_prototypes) do
+    -- Group
+    local group = prototype.group
+    local group_data = recipe_book.group[group.name]
+    group_data.fluids[#group_data.fluids + 1] = {class = "fluid", name = name}
+    -- Save to recipe book
     recipe_book.fluid[name] = {
       class = "fluid",
       default_temperature = prototype.default_temperature,
@@ -19,6 +24,7 @@ function fluid_proc.build(recipe_book, strings, metadata)
       temperatures = {},
       unlocked_by = util.unique_obj_array()
     }
+    -- Add strings
     util.add_string(strings, {dictionary = "fluid", internal = name, localised = prototype.localised_name})
     util.add_string(strings, {
       dictionary = "fluid_description",
