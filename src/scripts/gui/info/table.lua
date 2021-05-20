@@ -1,6 +1,8 @@
 local fixed_format = require("lib.fixed-precision-format")
 local gui = require("__flib__.gui-beta")
 
+local constants = require("constants")
+
 local formatter = require("scripts.formatter")
 
 local table_comp = {}
@@ -30,9 +32,8 @@ function table_comp.update(component, refs, object_data, player_data, variables)
 
   local search_query = variables.search_query
 
-  local i = 3
+  local i = 2
   for _, row in ipairs(component.rows) do
-    -- TODO: Implement 'goto' type with an object
     if row.type == "plain" then
       local value = object_data[row.name]
       if value then
@@ -45,6 +46,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             label_label = table.add{
               type = "label",
               style = "rb_table_label",
+              index = i
             }
           end
           local tooltip = row.label_tooltip
@@ -64,10 +66,68 @@ function table_comp.update(component, refs, object_data, player_data, variables)
           end
           i = i + 1
           local value_label = children[i]
-          if not value_label then
-            value_label = table.add{type = "label"}
+          if not value_label or value_label.type ~= "label" then
+            if value_label then
+              value_label.destroy()
+            end
+            value_label = table.add{type = "label", index = i}
           end
           value_label.caption = value
+        end
+      end
+    elseif row.type == "goto" then
+      local source_ident = object_data[row.source]
+      if source_ident then
+        local caption = gui_translations[row.label or row.source]
+        if string.find(string.lower(caption), search_query) then
+          -- Label
+          -- TODO: Deduplicate this
+          i = i + 1
+          local label_label = children[i]
+          if not label_label then
+            label_label = table.add{
+              type = "label",
+              style = "rb_table_label",
+              index = i,
+            }
+          end
+          local tooltip = row.label_tooltip
+          if tooltip then
+            caption = caption.." [img=info]"
+            tooltip = gui_translations[row.label_tooltip]
+          else
+            tooltip = ""
+          end
+          label_label.caption = caption
+          label_label.tooltip = tooltip
+
+          -- Button
+          i = i + 1
+          local button = children[i]
+          if not button or button.type ~= "button" then
+            if button then
+              button.destroy()
+            end
+            button = table.add{
+              type = "button",
+              style = "rb_table_button",
+              mouse_button_filter = {"left", "middle"},
+              index = i
+            }
+          end
+          local source_data = global.recipe_book[source_ident.class][source_ident.name]
+          local info = formatter(source_data, player_data, {always_show = true})
+          button.caption = info.caption
+          button.tooltip = info.tooltip
+          gui.set_action(button, "on_click", {
+            gui = "info",
+            id = variables.gui_id,
+            action = "navigate_to_plain",
+            context = {
+              class = source_ident.class,
+              name = source_ident.name
+            }
+          })
         end
       end
     end

@@ -27,6 +27,17 @@ styles.rb_unresearched_list_box_item = {
   disabled_font_color = constants.colors.unresearched.tbl
 }
 
+styles.rb_table_button = {
+  type = "button_style",
+  parent = "rb_list_box_item",
+  horizontally_stretchable = "off",
+  horizontally_squashable = "off",
+  top_margin = -3,
+  right_margin = -8,
+  bottom_margin = -5,
+  left_margin = -8,
+}
+
 -- FLOW STYLES
 
 styles.rb_main_frame_flow = {
@@ -132,6 +143,13 @@ styles.rb_inside_warning_frame = {
 }
 
 -- LABEL STYLES
+
+styles.rb_hyperlink_label = {
+  type = "label_style",
+  -- parent = "hyperlink_label",
+  font_color = {110, 179, 255},
+  hovered_font_color = {154, 250, 255},
+}
 
 styles.rb_table_label = {
   type = "label_style",

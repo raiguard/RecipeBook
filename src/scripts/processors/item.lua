@@ -70,6 +70,7 @@ function item_proc.build(recipe_book, strings, metadata)
         or nil
       ),
       fuel_value = has_fuel_value and fuel_value or nil,
+      group = {class = "group", name = group.name},
       hidden = prototype.has_flag("hidden"),
       ingredient_in = {},
       mined_from = {},

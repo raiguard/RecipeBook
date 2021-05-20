@@ -2,12 +2,13 @@
 Version: 3.0.0
 Date: ????
   Features:
+    - Added group page, showing the fluids, items, and recipes belonging to each group
     - Added science lab page, showing research speed, compatible science packs, unlocked by, and placeable by
     - Added numerous properties that were previously confined to tooltips:
       - Crafter: Crafting speed
-      - Fluid: Fuel value
-      - Item: Stack size, fuel value, fuel pollution, vehicle acceleration, vehicle top speed
-      - Recipe: Recipe category
+      - Fluid: Fuel value, group
+      - Item: Stack size, fuel value, fuel pollution, vehicle acceleration, vehicle top speed, group
+      - Recipe: Recipe category, group
   Gui:
     - Added new "table" element that can display key -> value pairs
     - Added text search to information pages

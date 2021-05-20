@@ -14,6 +14,7 @@ function fluid_proc.build(recipe_book, strings, metadata)
       class = "fluid",
       default_temperature = prototype.default_temperature,
       fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
+      group = {class = "group", name = group.name},
       hidden = prototype.hidden,
       ingredient_in = {},
       mined_from = {},

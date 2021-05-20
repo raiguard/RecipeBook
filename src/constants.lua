@@ -257,7 +257,8 @@ constants.pages = {
   },
   fluid = {
     {type = "table", rows = {
-      {type = "plain", name = "fuel_value", formatter = "fuel_value"}
+      {type = "plain", name = "fuel_value", formatter = "fuel_value"},
+      {type = "goto", source = "group"},
     }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
@@ -292,7 +293,8 @@ constants.pages = {
         name = "fuel_top_speed_multiplier",
         label = "vehicle_top_speed",
         formatter = "percent"
-      }
+      },
+      {type = "goto", source = "group"},
     }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
@@ -319,7 +321,8 @@ constants.pages = {
         label = "crafting_time",
         label_tooltip = "crafting_time_desc",
         formatter = "seconds_from_ticks"
-      }
+      },
+      {type = "goto", source = "group"},
     }},
     {type = "list_box", source = "ingredients", always_show = true},
     {type = "list_box", source = "products", always_show = true},
@@ -358,7 +361,7 @@ constants.settings = {
   interface = {
     show_hidden = {
       -- TEMPORARY:
-      default_value = false,
+      default_value = true,
       has_tooltip = true
     },
     show_unresearched = {
