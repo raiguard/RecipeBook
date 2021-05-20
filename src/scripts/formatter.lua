@@ -241,6 +241,7 @@ end
 
 local ingredients_products_keys = {ingredients = true, products = true}
 
+-- TODO: Refactor tooltips to be more generic (similar to the new pages system)
 local formatters = {
   crafter = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, blueprint_recipe)
