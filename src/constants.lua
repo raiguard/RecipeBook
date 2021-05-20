@@ -2,29 +2,29 @@ local table = require("__flib__.table")
 
 local constants = {}
 
--- dictionary category -> affects research
--- anything with `0` as the value will be ignored for research
+-- Dictionary category -> affects research
+-- Anything with `0` as the value will be ignored for research
 constants.disabled_recipe_categories = {
-  -- creative mod
+  -- Creative mod
   ["creative-mod_free-fluids"] = 1,
   ["creative-mod_energy-absorption"] = 1,
-  -- editor extensions
+  -- Editor extensions
   ["ee-testing-tool"] = 1,
-  -- deep storage unit
+  -- Deep storage unit
   ["deep-storage-item"] = 0,
   ["deep-storage-fluid"] = 0,
   ["deep-storage-item-big"] = 0,
   ["deep-storage-fluid-big"] = 0,
   ["deep-storage-item-mk2/3"] = 0,
   ["deep-storage-fluid-mk2/3"] = 0,
-  -- krastorio 2
-  ["void-crushing"] = 0, -- this doesn't actually exist yet, but will soon!
-  -- mining drones
+  -- Krastorio 2
+  ["void-crushing"] = 0, -- This doesn't actually exist yet, but will soon!
+  -- Mining drones
   ["mining-depot"] = 0,
-  -- pyanodon's
+  -- Pyanodon's
   ["py-runoff"] = 1,
   ["py-venting"] = 1,
-  -- transport drones
+  -- Transport drones
   ["fuel-depot"] = 0,
   ["transport-drone-request"] = 0,
   ["transport-fluid-request"] = 0
