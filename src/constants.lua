@@ -88,6 +88,18 @@ constants.colors = {
 
 constants.default_max_rows = 8
 
+constants.derived_type_to_class = {
+  ["assembling-machine"] = "crafter",
+  ["fluid"] = "fluid",
+  ["furnace"] = "crafter",
+  ["item"] = "item",
+  ["item-group"] = "group",
+  ["lab"] = "lab",
+  ["recipe"] = "recipe",
+  ["rocket-silo"] = "crafter",
+  ["technology"] = "technology",
+}
+
 constants.empty_translations_table = {
   gui = {},
   crafter = {},
@@ -406,18 +418,6 @@ constants.settings = {
       has_tooltip = true
     }
   }
-}
-
-constants.type_to_class = {
-  ["assembling-machine"] = "crafter",
-  ["fluid"] = "fluid",
-  ["furnace"] = "crafter",
-  ["item"] = "item",
-  ["item-group"] = "group",
-  ["lab"] = "lab",
-  ["recipe"] = "recipe",
-  ["rocket-silo"] = "crafter",
-  ["technology"] = "technology",
 }
 
 return constants
