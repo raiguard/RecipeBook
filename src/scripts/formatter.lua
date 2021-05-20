@@ -243,7 +243,7 @@ local ingredients_products_keys = {ingredients = true, products = true}
 
 local formatters = {
   crafter = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label, blueprint_recipe)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, blueprint_recipe)
       -- Locals
       local translations = player_data.translations
       local gui_translations = translations.gui
@@ -281,9 +281,7 @@ local formatters = {
             )
           end
           -- Help text
-          if not is_label then
-            fixed_recipe_help_str = control(gui_translations.control_click, gui_translations.view_fixed_recipe)
-          end
+          fixed_recipe_help_str = control(gui_translations.control_click, gui_translations.view_fixed_recipe)
         end
       end
       -- Crafting speed
@@ -295,18 +293,15 @@ local formatters = {
       end
       local crafting_categories_str = concat(crafting_categories_str_arr)
 
-      local open_page_help_str = ""
+      -- Open page help
+      local open_page_help_str = control(gui_translations.click, gui_translations.view_details)
+      -- Blueprintable
       local blueprintable_str = ""
-      if not is_label then
-        -- Open page help
-        open_page_help_str = control(gui_translations.click, gui_translations.view_details)
-        -- Blueprintable
-        if blueprint_recipe then
-          if obj_data.blueprintable then
-            blueprintable_str = control(gui_translations.shift_click, gui_translations.get_blueprint)
-          else
-            blueprintable_str = "\n"..rich_text("color", "error", gui_translations.blueprint_not_available)
-          end
+      if blueprint_recipe then
+        if obj_data.blueprintable then
+          blueprintable_str = control(gui_translations.shift_click, gui_translations.get_blueprint)
+        else
+          blueprintable_str = "\n"..rich_text("color", "error", gui_translations.blueprint_not_available)
         end
       end
 
@@ -324,7 +319,7 @@ local formatters = {
     enabled = function() return true end
   },
   fluid = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
       -- Locals
       local gui_translations = player_data.translations.gui
 
@@ -336,13 +331,10 @@ local formatters = {
         fuel_value_str = tooltip_kv(gui_translations.fuel_value, fuel_value(obj_data.fuel_value, gui_translations))
       end
       -- Interaction help
-      local interaction_help_str = ""
-      if not is_label then
-        interaction_help_str = control(gui_translations.click, gui_translations.view_details)
-        if obj_data.temperature_data then
-          interaction_help_str = interaction_help_str
-            ..control(gui_translations.shift_click, gui_translations.view_base_fluid)
-        end
+      local interaction_help_str = control(gui_translations.click, gui_translations.view_details)
+      if obj_data.temperature_data then
+        interaction_help_str = interaction_help_str
+          ..control(gui_translations.shift_click, gui_translations.view_base_fluid)
       end
 
       return base_str..fuel_value_str..interaction_help_str
@@ -350,7 +342,7 @@ local formatters = {
     enabled = function() return true end
   },
   item = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
       -- Locals
       local gui_translations = player_data.translations.gui
 
@@ -394,10 +386,7 @@ local formatters = {
         )
       end
       -- Interaction help
-      local interaction_help_str = ""
-      if not is_label then
-        interaction_help_str = control(gui_translations.click, gui_translations.view_details)
-      end
+      local interaction_help_str = control(gui_translations.click, gui_translations.view_details)
 
       return (
         base_str
@@ -412,14 +401,10 @@ local formatters = {
     enabled = function() return true end
   },
   group = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
-      if is_label then
-        return base_str
-      else
-        local gui_translations = player_data.translations.gui
-        return base_str..control(gui_translations.click, gui_translations.view_details)
-      end
+      local gui_translations = player_data.translations.gui
+      return base_str..control(gui_translations.click, gui_translations.view_details)
     end,
     enabled = function() return true end
   },
@@ -454,7 +439,7 @@ local formatters = {
     enabled = function() return false end
   },
   recipe = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
       -- Locals
       local recipe_book = global.recipe_book
       local gui_translations = player_data.translations.gui
@@ -466,7 +451,7 @@ local formatters = {
       local category_str = tooltip_kv(gui_translations.category, obj_data.category)
       -- Crafting time, ingredients and products
       local ip_str_arr = {}
-      if player_settings.show_detailed_tooltips and not is_label then
+      if player_settings.show_detailed_tooltips then
         -- Crafting time
         ip_str_arr[1] = tooltip_kv(
           gui_translations.crafting_time,
@@ -500,10 +485,7 @@ local formatters = {
       end
       local ip_str = concat(ip_str_arr)
       -- Interaction help
-      local interaction_help_str = ""
-      if not is_label then
-        interaction_help_str = control(gui_translations.click, gui_translations.view_details)
-      end
+      local interaction_help_str = control(gui_translations.click, gui_translations.view_details)
 
       return base_str..category_str..ip_str..interaction_help_str
     end,
@@ -537,7 +519,7 @@ local formatters = {
     enabled = function(obj_data) return obj_data.required_fluid and true or false end
   },
   technology = {
-    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
       local gui_translations = player_data.translations.gui
       local player_settings = player_data.settings
@@ -545,7 +527,7 @@ local formatters = {
 
       -- Units count, ingredients
       local tech_str_arr = {}
-      if player_settings.show_detailed_tooltips and not is_label then
+      if player_settings.show_detailed_tooltips then
         -- Units count
         local unit_count = obj_data.research_unit_count or game.evaluate_expression(
           obj_data.research_unit_count_formula,
@@ -582,11 +564,8 @@ local formatters = {
 
       local tech_str = concat(tech_str_arr)
       -- Interaction help
-      local interaction_help_str = ""
-      if not is_label then
-        interaction_help_str = control(gui_translations.click, gui_translations.view_details)
-          ..control(gui_translations.shift_click, gui_translations.open_in_technology_window)
-      end
+      local interaction_help_str = control(gui_translations.click, gui_translations.view_details)
+        ..control(gui_translations.shift_click, gui_translations.open_in_technology_window)
 
       return base_str..tech_str..interaction_help_str
     end,
@@ -599,19 +578,27 @@ local function format_item(obj_data, player_data, options)
   if options.always_show or should_show then
     -- Format and return
     local formatter_subtable = formatters[obj_data.class]
-    return {
-      caption = get_caption(obj_data, player_data, is_hidden, is_enabled, options.is_label, options.amount_string),
-      is_enabled = formatter_subtable.enabled(obj_data),
-      is_researched = is_researched,
-      tooltip = formatter_subtable.tooltip(
+    local tooltip = options.is_label
+      and get_base_tooltip(
+        obj_data,
+        player_data,
+        is_hidden,
+        is_researched,
+        is_enabled
+      )
+      or formatter_subtable.tooltip(
         obj_data,
         player_data,
         is_hidden,
         is_researched,
         is_enabled,
-        options.is_label,
         options.blueprint_recipe
       )
+    return {
+      caption = get_caption(obj_data, player_data, is_hidden, is_enabled, options.is_label, options.amount_string),
+      is_enabled = formatter_subtable.enabled(obj_data),
+      is_researched = is_researched,
+      tooltip = tooltip
     }
   else
     return false
