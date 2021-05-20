@@ -114,7 +114,11 @@ function list_box.update(component, refs, object_data, player_data, variables)
     refs.root.visible = true
     local translations = player_data.translations.gui
     -- Update label caption
-    refs.label.caption = formatter.expand_string(translations.list_box_label, translations[component.source], i)
+    refs.label.caption = formatter.expand_string(
+      translations.list_box_label,
+      translations[component.source] or component.source,
+      i
+    )
   else
     refs.root.visible = false
   end

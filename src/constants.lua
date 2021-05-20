@@ -34,6 +34,8 @@ constants.class_to_font_glyph = {
   crafter = "D",
   fluid = "B",
   item = "C",
+  -- TODO: Add a glyph
+  item_group = "Z",
   lab = "D",
   offshore_pump = "D",
   recipe = "E",
@@ -41,21 +43,11 @@ constants.class_to_font_glyph = {
   technology = "A"
 }
 
-constants.class_to_titlebar_label = {
-  crafter = {"gui.rb-crafter"},
-  fluid = {"gui.rb-fluid"},
-  item = {"gui.rb-item"},
-  lab = {"gui.rb-lab"},
-  offshore_pump = {"gui.rb-offshore-pump"},
-  recipe = {"gui.rb-recipe"},
-  resource = {"gui.rb-resource"},
-  technology = {"gui.rb-technology"}
-}
-
 constants.class_to_type = {
   crafter = "entity",
   fluid = "fluid",
   item = "item",
+  item_group = "item-group",
   lab = "entity",
   offshore_pump = "entity",
   recipe = "recipe",
@@ -104,6 +96,8 @@ constants.empty_translations_table = {
   fluid_description = {},
   item = {},
   item_description = {},
+  item_group = {},
+  item_group_description = {},
   lab = {},
   lab_description = {},
   offshore_pump = {},
@@ -117,31 +111,21 @@ constants.empty_translations_table = {
 }
 
 constants.gui_strings = {
-  -- internal classes
-  {dictionary = "gui", internal = "crafter", localised = {"gui.rb-crafter"}},
-  {dictionary = "gui", internal = "fluid", localised = {"gui.rb-fluid"}},
-  {dictionary = "gui", internal = "item", localised = {"gui.rb-item"}},
-  {dictionary = "gui", internal = "lab", localised = {"gui.rb-lab"}},
-  {dictionary = "gui", internal = "offshore_pump", localised = {"gui.rb-offshore-pump"}},
-  {dictionary = "gui", internal = "recipe", localised = {"gui.rb-recipe"}},
-  {dictionary = "gui", internal = "resource", localised = {"gui.rb-resource"}},
-  {dictionary = "gui", internal = "technology", localised = {"gui.rb-technology"}},
-  -- captions
-  {dictionary = "gui", internal = "disabled_abbrev", localised = {"gui.rb-disabled-abbrev"}},
-  {dictionary = "gui", internal = "hidden_abbrev", localised = {"gui.rb-hidden-abbrev"}},
-  -- tooltips
   {dictionary = "gui", internal = "alt_click", localised = {"gui.rb-alt-click"}},
   {dictionary = "gui", internal = "blueprint_not_available", localised = {"gui.rb-blueprint-not-available"}},
   {dictionary = "gui", internal = "category", localised = {"gui.rb-category"}},
   {dictionary = "gui", internal = "click", localised = {"gui.rb-click"}},
   {dictionary = "gui", internal = "compatible_recipes", localised = {"gui.rb-compatible-recipes"}},
   {dictionary = "gui", internal = "control_click", localised = {"gui.rb-control-click"}},
+  {dictionary = "gui", internal = "crafter", localised = {"gui.rb-crafter"}},
   {dictionary = "gui", internal = "crafting_categories", localised = {"gui.rb-crafting-categories"}},
   {dictionary = "gui", internal = "crafting_speed", localised = {"description.crafting-speed"}},
   {dictionary = "gui", internal = "crafting_time_desc", localised = {"gui.rb-crafting-time-desc"}},
   {dictionary = "gui", internal = "crafting_time", localised = {"gui.rb-crafting-time"}},
+  {dictionary = "gui", internal = "disabled_abbrev", localised = {"gui.rb-disabled-abbrev"}},
   {dictionary = "gui", internal = "disabled", localised = {"entity-status.disabled"}},
   {dictionary = "gui", internal = "fixed_recipe", localised = {"gui.rb-fixed-recipe"}},
+  {dictionary = "gui", internal = "fluid", localised = {"gui.rb-fluid"}},
   {dictionary = "gui", internal = "format_percent", localised = {"format-percent"}},
   {dictionary = "gui", internal = "format_seconds", localised = {"time-symbol-seconds"}},
   {dictionary = "gui", internal = "fuel_pollution", localised = {"description.fuel-pollution"}},
@@ -151,13 +135,18 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "go_forward", localised = {"gui.rb-go-forward"}},
   {dictionary = "gui", internal = "go_to_the_back", localised = {"gui.rb-go-to-the-back"}},
   {dictionary = "gui", internal = "go_to_the_front", localised = {"gui.rb-go-to-the-front"}},
+  {dictionary = "gui", internal = "hidden_abbrev", localised = {"gui.rb-hidden-abbrev"}},
   {dictionary = "gui", internal = "hidden", localised = {"gui.rb-hidden"}},
   {dictionary = "gui", internal = "ingredient_in", localised = {"gui.rb-ingredient-in"}},
   {dictionary = "gui", internal = "ingredients", localised = {"gui.rb-ingredients"}},
   {dictionary = "gui", internal = "inputs", localised = {"gui.rb-inputs"}},
+  {dictionary = "gui", internal = "item_group", localised = {"gui.rb-item-group"}},
+  {dictionary = "gui", internal = "item", localised = {"gui.rb-item"}},
+  {dictionary = "gui", internal = "lab", localised = {"gui.rb-lab"}},
   {dictionary = "gui", internal = "list_box_label", localised = {"gui.rb-list-box-label"}},
   {dictionary = "gui", internal = "made_in", localised = {"gui.rb-made-in"}},
   {dictionary = "gui", internal = "mined_from", localised = {"gui.rb-mined-from"}},
+  {dictionary = "gui", internal = "offshore_pump", localised = {"gui.rb-offshore-pump"}},
   {dictionary = "gui", internal = "open_in_technology_window", localised = {"gui.rb-open-in-technology-window"}},
   {dictionary = "gui", internal = "per_second_suffix", localised = {"gui.rb-per-second-suffix"}},
   {dictionary = "gui", internal = "placeable_by", localised = {"gui.rb-placeable-by"}},
@@ -167,11 +156,14 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "products", localised = {"gui.rb-products"}},
   {dictionary = "gui", internal = "pumped_by", localised = {"gui.rb-pumped-by"}},
   {dictionary = "gui", internal = "pumping_speed", localised = {"description.pumping-speed"}},
+  {dictionary = "gui", internal = "recipe", localised = {"gui.rb-recipe"}},
+  {dictionary = "gui", internal = "recipes", localised = {"gui.rb-recipes"}},
   {dictionary = "gui", internal = "required_units", localised = {"gui.rb-required-units"}},
   {dictionary = "gui", internal = "researched_in", localised = {"gui.rb-researched-in"}},
   {dictionary = "gui", internal = "research_ingredients_per_unit", localised = {"gui.rb-research-ingredients-per-unit"}},
   {dictionary = "gui", internal = "research_speed_desc", localised = {"gui.rb-research-speed-desc"}},
   {dictionary = "gui", internal = "research_speed", localised = {"description.research-speed"}},
+  {dictionary = "gui", internal = "resource", localised = {"gui.rb-resource"}},
   {dictionary = "gui", internal = "rocket_launch_payloads", localised = {"gui.rb-rocket-launch-payloads"}},
   {dictionary = "gui", internal = "rocket_launch_products", localised = {"gui.rb-rocket-launch-products"}},
   {dictionary = "gui", internal = "rocket_parts_required", localised = {"gui.rb-rocket-parts-required"}},
@@ -179,6 +171,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "shift_click", localised = {"gui.rb-shift-click"}},
   {dictionary = "gui", internal = "si_joule", localised = {"si-unit-symbol-joule"}},
   {dictionary = "gui", internal = "stack_size", localised = {"gui.rb-stack-size"}},
+  {dictionary = "gui", internal = "technology", localised = {"gui.rb-technology"}},
   {dictionary = "gui", internal = "temperatures", localised = {"gui.rb-temperatures"}},
   {dictionary = "gui", internal = "time_per_unit_desc", localised = {"gui.rb-time-per-unit-desc"}},
   {dictionary = "gui", internal = "time_per_unit", localised = {"gui.rb-time-per-unit"}},
@@ -289,6 +282,9 @@ constants.pages = {
     {type = "list_box", source = "mined_from"},
     {type = "list_box", source = "researched_in"},
     {type = "list_box", source = "unlocked_by"}
+  },
+  item_group = {
+    {type = "list_box", source = "recipes"}
   },
   lab = {
     {type = "table", rows = {

@@ -411,6 +411,18 @@ local formatters = {
     end,
     enabled = function() return true end
   },
+  item_group = {
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, is_label)
+      local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
+      if is_label then
+        return base_str
+      else
+        local gui_translations = player_data.translations.gui
+        return base_str..control(gui_translations.click, gui_translations.view_details)
+      end
+    end,
+    enabled = function() return true end
+  },
   lab = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)

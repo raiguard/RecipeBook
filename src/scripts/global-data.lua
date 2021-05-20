@@ -3,6 +3,7 @@ local constants = require("constants")
 local crafter_proc = require("scripts.processors.crafter")
 local fluid_proc = require("scripts.processors.fluid")
 local item_proc = require("scripts.processors.item")
+local item_group_proc = require("scripts.processors.item-group")
 local lab_proc = require("scripts.processors.lab")
 local offshore_pump_proc = require("scripts.processors.offshore-pump")
 local recipe_proc = require("scripts.processors.recipe")
@@ -22,6 +23,7 @@ function global_data.build_recipe_book()
     crafter = {},
     fluid = {},
     item = {},
+    item_group = {},
     lab = {},
     offshore_pump = {},
     recipe = {},
@@ -36,6 +38,7 @@ function global_data.build_recipe_book()
   crafter_proc(recipe_book, strings, metadata)
   fluid_proc(recipe_book, strings, metadata)
   item_proc(recipe_book, strings, metadata)
+  item_group_proc(recipe_book, strings)
   lab_proc(recipe_book, strings)
   offshore_pump_proc(recipe_book, strings)
   recipe_proc(recipe_book, strings, metadata)

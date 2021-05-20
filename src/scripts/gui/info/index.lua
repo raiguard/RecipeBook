@@ -325,7 +325,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
 
   -- Label
   local label = refs.titlebar.label
-  label.caption = constants.class_to_titlebar_label[context.class]
+  label.caption = gui_translations[context.class]
 
   -- HEADER
 
