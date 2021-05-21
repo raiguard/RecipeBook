@@ -119,15 +119,8 @@ function table_comp.update(component, refs, object_data, player_data, variables)
           local info = formatter(source_data, player_data, {always_show = true})
           button.caption = info.caption
           button.tooltip = info.tooltip
-          gui.set_action(button, "on_click", {
-            gui = "info",
-            id = variables.gui_id,
-            action = "navigate_to_plain",
-            context = {
-              class = source_ident.class,
-              name = source_ident.name
-            }
-          })
+          gui.set_action(button, "on_click", {gui = "info", id = variables.gui_id, action = "navigate_to"})
+          gui.update_tags(button, {context = {class = source_ident.class, name = source_ident.name}})
         end
       end
     end

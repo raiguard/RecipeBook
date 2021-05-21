@@ -130,7 +130,7 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
           button.tooltip = tooltip
           gui.update_tags(button, {
             blueprint_recipe = blueprint_recipe,
-            obj = object,
+            context = object,
             researched = object_data.is_researched
           })
         else
@@ -142,7 +142,7 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
               tooltip = tooltip,
               tags = {
                 blueprint_recipe = blueprint_recipe,
-                obj = object,
+                context = object,
                 researched = object_data.is_researched
               },
               actions = {

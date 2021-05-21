@@ -333,6 +333,7 @@ constants.pages = {
   recipe = {
     {type = "table", rows = {
       {type = "goto", source = "recipe_category"},
+      {type = "goto", source = "group"},
       {
         type = "plain",
         name = "energy",
@@ -340,7 +341,6 @@ constants.pages = {
         label_tooltip = "crafting_time_desc",
         formatter = "seconds_from_ticks"
       },
-      {type = "goto", source = "group"},
     }},
     {type = "list_box", source = "ingredients", always_show = true},
     {type = "list_box", source = "products", always_show = true},

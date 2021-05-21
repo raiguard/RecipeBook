@@ -129,10 +129,10 @@ function util.navigate_to(e)
 
   local element = e.element
   local tags = gui.get_tags(element)
-  local obj = tags.obj
+  local context = tags.context
 
-  if obj.class == "crafter" then
-    local crafter_data = global.recipe_book.crafter[obj.name]
+  if context.class == "crafter" then
+    local crafter_data = global.recipe_book.crafter[context.name]
     if crafter_data then
       if e.control then
         if crafter_data.fixed_recipe then
@@ -145,14 +145,14 @@ function util.navigate_to(e)
             local cursor_stack = player.cursor_stack
             player.clear_cursor()
             if cursor_stack and cursor_stack.valid then
-              local CollisionBox = area.load(game.entity_prototypes[obj.name].collision_box)
+              local CollisionBox = area.load(game.entity_prototypes[context.name].collision_box)
               local height = CollisionBox:height()
               local width = CollisionBox:width()
               cursor_stack.set_stack{name = "blueprint", count = 1}
               cursor_stack.set_blueprint_entities{
                 {
                   entity_number = 1,
-                  name = obj.name,
+                  name = context.name,
                   position = {
                     -- Entities with an even number of tiles to a side need to be set at -0.5 instead of 0
                     math.ceil(width) % 2 == 0 and -0.5 or 0,
@@ -173,32 +173,32 @@ function util.navigate_to(e)
           end
         end
       else
-        return {class = obj.class, name = obj.name}
+        return {class = context.class, name = context.name}
       end
     end
-  elseif obj.class == "fluid" then
-    local fluid_data = global.recipe_book.fluid[obj.name]
+  elseif context.class == "fluid" then
+    local fluid_data = global.recipe_book.fluid[context.name]
     if e.shift and fluid_data.temperature_data then
       return {class = "fluid", name = fluid_data.prototype_name}
     else
-      return {class = "fluid", name = obj.name}
+      return {class = "fluid", name = context.name}
     end
-  elseif obj.class == "resource" then
-    local resource_data = global.recipe_book.resource[obj.name]
+  elseif context.class == "resource" then
+    local resource_data = global.recipe_book.resource[context.name]
     if resource_data then
       local required_fluid = resource_data.required_fluid
       if required_fluid then
         return {class = "fluid", name = required_fluid.name}
       end
     end
-  elseif obj.class == "technology" then
+  elseif context.class == "technology" then
     if e.shift then
-      player.open_technology_gui(obj.name)
+      player.open_technology_gui(context.name)
     else
-      return {class = obj.class, name = obj.name}
+      return {class = context.class, name = context.name}
     end
   else
-    return {class = obj.class, name = obj.name}
+    return {class = context.class, name = context.name}
   end
 end
 

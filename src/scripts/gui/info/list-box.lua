@@ -81,7 +81,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
           item.caption = info.caption
           item.tooltip = info.tooltip
           item.enabled = info.is_enabled
-          gui.update_tags(item, {obj = {class = obj.class, name = obj.name}})
+          gui.update_tags(item, {context = {class = obj.class, name = obj.name}})
         else
           add{
             type = "button",
@@ -93,10 +93,10 @@ function list_box.update(component, refs, object_data, player_data, variables)
             tags = {
               [script.mod_name] = {
                 blueprint_recipe = blueprint_recipe,
+                context = {class = obj.class, name = obj.name},
                 flib = {
                   on_click = {gui = "info", id = variables.gui_id, action = "navigate_to"}
                 },
-                obj = {class = obj.class, name = obj.name}
               }
             }
           }
