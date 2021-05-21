@@ -31,6 +31,43 @@ commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
   end
 end)
 
+-- TEMPORARY: FOR DEBUGGING ONLY
+
+local function split(str, sep)
+  local t = {}
+  for substr in string.gmatch(str, "([^"..sep.."]+)") do
+    table.insert(t, substr)
+  end
+  return t
+end
+
+commands.add_command("rb-set-option", nil, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local parameters = split(e.parameter, " ")
+  if #parameters ~= 2 then
+    game.print("Invalid command")
+  end
+  player_table.settings[parameters[1]] = parameters[2] == "true" and true or false
+  shared.refresh_contents(player, player_table)
+end)
+
+commands.add_command("rb-toggle-group", nil, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local groups = player_table.settings.groups
+  groups[e.parameter] = not groups[e.parameter]
+  shared.refresh_contents(player, player_table)
+end)
+
+commands.add_command("rb-toggle-category", nil, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local categories = player_table.settings.recipe_categories
+  categories[e.parameter] = not categories[e.parameter]
+  shared.refresh_contents(player, player_table)
+end)
+
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
@@ -135,10 +172,8 @@ event.register("rb-toggle-gui", function(e)
   if player_table.flags.can_open_gui then
     local selected_prototype = e.selected_prototype
     if selected_prototype then
-      local class = (
-        constants.derived_type_to_class[selected_prototype.base_type]
+      local class = constants.derived_type_to_class[selected_prototype.base_type]
         or constants.derived_type_to_class[selected_prototype.derived_type]
-      )
       -- Not everything will have a Recipe Book entry
       if class then
         local name = selected_prototype.name
@@ -260,7 +295,6 @@ function shared.open_page(player, player_table, context)
   if existing_id then
     info_gui.handle_action({id = existing_id, action = "bring_to_front"}, {player_index = player.index})
   else
-    -- TODO: Check for and update an already existing temporary window
     info_gui.build(player, player_table, context)
   end
 end
