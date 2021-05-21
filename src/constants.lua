@@ -42,6 +42,8 @@ constants.class_to_font_glyph = {
   group = "Z",
   lab = "D",
   offshore_pump = "D",
+  -- TODO: Add a glyph
+  recipe_category = "Z",
   recipe = "E",
   resource = "F",
   technology = "A"
@@ -54,6 +56,7 @@ constants.class_to_type = {
   group = "item-group",
   lab = "entity",
   offshore_pump = "entity",
+  recipe_category = false,
   recipe = "recipe",
   resource = "entity",
   technology = "technology"
@@ -96,9 +99,10 @@ constants.derived_type_to_class = {
   ["assembling-machine"] = "crafter",
   ["fluid"] = "fluid",
   ["furnace"] = "crafter",
-  ["item"] = "item",
   ["item-group"] = "group",
+  ["item"] = "item",
   ["lab"] = "lab",
+  ["recipe-catgory"] = "recipe_category",
   ["recipe"] = "recipe",
   ["rocket-silo"] = "crafter",
   ["technology"] = "technology",
@@ -110,15 +114,17 @@ constants.empty_translations_table = {
   crafter_description = {},
   fluid = {},
   fluid_description = {},
-  item = {},
-  item_description = {},
   group = {},
   group_description = {},
+  item = {},
+  item_description = {},
   lab = {},
   lab_description = {},
   offshore_pump = {},
   offshore_pump_description = {},
   recipe = {},
+  recipe_category = {},
+  recipe_category_description = {},
   recipe_description = {},
   resource = {},
   resource_description = {},
@@ -129,6 +135,7 @@ constants.empty_translations_table = {
 constants.gui_strings = {
   {dictionary = "gui", internal = "alt_click", localised = {"gui.rb-alt-click"}},
   {dictionary = "gui", internal = "blueprint_not_available", localised = {"gui.rb-blueprint-not-available"}},
+  {dictionary = "gui", internal = "categories", localised = {"gui.rb-categories"}},
   {dictionary = "gui", internal = "category", localised = {"gui.rb-category"}},
   {dictionary = "gui", internal = "click", localised = {"gui.rb-click"}},
   {dictionary = "gui", internal = "compatible_recipes", localised = {"gui.rb-compatible-recipes"}},
@@ -174,6 +181,8 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "products", localised = {"gui.rb-products"}},
   {dictionary = "gui", internal = "pumped_by", localised = {"gui.rb-pumped-by"}},
   {dictionary = "gui", internal = "pumping_speed", localised = {"description.pumping-speed"}},
+  {dictionary = "gui", internal = "recipe_categories", localised = {"gui.rb-recipe-categories"}},
+  {dictionary = "gui", internal = "recipe_category", localised = {"gui.rb-recipe-category"}},
   {dictionary = "gui", internal = "recipe", localised = {"gui.rb-recipe"}},
   {dictionary = "gui", internal = "recipes", localised = {"gui.rb-recipes"}},
   {dictionary = "gui", internal = "required_units", localised = {"gui.rb-required-units"}},
@@ -316,9 +325,14 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },
+  recipe_category = {
+    {type = "list_box", source = "fluids"},
+    {type = "list_box", source = "items"},
+    {type = "list_box", source = "recipes"},
+  },
   recipe = {
     {type = "table", rows = {
-      {type = "plain", name = "category"},
+      {type = "goto", source = "recipe_category"},
       {
         type = "plain",
         name = "energy",

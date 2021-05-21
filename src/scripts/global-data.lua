@@ -6,6 +6,7 @@ local group_proc = require("scripts.processors.group")
 local item_proc = require("scripts.processors.item")
 local lab_proc = require("scripts.processors.lab")
 local offshore_pump_proc = require("scripts.processors.offshore-pump")
+local recipe_category_proc = require("scripts.processors.recipe-category")
 local recipe_proc = require("scripts.processors.recipe")
 local resource_proc = require("scripts.processors.resource")
 local technology_proc = require("scripts.processors.technology")
@@ -26,6 +27,7 @@ function global_data.build_recipe_book()
     group = {},
     lab = {},
     offshore_pump = {},
+    recipe_category = {},
     recipe = {},
     resource = {},
     technology = {}
@@ -36,6 +38,7 @@ function global_data.build_recipe_book()
   local metadata = {}
 
   group_proc(recipe_book, strings)
+  recipe_category_proc(recipe_book, strings)
 
   crafter_proc(recipe_book, strings, metadata)
   fluid_proc(recipe_book, strings, metadata)

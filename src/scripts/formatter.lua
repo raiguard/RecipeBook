@@ -109,16 +109,17 @@ local function get_should_show(obj_data, player_data)
       return false, is_hidden, is_researched, is_enabled
     end
     -- For recipes - check category to see if it should be shown
-    local category = obj_data.category
-    local categories = obj_data.recipe_categories
-    if category then
-      if player_settings.recipe_categories[category] then
+    -- TODO: Recipe category  members won't be shown on their own page if disabled
+    local recipe_category = obj_data.recipe_category
+    local recipe_categories = obj_data.recipe_categories
+    if recipe_category then
+      if player_settings.recipe_categories[recipe_category.name] then
         return true, is_hidden, is_researched, is_enabled
       end
-    -- For materials - check if any of their categories are enabled
-    elseif categories then
+    -- For materials - check if any of their recipe categories are enabled
+    elseif recipe_categories then
       local category_settings = player_settings.recipe_categories
-      for _, category_name in ipairs(categories) do
+      for _, category_name in ipairs(recipe_categories) do
         if category_settings[category_name] then
           return true, is_hidden, is_researched, is_enabled
         end
@@ -158,7 +159,11 @@ local function get_caption(obj_data, player_data, is_hidden, is_enabled, is_labe
     disabled_str = rich_text("font", "default-semibold", translations.gui.disabled_abbrev).."  "
   end
   -- Icon
-  local icon_str = sprite(class_to_type[class], obj_data.prototype_name).."  "
+  local icon_str = ""
+  local type = class_to_type[class]
+  if type then
+    icon_str = sprite(class_to_type[class], obj_data.prototype_name).."  "
+  end
   -- Amount string
   local amount_str = ""
   if amount then
@@ -197,9 +202,9 @@ local function get_base_tooltip(obj_data, player_data, is_hidden, is_researched,
 
   -- Title
   local name_str = use_internal_names and internal_name or name
+  local type = class_to_type[class]
   local title_str = (
-    sprite(class_to_type[class], obj_data.prototype_name)
-    .."  "
+    (type and sprite(class_to_type[class], obj_data.prototype_name).."  " or "")
     ..rich_text(
       "font",
       "default-bold",
@@ -444,6 +449,12 @@ local formatters = {
     end,
     enabled = function() return false end
   },
+  recipe_category = {
+    tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
+      return get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
+    end,
+    enabled = function() return true end
+  },
   recipe = {
     tooltip = function(obj_data, player_data, is_hidden, is_researched, is_enabled, _)
       -- Locals
@@ -453,8 +464,8 @@ local formatters = {
 
       -- Build string
       local base_str = get_base_tooltip(obj_data, player_data, is_hidden, is_researched, is_enabled)
-      -- Crafting_category
-      local category_str = tooltip_kv(gui_translations.category, obj_data.category)
+      -- Recipe category
+      local category_str = tooltip_kv(gui_translations.recipe_category, obj_data.recipe_category.name)
       -- Crafting time, ingredients and products
       local ip_str_arr = {}
       if player_settings.show_detailed_tooltips then

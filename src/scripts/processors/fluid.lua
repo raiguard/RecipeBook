@@ -157,7 +157,8 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
               -- Add to recipes table
               temperature_data[fluid_tbl_name][#temperature_data[fluid_tbl_name] + 1] = recipe_ident
               -- Add recipe category
-              temperature_data.recipe_categories[#temperature_data.recipe_categories + 1] = recipe_data.category
+              local recipe_categories = temperature_data.recipe_categories
+              recipe_categories[#recipe_categories + 1] = recipe_data.recipe_category.name
               -- If in product_of, append to unlocked_by
               -- This is to avoid variants being "unlocked" when you can't actually get them
               if fluid_tbl_name == "product_of" then

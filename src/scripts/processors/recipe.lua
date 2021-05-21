@@ -7,11 +7,15 @@ local fluid_proc = require("scripts.processors.fluid")
 return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.recipe_prototypes) do
     local category = prototype.category
+    local group = prototype.group
 
     local enabled_at_start = prototype.enabled
 
-    local group = prototype.group
+    -- Add to recipe category
+    local category_data = recipe_book.recipe_category[category]
+    category_data.recipes[#category_data.recipes + 1] = {class = "recipe", name = name}
 
+    -- Add to group
     local group_data = recipe_book.group[group.name]
     group_data.recipes[#group_data.recipes + 1] = {class = "recipe", name = name}
 
@@ -19,7 +23,6 @@ return function(recipe_book, strings, metadata)
       associated_crafters = {},
       associated_labs = {},
       associated_offshore_pumps = {},
-      category = category,
       class = "recipe",
       enabled_at_start = enabled_at_start,
       energy = prototype.energy,
@@ -27,6 +30,7 @@ return function(recipe_book, strings, metadata)
       hidden = prototype.hidden,
       made_in = {},
       prototype_name = name,
+      recipe_category = {class = "recipe_category", name = category},
       unlocked_by = {},
       used_as_fixed_recipe = metadata.fixed_recipes[name]
     }
@@ -48,9 +52,14 @@ return function(recipe_book, strings, metadata)
         output[i] = material_io_data
         material_data.recipe_categories[#material_data.recipe_categories + 1] = category
 
-        if enabled_at_start and io_type == "products" then
-          material_data.enabled_at_start = true
+        if io_type == "products" then
+          local subtable = category_data[material.type.."s"]
+          subtable[#subtable + 1] = {class = material.type, name = material.name}
+          if enabled_at_start then
+            material_data.enabled_at_start = true
+          end
         end
+
 
         -- fluid temperatures
         if material.type == "fluid" then
