@@ -30,6 +30,10 @@ constants.disabled_recipe_categories = {
   ["transport-fluid-request"] = 0
 }
 
+constants.disabled_groups = {
+  ["ee-tools"] = true
+}
+
 constants.class_to_font_glyph = {
   crafter = "D",
   fluid = "B",
@@ -351,6 +355,8 @@ constants.pages = {
 
 constants.search_results_limit = 150
 
+-- TODO: Group toggling
+-- TODO: Recipe category toggling
 constants.settings = {
   general = {
     open_selected_object = {

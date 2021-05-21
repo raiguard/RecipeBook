@@ -39,24 +39,40 @@ function player_data.init(player_index)
 end
 
 function player_data.update_settings(player, player_table)
-  local existing_settings = player_table.settings
+  local former_settings = player_table.settings
   local settings = {}
+
+  -- Generic settings
   for _, settings_data in pairs(constants.settings) do
     for name, data in pairs(settings_data) do
-      settings[name] = existing_settings[name] or data.default_value
+      settings[name] = former_settings[name] or data.default_value
     end
   end
-  local categories = player_table.settings.recipe_categories or {}
+
+  -- Recipe categories
+  local former_categories = former_settings.recipe_categories or {}
+  local categories = {}
   for name in pairs(game.recipe_category_prototypes) do
-    if categories[name] == nil then
+    if former_categories[name] == nil then
       categories[name] = not constants.disabled_recipe_categories[name]
     end
   end
   settings.recipe_categories = categories
 
+  -- Groups
+  local former_groups = former_settings.groups or {}
+  local groups = {}
+  for name in pairs(global.recipe_book.group) do
+    if former_groups[name] == nil then
+      groups[name] = not constants.disabled_groups[name]
+    end
+  end
+  settings.groups = groups
+
+  -- Save to `global`
   player_table.settings = settings
 
-  -- purge memoizer cache
+  -- Purge memoizer cache
   formatter.purge_cache(player.index)
 end
 

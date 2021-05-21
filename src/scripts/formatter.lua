@@ -98,11 +98,16 @@ local function get_should_show(obj_data, player_data)
 
   -- Check hidden and researched status
   local is_hidden, is_researched, is_enabled = get_properties(obj_data, force_index)
-  if
-    (show_hidden or not is_hidden)
+  if (show_hidden or not is_hidden)
     and (show_unresearched or is_researched)
     and (show_disabled or is_enabled)
   then
+    -- Check group
+    -- TODO: Group members won't be shown on their own page if disabled
+    local group = obj_data.group
+    if group and not player_settings.groups[group.name] then
+      return false, is_hidden, is_researched, is_enabled
+    end
     -- For recipes - check category to see if it should be shown
     local category = obj_data.category
     local categories = obj_data.recipe_categories
