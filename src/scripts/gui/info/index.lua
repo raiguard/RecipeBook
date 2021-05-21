@@ -479,7 +479,9 @@ end
 
 function info_gui.update_all(player, player_table)
   for id in pairs(player_table.guis.info) do
-    info_gui.update_contents(player, player_table, id)
+    if id ~= "_next_id" then
+      info_gui.update_contents(player, player_table, id)
+    end
   end
 end
 
