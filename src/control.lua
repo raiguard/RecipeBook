@@ -160,7 +160,6 @@ event.on_lua_shortcut(function(e)
     local player_table = global.players[e.player_index]
 
     -- TODO: Open search GUI
-    -- NOTE: Perhaps we should re-introduce holding an item to open it?
   end
 end)
 

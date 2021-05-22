@@ -1,10 +1,7 @@
 local area = require("__flib__.area")
 local gui = require("__flib__.gui-beta")
 local math = require("__flib__.math")
-local misc = require("__flib__.misc")
 local table = require("__flib__.table")
-
-local constants = require("constants")
 
 local formatter = require("scripts.formatter")
 
