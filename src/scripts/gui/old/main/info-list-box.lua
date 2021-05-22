@@ -2,7 +2,7 @@ local area = require("__flib__.area")
 local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
-local formatter = require("scripts.formatter")
+local formatter = require("scripts.formatter-old")
 local util = require("scripts.util")
 
 local info_list_box = {}

@@ -2,7 +2,7 @@ local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
 
-local formatter = require("scripts.formatter")
+local formatter = require("scripts.formatter-old")
 local shared = require("scripts.shared")
 local util = require("scripts.util")
 

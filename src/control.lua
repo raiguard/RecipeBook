@@ -4,7 +4,7 @@ local migration = require("__flib__.migration")
 local translation = require("__flib__.translation")
 
 local constants = require("constants")
-local formatter = require("scripts.formatter")
+local formatter = require("scripts.formatter-old")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")

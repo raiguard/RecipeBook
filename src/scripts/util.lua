@@ -3,7 +3,7 @@ local gui = require("__flib__.gui-beta")
 local math = require("__flib__.math")
 local table = require("__flib__.table")
 
-local formatter = require("scripts.formatter")
+local formatter = require("scripts.formatter-old")
 
 local util = {}
 

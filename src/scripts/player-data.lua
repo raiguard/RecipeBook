@@ -2,7 +2,7 @@ local table = require("__flib__.table")
 local translation = require("__flib__.translation")
 
 local constants = require("constants")
-local formatter = require("scripts.formatter")
+local formatter = require("scripts.formatter-old")
 local shared = require("scripts.shared")
 
 local info_gui = require("scripts.gui.info.index")
