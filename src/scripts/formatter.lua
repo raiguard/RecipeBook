@@ -65,24 +65,23 @@ local function per_second(value, gui_translations)
   return number(value)..gui_translations.per_second_suffix
 end
 
-local function get_properties(obj_data, force_index)
+local function get_properties(obj_data, force)
   local is_researched
   if obj_data.enabled_at_start then
     is_researched = true
   elseif obj_data.researched_forces then
-    is_researched = obj_data.researched_forces[force_index] or false
+    is_researched = obj_data.researched_forces[force.index] or false
   else
     is_researched = true
   end
 
   local is_enabled = true
-  -- FIXME: find a better way to do this
   -- We have to get the current enabled status from the object itself
-  -- Recipes are unlocked by "enabling" them, so only check if a recipe is actually disabled if it's researched
+  -- Recipes are unlocked by "enabling" them, so only check a recipe if it's researched
   if obj_data.class == "recipe" and is_researched then
-    is_enabled = game.forces[force_index].recipes[obj_data.prototype_name].enabled
+    is_enabled = force.recipes[obj_data.prototype_name].enabled
   elseif obj_data.class == "technology" then
-    is_enabled = game.forces[force_index].technologies[obj_data.prototype_name].enabled
+    is_enabled = force.technologies[obj_data.prototype_name].enabled
   end
 
   return obj_data.hidden, is_researched, is_enabled
@@ -90,14 +89,14 @@ end
 
 local function get_should_show(obj_data, player_data)
   -- Player data
-  local force_index = player_data.force_index
+  local force = player_data.force
   local player_settings = player_data.settings
   local show_hidden = player_settings.show_hidden
   local show_unresearched = player_settings.show_unresearched
   local show_disabled = player_settings.show_disabled
 
   -- Check hidden and researched status
-  local is_hidden, is_researched, is_enabled = get_properties(obj_data, force_index)
+  local is_hidden, is_researched, is_enabled = get_properties(obj_data, force)
   if (show_hidden or not is_hidden)
     and (show_unresearched or is_researched)
     and (show_disabled or is_enabled)
@@ -628,7 +627,7 @@ function formatter.format(obj_data, player_data, options)
 
   local player_index = player_data.player_index
   local cache = caches[player_index]
-  local _, is_researched, is_enabled = get_properties(obj_data, player_data.force_index)
+  local _, is_researched, is_enabled = get_properties(obj_data, player_data.force)
   local cache_key = (
     obj_data.class
     .."."..(obj_data.name or obj_data.prototype_name)
@@ -668,7 +667,7 @@ end
 function formatter.build_player_data(player, player_table)
   return {
     favorites = player_table.favorites,
-    force_index = player.force.index,
+    force = player.force,
     history = player_table.history.global,
     player_index = player.index,
     settings = player_table.settings,

@@ -259,14 +259,7 @@ function info_gui.update_contents(player, player_table, id, new_context)
   local context = new_context or history[history._index]
   local obj_data = global.recipe_book[context.class][context.name]
 
-  local player_data = {
-    favorites = player_table.favorites,
-    force_index = player.force.index,
-    history = player_table.history.global,
-    player_index = player.index,
-    settings = player_table.settings,
-    translations = player_table.translations
-  }
+  local player_data = formatter.build_player_data(player, player_table)
   local gui_translations = player_data.translations.gui
 
   -- TITLEBAR
