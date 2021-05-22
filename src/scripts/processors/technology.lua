@@ -2,13 +2,11 @@ local math = require("__flib__.math")
 
 local util = require("scripts.util")
 
-local fluid_proc = require("scripts.processors.fluid")
-
-return function(recipe_book, strings, metadata)
+return function(recipe_book, strings)
   for name, prototype in pairs(game.technology_prototypes) do
-    local unlocks_fluids = {}
-    local unlocks_items = {}
-    local unlocks_recipes = {}
+    local unlocks_fluids = util.unique_obj_array()
+    local unlocks_items = util.unique_obj_array()
+    local unlocks_recipes = util.unique_obj_array()
     local research_ingredients_per_unit = {}
 
     -- research units and ingredients per unit
@@ -27,8 +25,7 @@ return function(recipe_book, strings, metadata)
       research_unit_count = prototype.research_unit_count
     end
 
-    -- unlocks recipes, materials, crafter / lab / offshore pump
-    -- TODO: This breaks the list navigation system
+    -- Unlocks recipes, materials, crafter / lab / offshore pump
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
         local recipe_data = recipe_book.recipe[modifier.recipe]
@@ -46,18 +43,12 @@ return function(recipe_book, strings, metadata)
           product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
 
           if product_data.class == "item" then
-            if not unlocks_items[product_ident.name] then
-              unlocks_items[#unlocks_items+1] = product_ident
-              unlocks_items[product_ident.name] = true
-            end
+            unlocks_items[#unlocks_items+1] = product_ident
           elseif product_data.class == "fluid" then
-            if not unlocks_fluids[product_ident.name] then
-              unlocks_fluids[#unlocks_fluids+1] = product_ident
-              unlocks_fluids[product_ident.name] = true
-            end
+            unlocks_fluids[#unlocks_fluids+1] = product_ident
           end
 
-          -- crafter / lab / offshore pump
+          -- Crafter / lab / offshore pump
           local place_result = product_data.place_result
           if place_result then
             local machine_data = recipe_book.crafter[place_result]
@@ -126,7 +117,7 @@ return function(recipe_book, strings, metadata)
     local prototype = game.technology_prototypes[name]
 
     if prototype.prerequisites then
-      for prerequisite_name, _ in pairs(prototype.prerequisites) do
+      for prerequisite_name in pairs(prototype.prerequisites) do
         technology.prerequisites[#technology.prerequisites + 1] = {class = "technology", name = prerequisite_name}
         local prerequisite_data = recipe_book.technology[prerequisite_name]
         prerequisite_data.prerequisite_of[#prerequisite_data.prerequisite_of + 1] = {class = "technology", name = name}
