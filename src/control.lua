@@ -247,6 +247,8 @@ end)
 
 -- TRANSLATIONS
 
+-- TEMPORARY:
+local formatter_new = require("scripts.formatter")
 event.on_string_translated(function(e)
   local names, finished = translation.process_result(e)
   if names then
@@ -273,6 +275,9 @@ event.on_string_translated(function(e)
     -- TODO: Create search GUI - info GUIs are created on demand
     -- main_gui.build(player, player_table)
     -- update flags
+    -- TEMPORARY:
+    formatter_new.create_cache(e.player_index)
+    formatter_new.create_test_gui(player, player_table)
     player_table.flags.can_open_gui = true
     player_table.flags.translate_on_join = false -- not really needed, but is here just in case
     player_table.flags.show_message_after_translation = false

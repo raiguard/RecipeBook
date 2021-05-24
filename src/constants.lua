@@ -31,6 +31,7 @@ constants.disabled_recipe_categories = {
 }
 
 constants.disabled_groups = {
+  -- Editor extensions
   ["ee-tools"] = true
 }
 
@@ -150,6 +151,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "fixed_recipe", localised = {"gui.rb-fixed-recipe"}},
   {dictionary = "gui", internal = "fluid", localised = {"gui.rb-fluid"}},
   {dictionary = "gui", internal = "fluids", localised = {"gui.rb-fluids"}},
+  {dictionary = "gui", internal = "format_amount", localised = {"gui.rb-format-amount"}},
   {dictionary = "gui", internal = "format_percent", localised = {"format-percent"}},
   {dictionary = "gui", internal = "format_seconds", localised = {"time-symbol-seconds"}},
   {dictionary = "gui", internal = "fuel_pollution", localised = {"description.fuel-pollution"}},
@@ -441,6 +443,25 @@ constants.settings = {
       has_tooltip = true
     }
   }
+}
+
+constants.tooltips = {
+  crafter = {
+    {type = "plain", source = "crafting_speed", formatter = "number"},
+    {type = "list", source = "crafting_categories"}
+  },
+  fluid = {
+    {type = "plain", source = "fuel_value", formatter = "fuel_value"},
+    {type = "plain", source = "group", formatter = "object"}
+  },
+  group = {},
+  item = {
+
+  },
+  lab = {},
+  recipe_category = {},
+  recipe = {},
+  technology = {},
 }
 
 return constants
