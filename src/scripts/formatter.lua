@@ -132,10 +132,10 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   end
 
   if obj_properties.hidden then
-    before = before..gui_translations.hidden_abbrev.."  "
+    before = before..rich_text("font", "default-semibold", gui_translations.hidden_abbrev).."  "
   end
   if not obj_properties.enabled then
-    before = before..gui_translations.disabled_abbrev.."  "
+    before = before..rich_text("font", "default-semibold", gui_translations.disabled_abbrev).."  "
   end
 
   local type = constants.class_to_type[class]
@@ -181,9 +181,10 @@ function formatter.format(obj_data, player_data, options)
   options = options or {}
 
   local obj_properties = get_obj_properties(obj_data, player_data.force)
-
-  local caption = get_caption(obj_data, obj_properties, player_data, options)
   local amount_ident = options.amount_ident
+
+  -- Caption
+  local caption = get_caption(obj_data, obj_properties, player_data, options)
   local output
   if amount_ident then
     output = caption.before
@@ -197,6 +198,7 @@ function formatter.format(obj_data, player_data, options)
   else
     output = caption.before..caption.after
   end
+
   return {
     caption = output,
     enabled = true,
@@ -226,11 +228,11 @@ function formatter.create_test_gui(player, player_table)
     {rb.crafter["assembling-machine-3"], {}},
     {rb.fluid["steam.975"], {amount_ident = {amount = 55, probability = 0.75}}},
     {rb.group["production"], {}},
-    {rb.item["coal"], {amount_ident = {amount_min = 4, amount_max = 7}}},
+    {rb.item["loader"], {amount_ident = {amount_min = 4, amount_max = 7}}},
     {rb.lab["lab"], {}},
     {rb.recipe["advanced-oil-processing"], {amount_ident = {amount = 69}}},
     {rb.recipe_category["crafting-with-fluid"], {}},
-    {rb.technology["mining-productivity-2"], {}},
+    {rb.technology["kr-logo"], {}},
   }
   local player_data = formatter.build_player_data(player, player_table)
   local frame = player.gui.screen.add{type = "frame", style = "deep_frame_in_shallow_frame", direction = "vertical"}
