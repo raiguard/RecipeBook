@@ -114,11 +114,8 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
         end
       end
 
-      -- Step 2: Add properties from base fluid to temperature variants
-      for recipe_tbl_name, fluid_tbl_name in pairs{
-        ingredients = "ingredient_in",
-        products = "product_of"
-      } do
+      -- Step 3: Add properties from base fluid to temperature variants
+      for recipe_tbl_name, fluid_tbl_name in pairs{ingredients = "ingredient_in", products = "product_of"} do
         for _, recipe_ident in pairs(fluid_data[fluid_tbl_name]) do
           local recipe_data = recipe_book.recipe[recipe_ident.name]
 

@@ -55,10 +55,10 @@ end
 local function get_amount_string(amount_ident, player_data, options)
   local cache_key = build_cache_key(
     "amount_string",
-    amount_ident.amount or "nil",
-    amount_ident.amount_min or "nil",
-    amount_ident.amount_max or "nil",
-    amount_ident.probability or "nil",
+    amount_ident.amount or "false",
+    amount_ident.amount_min or "false",
+    amount_ident.amount_max or "false",
+    amount_ident.probability or "false",
     options.amount_only or "false"
   )
   local cache = caches[player_data.player_index]
