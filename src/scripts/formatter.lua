@@ -28,14 +28,6 @@ local caches = {}
 
 local formatter = {}
 
-local caches_template = {
-  caption = {},
-  amount_string = {},
-  -- tooltip_base = {},
-  -- tooltip_deets = {},
-  -- control_hints = {},
-}
-
 local function build_cache_key(...)
   return table.concat(table.map({...}, function(v) return tostring(v) end), ".")
 end
@@ -60,38 +52,41 @@ local function sprite(class, name)
   return "[img="..class.."/"..name.."]"
 end
 
-local function get_amount_string(amount_data, gui_translations, player_index, amount_only)
+local function get_amount_string(amount_ident, player_data, options)
   local cache_key = build_cache_key(
-    amount_data.amount or "nil",
-    amount_data.amount_min or "nil",
-    amount_data.amount_max or "nil",
-    amount_data.probability or "nil"
+    "amount_string",
+    amount_ident.amount or "nil",
+    amount_ident.amount_min or "nil",
+    amount_ident.amount_max or "nil",
+    amount_ident.probability or "nil",
+    options.amount_only or "false"
   )
-  local cache = caches[player_index].amount_string
+  local cache = caches[player_data.player_index]
   local cached = cache[cache_key]
   if cached then
     return cached
   end
 
-  local amount = amount_data.amount
+  local amount = amount_ident.amount
   local output
-  if amount_only then
-    output = amount_data.amount == nil
+  if options.amount_only then
+    output = amount_ident.amount ~= nil
       and tostring(math.round_to(amount, 1))
-      or "~"..math.round_to((amount_data.amount_min + amount_data.amount_max) / 2, 1)
+      or "~"..math.round_to((amount_ident.amount_min + amount_ident.amount_max) / 2, 1)
   else
+    local gui_translations = player_data.translations.gui
     -- Amount
     if amount then
       output = expand_string(gui_translations.format_amount, number(amount))
     else
       output = expand_string(
         gui_translations.format_amount,
-        number(amount_data.amount_min).." - "..number(amount_data.amount_max)
+        number(amount_ident.amount_min).." - "..number(amount_ident.amount_max)
       )
     end
 
     -- Probability
-    local probability = amount_data.probability
+    local probability = amount_ident.probability
     if probability and probability < 1 then
       output = (probability * 100).."% "..output
     end
@@ -110,6 +105,7 @@ local function get_caption(obj_data, obj_properties, player_data, options)
 
   local cache = caches[player_data.player_index]
   local cache_key = build_cache_key(
+    "caption",
     obj_data.class,
     name,
     obj_properties.enabled,
@@ -155,6 +151,64 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   return output
 end
 
+local function get_base_tooltip(obj_data, obj_properties, player_data, options)
+  local settings = player_data.settings
+  local gui_translations = player_data.translations.gui
+
+  local prototype_name = obj_data.prototype_name
+  local name = obj_data.name or prototype_name
+  local class = obj_data.class
+  local type = constants.class_to_type[class]
+
+  local cache = caches[player_data.player_index]
+  local cache_key = build_cache_key(
+    "base_tooltip",
+    obj_data.class,
+    name,
+    obj_properties.enabled,
+    obj_properties.hidden,
+    obj_properties.researched
+  )
+  local cached = cache[cache_key]
+  if cached then
+    return cached
+  end
+
+  local before
+  if type then
+    before = sprite(type, prototype_name).."  "
+  else
+    before = ""
+  end
+
+  local name_str
+  if settings.use_internal_names then
+    name_str = name
+  else
+    name_str = player_data.translations[class][name]
+  end
+
+  local after = rich_text("font", "default-semibold", rich_text("color", "heading", name_str))
+    .."\n"
+    ..rich_text("color", "info", gui_translations[class])
+
+  if not obj_properties.researched then
+    after = after.."  |  "..rich_text("color", "unresearched", gui_translations.unresearched)
+  end
+
+  if not obj_properties.enabled then
+    after = after.."  |  "..gui_translations.disabled
+  end
+
+  if obj_properties.hidden then
+    after = after.."  |  "..gui_translations.hidden
+  end
+
+  local output = {before = before, after = after}
+  cache[cache_key] = output
+  return output
+end
+
 local function get_obj_properties(obj_data, force)
   local researched
   if obj_data.enabled_at_start then
@@ -174,7 +228,7 @@ local function get_obj_properties(obj_data, force)
     enabled = force.technologies[obj_data.prototype_name].enabled
   end
 
-  return {hidden = obj_data.hidden, researched = researched, enabled = enabled}
+  return {hidden = obj_data.hidden or false, researched = researched, enabled = enabled}
 end
 
 function formatter.format(obj_data, player_data, options)
@@ -184,31 +238,52 @@ function formatter.format(obj_data, player_data, options)
   local amount_ident = options.amount_ident
 
   -- Caption
-  local caption = get_caption(obj_data, obj_properties, player_data, options)
-  local output
-  if amount_ident then
-    output = caption.before
-    ..rich_text(
-      "font",
-      "default-semibold",
-      get_amount_string(amount_ident, player_data.translations.gui, player_data.player_index, options.amount_only)
-    )
-    .."  "
-    ..caption.after
+  local caption_output
+  if amount_ident and options.amount_only then
+    caption_output = get_amount_string(amount_ident, player_data, options)
   else
-    output = caption.before..caption.after
+    local caption = get_caption(obj_data, obj_properties, player_data, options)
+    if amount_ident then
+      caption_output = caption.before
+      ..rich_text(
+        "font",
+        "default-semibold",
+        get_amount_string(amount_ident, player_data, options)
+      )
+      .."  "
+      ..caption.after
+    else
+      caption_output = caption.before..caption.after
+    end
+  end
+
+  -- Tooltip
+  local base_tooltip = get_base_tooltip(obj_data, obj_properties, player_data, options)
+  local tooltip_output
+  if amount_ident and options.amount_only then
+    tooltip_output = base_tooltip.before
+      ..rich_text(
+        "font",
+        "default-bold",
+        -- TODO: Perhaps don't pass an empty options table here
+        rich_text("color", "heading", get_amount_string(amount_ident, player_data, {}))
+      )
+      .."  "
+      ..base_tooltip.after
+  else
+    tooltip_output = base_tooltip.before..base_tooltip.after
   end
 
   return {
-    caption = output,
-    enabled = true,
-    researched  = true,
-    tooltip = "",
+    caption = caption_output,
+    enabled = obj_properties.enabled,
+    researched  = obj_properties.researched,
+    tooltip = tooltip_output,
   }
 end
 
 function formatter.create_cache(player_index)
-  caches[player_index] = table.shallow_copy(caches_template)
+  caches[player_index] = {}
 end
 
 function formatter.build_player_data(player, player_table)
@@ -229,6 +304,7 @@ function formatter.create_test_gui(player, player_table)
     {rb.fluid["steam.975"], {amount_ident = {amount = 55, probability = 0.75}}},
     {rb.group["production"], {}},
     {rb.item["loader"], {amount_ident = {amount_min = 4, amount_max = 7}}},
+    {rb.item["coal"], {amount_ident = {amount_min = 4, amount_max = 7}, amount_only = true}},
     {rb.lab["lab"], {}},
     {rb.recipe["advanced-oil-processing"], {amount_ident = {amount = 69}}},
     {rb.recipe_category["crafting-with-fluid"], {}},
@@ -239,7 +315,7 @@ function formatter.create_test_gui(player, player_table)
   for _, obj in pairs(test_objects) do
     local info = formatter(obj[1], player_data, obj[2])
     if info then
-      frame.add{type = "button", style = "rb_list_box_item", caption = info.caption}
+      frame.add{type = "button", style = "rb_list_box_item", caption = info.caption, tooltip = info.tooltip}
     end
   end
 end
