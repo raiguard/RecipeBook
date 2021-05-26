@@ -33,8 +33,10 @@ return function(recipe_book, strings, metadata)
   local rocket_silo_categories = {}
   for name, prototype in pairs(crafter_prototypes) do
     -- fixed recipe
+    local fixed_recipe
     if prototype.fixed_recipe then
       metadata.fixed_recipes[prototype.fixed_recipe] = true
+      fixed_recipe = {class = "recipe", name = prototype.fixed_recipe}
     end
     -- rocket silo categories
     if prototype.rocket_parts_required then
@@ -50,7 +52,7 @@ return function(recipe_book, strings, metadata)
       class = "crafter",
       compatible_recipes = {},
       crafting_speed = prototype.crafting_speed,
-      fixed_recipe = prototype.fixed_recipe,
+      fixed_recipe = fixed_recipe,
       hidden = is_hidden,
       placeable_by = {},
       prototype_name = name,

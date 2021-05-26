@@ -230,6 +230,47 @@ constants.header_button_tooltips = {
   },
 }
 
+constants.interaction_helps = {
+  crafter = {
+    {modifier = nil, label = "view_details"},
+    {
+      modifier = "shift",
+      label = "get_blueprint",
+      option = "blueprint_recipe",
+      alternate_label = "blueprint_not_available"
+    },
+    {modifier = "control", label = "view_fixed_recipe", source = "fixed_recipe", force_label = true}
+  },
+  fluid = {
+    {modifier = nil, label = "view_details"},
+    {modifier = "shift", label = "view_base_bluid", source = "base_fluid", formatter = "object"}
+  },
+  item = {
+    {modifier = nil, label = "view_details"}
+  },
+  group = {
+    {modifier = nil, label = "view_details"}
+  },
+  lab = {
+    {modifier = nil, label = "view_details"}
+  },
+  offshore_pump = {},
+  recipe_category = {
+    {modifier = nil, label = "view_details"}
+  },
+  recipe = {
+    {modifier = nil, label = "view_details"}
+
+  },
+  resource = {
+    {modifier = nil, label = "view_required_fluid", source = "required_fluid", formatter = "object"}
+  },
+  technology = {
+    {modifier = nil, label = "view_details"},
+    {modifier = "shift", label = "open_in_technology_window"}
+  }
+}
+
 constants.input_sanitizers = {
   ["%%"] = "%%%%",
   ["%("] = "%%(",
@@ -264,7 +305,8 @@ constants.nav_event_properties = {
 constants.pages = {
   crafter = {
     {type = "table", rows = {
-      {type = "plain", name = "crafting_speed"}
+      {type = "plain", name = "crafting_speed"},
+      {type = "goto", source = "fixed_recipe"}
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     {type = "list_box", source = "unlocked_by"},
@@ -374,6 +416,7 @@ constants.search_results_limit = 150
 -- TODO: Group toggling
 -- TODO: Recipe category toggling
 constants.settings = {
+  -- TODO: Remove this option
   general = {
     open_selected_object = {
       default_value = true,
@@ -416,6 +459,10 @@ constants.settings = {
       default_value = true,
       has_tooltip = true
     },
+    show_interaction_helps = {
+      default_value = true,
+      has_tooltip = true
+    },
     preserve_session = {
       default_value = false,
       has_tooltip = true
@@ -448,6 +495,7 @@ constants.settings = {
 constants.tooltips = {
   crafter = {
     {type = "plain", source = "crafting_speed", formatter = "number"},
+    {type = "plain", source = "fixed_recipe", formatter = "object", options = {hide_glyph = true, label_only = true}},
     -- TODO: Rename to crafting_categories and use object formatter
     {type = "list", source = "categories"}
   },

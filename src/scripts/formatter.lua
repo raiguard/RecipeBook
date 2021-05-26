@@ -146,7 +146,7 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   local class = obj_data.class
 
   local before = ""
-  if settings.show_glyphs then
+  if settings.show_glyphs and not options.hide_glyph then
     before = rich_text(
       "font",
       "RecipeBook",
@@ -290,6 +290,70 @@ local function get_tooltip_deets(obj_data, obj_properties, player_data, options)
   return output
 end
 
+local function get_interaction_helps(obj_data, obj_properties, player_data, options)
+  local gui_translations = player_data.translations.gui
+
+  local cache = caches[player_data.player_index]
+  local cache_key = build_cache_key(
+    "interaction_helps",
+    obj_data.class,
+    obj_data.name or obj_data.prototype_name
+  )
+  local cached = cache[cache_key]
+  if cached then
+    return cached
+  end
+
+  local output = ""
+
+  local helps = constants.interaction_helps[obj_data.class]
+
+  for _, help in pairs(helps) do
+    local value = ""
+    local skip_label = false
+    local option = help.option
+    if option and not options[option] then
+      if help.alternate_label then
+        -- HACK: This is hardcoded, since alternate_label is always an error right now
+        value = rich_text("color", "error", gui_translations[help.alternate_label])
+        skip_label = true
+      end
+    else
+      local source = help.source
+      if source then
+        local obj_value = obj_data[source]
+        if obj_value then
+          if help.force_label then
+            value = gui_translations[help.label]
+          else
+            local fmtr = help.formatter
+            if fmtr then
+              value = formatter[fmtr](obj_value, gui_translations, player_data, help.options)
+            else
+              value = gui_translations[obj_value]
+            end
+          end
+        end
+      else
+        value = gui_translations[help.label]
+      end
+    end
+
+    if #value > 0 then
+      local input_name = help.modifier and help.modifier.."_click" or "click"
+      local label = skip_label and "" or rich_text(
+        "font",
+        "default-semibold",
+        rich_text("color", "info", gui_translations[input_name]..": ")
+      )
+      output = output.."\n"..label..value
+    end
+  end
+
+  cache[cache_key] = output
+  return output
+end
+
 local function get_obj_properties(obj_data, force)
   local researched
   if obj_data.enabled_at_start then
@@ -354,8 +418,12 @@ function formatter.format(obj_data, player_data, options)
   else
     tooltip_output = base_tooltip.before..base_tooltip.after
   end
-  if player_data.settings.show_detailed_tooltips then
+  local settings = player_data.settings
+  if settings.show_detailed_tooltips then
     tooltip_output = tooltip_output..get_tooltip_deets(obj_data, obj_properties, player_data, options)
+  end
+  if settings.show_interaction_helps then
+    tooltip_output = tooltip_output..get_interaction_helps(obj_data, obj_properties, player_data, options)
   end
 
   return {
@@ -384,7 +452,7 @@ end
 function formatter.create_test_gui(player, player_table)
   local rb = global.recipe_book
   local test_objects = {
-    {rb.crafter["assembling-machine-3"], {}},
+    {rb.crafter["rocket-silo"], {}},
     {rb.fluid["steam.975"], {amount_ident = {amount = 55, probability = 0.75}}},
     {rb.group["production"], {}},
     {rb.item["loader"], {amount_ident = {amount_min = 4, amount_max = 7}}},
