@@ -448,7 +448,8 @@ constants.settings = {
 constants.tooltips = {
   crafter = {
     {type = "plain", source = "crafting_speed", formatter = "number"},
-    {type = "list", source = "crafting_categories"}
+    -- TODO: Rename to crafting_categories and use object formatter
+    {type = "list", source = "categories"}
   },
   fluid = {
     {type = "plain", source = "fuel_value", formatter = "fuel_value"},
@@ -456,12 +457,30 @@ constants.tooltips = {
   },
   group = {},
   item = {
-
+    {type = "plain", source = "stack_size", formatter = "number"},
+    {type = "plain", source = "fuel_value", formatter = "fuel_value"},
+    {type = "plain", source = "fuel_emissions_multiplier", label = "fuel_pollution", formatter = "percent"},
+    {type = "plain", source = "fuel_acceleration_multiplier", label = "vehicle_acceleration", formatter = "percent"},
+    {type = "plain", source = "fuel_top_speed_multiplier", label = "vehicle_top_speed", formatter = "percent"},
+    {type = "plain", source = "group", formatter = "object"},
   },
-  lab = {},
+  lab = {
+    {type = "plain", source = "research_speed", formatter = "number"},
+    {type = "list", source = "inputs", formatter = "object"}
+  },
   recipe_category = {},
-  recipe = {},
-  technology = {},
+  recipe = {
+    {type = "plain", source = "energy", label = "crafting_time", formatter = "seconds_from_ticks"},
+    {type = "plain", source = "recipe_category", formatter = "object"},
+    {type = "plain", source = "group", formatter = "object"},
+    {type = "list", source = "ingredients", formatter = "object", options = {always_show = true}},
+    {type = "list", source = "products", formatter = "object", options = {always_show = true}}
+  },
+  technology = {
+    {type = "plain", source = "research_unit_count", label = "required_units", formatter = "number"},
+    {type = "plain", source = "research_unit_energy", label = "time_per_unit", formatter = "seconds_from_ticks"},
+    {type = "list", source = "research_ingredients_per_unit", formatter = "object", options = {always_show = true}}
+  }
 }
 
 return constants

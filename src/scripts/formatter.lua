@@ -18,6 +18,7 @@
     - amount_only
     - is_label: show_glyphs = false, show_tooltip_details = false
 ]]
+local fixed_format = require("lib.fixed-precision-format")
 local math = require("__flib__.math")
 local misc = require("__flib__.misc")
 local table = require("__flib__.table")
@@ -40,16 +41,42 @@ local function expand_string(source, ...)
   return source
 end
 
-local function number(value)
-  return misc.delineate_number(math.round_to(value, 2))
-end
-
 local function rich_text(key, value, inner)
   return "["..key.."="..(key == "color" and constants.colors[value].str or value).."]"..inner.."[/"..key.."]"
 end
 
 local function sprite(class, name)
   return "[img="..class.."/"..name.."]"
+end
+
+local function number(value)
+  return misc.delineate_number(math.round_to(value, 2))
+end
+
+local function fuel_value(value, gui_translations)
+  return fixed_format(value, 3, "2")..gui_translations.si_joule
+end
+
+local function percent(value, gui_translations)
+  return expand_string(gui_translations.format_percent, number(value * 100))
+end
+
+local function seconds(value, gui_translations)
+  return expand_string(gui_translations.format_seconds, number(value * 60))
+end
+
+local function seconds_from_ticks(value, gui_translations)
+  return seconds(value / 60, gui_translations)
+end
+
+local function per_second(value, gui_translations)
+  return number(value)..gui_translations.per_second_suffix
+end
+
+local function object(value, _, player_data, options)
+  local obj_data = global.recipe_book[value.class][value.name]
+  local info = formatter(obj_data, player_data, options)
+  return info.caption
 end
 
 local function get_amount_string(amount_ident, player_data, options)
@@ -209,6 +236,60 @@ local function get_base_tooltip(obj_data, obj_properties, player_data, options)
   return output
 end
 
+local function get_tooltip_deets(obj_data, obj_properties, player_data, options)
+  local gui_translations = player_data.translations.gui
+
+  local cache = caches[player_data.player_index]
+  local cache_key = build_cache_key(
+    "tooltip_deets",
+    obj_data.class,
+    obj_data.name or obj_data.prototype_name
+  )
+  local cached = cache[cache_key]
+  if cached then
+    return cached
+  end
+
+  local deets_structure = constants.tooltips[obj_data.class]
+
+  local output = ""
+
+  for _, deet in pairs(deets_structure) do
+    local values
+    local type = deet.type
+    if type == "plain" then
+      values = {obj_data[deet.source]}
+    elseif type == "list" then
+      values = table.array_copy(obj_data[deet.source])
+    end
+
+    local values_output = ""
+    for _, value in pairs(values) do
+      local fmtr = deet.formatter
+      if fmtr then
+        value = formatter[fmtr](value, gui_translations, player_data, deet.options)
+      end
+      if value then
+        if type == "plain" then
+          values_output = values_output.."  "..value
+        elseif type == "list" then
+          values_output = values_output.."\n    "..value
+        end
+      end
+    end
+
+    if #values_output > 0 then
+      output = output
+        .."\n"
+        ..rich_text("font", "default-semibold", gui_translations[deet.label or deet.source]..":")
+        ..values_output
+    end
+  end
+
+  cache[cache_key] = output
+  return output
+end
+
 local function get_obj_properties(obj_data, force)
   local researched
   if obj_data.enabled_at_start then
@@ -273,6 +354,9 @@ function formatter.format(obj_data, player_data, options)
   else
     tooltip_output = base_tooltip.before..base_tooltip.after
   end
+  if player_data.settings.show_detailed_tooltips then
+    tooltip_output = tooltip_output..get_tooltip_deets(obj_data, obj_properties, player_data, options)
+  end
 
   return {
     caption = caption_output,
@@ -319,6 +403,18 @@ function formatter.create_test_gui(player, player_table)
     end
   end
 end
+
+formatter.build_cache_key = build_cache_key
+formatter.expand_string = expand_string
+formatter.rich_text = rich_text
+formatter.sprite = sprite
+formatter.number = number
+formatter.fuel_value = fuel_value
+formatter.object = object
+formatter.percent = percent
+formatter.seconds = seconds
+formatter.seconds_from_ticks = seconds_from_ticks
+formatter.per_second = per_second
 
 setmetatable(formatter, {__call = function(_, ...) return formatter.format(...) end})
 
