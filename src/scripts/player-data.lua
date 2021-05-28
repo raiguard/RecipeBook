@@ -2,7 +2,7 @@ local table = require("__flib__.table")
 local translation = require("__flib__.translation")
 
 local constants = require("constants")
-local formatter = require("scripts.formatter-old")
+local formatter = require("scripts.formatter")
 local shared = require("scripts.shared")
 
 local info_gui = require("scripts.gui.info.index")
@@ -72,8 +72,8 @@ function player_data.update_settings(player, player_table)
   -- Save to `global`
   player_table.settings = settings
 
-  -- Purge memoizer cache
-  formatter.purge_cache(player.index)
+  -- Create or purge memoizer cache
+  formatter.create_cache(player.index)
 end
 
 function player_data.start_translations(player_index)

@@ -3,7 +3,7 @@ local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
 
-local formatter = require("scripts.formatter-old")
+local formatter = require("scripts.formatter")
 
 local table_comp = {}
 

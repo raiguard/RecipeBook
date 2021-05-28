@@ -3,7 +3,7 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
-local formatter = require("scripts.formatter-old")
+local formatter = require("scripts.formatter")
 local shared = require("scripts.shared")
 local util = require("scripts.util")
 

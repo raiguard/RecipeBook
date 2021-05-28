@@ -49,6 +49,13 @@ local function sprite(class, name)
   return "[img="..class.."/"..name.."]"
 end
 
+local function control(content, action)
+  return "\n"
+    ..rich_text("color", "info", rich_text("font", "default-semibold", content..":"))
+    .." "
+    ..action
+end
+
 local function number(value)
   return misc.delineate_number(math.round_to(value, 2))
 end
@@ -438,6 +445,12 @@ function formatter.create_cache(player_index)
   caches[player_index] = {}
 end
 
+function formatter.create_all_caches()
+  for i in pairs(global.players) do
+    caches[i] = {}
+  end
+end
+
 function formatter.build_player_data(player, player_table)
   return {
     favorites = player_table.favorites,
@@ -473,16 +486,17 @@ function formatter.create_test_gui(player, player_table)
 end
 
 formatter.build_cache_key = build_cache_key
+formatter.control = control
 formatter.expand_string = expand_string
-formatter.rich_text = rich_text
-formatter.sprite = sprite
-formatter.number = number
 formatter.fuel_value = fuel_value
+formatter.number = number
 formatter.object = object
 formatter.percent = percent
-formatter.seconds = seconds
-formatter.seconds_from_ticks = seconds_from_ticks
 formatter.per_second = per_second
+formatter.rich_text = rich_text
+formatter.seconds_from_ticks = seconds_from_ticks
+formatter.seconds = seconds
+formatter.sprite = sprite
 
 setmetatable(formatter, {__call = function(_, ...) return formatter.format(...) end})
 

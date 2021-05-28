@@ -2,7 +2,7 @@ local gui = require("__flib__.gui-beta")
 local table = require("__flib__.table")
 
 local constants = require("constants")
-local formatter = require("scripts.formatter-old")
+local formatter = require("scripts.formatter")
 
 local info_list_box = require("scripts.gui.main.info-list-box")
 local quick_ref_gui = require("scripts.gui.quick-ref")

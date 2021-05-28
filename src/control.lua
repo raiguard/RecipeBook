@@ -4,7 +4,7 @@ local migration = require("__flib__.migration")
 local translation = require("__flib__.translation")
 
 local constants = require("constants")
-local formatter = require("scripts.formatter-old")
+local formatter = require("scripts.formatter")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
@@ -22,8 +22,8 @@ commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
     local player = game.get_player(e.player_index)
     player.print{"rb-message.refreshing-player-data"}
     player_data.refresh(player, global.players[e.player_index])
-  elseif e.parameter == "purge-memoizer-cache" then
-    formatter.purge_cache(e.player_index)
+  elseif e.parameter == "clear-memoizer-cache" then
+    formatter.create_cache(e.player_index)
     local player = game.get_player(e.player_index)
     player.print{"rb-message.memoizer-cache-purged"}
   else
@@ -248,7 +248,6 @@ end)
 -- TRANSLATIONS
 
 -- TEMPORARY:
-local formatter_new = require("scripts.formatter")
 event.on_string_translated(function(e)
   local names, finished = translation.process_result(e)
   if names then
@@ -275,9 +274,6 @@ event.on_string_translated(function(e)
     -- TODO: Create search GUI - info GUIs are created on demand
     -- main_gui.build(player, player_table)
     -- update flags
-    -- TEMPORARY:
-    formatter_new.create_cache(e.player_index)
-    formatter_new.create_test_gui(player, player_table)
     player_table.flags.can_open_gui = true
     player_table.flags.translate_on_join = false -- not really needed, but is here just in case
     player_table.flags.show_message_after_translation = false
@@ -323,7 +319,7 @@ function shared.update_header_button(player, player_table, context, button, to_s
 end
 
 function shared.refresh_contents(player, player_table)
-  formatter.purge_cache(player.index)
+  formatter.clear_cache(player.index)
   info_gui.update_all(player, player_table)
   quick_ref_gui.update_all(player, player_table)
 end
