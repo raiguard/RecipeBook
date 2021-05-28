@@ -1,7 +1,5 @@
-local fixed_format = require("lib.fixed-precision-format")
 local gui = require("__flib__.gui-beta")
-
-local constants = require("constants")
+local table = require("__flib__.table")
 
 local formatter = require("scripts.formatter")
 
@@ -25,8 +23,8 @@ function table_comp.build(parent, index, component)
 end
 
 function table_comp.update(component, refs, object_data, player_data, variables)
-  local table = refs.table
-  local children = table.children
+  local tbl = refs.table
+  local children = tbl.children
 
   local gui_translations = player_data.translations.gui
 
@@ -43,7 +41,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
           i = i + 1
           local label_label = children[i]
           if not label_label then
-            label_label = table.add{
+            label_label = tbl.add{
               type = "label",
               style = "rb_table_label",
               index = i
@@ -70,7 +68,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             if value_label then
               value_label.destroy()
             end
-            value_label = table.add{type = "label", index = i}
+            value_label = tbl.add{type = "label", index = i}
           end
           value_label.caption = value
         end
@@ -85,7 +83,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
           i = i + 1
           local label_label = children[i]
           if not label_label then
-            label_label = table.add{
+            label_label = tbl.add{
               type = "label",
               style = "rb_table_label",
               index = i,
@@ -108,7 +106,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             if button then
               button.destroy()
             end
-            button = table.add{
+            button = tbl.add{
               type = "button",
               style = "rb_table_button",
               mouse_button_filter = {"left", "middle"},
@@ -116,7 +114,9 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             }
           end
           local source_data = global.recipe_book[source_ident.class][source_ident.name]
-          local info = formatter(source_data, player_data, {always_show = true})
+          local options = table.shallow_copy(row.options or {})
+          options.always_show = true
+          local info = formatter(source_data, player_data, options)
           button.caption = info.caption
           button.tooltip = info.tooltip
           gui.set_action(button, "on_click", {gui = "info", id = variables.gui_id, action = "navigate_to"})

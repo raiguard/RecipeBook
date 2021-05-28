@@ -18,12 +18,6 @@ local function quick_ref_panel(ref)
     }
 end
 
-local function build_tooltip(tooltip, amount_string, gui_translations)
-  return
-    string.gsub(tooltip, "^.-color=.-%]", "%1"..string.gsub(amount_string, "%%", "%%%%").." ")
-    ..formatter.control(gui_translations.alt_click, gui_translations.toggle_completed)
-end
-
 function quick_ref_gui.build(player, player_table, recipe_name)
   local refs = gui.build(player.gui.screen, {
     {type = "frame", direction = "vertical", ref = {"window"},
@@ -114,36 +108,44 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
       local object_info = formatter(
         object_data,
         player_data,
-        {always_show = source ~= "made_in", blueprint_recipe = blueprint_recipe}
+        {
+          amount_ident = object.amount_ident,
+          amount_only = true,
+          always_show = source ~= "made_in",
+          blueprint_recipe = blueprint_recipe
+        }
       )
       if object_info then
         i = i + 1
 
-        local button_style = object_info.is_researched and "flib_slot_button_default" or "flib_slot_button_red"
-        local tooltip = build_tooltip(object_info.tooltip, object.amount_string, player_data.translations.gui)
+        local button_style = object_info.researched and "flib_slot_button_default" or "flib_slot_button_red"
 
         local button = buttons[i]
 
         if button then
           button.style = button_style
           button.sprite = constants.class_to_type[object.class].."/"..object.name
-          button.tooltip = tooltip
+          button.tooltip = object_info.tooltip
           gui.update_tags(button, {
             blueprint_recipe = blueprint_recipe,
             context = object,
-            researched = object_data.is_researched
+            researched = object_data.researched
           })
         else
+          local probability = object.amount_ident.probability
+          if probability == 1 then
+            probability = false
+          end
           gui.build(table, {
             {
               type = "sprite-button",
               style = button_style,
               sprite = constants.class_to_type[object.class].."/"..object.name,
-              tooltip = tooltip,
+              tooltip = object_info.tooltip,
               tags = {
                 blueprint_recipe = blueprint_recipe,
                 context = object,
-                researched = object_data.is_researched
+                researched = object_data.researched
               },
               actions = {
                 on_click = {gui = "quick_ref", id = recipe_name, action = "handle_button_click", source = source}
@@ -151,13 +153,13 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
               {
                 type = "label",
                 style = "rb_slot_label",
-                caption = object.quick_ref_amount_string,
+                caption = object_info.caption,
                 ignored_by_interaction = true
               },
               {
                 type = "label",
                 style = "rb_slot_label_top",
-                caption = string.find(object.amount_string, "%%") and "%" or "",
+                caption = show_percent and "%" or "",
                 ignored_by_interaction = true
               }
             }

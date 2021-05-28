@@ -154,6 +154,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "format_amount", localised = {"gui.rb-format-amount"}},
   {dictionary = "gui", internal = "format_percent", localised = {"format-percent"}},
   {dictionary = "gui", internal = "format_seconds", localised = {"time-symbol-seconds"}},
+  {dictionary = "gui", internal = "format_seconds_parenthesis", localised = {"gui.rb-format-seconds-parenthesis"}},
   {dictionary = "gui", internal = "fuel_pollution", localised = {"description.fuel-pollution"}},
   {dictionary = "gui", internal = "fuel_value", localised = {"description.fuel-value"}},
   {dictionary = "gui", internal = "get_blueprint", localised = {"gui.rb-get-blueprint"}},
@@ -306,7 +307,7 @@ constants.pages = {
   crafter = {
     {type = "table", rows = {
       {type = "plain", name = "crafting_speed"},
-      {type = "goto", source = "fixed_recipe"}
+      {type = "goto", source = "fixed_recipe", options = {hide_glyph = true}}
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     {type = "list_box", source = "unlocked_by"},
@@ -501,7 +502,7 @@ constants.tooltips = {
   },
   fluid = {
     {type = "plain", source = "fuel_value", formatter = "fuel_value"},
-    {type = "plain", source = "group", formatter = "object"}
+    {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true, label_only = true}}
   },
   group = {},
   item = {
@@ -510,19 +511,22 @@ constants.tooltips = {
     {type = "plain", source = "fuel_emissions_multiplier", label = "fuel_pollution", formatter = "percent"},
     {type = "plain", source = "fuel_acceleration_multiplier", label = "vehicle_acceleration", formatter = "percent"},
     {type = "plain", source = "fuel_top_speed_multiplier", label = "vehicle_top_speed", formatter = "percent"},
-    {type = "plain", source = "group", formatter = "object"},
+    {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true, label_only = true}},
   },
   lab = {
     {type = "plain", source = "research_speed", formatter = "number"},
-    {type = "list", source = "inputs", formatter = "object"}
+    {type = "list", source = "inputs", formatter = "object", options = {hide_glyph = true, label_only = true}}
   },
   recipe_category = {},
   recipe = {
     {type = "plain", source = "energy", label = "crafting_time", formatter = "seconds_from_ticks"},
-    {type = "plain", source = "recipe_category", formatter = "object"},
-    {type = "plain", source = "group", formatter = "object"},
+    {type = "plain", source = "recipe_category", formatter = "object", options = {hide_glyph = true, label_only = true}},
+    {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true, label_only = true}},
     {type = "list", source = "ingredients", formatter = "object", options = {always_show = true}},
     {type = "list", source = "products", formatter = "object", options = {always_show = true}}
+  },
+  resource = {
+    {type = "plain", source = "required_fluid", formatter = "object", options = {always_show = true, hide_glyph = true}}
   },
   technology = {
     {type = "plain", source = "research_unit_count", label = "required_units", formatter = "number"},

@@ -13,31 +13,14 @@ function util.append(tbl, name)
   return new_tbl
 end
 
--- TODO: Locale-specific amount strings
-function util.build_amount_string(material)
-  -- amount
-  local amount = material.amount
-  local amount_string = (
-    amount
-    and math.round_to(amount, 2).." x"
-    or material.amount_min.." - "..material.amount_max.." x"
-  )
-
-  -- probability
-  local probability = material.probability
-  if probability and probability < 1 then
-    amount_string = (probability * 100).."% "..amount_string
-  end
-
-  -- quick ref string
-  local quick_ref_string = (
-    amount == nil
-    and "~"..((material.amount_min + material.amount_max) / 2)
-    or tostring(math.round_to(amount, 1))
-  )
-
-  -- first return is the standard, second return is what is shown in the quick ref GUI
-  return amount_string, quick_ref_string
+function util.build_amount_ident(input)
+  return {
+    amount = input.amount or false,
+    amount_min = input.amount_min or false,
+    amount_max = input.amount_max or false,
+    probability = input.probability or false,
+    format = input.format or "format_amount"
+  }
 end
 
 function util.build_temperature_ident(fluid)
@@ -132,9 +115,7 @@ function util.navigate_to(e)
     local crafter_data = global.recipe_book.crafter[context.name]
     if crafter_data then
       if e.control then
-        if crafter_data.fixed_recipe then
-          return {class = "recipe", name = crafter_data.fixed_recipe}
-        end
+        return crafter_data.fixed_recipe
       elseif e.shift then
         local blueprint_recipe = tags.blueprint_recipe
         if blueprint_recipe then

@@ -67,14 +67,14 @@ function list_box.update(component, refs, object_data, player_data, variables)
         player_data,
         {
           always_show = always_show,
-          amount_string = obj.amount_string,
+          amount_ident = obj.amount_ident,
           blueprint_recipe = blueprint_recipe
         }
       )
 
       if info then
         i = i + 1
-        local style = info.is_researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+        local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
         local item = children[i]
         if item then
           item.style = style

@@ -319,7 +319,7 @@ function shared.update_header_button(player, player_table, context, button, to_s
 end
 
 function shared.refresh_contents(player, player_table)
-  formatter.clear_cache(player.index)
+  formatter.create_cache(player.index)
   info_gui.update_all(player, player_table)
   quick_ref_gui.update_all(player, player_table)
 end

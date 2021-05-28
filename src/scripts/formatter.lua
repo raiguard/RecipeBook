@@ -18,6 +18,7 @@
     - amount_only
     - is_label: show_glyphs = false, show_tooltip_details = false
 ]]
+
 local fixed_format = require("lib.fixed-precision-format")
 local math = require("__flib__.math")
 local misc = require("__flib__.misc")
@@ -80,20 +81,23 @@ local function per_second(value, gui_translations)
   return number(value)..gui_translations.per_second_suffix
 end
 
-local function object(value, _, player_data, options)
-  local obj_data = global.recipe_book[value.class][value.name]
-  local info = formatter(obj_data, player_data, options)
+local function object(obj, _, player_data, options)
+  local obj_data = global.recipe_book[obj.class][obj.name]
+  local obj_options = options and table.shallow_copy(options) or {}
+  obj_options.amount_ident = obj.amount_ident
+  local info = formatter(obj_data, player_data, obj_options)
   return info.caption
 end
 
 local function get_amount_string(amount_ident, player_data, options)
   local cache_key = build_cache_key(
     "amount_string",
-    amount_ident.amount or "false",
-    amount_ident.amount_min or "false",
-    amount_ident.amount_max or "false",
-    amount_ident.probability or "false",
-    options.amount_only or "false"
+    amount_ident.amount,
+    amount_ident.amount_min,
+    amount_ident.amount_max,
+    amount_ident.probability,
+    amount_ident.format,
+    options.amount_only
   )
   local cache = caches[player_data.player_index]
   local cached = cache[cache_key]
@@ -104,17 +108,18 @@ local function get_amount_string(amount_ident, player_data, options)
   local amount = amount_ident.amount
   local output
   if options.amount_only then
-    output = amount_ident.amount ~= nil
+    output = amount_ident.amount
       and tostring(math.round_to(amount, 1))
       or "~"..math.round_to((amount_ident.amount_min + amount_ident.amount_max) / 2, 1)
   else
     local gui_translations = player_data.translations.gui
     -- Amount
+    local format_string = gui_translations[amount_ident.format]
     if amount then
-      output = expand_string(gui_translations.format_amount, number(amount))
+      output = expand_string(format_string, number(amount))
     else
       output = expand_string(
-        gui_translations.format_amount,
+        format_string,
         number(amount_ident.amount_min).." - "..number(amount_ident.amount_max)
       )
     end
@@ -143,7 +148,8 @@ local function get_caption(obj_data, obj_properties, player_data, options)
     obj_data.class,
     name,
     obj_properties.enabled,
-    obj_properties.hidden
+    obj_properties.hidden,
+    options.hide_glyph
   )
   local cached = cache[cache_key]
   if cached then
@@ -383,8 +389,14 @@ local function get_obj_properties(obj_data, force)
   return {hidden = obj_data.hidden or false, researched = researched, enabled = enabled}
 end
 
+-- FIXME: `get_should_show` is not implemented, so everything is always shown
 function formatter.format(obj_data, player_data, options)
   options = options or {}
+
+  if options.is_label then
+    options.hide_glyph = true
+    options.base_tooltip_only = true
+  end
 
   local obj_properties = get_obj_properties(obj_data, player_data.force)
   local amount_ident = options.amount_ident
@@ -426,10 +438,10 @@ function formatter.format(obj_data, player_data, options)
     tooltip_output = base_tooltip.before..base_tooltip.after
   end
   local settings = player_data.settings
-  if settings.show_detailed_tooltips then
+  if settings.show_detailed_tooltips and not options.base_tooltip_only then
     tooltip_output = tooltip_output..get_tooltip_deets(obj_data, obj_properties, player_data, options)
   end
-  if settings.show_interaction_helps then
+  if settings.show_interaction_helps and not options.base_tooltip_only then
     tooltip_output = tooltip_output..get_interaction_helps(obj_data, obj_properties, player_data, options)
   end
 

@@ -17,12 +17,11 @@ function item_proc.build(recipe_book, strings, metadata)
     local launch_products = {}
     for i, product in ipairs(prototype.rocket_launch_products or {}) do
       -- Add to products table w/ amount string
-      local amount_string, quick_ref_amount_string = util.build_amount_string(product)
+      local amount_ident = util.build_amount_ident(product)
       launch_products[i] = {
         class = product.type,
         name = product.name,
-        amount_string = amount_string,
-        quick_ref_amount_string = quick_ref_amount_string
+        amount_ident = amount_ident
       }
       -- Add to payloads table
       local product_payloads = rocket_launch_payloads[product.name]

@@ -5,10 +5,10 @@ return function(recipe_book, strings)
     recipe_book.group[name] = {
       class = "group",
       enabled_at_start = true,
-      fluids = {},
-      items = {},
+      fluids = util.unique_obj_array{},
+      items = util.unique_obj_array{},
       prototype_name = name,
-      recipes = {},
+      recipes = util.unique_obj_array{},
     }
     util.add_string(strings, {dictionary = "group", internal = name, localised = prototype.localised_name})
     -- NOTE: Groups do not have descriptions

@@ -17,7 +17,7 @@ return function(recipe_book, strings)
       required_fluid = {
         class = "fluid",
         name = mineable_properties.required_fluid,
-        amount_string = util.build_amount_string{amount = mineable_properties.fluid_amount}
+        amount_ident = util.build_amount_ident{amount = mineable_properties.fluid_amount}
       }
     else
       -- enable resource items that are hand-minable
