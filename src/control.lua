@@ -247,7 +247,7 @@ end)
 
 -- TRANSLATIONS
 
--- TEMPORARY:
+-- TODO: Revisit translations system as a whole in flib
 event.on_string_translated(function(e)
   local names, finished = translation.process_result(e)
   if names then

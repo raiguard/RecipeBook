@@ -324,14 +324,8 @@ local function get_interaction_helps(obj_data, obj_properties, player_data, opti
   for _, help in pairs(helps) do
     local value = ""
     local skip_label = false
-    local option = help.option
-    if option and not options[option] then
-      if help.alternate_label then
-        -- HACK: This is hardcoded, since alternate_label is always an error right now
-        value = rich_text("color", "error", gui_translations[help.alternate_label])
-        skip_label = true
-      end
-    else
+    local test = help.test
+    if not test or test(obj_data, options) then
       local source = help.source
       if source then
         local obj_value = obj_data[source]
@@ -367,7 +361,15 @@ local function get_interaction_helps(obj_data, obj_properties, player_data, opti
   return output
 end
 
-local function get_obj_properties(obj_data, force)
+local function get_obj_properties(obj_data, player_data, options)
+  -- Player data
+  local force = player_data.force
+  local player_settings = player_data.settings
+  local show_hidden = player_settings.show_hidden
+  local show_unresearched = player_settings.show_unresearched
+  local show_disabled = player_settings.show_disabled
+
+  -- Actually get object properties
   local researched
   if obj_data.enabled_at_start then
     researched = true
@@ -376,7 +378,6 @@ local function get_obj_properties(obj_data, force)
   else
     researched = true
   end
-
   local enabled = true
   -- We have to get the current enabled status from the object itself
   -- Recipes are unlocked by "enabling" them, so only check a recipe if it's researched
@@ -385,11 +386,44 @@ local function get_obj_properties(obj_data, force)
   elseif obj_data.class == "technology" then
     enabled = force.technologies[obj_data.prototype_name].enabled
   end
+  local obj_properties = {hidden = obj_data.hidden or false, researched = researched, enabled = enabled}
 
-  return {hidden = obj_data.hidden or false, researched = researched, enabled = enabled}
+  -- Determine if we should show this object
+  local should_show = false
+  if options.always_show then
+    should_show = true
+  elseif (show_hidden or not obj_properties.hidden)
+    and (show_unresearched or obj_properties.researched)
+    and (show_disabled or obj_properties.enabled)
+  then
+    -- Check group
+    -- TODO: Group members won't be shown on their own page if disabled
+    local group = obj_data.group
+    if not group or player_settings.groups[group.name] then
+      -- For recipes - check category to see if it should be shown
+      -- TODO: Recipe category  members won't be shown on their own page if disabled
+      local recipe_category = obj_data.recipe_category
+      local recipe_categories = obj_data.recipe_categories
+      if recipe_category then
+        if player_settings.recipe_categories[recipe_category.name] then
+          should_show = true
+        end
+      -- For materials - check if any of their recipe categories are enabled
+      elseif recipe_categories then
+        local category_settings = player_settings.recipe_categories
+        for _, category_name in ipairs(recipe_categories) do
+          if category_settings[category_name] then
+            should_show = true
+          end
+        end
+      else
+        should_show = true
+      end
+    end
+  end
+  return should_show and obj_properties or false
 end
 
--- FIXME: `get_should_show` is not implemented, so everything is always shown
 function formatter.format(obj_data, player_data, options)
   options = options or {}
 
@@ -398,7 +432,9 @@ function formatter.format(obj_data, player_data, options)
     options.base_tooltip_only = true
   end
 
-  local obj_properties = get_obj_properties(obj_data, player_data.force)
+  local obj_properties = get_obj_properties(obj_data, player_data, options)
+  if not obj_properties then return false end
+
   local amount_ident = options.amount_ident
 
   -- Caption

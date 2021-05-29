@@ -135,7 +135,6 @@ constants.empty_translations_table = {
 
 constants.gui_strings = {
   {dictionary = "gui", internal = "alt_click", localised = {"gui.rb-alt-click"}},
-  {dictionary = "gui", internal = "blueprint_not_available", localised = {"gui.rb-blueprint-not-available"}},
   {dictionary = "gui", internal = "categories", localised = {"gui.rb-categories"}},
   {dictionary = "gui", internal = "category", localised = {"gui.rb-category"}},
   {dictionary = "gui", internal = "click", localised = {"gui.rb-click"}},
@@ -237,8 +236,9 @@ constants.interaction_helps = {
     {
       modifier = "shift",
       label = "get_blueprint",
-      option = "blueprint_recipe",
-      alternate_label = "blueprint_not_available"
+      test = function(obj_data, options)
+        return options.blueprint_recipe and obj_data.blueprintable
+      end
     },
     {modifier = "control", label = "view_fixed_recipe", source = "fixed_recipe", force_label = true}
   },
