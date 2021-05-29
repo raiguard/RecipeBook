@@ -316,7 +316,7 @@ constants.pages = {
   fluid = {
     {type = "table", rows = {
       {type = "plain", name = "fuel_value", formatter = "fuel_value"},
-      {type = "goto", source = "group"},
+      {type = "goto", source = "group", options = {hide_glyph = true}},
     }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
@@ -352,7 +352,7 @@ constants.pages = {
         label = "vehicle_top_speed",
         formatter = "percent"
       },
-      {type = "goto", source = "group"},
+      {type = "goto", source = "group", options = {hide_glyph = true}},
     }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
@@ -377,8 +377,8 @@ constants.pages = {
   },
   recipe = {
     {type = "table", rows = {
-      {type = "goto", source = "recipe_category"},
-      {type = "goto", source = "group"},
+      {type = "goto", source = "recipe_category", options = {hide_glyph = true}},
+      {type = "goto", source = "group", options = {hide_glyph = true}},
       {
         type = "plain",
         name = "energy",
