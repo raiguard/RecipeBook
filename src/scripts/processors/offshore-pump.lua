@@ -14,7 +14,7 @@ function offshore_pump_proc.build(recipe_book, strings)
 
     recipe_book.offshore_pump[name] = {
       class = "offshore_pump",
-      fluid = fluid.name,
+      fluid = {class = "fluid", name = fluid.name},
       hidden = prototype.has_flag("hidden"),
       placeable_by = {},
       prototype_name = name,

@@ -215,6 +215,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "view_base_fluid", localised = {"gui.rb-view-base-fluid"}},
   {dictionary = "gui", internal = "view_details", localised = {"gui.rb-view-details"}},
   {dictionary = "gui", internal = "view_fixed_recipe", localised = {"gui.rb-view-fixed-recipe"}},
+  {dictionary = "gui", internal = "view_fluid", localised = {"gui.rb-view-fluid"}},
   {dictionary = "gui", internal = "view_required_fluid", localised = {"gui.rb-view-required-fluid"}},
   {dictionary = "gui", internal = "view_technology", localised = {"gui.rb-view-technology"}},
 }
@@ -244,7 +245,8 @@ constants.interaction_helps = {
   },
   fluid = {
     {modifier = nil, label = "view_details"},
-    {modifier = "shift", label = "view_base_bluid", source = "base_fluid", formatter = "object"}
+    -- FIXME: Doesn't work
+    -- {modifier = "shift", label = "view_base_fluid", source = "base_fluid", formatter = "object"}
   },
   item = {
     {modifier = nil, label = "view_details"}
@@ -255,7 +257,10 @@ constants.interaction_helps = {
   lab = {
     {modifier = nil, label = "view_details"}
   },
-  offshore_pump = {},
+  offshore_pump = {
+    -- FIXME: Refactor the handler so this will actually work - right now it tries to go to the pump page
+    {modifier = nil, label = "view_fluid", source = "fluid", formatter = "object", force_label = true}
+  },
   recipe_category = {
     {modifier = nil, label = "view_details"}
   },
@@ -307,7 +312,8 @@ constants.pages = {
   crafter = {
     {type = "table", rows = {
       {type = "plain", name = "crafting_speed"},
-      {type = "goto", source = "fixed_recipe", options = {hide_glyph = true}}
+      {type = "goto", source = "fixed_recipe", options = {hide_glyph = true}},
+      {type = "plain", name = "rocket_parts_required"}
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     {type = "list_box", source = "unlocked_by"},
@@ -497,6 +503,7 @@ constants.tooltips = {
   crafter = {
     {type = "plain", source = "crafting_speed", formatter = "number"},
     {type = "plain", source = "fixed_recipe", formatter = "object", options = {hide_glyph = true, label_only = true}},
+    {type = "plain", source = "rocket_parts_required", formatter = "number"},
     -- TODO: Rename to crafting_categories and use object formatter
     {type = "list", source = "categories"}
   },
@@ -516,6 +523,15 @@ constants.tooltips = {
   lab = {
     {type = "plain", source = "research_speed", formatter = "number"},
     {type = "list", source = "inputs", formatter = "object", options = {hide_glyph = true, label_only = true}}
+  },
+  offshore_pump = {
+    {type = "plain", source = "pumping_speed", formatter = "per_second"},
+    {
+      type = "plain",
+      source = "fluid",
+      formatter = "object",
+      options = {always_show = true, label_only = true, hide_glyph = true}
+    }
   },
   recipe_category = {},
   recipe = {

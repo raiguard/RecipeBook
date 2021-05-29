@@ -82,13 +82,11 @@ return function(recipe_book, strings, metadata)
     local num_ingredients = #data.ingredients
     for crafter_name, crafter_data in pairs(recipe_book.crafter) do
       if (crafter_data.ingredient_limit or 255) >= num_ingredients and crafter_data.categories[category] then
-        -- TODO: What is this?
-        -- local rocket_parts_str = crafter_data.rocket_parts_required and crafter_data.rocket_parts_required.."x  " or ""
+        -- FIXME: Doesn't show rocket parts required anymore
         local crafting_time = math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
         data.made_in[#data.made_in + 1] = {
           class = "crafter",
           name = crafter_name,
-          -- TODO: Locale-specific amount strings
           amount_ident = util.build_amount_ident{amount = crafting_time, format = "format_seconds_parenthesis"}
         }
         crafter_data.compatible_recipes[#crafter_data.compatible_recipes + 1] = {class = "recipe", name = name}

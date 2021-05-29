@@ -131,7 +131,7 @@ local function update_recipe(recipe_book, recipe_data, technology_name, force_in
 
     -- research pump fluid if it's not already
     local fluid = offshore_pump_data.fluid
-    local fluid_data = recipe_book.fluid[fluid]
+    local fluid_data = recipe_book.fluid[fluid.name]
     if fluid_data.researched_forces then
       fluid_data.researched_forces[force_index] = to_value
     end
