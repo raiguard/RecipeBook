@@ -273,9 +273,9 @@ function info_gui.update_contents(player, player_table, id, new_context)
   local entries = {}
   for i, history_context in ipairs(history) do
     local obj_data = global.recipe_book[history_context.class][history_context.name]
-    local info = formatter(obj_data, player_data, {always_show = true})
+    local info = formatter(obj_data, player_data, {always_show = true, label_only = true})
     local caption = info.caption
-    if not info.is_researched then
+    if not info.researched then
       caption = formatter.rich_text("color", "unresearched", caption)
     end
     entries[history_len - (i - 1)] = formatter.rich_text(
