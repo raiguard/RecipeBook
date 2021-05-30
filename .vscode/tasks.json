@@ -29,6 +29,29 @@
         "Sandbox": true
       },
       "disableExtraMods": true
+    },
+    {
+      "type": "factorio",
+      "label": "Set mods - SE",
+      "command": "adjustMods",
+      "modsPath": "/home/rai/dev/factorio/1/mods",
+      "adjustMods": {
+        "aai-industry": true,
+        "aai-signal-transmission": true,
+        "alien-biomes": true,
+        "EditorExtensions": true,
+        "flib": true,
+        "informatron": true,
+        "jetpack": true,
+        "RecipeBook": true,
+        "robot_attrition": true,
+        "Sandbox": true,
+        "space-exploration-graphics": true,
+        "space-exploration-hr-graphics": true,
+        "space-exploration-postprocess": true,
+        "space-exploration": true
+      },
+      "disableExtraMods": true
     }
   ]
 }
