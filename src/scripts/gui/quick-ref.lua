@@ -124,7 +124,7 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
 
         if button then
           button.style = button_style
-          button.sprite = constants.class_to_type[object.class].."/"..object.name
+          button.sprite = constants.class_to_type[object.class].."/"..object_data.prototype_name
           button.tooltip = object_info.tooltip
           gui.update_tags(button, {
             blueprint_recipe = blueprint_recipe,
@@ -140,7 +140,7 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
             {
               type = "sprite-button",
               style = button_style,
-              sprite = constants.class_to_type[object.class].."/"..object.name,
+              sprite = constants.class_to_type[object.class].."/"..object_data.prototype_name,
               tooltip = object_info.tooltip,
               tags = {
                 blueprint_recipe = blueprint_recipe,
