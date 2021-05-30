@@ -20,6 +20,7 @@ Date: ????
     - You can open as many information windows as you want simultaneously
   Changes:
     - Recipe time-to-craft is now displayed in a generic info table, rather than as a fake ingredient
+    - Unresearched objects are shown by default
   Bugfixes:
     - Fixed that recipe "made in" didn't account for ingredient count limits on assemblers
     - Fixed that rocket launch products were always marked as their own payload

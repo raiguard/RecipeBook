@@ -466,18 +466,15 @@ constants.search_results_limit = 150
 constants.settings = {
   interface = {
     show_hidden = {
-      -- TEMPORARY:
-      default_value = true,
+      default_value = false,
       has_tooltip = true
     },
     show_unresearched = {
-      -- TEMPORARY:
       default_value = true,
       has_tooltip = true
     },
     show_disabled = {
-      -- TEMPORARY:
-      default_value = true,
+      default_value = false,
       has_tooltip = true
     },
     show_glyphs = {
@@ -573,7 +570,12 @@ constants.tooltips = {
   },
   recipe_category = {},
   recipe = {
-    {type = "plain", source = "recipe_category", formatter = "object", options = {hide_glyph = true, label_only = true}},
+    {
+      type = "plain",
+      source = "recipe_category",
+      formatter = "object",
+      options = {hide_glyph = true, label_only = true}
+    },
     {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true, label_only = true}},
     {type = "plain", source = "energy", label = "crafting_time", formatter = "seconds_from_ticks"},
     {type = "list", source = "ingredients", formatter = "object", options = {always_show = true}},
