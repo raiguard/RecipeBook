@@ -259,8 +259,7 @@ constants.interactions = {
       modifiers = {"shift"},
       action = "view_source",
       label = "view_base_fluid",
-      source = "base_fluid",
-      formatter = "object"
+      source = "base_fluid"
     }
   },
   item = {
@@ -278,9 +277,7 @@ constants.interactions = {
       modifiers = {"shift"},
       action = "view_source",
       label = "view_fluid",
-      source = "fluid",
-      formatter = "object",
-      force_label = true
+      source = "fluid"
     }
   },
   recipe_category = {
@@ -294,8 +291,7 @@ constants.interactions = {
       modifiers = {},
       action = "view_source",
       label = "view_required_fluid",
-      source = "required_fluid",
-      formatter = "object"
+      source = "required_fluid"
     }
   },
   technology = {

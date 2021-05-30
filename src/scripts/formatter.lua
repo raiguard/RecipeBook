@@ -86,7 +86,9 @@ local function object(obj, _, player_data, options)
   local obj_options = options and table.shallow_copy(options) or {}
   obj_options.amount_ident = obj.amount_ident
   local info = formatter(obj_data, player_data, obj_options)
-  return info.caption
+  if info then
+    return info.caption
+  end
 end
 
 local function get_amount_string(amount_ident, player_data, options)
@@ -191,7 +193,7 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   return output
 end
 
-local function get_base_tooltip(obj_data, obj_properties, player_data, options)
+local function get_base_tooltip(obj_data, obj_properties, player_data)
   local settings = player_data.settings
   local gui_translations = player_data.translations.gui
 
@@ -249,7 +251,7 @@ local function get_base_tooltip(obj_data, obj_properties, player_data, options)
   return output
 end
 
-local function get_tooltip_deets(obj_data, obj_properties, player_data, options)
+local function get_tooltip_deets(obj_data, player_data)
   local gui_translations = player_data.translations.gui
 
   local cache = caches[player_data.player_index]
@@ -303,7 +305,7 @@ local function get_tooltip_deets(obj_data, obj_properties, player_data, options)
   return output
 end
 
-local function get_interaction_helps(obj_data, obj_properties, player_data, options)
+local function get_interaction_helps(obj_data, player_data, options)
   local gui_translations = player_data.translations.gui
 
   local cache = caches[player_data.player_index]
@@ -322,37 +324,23 @@ local function get_interaction_helps(obj_data, obj_properties, player_data, opti
   local interactions = constants.interactions[obj_data.class]
 
   for _, interaction in pairs(interactions) do
-    local value = ""
     local test = interaction.test
     if not test or test(obj_data, options) then
       local source = interaction.source
-      if source then
-        local obj_value = obj_data[source]
-        if obj_value then
-          if interaction.force_label then
-            value = gui_translations[interaction.label or interaction.action]
-          else
-            local fmtr = interaction.formatter
-            if fmtr then
-              value = formatter[fmtr](obj_value, gui_translations, player_data, interaction.options)
-            else
-              value = gui_translations[obj_value]
-            end
-          end
-        end
-      else
-        value = gui_translations[interaction.label or interaction.action]
+      if not source or obj_data[source] then
+        local action = gui_translations[interaction.label or interaction.action]
+        local input_name = table.reduce(
+          interaction.modifiers,
+          function(acc, modifier) return acc..modifier.."_" end,
+          ""
+        ).."click"
+        local label = rich_text(
+          "font",
+          "default-semibold",
+          rich_text("color", "info", gui_translations[input_name]..": ")
+        )
+        output = output.."\n"..label..action
       end
-    end
-
-    if #value > 0 then
-      local input_name = table.reduce(interaction.modifiers, function(acc, modifier) return acc..modifier.."_" end, "").."click"
-      local label = rich_text(
-        "font",
-        "default-semibold",
-        rich_text("color", "info", gui_translations[input_name]..": ")
-      )
-      output = output.."\n"..label..value
     end
   end
 
@@ -458,7 +446,7 @@ function formatter.format(obj_data, player_data, options)
   end
 
   -- Tooltip
-  local base_tooltip = get_base_tooltip(obj_data, obj_properties, player_data, options)
+  local base_tooltip = get_base_tooltip(obj_data, obj_properties, player_data)
   local tooltip_output
   if amount_ident and options.amount_only then
     tooltip_output = base_tooltip.before
@@ -475,10 +463,10 @@ function formatter.format(obj_data, player_data, options)
   end
   local settings = player_data.settings
   if settings.show_detailed_tooltips and not options.base_tooltip_only then
-    tooltip_output = tooltip_output..get_tooltip_deets(obj_data, obj_properties, player_data, options)
+    tooltip_output = tooltip_output..get_tooltip_deets(obj_data, player_data)
   end
   if settings.show_interaction_helps and not options.base_tooltip_only then
-    tooltip_output = tooltip_output..get_interaction_helps(obj_data, obj_properties, player_data, options)
+    tooltip_output = tooltip_output..get_interaction_helps(obj_data, player_data, options)
   end
 
   return {

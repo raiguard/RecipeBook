@@ -46,6 +46,7 @@ function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, 
     local combined_name = fluid_data.prototype_name.."."..temperature_string
 
     local temperature_data = {
+      base_fluid = {class = "fluid", name = fluid_data.prototype_name},
       class = "fluid",
       default_temperature = fluid_data.default_temperature,
       fuel_value = fluid_data.fuel_value,

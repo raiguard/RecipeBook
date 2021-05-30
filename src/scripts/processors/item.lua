@@ -42,7 +42,7 @@ function item_proc.build(recipe_book, strings, metadata)
     if place_result then
       local class = constants.derived_type_to_class[place_result.type]
       if class then
-        place_result = {class = constants.derived_type_to_class[place_result.type], name = place_result.name}
+        place_result = {class = class, name = place_result.name}
         place_results[name] = place_result
       else
         place_result = nil
