@@ -88,13 +88,21 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             }
           end
           local source_data = global.recipe_book[value.class][value.name]
-          local options = table.shallow_copy(row.options or {})
-          options.always_show = true
-          local info = formatter(source_data, player_data, options)
-          button.caption = info.caption
-          button.tooltip = info.tooltip
-          gui.set_action(button, "on_click", {gui = "info", id = variables.gui_id, action = "navigate_to"})
-          gui.update_tags(button, {context = {class = value.class, name = value.name}})
+          -- local options = table.shallow_copy(row.options or {})
+          -- options.always_show = true
+          local info = formatter(source_data, player_data, row.options)
+          if info then
+            button.caption = info.caption
+            button.tooltip = info.tooltip
+            gui.set_action(button, "on_click", {gui = "info", id = variables.gui_id, action = "navigate_to"})
+            gui.update_tags(button, {context = {class = value.class, name = value.name}})
+          else
+            -- Don't actually show this row
+            -- This is an ugly way to do it, but whatever
+            button.destroy()
+            label_label.destroy()
+            i = i - 2
+          end
         end
       end
     end
