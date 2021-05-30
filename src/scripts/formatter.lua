@@ -61,6 +61,10 @@ local function number(value)
   return misc.delineate_number(math.round_to(value, 2))
 end
 
+local function area(value, gui_translations)
+  return expand_string(gui_translations.format_area, number(value))
+end
+
 local function fuel_value(value, gui_translations)
   return fixed_format(value, 3, "2")..gui_translations.si_joule
 end
@@ -536,6 +540,7 @@ function formatter.create_test_gui(player, player_table)
   end
 end
 
+formatter.area = area
 formatter.build_cache_key = build_cache_key
 formatter.control = control
 formatter.expand_string = expand_string

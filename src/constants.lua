@@ -168,6 +168,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "fluid", localised = {"gui.rb-fluid"}},
   {dictionary = "gui", internal = "fluids", localised = {"gui.rb-fluids"}},
   {dictionary = "gui", internal = "format_amount", localised = {"gui.rb-format-amount"}},
+  {dictionary = "gui", internal = "format_area", localised = {"gui.rb-format-area"}},
   {dictionary = "gui", internal = "format_percent", localised = {"format-percent"}},
   {dictionary = "gui", internal = "format_seconds", localised = {"time-symbol-seconds"}},
   {dictionary = "gui", internal = "format_seconds_parenthesis", localised = {"gui.rb-format-seconds-parenthesis"}},
@@ -192,6 +193,8 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "mined_from", localised = {"gui.rb-mined-from"}},
   {dictionary = "gui", internal = "mining_drill", localised = {"gui.rb-mining-drill"}},
   {dictionary = "gui", internal = "mining_drills", localised = {"gui.rb-mining-drills"}},
+  {dictionary = "gui", internal = "mining_area", localised = {"gui.rb-mining-area"}},
+  {dictionary = "gui", internal = "mining_speed", localised = {"gui.rb-mining-speed"}},
   {dictionary = "gui", internal = "mining_time", localised = {"gui.rb-mining-time"}},
   {dictionary = "gui", internal = "offshore_pump", localised = {"gui.rb-offshore-pump"}},
   {dictionary = "gui", internal = "open_in_technology_window", localised = {"gui.rb-open-in-technology-window"}},
@@ -441,6 +444,10 @@ constants.pages = {
     {type = "list_box", source = "placeable_by"}
   },
   mining_drill = {
+    {type = "table", rows = {
+      {type = "plain", source = "mining_speed", formatter = "per_second"},
+      {type = "plain", source = "mining_area", formatter = "area"}
+    }},
     {type = "list_box", source = "compatible_resources"},
     {type = "list_box", source = "resource_categories"},
     {type = "list_box", source = "unlocked_by"},
@@ -624,7 +631,8 @@ constants.tooltips = {
     {type = "list", source = "inputs", formatter = "object", options = {hide_glyph = true}}
   },
   mining_drill = {
-    -- TODO: Make `label_only` a default option for tooltips
+    {type = "plain", source = "mining_speed", formatter = "per_second"},
+    {type = "plain", source = "mining_area", formatter = "area"},
     {type = "list", source = "resource_categories", formatter = "object"}
   },
   offshore_pump = {

@@ -5,7 +5,7 @@ Date: ????
     - Added new pages:
         - Group: fluids, items, and recipes belonging to each group
         - Lab: research speed, compatible science packs, unlocked by, and placeable by
-        - Mining drill: Compatible resources, resource categories, unlocked by, placeable by
+        - Mining drill: Mining speed, mining area, compatible resources, resource categories, unlocked by, placeable by
         - Offshore pump: pumping speed, output fluid, unlocked by, placeable by
         - Recipe category: fluids, items, and recipes belonging to each recipe category
         - Resource: Resource category, required fluid, mining time, products, compatible mining drills
