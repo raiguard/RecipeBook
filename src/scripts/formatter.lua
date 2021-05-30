@@ -6,7 +6,7 @@
     - Base tooltip
     - Tooltip contents
     - Amount strings
-    - Control hints?
+    - Control hints
   - The output is assembled from these individual caches
     - Perhaps the final outputs should be cached as well?
     - The idea here is to avoid re-generating the entire caption and tooltip when just the amount or control hints are

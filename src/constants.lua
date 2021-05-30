@@ -312,9 +312,9 @@ constants.nav_event_properties = {
 constants.pages = {
   crafter = {
     {type = "table", rows = {
-      {type = "plain", name = "crafting_speed"},
+      {type = "plain", name = "crafting_speed", formatter = "number"},
       {type = "goto", source = "fixed_recipe", options = {hide_glyph = true}},
-      {type = "plain", name = "rocket_parts_required"}
+      {type = "plain", name = "rocket_parts_required", formatter = "number"}
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     -- TODO: Make invisible by default
@@ -341,7 +341,7 @@ constants.pages = {
   },
   item = {
     {type = "table", rows = {
-      {type = "plain", name = "stack_size"},
+      {type = "plain", name = "stack_size", formatter = "number"},
       {type = "plain", name = "fuel_value", formatter = "fuel_value"},
       {
         type = "plain",
@@ -374,7 +374,13 @@ constants.pages = {
   },
   lab = {
     {type = "table", rows = {
-      {type = "plain", name = "researching_speed", label = "research_speed", label_tooltip = "research_speed_desc"}
+      {
+        type = "plain",
+        name = "researching_speed",
+        label = "research_speed",
+        label_tooltip = "research_speed_desc",
+        formatter = "number"
+      }
     }},
     {type = "list_box", source = "inputs"},
     {type = "list_box", source = "unlocked_by"},
