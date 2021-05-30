@@ -139,7 +139,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             value_label = tbl.add{type = "label", index = i}
           end
           local tech_level = variables.selected_tech_level
-          value_label.caption = formatter.number(
+          value_label.caption = formatter[row.formatter](
             game.evaluate_expression(value, {L = tech_level, l = tech_level})
           )
         end
