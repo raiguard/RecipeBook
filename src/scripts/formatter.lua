@@ -99,7 +99,8 @@ local function get_amount_string(amount_ident, player_data, options)
     amount_ident.amount_max,
     amount_ident.probability,
     amount_ident.format,
-    options.amount_only
+    options.amount_only,
+    options.rocket_parts_required
   )
   local cache = caches[player_data.player_index]
   local cached = cache[cache_key]
@@ -130,6 +131,12 @@ local function get_amount_string(amount_ident, player_data, options)
     local probability = amount_ident.probability
     if probability and probability < 1 then
       output = (probability * 100).."% "..output
+    end
+
+    -- Rocket parts required
+    -- Hardcoded to always use the `amount` formatter
+    if options.rocket_parts_required then
+      output = expand_string(gui_translations.format_amount, options.rocket_parts_required).."  "..output
     end
   end
 
@@ -412,8 +419,18 @@ local function get_obj_properties(obj_data, player_data, options)
   return should_show and obj_properties or false
 end
 
+local available_options = {
+  hide_glyphs = false,
+  base_tooltip_only = false,
+  label_only = true,
+  -- is_label = true,
+  amount_ident = false,
+  rocket_parts_required = false,
+  amount_only = false,
+}
+
 function formatter.format(obj_data, player_data, options)
-  options = options or {}
+  options = table.deep_merge{available_options, options or {}}
 
   if options.is_label then
     options.hide_glyph = true

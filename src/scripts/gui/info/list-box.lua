@@ -68,7 +68,8 @@ function list_box.update(component, refs, object_data, player_data, variables)
         {
           always_show = always_show,
           amount_ident = obj.amount_ident,
-          blueprint_recipe = blueprint_recipe
+          blueprint_recipe = blueprint_recipe,
+          rocket_parts_required = obj_data.rocket_parts_required
         }
       )
 
