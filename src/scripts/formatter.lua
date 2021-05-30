@@ -241,9 +241,16 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
     name_str = player_data.translations[class][name]
   end
 
-  local after = rich_text("font", "default-semibold", rich_text("color", "heading", name_str))
-    .."\n"
-    ..rich_text("color", "info", gui_translations[class])
+  local after = rich_text("font", "default-semibold", rich_text("color", "heading", name_str)).."\n"
+
+  if settings.show_descriptions then
+    local description = player_data.translations[class.."_description"][name]
+    if description then
+      after = after..description.."\n"
+    end
+  end
+
+  after = after..rich_text("color", "info", gui_translations[class])
 
   if not obj_properties.researched then
     after = after.."  |  "..rich_text("color", "unresearched", gui_translations.unresearched)
