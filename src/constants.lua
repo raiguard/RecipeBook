@@ -312,9 +312,9 @@ constants.nav_event_properties = {
 constants.pages = {
   crafter = {
     {type = "table", rows = {
-      {type = "plain", name = "crafting_speed", formatter = "number"},
+      {type = "plain", source = "crafting_speed", formatter = "number"},
       {type = "goto", source = "fixed_recipe", options = {hide_glyph = true}},
-      {type = "plain", name = "rocket_parts_required", formatter = "number"}
+      {type = "plain", source = "rocket_parts_required", formatter = "number"}
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     -- TODO: Make invisible by default
@@ -324,7 +324,7 @@ constants.pages = {
   },
   fluid = {
     {type = "table", rows = {
-      {type = "plain", name = "fuel_value", formatter = "fuel_value"},
+      {type = "plain", source = "fuel_value", formatter = "fuel_value"},
       {type = "goto", source = "group", options = {hide_glyph = true}},
     }},
     {type = "list_box", source = "ingredient_in"},
@@ -341,23 +341,23 @@ constants.pages = {
   },
   item = {
     {type = "table", rows = {
-      {type = "plain", name = "stack_size", formatter = "number"},
-      {type = "plain", name = "fuel_value", formatter = "fuel_value"},
+      {type = "plain", source = "stack_size", formatter = "number"},
+      {type = "plain", source = "fuel_value", formatter = "fuel_value"},
       {
         type = "plain",
-        name = "fuel_emissions_multiplier",
+        source = "fuel_emissions_multiplier",
         label = "fuel_pollution",
         formatter = "percent"
       },
       {
         type = "plain",
-        name = "fuel_acceleration_multiplier",
+        source = "fuel_acceleration_multiplier",
         label = "vehicle_acceleration",
         formatter = "percent"
       },
       {
         type = "plain",
-        name = "fuel_top_speed_multiplier",
+        source = "fuel_top_speed_multiplier",
         label = "vehicle_top_speed",
         formatter = "percent"
       },
@@ -376,7 +376,7 @@ constants.pages = {
     {type = "table", rows = {
       {
         type = "plain",
-        name = "researching_speed",
+        source = "researching_speed",
         label = "research_speed",
         label_tooltip = "research_speed_desc",
         formatter = "number"
@@ -388,7 +388,7 @@ constants.pages = {
   },
   offshore_pump = {
     {type = "table", rows = {
-      {type ="plain", name = "pumping_speed", formatter = "per_second"},
+      {type ="plain", source = "pumping_speed", formatter = "per_second"},
       {type = "goto", source = "fluid", options = {always_show = true, hide_glyph = true}},
     }},
     {type = "list_box", source = "unlocked_by"},
@@ -405,7 +405,7 @@ constants.pages = {
       {type = "goto", source = "group", options = {hide_glyph = true}},
       {
         type = "plain",
-        name = "energy",
+        source = "energy",
         label = "crafting_time",
         label_tooltip = "crafting_time_desc",
         formatter = "seconds_from_ticks"
@@ -418,10 +418,10 @@ constants.pages = {
   },
   technology = {
     {type = "table", rows = {
-      {type = "plain", name = "research_unit_count", label = "required_units", formatter = "number"},
+      {type = "plain", source = "research_unit_count", label = "required_units", formatter = "number"},
       {
         type = "plain",
-        name = "research_unit_energy",
+        source = "research_unit_energy",
         label = "time_per_unit",
         label_tooltip = "time_per_unit_desc",
         formatter = "seconds_from_ticks"

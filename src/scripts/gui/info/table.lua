@@ -32,31 +32,32 @@ function table_comp.update(component, refs, object_data, player_data, variables)
 
   local i = 2
   for _, row in ipairs(component.rows) do
-    if row.type == "plain" then
-      local value = object_data[row.name]
-      if value then
-        local caption = gui_translations[row.label or row.name]
-        if string.find(string.lower(caption), search_query) then
-          -- Label
-          i = i + 1
-          local label_label = children[i]
-          if not label_label then
-            label_label = tbl.add{
-              type = "label",
-              style = "rb_table_label",
-              index = i
-            }
-          end
-          local tooltip = row.label_tooltip
-          if tooltip then
-            caption = caption.." [img=info]"
-            tooltip = gui_translations[row.label_tooltip]
-          else
-            tooltip = ""
-          end
-          label_label.caption = caption
-          label_label.tooltip = tooltip
+    local value = object_data[row.source]
+    if value then
+      local caption = gui_translations[row.label or row.source]
+      if string.find(string.lower(caption), search_query) then
+        -- Label
+        i = i + 1
+        local label_label = children[i]
+        if not label_label then
+          label_label = tbl.add{
+            type = "label",
+            style = "rb_table_label",
+            index = i
+          }
+        end
+        local tooltip = row.label_tooltip
+        if tooltip then
+          caption = caption.." [img=info]"
+          tooltip = gui_translations[row.label_tooltip]
+        else
+          tooltip = ""
+        end
+        label_label.caption = caption
+        label_label.tooltip = tooltip
 
+        -- Value
+        if row.type == "plain" then
           -- Value
           local fmt = row.formatter
           if fmt then
@@ -71,34 +72,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             value_label = tbl.add{type = "label", index = i}
           end
           value_label.caption = value
-        end
-      end
-    elseif row.type == "goto" then
-      local source_ident = object_data[row.source]
-      if source_ident then
-        local caption = gui_translations[row.label or row.source]
-        if string.find(string.lower(caption), search_query) then
-          -- Label
-          -- TODO: Deduplicate this
-          i = i + 1
-          local label_label = children[i]
-          if not label_label then
-            label_label = tbl.add{
-              type = "label",
-              style = "rb_table_label",
-              index = i,
-            }
-          end
-          local tooltip = row.label_tooltip
-          if tooltip then
-            caption = caption.." [img=info]"
-            tooltip = gui_translations[row.label_tooltip]
-          else
-            tooltip = ""
-          end
-          label_label.caption = caption
-          label_label.tooltip = tooltip
-
+        elseif row.type == "goto" then
           -- Button
           i = i + 1
           local button = children[i]
@@ -113,14 +87,14 @@ function table_comp.update(component, refs, object_data, player_data, variables)
               index = i
             }
           end
-          local source_data = global.recipe_book[source_ident.class][source_ident.name]
+          local source_data = global.recipe_book[value.class][value.name]
           local options = table.shallow_copy(row.options or {})
           options.always_show = true
           local info = formatter(source_data, player_data, options)
           button.caption = info.caption
           button.tooltip = info.tooltip
           gui.set_action(button, "on_click", {gui = "info", id = variables.gui_id, action = "navigate_to"})
-          gui.update_tags(button, {context = {class = source_ident.class, name = source_ident.name}})
+          gui.update_tags(button, {context = {class = value.class, name = value.name}})
         end
       end
     end
