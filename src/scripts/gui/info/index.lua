@@ -586,7 +586,7 @@ function info_gui.handle_action(msg, e)
       end
     end
   elseif msg.action == "navigate_to_plain" then
-    info_gui.update_contents(player, player_table, msg.id, msg.context)
+    info_gui.update_contents(player, player_table, msg.id, {new_context = msg.context})
   elseif msg.action == "open_in_tech_window" then
     player.open_technology_gui(context.name)
   elseif msg.action == "go_to_base_fluid" then
