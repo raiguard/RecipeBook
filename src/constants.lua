@@ -232,49 +232,73 @@ constants.header_button_tooltips = {
   },
 }
 
-constants.interaction_helps = {
+-- NOTE: Modifiers must be in the order of "control", "shift", "alt" for those that are present
+constants.interactions = {
   crafter = {
-    {modifier = nil, label = "view_details"},
+    {modifiers = {}, action = "view_details"},
     {
-      modifier = "shift",
-      label = "get_blueprint",
+      modifiers = {"shift"},
+      action = "get_blueprint",
       test = function(obj_data, options)
         return options.blueprint_recipe and obj_data.blueprintable
       end
     },
-    {modifier = "control", label = "view_fixed_recipe", source = "fixed_recipe", force_label = true}
+    {
+      modifiers = {"control"},
+      action = "view_source",
+      label = "view_fixed_recipe",
+      source = "fixed_recipe",
+      force_label = true
+    }
   },
   fluid = {
-    {modifier = nil, label = "view_details"},
-    -- FIXME: Doesn't work
-    -- {modifier = "shift", label = "view_base_fluid", source = "base_fluid", formatter = "object"}
+    {modifiers = {}, action = "view_details"},
+    {
+      modifiers = {"shift"},
+      action = "view_source",
+      label = "view_base_fluid",
+      source = "base_fluid",
+      formatter = "object"
+    }
   },
   item = {
-    {modifier = nil, label = "view_details"}
+    {modifiers = {}, action = "view_details"}
   },
   group = {
-    {modifier = nil, label = "view_details"}
+    {modifiers = {}, action = "view_details"}
   },
   lab = {
-    {modifier = nil, label = "view_details"}
+    {modifiers = {}, action = "view_details"}
   },
   offshore_pump = {
-    -- FIXME: Refactor the handler so this will actually work - right now it tries to go to the pump page
-    {modifier = nil, label = "view_fluid", source = "fluid", formatter = "object", force_label = true}
+    {modifiers = {}, action = "view_details"},
+    {
+      modifiers = {"shift"},
+      action = "view_source",
+      label = "view_fluid",
+      source = "fluid",
+      formatter = "object",
+      force_label = true
+    }
   },
   recipe_category = {
-    {modifier = nil, label = "view_details"}
+    {modifiers = {}, action = "view_details"}
   },
   recipe = {
-    {modifier = nil, label = "view_details"}
-
+    {modifiers = {}, action = "view_details"}
   },
   resource = {
-    {modifier = nil, label = "view_required_fluid", source = "required_fluid", formatter = "object"}
+    {
+      modifiers = {},
+      action = "view_source",
+      label = "view_required_fluid",
+      source = "required_fluid",
+      formatter = "object"
+    }
   },
   technology = {
-    {modifier = nil, label = "view_details"},
-    {modifier = "shift", label = "open_in_technology_window"}
+    {modifiers = {}, action = "view_details"},
+    {modifiers = {"shift"}, action = "open_in_technology_window"}
   }
 }
 
@@ -438,16 +462,8 @@ constants.pages = {
 
 constants.search_results_limit = 150
 
--- TODO: Group toggling
--- TODO: Recipe category toggling
+-- TODO: Redo entire settings functionality
 constants.settings = {
-  -- TODO: Remove this option
-  general = {
-    open_selected_object = {
-      default_value = true,
-      has_tooltip = true
-    }
-  },
   interface = {
     show_hidden = {
       -- TEMPORARY:

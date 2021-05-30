@@ -3,6 +3,8 @@ local gui = require("__flib__.gui-beta")
 local math = require("__flib__.math")
 local table = require("__flib__.table")
 
+local constants = require("constants")
+
 local formatter = require("scripts.formatter")
 
 local util = {}
@@ -117,22 +119,31 @@ function util.process_placeable_by(prototype)
   end
 end
 
+-- The calling GUI will navigate to the context that is returned, if any
+-- Actions that do not open a page will not return a context
 function util.navigate_to(e)
-  local player = game.get_player(e.player_index)
-
-  local element = e.element
-  local tags = gui.get_tags(element)
+  local tags = gui.get_tags(e.element)
   local context = tags.context
 
-  if context.class == "crafter" then
-    local crafter_data = global.recipe_book.crafter[context.name]
-    if crafter_data then
-      if e.control then
-        return crafter_data.fixed_recipe
-      elseif e.shift then
+  local modifiers = {}
+  for name, modifier in pairs{control = e.control, shift = e.shift, alt = e.alt} do
+    if modifier then
+      modifiers[#modifiers + 1] = name
+    end
+  end
+
+  for _, interaction in pairs(constants.interactions[context.class]) do
+    if table.deep_compare(interaction.modifiers, modifiers) then
+      local action = interaction.action
+      local context_data = global.recipe_book[context.class][context.name]
+      local player = game.get_player(e.player_index)
+
+      if action == "view_details" then
+        return context
+      elseif action == "get_blueprint" then
         local blueprint_recipe = tags.blueprint_recipe
         if blueprint_recipe then
-          if crafter_data.blueprintable then
+          if context_data.blueprintable then
             local cursor_stack = player.cursor_stack
             player.clear_cursor()
             if cursor_stack and cursor_stack.valid then
@@ -163,33 +174,15 @@ function util.navigate_to(e)
             player.play_sound{path = "utility/cannot_build"}
           end
         end
-      else
-        return {class = context.class, name = context.name}
+      elseif action == "open_in_technology_window" then
+        player.open_technology_gui(context.name)
+      elseif action == "view_source" then
+        local source = context_data[interaction.source]
+        if source then
+          return source
+        end
       end
     end
-  elseif context.class == "fluid" then
-    local fluid_data = global.recipe_book.fluid[context.name]
-    if e.shift and fluid_data.temperature_data then
-      return {class = "fluid", name = fluid_data.prototype_name}
-    else
-      return {class = "fluid", name = context.name}
-    end
-  elseif context.class == "resource" then
-    local resource_data = global.recipe_book.resource[context.name]
-    if resource_data then
-      local required_fluid = resource_data.required_fluid
-      if required_fluid then
-        return {class = "fluid", name = required_fluid.name}
-      end
-    end
-  elseif context.class == "technology" then
-    if e.shift then
-      player.open_technology_gui(context.name)
-    else
-      return {class = context.class, name = context.name}
-    end
-  else
-    return {class = context.class, name = context.name}
   end
 end
 

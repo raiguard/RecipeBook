@@ -319,36 +319,35 @@ local function get_interaction_helps(obj_data, obj_properties, player_data, opti
 
   local output = ""
 
-  local helps = constants.interaction_helps[obj_data.class]
+  local interactions = constants.interactions[obj_data.class]
 
-  for _, help in pairs(helps) do
+  for _, interaction in pairs(interactions) do
     local value = ""
-    local skip_label = false
-    local test = help.test
+    local test = interaction.test
     if not test or test(obj_data, options) then
-      local source = help.source
+      local source = interaction.source
       if source then
         local obj_value = obj_data[source]
         if obj_value then
-          if help.force_label then
-            value = gui_translations[help.label]
+          if interaction.force_label then
+            value = gui_translations[interaction.label or interaction.action]
           else
-            local fmtr = help.formatter
+            local fmtr = interaction.formatter
             if fmtr then
-              value = formatter[fmtr](obj_value, gui_translations, player_data, help.options)
+              value = formatter[fmtr](obj_value, gui_translations, player_data, interaction.options)
             else
               value = gui_translations[obj_value]
             end
           end
         end
       else
-        value = gui_translations[help.label]
+        value = gui_translations[interaction.label or interaction.action]
       end
     end
 
     if #value > 0 then
-      local input_name = help.modifier and help.modifier.."_click" or "click"
-      local label = skip_label and "" or rich_text(
+      local input_name = table.reduce(interaction.modifiers, function(acc, modifier) return acc..modifier.."_" end, "").."click"
+      local label = rich_text(
         "font",
         "default-semibold",
         rich_text("color", "info", gui_translations[input_name]..": ")
