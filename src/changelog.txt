@@ -5,6 +5,7 @@ Date: ????
     - Added new pages:
         - Group: fluids, items, and recipes belonging to each group
         - Lab: research speed, compatible science packs, unlocked by, and placeable by
+        - Offshore pump: pumping speed, output fluid, unlocked by, placeable by
         - Recipe category: fluids, items, and recipes belonging to each recipe category
     - Added numerous properties that were previously confined to tooltips:
       - Crafter: Crafting speed

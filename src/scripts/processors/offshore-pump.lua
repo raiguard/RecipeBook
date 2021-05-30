@@ -18,7 +18,7 @@ function offshore_pump_proc.build(recipe_book, strings)
       hidden = prototype.has_flag("hidden"),
       placeable_by = {},
       prototype_name = name,
-      pumping_speed = prototype.pumping_speed,
+      pumping_speed = prototype.pumping_speed * 60,
       unlocked_by = {}
     }
     util.add_string(strings, {
@@ -37,7 +37,7 @@ end
 function offshore_pump_proc.check_enabled_at_start(recipe_book)
   for _, data in pairs(recipe_book.offshore_pump) do
     if not data.researched_forces then
-      local fluid_data = recipe_book.fluid[data.fluid]
+      local fluid_data = recipe_book.fluid[data.fluid.name]
       fluid_data.researched_forces = nil
       fluid_data.unlocked_by = {}
     end

@@ -42,6 +42,7 @@ constants.class_to_font_glyph = {
   -- TODO: Add a glyph
   group = "Z",
   lab = "D",
+  -- TODO: Add a special glyph?
   offshore_pump = "D",
   -- TODO: Add a glyph
   recipe_category = "Z",
@@ -103,6 +104,7 @@ constants.derived_type_to_class = {
   ["item-group"] = "group",
   ["item"] = "item",
   ["lab"] = "lab",
+  ["offshore-pump"] = "offshore_pump",
   ["recipe-catgory"] = "recipe_category",
   ["recipe"] = "recipe",
   ["rocket-silo"] = "crafter",
@@ -376,6 +378,14 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },
+  offshore_pump = {
+    {type = "table", rows = {
+      {type ="plain", name = "pumping_speed", formatter = "per_second"},
+      {type = "goto", source = "fluid", options = {always_show = true, hide_glyph = true}},
+    }},
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "placeable_by"}
+  },
   recipe_category = {
     {type = "list_box", source = "fluids"},
     {type = "list_box", source = "items"},
@@ -535,9 +545,9 @@ constants.tooltips = {
   },
   recipe_category = {},
   recipe = {
-    {type = "plain", source = "energy", label = "crafting_time", formatter = "seconds_from_ticks"},
     {type = "plain", source = "recipe_category", formatter = "object", options = {hide_glyph = true, label_only = true}},
     {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true, label_only = true}},
+    {type = "plain", source = "energy", label = "crafting_time", formatter = "seconds_from_ticks"},
     {type = "list", source = "ingredients", formatter = "object", options = {always_show = true}},
     {type = "list", source = "products", formatter = "object", options = {always_show = true}}
   },

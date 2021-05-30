@@ -115,9 +115,6 @@ function item_proc.place_results(recipe_book, metadata)
       or recipe_book.offshore_pump[result_name]
     if result_data then
       result_data.placeable_by[#result_data.placeable_by + 1] = {class = "item", name = item_name}
-    -- FIXME: What was this used for?
-    -- else
-    --   place_result = nil
     end
   end
 end

@@ -78,7 +78,7 @@ local function seconds_from_ticks(value, gui_translations)
 end
 
 local function per_second(value, gui_translations)
-  return number(value)..gui_translations.per_second_suffix
+  return number(value).." "..gui_translations.per_second_suffix
 end
 
 local function object(obj, _, player_data, options)
