@@ -153,7 +153,7 @@ function info_gui.build(player, player_table, context)
             ),
             tool_button(
               "rb_fluid_black",
-              {"gui.rb-go-to-base-fluid"},
+              {"gui.rb-view-base-fluid"},
               {"header", "go_to_base_fluid_button"},
               {gui = "info", id = id, action = "go_to_base_fluid"}
             ),
@@ -244,14 +244,22 @@ function info_gui.update_contents(player, player_table, id, new_context)
   local history = state.history
   if new_context then
     -- Remove all entries after this
-    local history_len = #history
     for i = history._index + 1, #history do
       history[i] = nil
     end
     -- Insert new entry
-    history_len = #history
-    history[history_len + 1] = new_context
-    history._index = history_len + 1
+    local new_index = #history + 1
+    history[new_index] = new_context
+    history._index = new_index
+    -- Limit the length
+    -- SLOW: This is O(n)
+    local max_size = constants.session_history_size
+    if new_index > max_size then
+      history._index = max_size
+      for _ = max_size + 1, new_index do
+        table.remove(history, 1)
+      end
+    end
     -- Update global history
     shared.update_global_history(player_table.global_history, new_context)
   end

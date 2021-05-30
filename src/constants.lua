@@ -460,6 +460,8 @@ constants.pages = {
 
 constants.search_results_limit = 150
 
+constants.session_history_size = 20
+
 -- TODO: Redo entire settings functionality
 constants.settings = {
   interface = {
