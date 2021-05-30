@@ -159,7 +159,7 @@ function quick_ref_gui.update_contents(player, player_table, recipe_name)
               {
                 type = "label",
                 style = "rb_slot_label_top",
-                caption = show_percent and "%" or "",
+                caption = probability and "%" or "",
                 ignored_by_interaction = true
               }
             }
