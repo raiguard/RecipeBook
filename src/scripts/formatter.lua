@@ -396,11 +396,11 @@ local function get_obj_properties(obj_data, player_data, options)
     and (show_disabled or obj_properties.enabled)
   then
     -- Check group
-    -- TODO: Group members won't be shown on their own page if disabled
+    -- NOTE: Group members won't be shown on their own page if disabled
     local group = obj_data.group
     if not group or player_settings.groups[group.name] then
       -- For recipes - check category to see if it should be shown
-      -- TODO: Recipe category  members won't be shown on their own page if disabled
+      -- NOTE: Recipe category  members won't be shown on their own page if disabled
       local recipe_category = obj_data.recipe_category
       local recipe_categories = obj_data.recipe_categories_lookup
       if recipe_category then
@@ -501,9 +501,7 @@ end
 
 function formatter.build_player_data(player, player_table)
   return {
-    favorites = player_table.favorites,
     force = player.force,
-    history = player_table.history.global,
     player_index = player.index,
     settings = player_table.settings,
     translations = player_table.translations

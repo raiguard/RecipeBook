@@ -324,3 +324,7 @@ function shared.refresh_contents(player, player_table)
   quick_ref_gui.update_all(player, player_table)
 end
 
+function shared.update_global_history(global_history, new_context)
+  player_data.update_global_history(global_history, new_context)
+end
+

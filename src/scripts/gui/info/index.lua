@@ -252,6 +252,8 @@ function info_gui.update_contents(player, player_table, id, new_context)
     history_len = #history
     history[history_len + 1] = new_context
     history._index = history_len + 1
+    -- Update global history
+    shared.update_global_history(player_table.global_history, new_context)
   end
 
   -- COMMON DATA

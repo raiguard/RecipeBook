@@ -135,6 +135,8 @@ constants.empty_translations_table = {
   technology_description = {}
 }
 
+constants.global_history_size = 30
+
 constants.gui_strings = {
   {dictionary = "gui", internal = "alt_click", localised = {"gui.rb-alt-click"}},
   {dictionary = "gui", internal = "category", localised = {"gui.rb-category"}},

@@ -20,17 +20,12 @@ function player_data.init(player_index)
       show_message_after_translation = false,
       translate_on_join = false
     },
+    global_history = {},
     guis = {
       info = {
         _next_id = 1
       },
       quick_ref = {}
-    },
-    history = {
-      global = {},
-      session = {
-        position = 1
-      }
     },
     settings = {},
     translations = nil -- assigned its initial value in player_data.refresh
@@ -116,7 +111,6 @@ function player_data.refresh(player, player_table)
 
   -- destroy global history
   -- TODO: Validate instead of destroy
-  -- TODO: Implement global history
   player_table.global_history = {}
 
   -- update settings
@@ -137,8 +131,7 @@ end
 
 function player_data.check_cursor_stack(player)
     local cursor_stack = player.cursor_stack
-    if
-      cursor_stack
+    if cursor_stack
       and cursor_stack.valid
       and cursor_stack.valid_for_read
       and global.recipe_book.item[cursor_stack.name]
@@ -146,6 +139,37 @@ function player_data.check_cursor_stack(player)
       return cursor_stack.name
     end
     return false
+end
+
+function player_data.update_global_history(global_history, new_context)
+  new_context = table.shallow_copy(new_context)
+  local ident = new_context.class.."."..new_context.name
+  if global_history[ident] then
+    for i, context in ipairs(global_history) do
+      if context.class == new_context.class and context.name == new_context.name then
+        -- Custom implementation of table.insert and table.remove that does the minimal amount of work needed
+        global_history[i] = nil
+        local prev = new_context
+        local current
+        for j = 1, i do
+          current = global_history[j]
+          global_history[j] = prev
+          prev = current
+        end
+        break
+      end
+    end
+  else
+    table.insert(global_history, 1, new_context)
+    global_history[ident] = true
+  end
+
+  for i = constants.global_history_size + 1, #global_history do
+    local context = global_history[i]
+    local ident = context.class.."."..context.name
+    global_history[ident] = nil
+    global_history[i] = nil
+  end
 end
 
 return player_data
