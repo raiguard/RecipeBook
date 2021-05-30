@@ -403,7 +403,7 @@ local function get_obj_properties(obj_data, player_data, options)
       -- For recipes - check category to see if it should be shown
       -- TODO: Recipe category  members won't be shown on their own page if disabled
       local recipe_category = obj_data.recipe_category
-      local recipe_categories = obj_data.recipe_categories
+      local recipe_categories = obj_data.recipe_categories_lookup
       if recipe_category then
         if player_settings.recipe_categories[recipe_category.name] then
           should_show = true
@@ -411,9 +411,10 @@ local function get_obj_properties(obj_data, player_data, options)
       -- For materials - check if any of their recipe categories are enabled
       elseif recipe_categories then
         local category_settings = player_settings.recipe_categories
-        for _, category_name in ipairs(recipe_categories) do
+        for category_name in pairs(recipe_categories) do
           if category_settings[category_name] then
             should_show = true
+            break
           end
         end
       else

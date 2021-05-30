@@ -137,13 +137,11 @@ constants.empty_translations_table = {
 
 constants.gui_strings = {
   {dictionary = "gui", internal = "alt_click", localised = {"gui.rb-alt-click"}},
-  {dictionary = "gui", internal = "categories", localised = {"gui.rb-categories"}},
   {dictionary = "gui", internal = "category", localised = {"gui.rb-category"}},
   {dictionary = "gui", internal = "click", localised = {"gui.rb-click"}},
   {dictionary = "gui", internal = "compatible_recipes", localised = {"gui.rb-compatible-recipes"}},
   {dictionary = "gui", internal = "control_click", localised = {"gui.rb-control-click"}},
   {dictionary = "gui", internal = "crafter", localised = {"gui.rb-crafter"}},
-  {dictionary = "gui", internal = "crafting_categories", localised = {"gui.rb-crafting-categories"}},
   {dictionary = "gui", internal = "crafting_speed", localised = {"description.crafting-speed"}},
   {dictionary = "gui", internal = "crafting_time_desc", localised = {"gui.rb-crafting-time-desc"}},
   {dictionary = "gui", internal = "crafting_time", localised = {"gui.rb-crafting-time"}},
@@ -319,6 +317,8 @@ constants.pages = {
       {type = "plain", name = "rocket_parts_required"}
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
+    -- TODO: Make invisible by default
+    {type = "list_box", source = "recipe_categories"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },
@@ -516,8 +516,12 @@ constants.tooltips = {
     {type = "plain", source = "crafting_speed", formatter = "number"},
     {type = "plain", source = "fixed_recipe", formatter = "object", options = {hide_glyph = true, label_only = true}},
     {type = "plain", source = "rocket_parts_required", formatter = "number"},
-    -- TODO: Rename to crafting_categories and use object formatter
-    {type = "list", source = "categories"}
+    {
+      type = "list",
+      source = "recipe_categories",
+      formatter = "object",
+      options = {hide_glyph = true, label_only = true}
+    }
   },
   fluid = {
     {type = "plain", source = "fuel_value", formatter = "fuel_value"},
