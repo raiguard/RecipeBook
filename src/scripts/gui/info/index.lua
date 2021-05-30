@@ -192,14 +192,15 @@ function info_gui.build(player, player_table, context)
   player_table.guis.info[id] = {
     refs = refs,
     state = {
-      history = {_index = 1, context},
+      history = {_index = 0},
       search_opened = false,
       search_query = "",
+      selected_tech_level = 0,
       warning_shown = false
     }
   }
 
-  info_gui.update_contents(player, player_table, id)
+  info_gui.update_contents(player, player_table, id, {new_context = context})
 end
 
 function info_gui.destroy(player_table, id)
@@ -233,7 +234,11 @@ function info_gui.find_open_context(player_table, context)
   return open
 end
 
-function info_gui.update_contents(player, player_table, id, new_context)
+function info_gui.update_contents(player, player_table, id, options)
+  options = options or {}
+  local new_context = options.new_context
+  local refresh = options.refresh
+
   local gui_data = player_table.guis.info[id]
   local state = gui_data.state
   local refs = gui_data.refs
@@ -271,6 +276,12 @@ function info_gui.update_contents(player, player_table, id, new_context)
 
   local player_data = formatter.build_player_data(player, player_table)
   local gui_translations = player_data.translations.gui
+
+  -- TECH LEVEL
+
+  if not refresh and obj_data.research_unit_count_formula then
+    state.selected_tech_level = player_data.force.technologies[context.name].level
+  end
 
   -- TITLEBAR
 
@@ -393,7 +404,6 @@ function info_gui.update_contents(player, player_table, id, new_context)
   -- Buttons
   if context.class == "technology" then
     refs.header.open_in_tech_window_button.visible = true
-    -- TODO: Tech level
   else
     refs.header.open_in_tech_window_button.visible = false
   end
@@ -427,13 +437,18 @@ function info_gui.update_contents(player, player_table, id, new_context)
 
   local i = 0
   local visible = false
-  local component_variables = {context = context, gui_id = id, search_query = state.search_query}
+  local component_variables = {
+    context = context,
+    gui_id = id,
+    search_query = state.search_query,
+    selected_tech_level = state.selected_tech_level
+  }
   -- Add or update relevant components
   for _, component_data in pairs(constants.pages[context.class]) do
     i = i + 1
     local component = components[component_data.type]
     local component_refs = page_refs[i]
-    if not component_refs or component_refs.type ~= component.type then
+    if not component_refs or component_refs.type ~= component_data.type then
       -- Destroy old elements
       if component_refs then
         component_refs.root.destroy()
@@ -560,14 +575,14 @@ function info_gui.handle_action(msg, e)
     state.search_query = query
 
     -- Update based on query
-    info_gui.update_contents(player, player_table, msg.id)
+    info_gui.update_contents(player, player_table, msg.id, {refresh = true})
   elseif msg.action == "navigate_to" then
     local context = util.navigate_to(e)
     if context then
       if e.button == defines.mouse_button_type.middle then
         info_gui.build(player, player_table, context)
       else
-        info_gui.update_contents(player, player_table, msg.id, context)
+        info_gui.update_contents(player, player_table, msg.id, {new_context = context})
       end
     end
   elseif msg.action == "navigate_to_plain" then
@@ -620,6 +635,15 @@ function info_gui.handle_action(msg, e)
           }
         }
       )
+    end
+  elseif msg.action == "change_tech_level" then
+    local context_data = global.recipe_book[context.class][context.name]
+    local min = context_data.min_level
+    local max = context_data.max_level
+    local new_level = math.clamp(state.selected_tech_level + msg.delta, min, max)
+    if new_level ~= state.selected_tech_level then
+      state.selected_tech_level = new_level
+      info_gui.update_contents(player, player_table, msg.id, {refresh = true})
     end
   end
 end

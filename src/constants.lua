@@ -203,6 +203,8 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "shift_click", localised = {"gui.rb-shift-click"}},
   {dictionary = "gui", internal = "si_joule", localised = {"si-unit-symbol-joule"}},
   {dictionary = "gui", internal = "stack_size", localised = {"gui.rb-stack-size"}},
+  {dictionary = "gui", internal = "tech_level_desc", localised = {"gui.rb-tech-level-desc"}},
+  {dictionary = "gui", internal = "tech_level", localised = {"gui.rb-tech-level"}},
   {dictionary = "gui", internal = "technology", localised = {"gui.rb-technology"}},
   {dictionary = "gui", internal = "temperatures", localised = {"gui.rb-temperatures"}},
   {dictionary = "gui", internal = "time_per_unit_desc", localised = {"gui.rb-time-per-unit-desc"}},
@@ -441,6 +443,18 @@ constants.pages = {
   technology = {
     {type = "table", rows = {
       {type = "plain", source = "research_unit_count", label = "required_units", formatter = "number"},
+      {
+        type = "tech_level_selector",
+        source = "research_unit_count_formula",
+        label = "tech_level",
+        label_tooltip = "tech_level_desc"
+      },
+      {
+        type = "tech_level_research_unit_count",
+        source = "research_unit_count_formula",
+        label = "required_units",
+        formatter = "number"
+      },
       {
         type = "plain",
         source = "research_unit_energy",

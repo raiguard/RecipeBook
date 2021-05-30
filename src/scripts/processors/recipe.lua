@@ -84,7 +84,6 @@ return function(recipe_book, strings, metadata)
       if (crafter_data.ingredient_limit or 255) >= num_ingredients
         and crafter_data.recipe_categories_lookup[category]
       then
-        -- FIXME: Doesn't show rocket parts required anymore
         local crafting_time = math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
         data.made_in[#data.made_in + 1] = {
           class = "crafter",

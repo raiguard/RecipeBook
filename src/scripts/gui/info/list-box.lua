@@ -16,15 +16,8 @@ function list_box.build(parent, index, component, variables)
           style = "mini_button_aligned_to_text_vertically_when_centered",
           tooltip = {"gui.rb-open-list-in-new-window"},
           -- TODO: Add a sprite
-          actions = {
-            on_click = {
-              gui = "info",
-              id = variables.gui_id,
-              action = "open_list",
-              context = variables.context,
-              source = component.source
-            }
-          }
+          ref = {"open_list_button"}
+          -- NOTE: Actions are set in the update function
         }
       },
       {type = "frame", style = "deep_frame_in_shallow_frame", ref = {"frame"},
@@ -81,7 +74,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
           item.style = style
           item.caption = info.caption
           item.tooltip = info.tooltip
-          item.enabled = info.is_enabled
+          -- item.enabled = info.is_enabled
           gui.update_tags(item, {context = {class = obj.class, name = obj.name}})
         else
           add{
@@ -89,7 +82,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
             style = style,
             caption = info.caption,
             tooltip = info.tooltip,
-            enabled = info.is_enabled,
+            -- enabled = info.enabled,
             mouse_button_filter = {"left", "middle"},
             tags = {
               [script.mod_name] = {
@@ -120,6 +113,14 @@ function list_box.update(component, refs, object_data, player_data, variables)
       translations[component.source] or component.source,
       i
     )
+    -- Update open list button
+    gui.set_action(refs.open_list_button, "on_click", {
+      gui = "info",
+      id = variables.gui_id,
+      action = "open_list",
+      context = variables.context,
+      source = component.source
+    })
   else
     refs.root.visible = false
   end

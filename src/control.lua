@@ -68,6 +68,20 @@ commands.add_command("rb-toggle-category", nil, function(e)
   shared.refresh_contents(player, player_table)
 end)
 
+commands.add_command("rb-print-object", nil, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local parameters = split(e.parameter, " ")
+  if #parameters ~= 2 then
+    game.print("Invalid command")
+  end
+  if __DebugAdapter then
+    __DebugAdapter.print(global.recipe_book[parameters[1]][parameters[2]])
+  else
+    log(serpent.block(global.recipe_book[parameters[1]][parameters[2]]))
+  end
+end)
+
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 

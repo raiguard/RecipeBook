@@ -487,6 +487,7 @@ function formatter.format(obj_data, player_data, options)
 
   return {
     caption = caption_output,
+    -- FIXME: This actually represents whether the button should be clickable or not
     enabled = obj_properties.enabled,
     researched  = obj_properties.researched,
     tooltip = tooltip_output,

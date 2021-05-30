@@ -1,11 +1,10 @@
 local gui = require("__flib__.gui-beta")
-local table = require("__flib__.table")
 
 local formatter = require("scripts.formatter")
 
 local table_comp = {}
 
-function table_comp.build(parent, index, component)
+function table_comp.build(parent, index, _)
   return gui.build(parent, {
     {
       type = "frame",
@@ -58,7 +57,6 @@ function table_comp.update(component, refs, object_data, player_data, variables)
 
         -- Value
         if row.type == "plain" then
-          -- Value
           local fmt = row.formatter
           if fmt then
             value = formatter[fmt](value, gui_translations)
@@ -73,7 +71,6 @@ function table_comp.update(component, refs, object_data, player_data, variables)
           end
           value_label.caption = value
         elseif row.type == "goto" then
-          -- Button
           i = i + 1
           local button = children[i]
           if not button or button.type ~= "button" then
@@ -103,6 +100,48 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             label_label.destroy()
             i = i - 2
           end
+        elseif row.type == "tech_level_selector" then
+          i = i + 1
+          local flow = children[i]
+          if not flow or flow.type ~= "flow" then
+            if flow then flow.destroy() end
+            flow = gui.build(tbl, {
+              {type = "flow", style_mods = {vertical_align = "center"}, index = i, ref = {"flow"},
+                -- TODO: Arrow button styles
+                {
+                  type = "button",
+                  style = "mini_button_aligned_to_text_vertically_when_centered",
+                  caption = "-",
+                  mouse_button_filter = {"left"},
+                  actions = {
+                    on_click = {gui = "info", id = variables.gui_id, action = "change_tech_level", delta = -1}
+                  }
+                },
+                {type = "label", name = "tech_level_label"},
+                {
+                  type = "button",
+                  style = "mini_button_aligned_to_text_vertically_when_centered",
+                  caption = "+",
+                  mouse_button_filter = {"left"},
+                  actions = {
+                    on_click = {gui = "info", id = variables.gui_id, action = "change_tech_level", delta = 1}
+                  }
+                }
+              }
+            }).flow
+          end
+          flow.tech_level_label.caption = formatter.number(variables.selected_tech_level)
+        elseif row.type == "tech_level_research_unit_count" then
+          i = i + 1
+          local value_label = children[i]
+          if not value_label or value_label.type ~= "label" then
+            if value_label then value_label.destroy() end
+            value_label = tbl.add{type = "label", index = i}
+          end
+          local tech_level = variables.selected_tech_level
+          value_label.caption = formatter.number(
+            game.evaluate_expression(value, {L = tech_level, l = tech_level})
+          )
         end
       end
     end
