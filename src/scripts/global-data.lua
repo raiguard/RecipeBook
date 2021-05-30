@@ -116,14 +116,14 @@ local function update_recipe(recipe_book, recipe_data, technology_name, force_in
   end
 
   -- labs
-  for _, lab_name in ipairs(recipe_data.associated_labs) do
-    local lab_data = recipe_book.lab[lab_name]
+  for _, lab_ident in ipairs(recipe_data.associated_labs) do
+    local lab_data = recipe_book.lab[lab_ident.name]
     lab_data.researched_forces[force_index] = to_value
   end
 
   -- offshore pumps
-  for _, offshore_pump_name in ipairs(recipe_data.associated_offshore_pumps) do
-    local offshore_pump_data = recipe_book.offshore_pump[offshore_pump_name]
+  for _, offshore_pump_ident in ipairs(recipe_data.associated_offshore_pumps) do
+    local offshore_pump_data = recipe_book.offshore_pump[offshore_pump_ident.name]
     offshore_pump_data.researched_forces[force_index] = to_value
 
     -- research pump fluid if it's not already
