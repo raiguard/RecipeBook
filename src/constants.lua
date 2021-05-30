@@ -190,6 +190,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "recipe_category", localised = {"gui.rb-recipe-category"}},
   {dictionary = "gui", internal = "recipe", localised = {"gui.rb-recipe"}},
   {dictionary = "gui", internal = "recipes", localised = {"gui.rb-recipes"}},
+  {dictionary = "gui", internal = "required_fluid", localised = {"gui.rb-required-fluid"}},
   {dictionary = "gui", internal = "required_units", localised = {"gui.rb-required-units"}},
   {dictionary = "gui", internal = "researched_in", localised = {"gui.rb-researched-in"}},
   {dictionary = "gui", internal = "research_ingredients_per_unit", localised = {"gui.rb-research-ingredients-per-unit"}},
