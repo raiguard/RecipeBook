@@ -11,7 +11,7 @@ return function(recipe_book, strings, metadata)
       crafting_speed = 1,
       hidden = false,
       ingredient_limit = prototype.ingredient_count,
-      placeable_by = {},
+      placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
       unlocked_by = {}
     }
@@ -54,7 +54,7 @@ return function(recipe_book, strings, metadata)
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = fixed_recipe,
       hidden = is_hidden,
-      placeable_by = {},
+      placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
       rocket_parts_required = prototype.rocket_parts_required,
       unlocked_by = {}

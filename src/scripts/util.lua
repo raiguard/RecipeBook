@@ -104,6 +104,19 @@ function util.frame_action_button(sprite, tooltip, ref, action)
   }
 end
 
+function util.process_placeable_by(prototype)
+  local placeable_by = prototype.items_to_place_this
+  if placeable_by then
+    return table.map(placeable_by, function(item_stack)
+      return {
+        class = "item",
+        name = item_stack.name,
+        amount_ident = util.build_amount_ident{amount = item_stack.count}
+      }
+    end)
+  end
+end
+
 function util.navigate_to(e)
   local player = game.get_player(e.player_index)
 

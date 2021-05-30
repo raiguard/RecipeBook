@@ -115,17 +115,6 @@ function item_proc.build(recipe_book, strings, metadata)
   metadata.place_results = place_results
 end
 
-function item_proc.place_results(recipe_book, metadata)
-  for item_name, result_ident in pairs(metadata.place_results) do
-    local result_data = recipe_book.crafter[result_ident.name]
-      or recipe_book.lab[result_ident.name]
-      or recipe_book.offshore_pump[result_ident.name]
-    if result_data then
-      result_data.placeable_by[#result_data.placeable_by + 1] = {class = "item", name = item_name}
-    end
-  end
-end
-
 -- When calling the module directly, call fluid_proc.build
 setmetatable(item_proc, { __call = function(_, ...) return item_proc.build(...) end })
 

@@ -47,9 +47,6 @@ function global_data.build_recipe_book()
   offshore_pump_proc(recipe_book, strings)
   recipe_proc(recipe_book, strings, metadata)
   resource_proc(recipe_book, strings)
-
-  item_proc.place_results(recipe_book, metadata)
-
   technology_proc(recipe_book, strings, metadata)
 
   offshore_pump_proc.check_enabled_at_start(recipe_book)
