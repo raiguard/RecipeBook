@@ -50,7 +50,7 @@ function global_data.build_recipe_book()
 
   item_proc.place_results(recipe_book, metadata)
 
-  technology_proc(recipe_book, strings)
+  technology_proc(recipe_book, strings, metadata)
 
   offshore_pump_proc.check_enabled_at_start(recipe_book)
 
@@ -113,8 +113,8 @@ local function update_recipe(recipe_book, recipe_data, technology_name, force_in
   end
 
   -- crafters
-  for _, crafter_name in ipairs(recipe_data.associated_crafters) do
-    local crafter_data = recipe_book.crafter[crafter_name]
+  for _, crafter_ident in ipairs(recipe_data.associated_crafters) do
+    local crafter_data = recipe_book.crafter[crafter_ident.name]
     crafter_data.researched_forces[force_index] = to_value
   end
 

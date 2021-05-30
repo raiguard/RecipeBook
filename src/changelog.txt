@@ -10,7 +10,7 @@ Date: ????
     - Added numerous properties that were previously confined to tooltips:
       - Crafter: Crafting speed
       - Fluid: Fuel value, group
-      - Item: Stack size, fuel value, fuel pollution, vehicle acceleration, vehicle top speed, group
+      - Item: Stack size, fuel value, fuel pollution, vehicle acceleration, vehicle top speed, group, place result (if the place result has RB data)
       - Recipe: Recipe category, group
     - Added settings to toggle group member visibility
     - Added text search to information pages

@@ -2,7 +2,7 @@ local math = require("__flib__.math")
 
 local util = require("scripts.util")
 
-return function(recipe_book, strings)
+return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     local unlocks_fluids = util.unique_obj_array()
     local unlocks_items = util.unique_obj_array()
@@ -48,11 +48,11 @@ return function(recipe_book, strings)
           end
 
           -- Crafter / lab / offshore pump
-          local place_result = product_data.place_result
+          local place_result = metadata.place_results[product_name]
           if place_result then
-            local machine_data = recipe_book.crafter[place_result]
-              or recipe_book.lab[place_result]
-              or recipe_book.offshore_pump[place_result]
+            local machine_data = recipe_book.crafter[place_result.name]
+              or recipe_book.lab[place_result.name]
+              or recipe_book.offshore_pump[place_result.name]
             if machine_data then
               machine_data.researched_forces = {}
               machine_data.unlocked_by[#machine_data.unlocked_by + 1] = {class = "technology", name = name}

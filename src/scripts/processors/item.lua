@@ -1,5 +1,7 @@
 local table = require("__flib__.table")
 
+local constants = require("constants")
+
 local util = require("scripts.util")
 
 local item_proc = {}
@@ -38,8 +40,13 @@ function item_proc.build(recipe_book, strings, metadata)
 
     local place_result = prototype.place_result
     if place_result then
-      place_result = place_result.name
-      place_results[name] = place_result
+      local class = constants.derived_type_to_class[place_result.type]
+      if class then
+        place_result = {class = constants.derived_type_to_class[place_result.type], name = place_result.name}
+        place_results[name] = place_result
+      else
+        place_result = nil
+      end
     end
 
     local fuel_value = prototype.fuel_value
@@ -109,10 +116,10 @@ function item_proc.build(recipe_book, strings, metadata)
 end
 
 function item_proc.place_results(recipe_book, metadata)
-  for item_name, result_name in pairs(metadata.place_results) do
-    local result_data = recipe_book.crafter[result_name]
-      or recipe_book.lab[result_name]
-      or recipe_book.offshore_pump[result_name]
+  for item_name, result_ident in pairs(metadata.place_results) do
+    local result_data = recipe_book.crafter[result_ident.name]
+      or recipe_book.lab[result_ident.name]
+      or recipe_book.offshore_pump[result_ident.name]
     if result_data then
       result_data.placeable_by[#result_data.placeable_by + 1] = {class = "item", name = item_name}
     end

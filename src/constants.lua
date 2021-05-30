@@ -179,6 +179,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "open_in_technology_window", localised = {"gui.rb-open-in-technology-window"}},
   {dictionary = "gui", internal = "per_second_suffix", localised = {"gui.rb-per-second-suffix"}},
   {dictionary = "gui", internal = "placeable_by", localised = {"gui.rb-placeable-by"}},
+  {dictionary = "gui", internal = "place_result", localised = {"gui.rb-place-result"}},
   {dictionary = "gui", internal = "prerequisite_of", localised = {"gui.rb-prerequisite-of"}},
   {dictionary = "gui", internal = "prerequisites", localised = {"gui.rb-prerequisites"}},
   {dictionary = "gui", internal = "product_of", localised = {"gui.rb-product-of"}},
@@ -361,6 +362,7 @@ constants.pages = {
         formatter = "percent"
       },
       {type = "goto", source = "group", options = {hide_glyph = true}},
+      {type = "goto", source = "place_result"}
     }},
     {type = "list_box", source = "ingredient_in"},
     {type = "list_box", source = "product_of"},
