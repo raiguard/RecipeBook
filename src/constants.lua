@@ -2,8 +2,9 @@ local table = require("__flib__.table")
 
 local constants = {}
 
--- Dictionary category -> affects research
--- Anything with `0` as the value will be ignored for research
+-- Dictionary category -> modifier
+-- `0` - Disabled by default, does not affect object availability
+-- `1` - Disabled by default
 constants.disabled_recipe_categories = {
   -- Creative mod
   ["creative-mod_free-fluids"] = 1,
@@ -42,12 +43,15 @@ constants.class_to_font_glyph = {
   -- TODO: Add a glyph
   group = "Z",
   lab = "D",
-  -- TODO: Add a special glyph?
+  -- TODO: Add a special glyph for these two?
+  mining_drill = "D",
   offshore_pump = "D",
   -- TODO: Add a glyph
   recipe_category = "Z",
   recipe = "E",
   resource = "F",
+  -- TODO: Add a glyph
+  resource_category = "Z",
   technology = "A"
 }
 
@@ -57,10 +61,12 @@ constants.class_to_type = {
   item = "item",
   group = "item-group",
   lab = "entity",
+  mining_drill = "entity",
   offshore_pump = "entity",
   recipe_category = false,
   recipe = "recipe",
   resource = "entity",
+  resource_category = false,
   technology = "technology"
 }
 
@@ -104,9 +110,12 @@ constants.derived_type_to_class = {
   ["item-group"] = "group",
   ["item"] = "item",
   ["lab"] = "lab",
+  ["mining-drill"] = "mining_drill",
   ["offshore-pump"] = "offshore_pump",
   ["recipe-catgory"] = "recipe_category",
   ["recipe"] = "recipe",
+  ["resource"] = "resource",
+  ["resource-catgory"] = "resource_category",
   ["rocket-silo"] = "crafter",
   ["technology"] = "technology",
 }
@@ -123,6 +132,8 @@ constants.empty_translations_table = {
   item_description = {},
   lab = {},
   lab_description = {},
+  mining_drill = {},
+  mining_drill_description = {},
   offshore_pump = {},
   offshore_pump_description = {},
   recipe = {},
@@ -130,6 +141,8 @@ constants.empty_translations_table = {
   recipe_category_description = {},
   recipe_description = {},
   resource = {},
+  resource_category = {},
+  resource_category_description = {},
   resource_description = {},
   technology = {},
   technology_description = {}
@@ -141,7 +154,9 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "alt_click", localised = {"gui.rb-alt-click"}},
   {dictionary = "gui", internal = "category", localised = {"gui.rb-category"}},
   {dictionary = "gui", internal = "click", localised = {"gui.rb-click"}},
+  {dictionary = "gui", internal = "compatible_mining_drills", localised = {"gui.rb-compatible-mining-drills"}},
   {dictionary = "gui", internal = "compatible_recipes", localised = {"gui.rb-compatible-recipes"}},
+  {dictionary = "gui", internal = "compatible_resources", localised = {"gui.rb-compatible-resources"}},
   {dictionary = "gui", internal = "control_click", localised = {"gui.rb-control-click"}},
   {dictionary = "gui", internal = "crafter", localised = {"gui.rb-crafter"}},
   {dictionary = "gui", internal = "crafting_speed", localised = {"description.crafting-speed"}},
@@ -175,6 +190,9 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "list_box_label", localised = {"gui.rb-list-box-label"}},
   {dictionary = "gui", internal = "made_in", localised = {"gui.rb-made-in"}},
   {dictionary = "gui", internal = "mined_from", localised = {"gui.rb-mined-from"}},
+  {dictionary = "gui", internal = "mining_drill", localised = {"gui.rb-mining-drill"}},
+  {dictionary = "gui", internal = "mining_drills", localised = {"gui.rb-mining-drills"}},
+  {dictionary = "gui", internal = "mining_time", localised = {"gui.rb-mining-time"}},
   {dictionary = "gui", internal = "offshore_pump", localised = {"gui.rb-offshore-pump"}},
   {dictionary = "gui", internal = "open_in_technology_window", localised = {"gui.rb-open-in-technology-window"}},
   {dictionary = "gui", internal = "per_second_suffix", localised = {"gui.rb-per-second-suffix"}},
@@ -196,7 +214,10 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "research_ingredients_per_unit", localised = {"gui.rb-research-ingredients-per-unit"}},
   {dictionary = "gui", internal = "research_speed_desc", localised = {"gui.rb-research-speed-desc"}},
   {dictionary = "gui", internal = "research_speed", localised = {"description.research-speed"}},
+  {dictionary = "gui", internal = "resource_categories", localised = {"gui.rb-resource-categories"}},
+  {dictionary = "gui", internal = "resource_category", localised = {"gui.rb-resource-category"}},
   {dictionary = "gui", internal = "resource", localised = {"gui.rb-resource"}},
+  {dictionary = "gui", internal = "resources", localised = {"gui.rb-resources"}},
   {dictionary = "gui", internal = "rocket_launch_payloads", localised = {"gui.rb-rocket-launch-payloads"}},
   {dictionary = "gui", internal = "rocket_launch_products", localised = {"gui.rb-rocket-launch-products"}},
   {dictionary = "gui", internal = "rocket_parts_required", localised = {"gui.rb-rocket-parts-required"}},
@@ -214,6 +235,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "unlocked_by", localised = {"gui.rb-unlocked-by"}},
   {dictionary = "gui", internal = "unlocks_fluids", localised = {"gui.rb-unlocks-fluids"}},
   {dictionary = "gui", internal = "unlocks_items", localised = {"gui.rb-unlocks-items"}},
+  {dictionary = "gui", internal = "unlocks_machines", localised = {"gui.rb-unlocks-machines"}},
   {dictionary = "gui", internal = "unlocks_recipes", localised = {"gui.rb-unlocks-recipes"}},
   {dictionary = "gui", internal = "unresearched", localised = {"gui.rb-unresearched"}},
   {dictionary = "gui", internal = "vehicle_acceleration", localised = {"description.fuel-acceleration"}},
@@ -274,6 +296,9 @@ constants.interactions = {
   lab = {
     {modifiers = {}, action = "view_details"}
   },
+  mining_drill = {
+    {modifiers = {}, action = "view_details"},
+  },
   offshore_pump = {
     {modifiers = {}, action = "view_details"},
     {
@@ -290,12 +315,16 @@ constants.interactions = {
     {modifiers = {}, action = "view_details"}
   },
   resource = {
+    {modifiers = {}, action = "view_details"},
     {
-      modifiers = {},
+      modifiers = {"shift"},
       action = "view_source",
       label = "view_required_fluid",
       source = "required_fluid"
     }
+  },
+  resource_category = {
+    {modifiers = {}, action = "view_details"}
   },
   technology = {
     {modifiers = {}, action = "view_details"},
@@ -411,6 +440,12 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },
+  mining_drill = {
+    {type = "list_box", source = "compatible_resources"},
+    {type = "list_box", source = "resource_categories"},
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "placeable_by"}
+  },
   offshore_pump = {
     {type = "table", rows = {
       {type ="plain", source = "pumping_speed", formatter = "per_second"},
@@ -441,6 +476,19 @@ constants.pages = {
     {type = "list_box", source = "made_in"},
     {type = "list_box", source = "unlocked_by"}
   },
+  resource = {
+    {type = "table", rows = {
+      {type = "goto", source = "resource_category", options = {always_show = true, hide_glyph = true}},
+      {type = "goto", source = "required_fluid", options = {always_show = true, hide_glyph = true}},
+      {type = "plain", source = "mining_time", formatter = "seconds_from_ticks"}
+    }},
+    {type = "list_box", source = "products"},
+    {type = "list_box", source = "compatible_mining_drills"}
+  },
+  resource_category = {
+    {type = "list_box", source = "resources"},
+    {type = "list_box", source = "mining_drills"}
+  },
   technology = {
     {type = "table", rows = {
       {type = "plain", source = "research_unit_count", label = "required_units", formatter = "number"},
@@ -467,6 +515,7 @@ constants.pages = {
     {type = "list_box", source = "research_ingredients_per_unit"},
     {type = "list_box", source = "unlocks_fluids"},
     {type = "list_box", source = "unlocks_items"},
+    {type = "list_box", source = "unlocks_machines"},
     {type = "list_box", source = "unlocks_recipes"},
     {type = "list_box", source = "prerequisites"},
     {type = "list_box", source = "prerequisite_of"}
@@ -548,18 +597,18 @@ constants.settings = {
 constants.tooltips = {
   crafter = {
     {type = "plain", source = "crafting_speed", formatter = "number"},
-    {type = "plain", source = "fixed_recipe", formatter = "object", options = {hide_glyph = true, label_only = true}},
+    {type = "plain", source = "fixed_recipe", formatter = "object", options = {hide_glyph = true}},
     {type = "plain", source = "rocket_parts_required", formatter = "number"},
     {
       type = "list",
       source = "recipe_categories",
       formatter = "object",
-      options = {hide_glyph = true, label_only = true}
+      options = {hide_glyph = true}
     }
   },
   fluid = {
     {type = "plain", source = "fuel_value", formatter = "fuel_value"},
-    {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true, label_only = true}}
+    {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true}}
   },
   group = {},
   item = {
@@ -568,11 +617,15 @@ constants.tooltips = {
     {type = "plain", source = "fuel_emissions_multiplier", label = "fuel_pollution", formatter = "percent"},
     {type = "plain", source = "fuel_acceleration_multiplier", label = "vehicle_acceleration", formatter = "percent"},
     {type = "plain", source = "fuel_top_speed_multiplier", label = "vehicle_top_speed", formatter = "percent"},
-    {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true, label_only = true}},
+    {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true}},
   },
   lab = {
     {type = "plain", source = "research_speed", formatter = "number"},
-    {type = "list", source = "inputs", formatter = "object", options = {hide_glyph = true, label_only = true}}
+    {type = "list", source = "inputs", formatter = "object", options = {hide_glyph = true}}
+  },
+  mining_drill = {
+    -- TODO: Make `label_only` a default option for tooltips
+    {type = "list", source = "resource_categories", formatter = "object"}
   },
   offshore_pump = {
     {type = "plain", source = "pumping_speed", formatter = "per_second"},
@@ -580,7 +633,7 @@ constants.tooltips = {
       type = "plain",
       source = "fluid",
       formatter = "object",
-      options = {always_show = true, label_only = true, hide_glyph = true}
+      options = {always_show = true, hide_glyph = true}
     }
   },
   recipe_category = {},
@@ -589,16 +642,25 @@ constants.tooltips = {
       type = "plain",
       source = "recipe_category",
       formatter = "object",
-      options = {hide_glyph = true, label_only = true}
+      options = {hide_glyph = true}
     },
-    {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true, label_only = true}},
+    {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true}},
     {type = "plain", source = "energy", label = "crafting_time", formatter = "seconds_from_ticks"},
     {type = "list", source = "ingredients", formatter = "object", options = {always_show = true}},
     {type = "list", source = "products", formatter = "object", options = {always_show = true}}
   },
   resource = {
-    {type = "plain", source = "required_fluid", formatter = "object", options = {always_show = true, hide_glyph = true}}
+    {
+      type = "plain",
+      source = "resource_category",
+      formatter = "object",
+      options = {always_show = true, hide_glyph = true}
+    },
+    {type = "plain", source = "required_fluid", formatter = "object", options = {always_show = true, hide_glyph = true}},
+    {type = "plain", source = "mining_time", formatter = "seconds_from_ticks"},
+    {type = "list", source = "products", formatter = "object"}
   },
+  resource_category = {},
   technology = {
     {type = "plain", source = "research_unit_count", label = "required_units", formatter = "number"},
     {type = "plain", source = "research_unit_energy", label = "time_per_unit", formatter = "seconds_from_ticks"},

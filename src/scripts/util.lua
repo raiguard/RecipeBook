@@ -119,6 +119,14 @@ function util.process_placeable_by(prototype)
   end
 end
 
+function util.convert_categories(source_tbl, class)
+  local categories = {}
+  for category in pairs(source_tbl) do
+    categories[#categories + 1] = {class = class, name = category}
+  end
+  return categories
+end
+
 -- The calling GUI will navigate to the context that is returned, if any
 -- Actions that do not open a page will not return a context
 function util.navigate_to(e)

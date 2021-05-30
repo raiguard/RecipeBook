@@ -1,13 +1,5 @@
 local util = require("scripts.util")
 
-local function get_recipe_categories(prototype)
-  local recipe_categories = {}
-  for category in pairs(prototype.crafting_categories) do
-    recipe_categories[#recipe_categories + 1] = {class = "recipe_category", name = category}
-  end
-  return recipe_categories
-end
-
 return function(recipe_book, strings, metadata)
   -- characters as crafters
   for name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "character"}}) do
@@ -20,7 +12,7 @@ return function(recipe_book, strings, metadata)
       ingredient_limit = prototype.ingredient_count,
       placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
-      recipe_categories = get_recipe_categories(prototype),
+      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       recipe_categories_lookup = prototype.crafting_categories,
       unlocked_by = {}
     }
@@ -64,7 +56,7 @@ return function(recipe_book, strings, metadata)
       hidden = is_hidden,
       placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
-      recipe_categories = get_recipe_categories(prototype),
+      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       recipe_categories_lookup = prototype.crafting_categories,
       rocket_parts_required = prototype.rocket_parts_required,
       unlocked_by = {}

@@ -5,8 +5,11 @@ Date: ????
     - Added new pages:
         - Group: fluids, items, and recipes belonging to each group
         - Lab: research speed, compatible science packs, unlocked by, and placeable by
+        - Mining drill: Compatible resources, resource categories, unlocked by, placeable by
         - Offshore pump: pumping speed, output fluid, unlocked by, placeable by
         - Recipe category: fluids, items, and recipes belonging to each recipe category
+        - Resource: Resource category, required fluid, mining time, products, compatible mining drills
+        - Resource category: Resources and mining drills belonging to that category
     - Added numerous properties that were previously confined to tooltips:
       - Crafter: Crafting speed
       - Fluid: Fuel value, group

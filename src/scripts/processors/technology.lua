@@ -1,11 +1,14 @@
 local math = require("__flib__.math")
 
+local constants = require("constants")
+
 local util = require("scripts.util")
 
 return function(recipe_book, strings, metadata)
   for name, prototype in pairs(game.technology_prototypes) do
     local unlocks_fluids = util.unique_obj_array()
     local unlocks_items = util.unique_obj_array()
+    local unlocks_machines = util.unique_obj_array()
     local unlocks_recipes = util.unique_obj_array()
     local research_ingredients_per_unit = {}
 
@@ -24,41 +27,43 @@ return function(recipe_book, strings, metadata)
       research_unit_count = prototype.research_unit_count
     end
 
-    -- Unlocks recipes, materials, crafter / lab / offshore pump
+    -- Unlocks recipes, materials, machines
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
         local recipe_data = recipe_book.recipe[modifier.recipe]
-        recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
-        recipe_data.researched_forces = {}
-        unlocks_recipes[#unlocks_recipes + 1] = {class = "recipe", name = modifier.recipe}
-        for _, product in pairs(recipe_data.products) do
-          local product_name = product.name
-          local product_data = recipe_book[product.class][product_name]
 
-          product_data.researched_forces = {}
+        -- Check if the category should be ignored for recipe availability
+        local disabled = constants.disabled_recipe_categories[recipe_data.recipe_category.name]
+        if not disabled or disabled ~= 0 then
+          recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
+          recipe_data.researched_forces = {}
+          unlocks_recipes[#unlocks_recipes + 1] = {class = "recipe", name = modifier.recipe}
+          for _, product in pairs(recipe_data.products) do
+            local product_name = product.name
+            local product_data = recipe_book[product.class][product_name]
 
-          local product_ident = {class = product_data.class, name = product_data.prototype_name}
+            product_data.researched_forces = {}
 
-          product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
+            local product_ident = {class = product_data.class, name = product_data.prototype_name}
 
-          if product_data.class == "item" then
-            unlocks_items[#unlocks_items+1] = product_ident
-          elseif product_data.class == "fluid" then
-            unlocks_fluids[#unlocks_fluids+1] = product_ident
-          end
+            product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
 
-          -- Crafter / lab / offshore pump
-          local place_result = metadata.place_results[product_name]
-          if place_result then
-            local machine_data = recipe_book.crafter[place_result.name]
-              or recipe_book.lab[place_result.name]
-              or recipe_book.offshore_pump[place_result.name]
-            if machine_data then
-              machine_data.researched_forces = {}
-              machine_data.unlocked_by[#machine_data.unlocked_by + 1] = {class = "technology", name = name}
+            -- Materials
+            if product_data.class == "item" then
+              unlocks_items[#unlocks_items + 1] = product_ident
+            elseif product_data.class == "fluid" then
+              unlocks_fluids[#unlocks_fluids + 1] = product_ident
+            end
 
-              local subtable_name = "associated_"..machine_data.class.."s"
-              recipe_data[subtable_name][#recipe_data[subtable_name] + 1] = place_result
+            -- Machines
+            local place_result = metadata.place_results[product_name]
+            if place_result then
+              local machine_data = recipe_book[place_result.class][place_result.name]
+              if machine_data then
+                machine_data.researched_forces = {}
+                machine_data.unlocked_by[#machine_data.unlocked_by + 1] = {class = "technology", name = name}
+                unlocks_machines[#unlocks_machines + 1] = place_result
+              end
             end
           end
         end
@@ -83,6 +88,7 @@ return function(recipe_book, strings, metadata)
       researched_forces = {},
       unlocks_fluids = unlocks_fluids,
       unlocks_items = unlocks_items,
+      unlocks_machines = unlocks_machines,
       unlocks_recipes = unlocks_recipes,
       upgrade = prototype.upgrade
     }

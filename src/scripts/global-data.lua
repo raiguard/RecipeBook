@@ -5,9 +5,11 @@ local fluid_proc = require("scripts.processors.fluid")
 local group_proc = require("scripts.processors.group")
 local item_proc = require("scripts.processors.item")
 local lab_proc = require("scripts.processors.lab")
+local mining_drill_proc = require("scripts.processors.mining-drill")
 local offshore_pump_proc = require("scripts.processors.offshore-pump")
 local recipe_category_proc = require("scripts.processors.recipe-category")
 local recipe_proc = require("scripts.processors.recipe")
+local resource_category_proc = require("scripts.processors.resource-category")
 local resource_proc = require("scripts.processors.resource")
 local technology_proc = require("scripts.processors.technology")
 
@@ -26,10 +28,12 @@ function global_data.build_recipe_book()
     item = {},
     group = {},
     lab = {},
+    mining_drill = {},
     offshore_pump = {},
     recipe_category = {},
     recipe = {},
     resource = {},
+    resource_category = {},
     technology = {}
   }
   -- localised strings for translation
@@ -39,11 +43,13 @@ function global_data.build_recipe_book()
 
   group_proc(recipe_book, strings)
   recipe_category_proc(recipe_book, strings)
+  resource_category_proc(recipe_book, strings)
 
   crafter_proc(recipe_book, strings, metadata)
   fluid_proc(recipe_book, strings, metadata)
   item_proc(recipe_book, strings, metadata)
   lab_proc(recipe_book, strings)
+  mining_drill_proc(recipe_book, strings)
   offshore_pump_proc(recipe_book, strings)
   recipe_proc(recipe_book, strings, metadata)
   resource_proc(recipe_book, strings)
@@ -52,6 +58,8 @@ function global_data.build_recipe_book()
   offshore_pump_proc.check_enabled_at_start(recipe_book)
 
   fluid_proc.process_temperatures(recipe_book, strings, metadata)
+
+  mining_drill_proc.add_resources(recipe_book)
 
   strings.__index = nil
   global.recipe_book = recipe_book
@@ -68,22 +76,115 @@ local function update_launch_products(recipe_book, launch_products, force_index,
   end
 end
 
-local function update_recipe(recipe_book, recipe_data, technology_name, force_index, to_value)
-  -- check if the category should be ignored for recipe availability
-  local disabled = constants.disabled_recipe_categories[recipe_data.category]
-  if disabled and disabled == 0 then return end
+-- local function update_recipe(recipe_book, recipe_data, technology_name, force_index, to_value)
+--   -- check if the category should be ignored for recipe availability
+--   local disabled = constants.disabled_recipe_categories[recipe_data.category]
+--   if disabled and disabled == 0 then return end
 
-  recipe_data.researched_forces[force_index] = to_value
+--   recipe_data.researched_forces[force_index] = to_value
 
-  -- products
-  for _, product in ipairs(recipe_data.products) do
-    local product_data = recipe_book[product.class][product.name]
+--   -- products
+--   for _, product in ipairs(recipe_data.products) do
+--     local product_data = recipe_book[product.class][product.name]
 
-    if product_data.researched_forces then
-      local temperature_ident = product_data.temperature_ident
-      if temperature_ident then
+--     if product_data.researched_forces then
+--       local temperature_ident = product_data.temperature_ident
+--       if temperature_ident then
+--         -- Unlock base fluid
+--         local base_fluid_data = recipe_book.fluid[product_data.prototype_name]
+--         base_fluid_data.researched_forces[force_index] = to_value
+
+--         -- Unlock all temperature variants that have this technology
+--         -- SLOW: Add a lookup table for unlocked_by so we don't have to iterate them like this
+--         for _, temperature_data in pairs(base_fluid_data.temperatures) do
+--           if temperature_data.researched_forces then
+--             for _, technology_ident in pairs(temperature_data.unlocked_by) do
+--               if technology_ident.name == technology_name then
+--                 temperature_data.researched_forces[force_index] = to_value
+--                 break
+--               end
+--             end
+--           end
+--         end
+--       else
+--         product_data.researched_forces[force_index] = to_value
+
+--         if product.class == "item" then
+--           -- rocket launch products
+--           update_launch_products(recipe_book, product_data.rocket_launch_products, force_index, to_value)
+--         end
+--       end
+--     end
+--   end
+
+--   -- for _, obj_ident in ipairs(recipe_data.unlocks_objects) do
+--   --   local class = obj_ident.class
+--   --   local obj_data = recipe_book[class][obj_ident.name]
+
+--   --   -- Unlock this object
+--   --   if obj_data.researched_forces then
+--   --     obj_data.researched_forces[force_index] = to_value
+--   --   end
+
+--   --   if class == "fluid" and obj_data.temperature_ident then
+--   --     -- Unlock base fluid
+--   --     local base_fluid_data = recipe_book.fluid[obj_data.prototype_name]
+--   --     base_fluid_data.researched_forces[force_index] = to_value
+
+--   --     -- Unlock all temperature variants that have this technology
+--   --     -- SLOW: Add a lookup table for unlocked_by so we don't have to iterate them like this
+--   --     for _, temperature_data in pairs(base_fluid_data.temperatures) do
+--   --       if temperature_data.researched_forces then
+--   --         for _, technology_ident in pairs(temperature_data.unlocked_by) do
+--   --           if technology_ident.name == technology_name then
+--   --             temperature_data.researched_forces[force_index] = to_value
+--   --             break
+--   --           end
+--   --         end
+--   --       end
+--   --     end
+--   --   elseif class == "item" then
+--   --     -- Unlock rocket launch products
+--   --     update_launch_products(recipe_book, obj_data.rocket_launch_products, force_index, to_value)
+--   --   elseif class == "offshore_pump" then
+--   --     -- Unlock pumped fluid
+--   --     local fluid = obj_data.fluid
+--   --     local fluid_data = recipe_book.fluid[fluid.name]
+--   --     if fluid_data.researched_forces then
+--   --       fluid_data.researched_forces[force_index] = to_value
+--   --     end
+--   --   end
+--   -- end
+-- end
+
+function global_data.handle_research_updated(technology, to_value)
+  local force_index = technology.force.index
+  local recipe_book = global.recipe_book
+  -- Technology
+  local technology_data = recipe_book.technology[technology.name]
+  -- Other mods can update technologies during on_configuration_changed before RB gets a chance to config change
+  if not technology_data then return end
+  technology_data.researched_forces[force_index] = to_value
+
+  -- TODO: Disabled recipe category availability
+  for _, objects in pairs{
+    technology_data.unlocks_fluids,
+    technology_data.unlocks_items,
+    technology_data.unlocks_machines,
+    technology_data.unlocks_recipes
+  } do
+    for _, obj_ident in ipairs(objects) do
+      local class = obj_ident.class
+      local obj_data = recipe_book[class][obj_ident.name]
+
+      -- Unlock this object
+      if obj_data.researched_forces then
+        obj_data.researched_forces[force_index] = to_value
+      end
+
+      if class == "fluid" and obj_data.temperature_ident then
         -- Unlock base fluid
-        local base_fluid_data = recipe_book.fluid[product_data.prototype_name]
+        local base_fluid_data = recipe_book.fluid[obj_data.prototype_name]
         base_fluid_data.researched_forces[force_index] = to_value
 
         -- Unlock all temperature variants that have this technology
@@ -91,62 +192,25 @@ local function update_recipe(recipe_book, recipe_data, technology_name, force_in
         for _, temperature_data in pairs(base_fluid_data.temperatures) do
           if temperature_data.researched_forces then
             for _, technology_ident in pairs(temperature_data.unlocked_by) do
-              if technology_ident.name == technology_name then
+              if technology_ident.name == technology.name then
                 temperature_data.researched_forces[force_index] = to_value
                 break
               end
             end
           end
         end
-      else
-        product_data.researched_forces[force_index] = to_value
-
-        if product.class == "item" then
-          -- rocket launch products
-          update_launch_products(recipe_book, product_data.rocket_launch_products, force_index, to_value)
+      elseif class == "item" then
+        -- Unlock rocket launch products
+        update_launch_products(recipe_book, obj_data.rocket_launch_products, force_index, to_value)
+      elseif class == "offshore_pump" then
+        -- Unlock pumped fluid
+        local fluid = obj_data.fluid
+        local fluid_data = recipe_book.fluid[fluid.name]
+        if fluid_data.researched_forces then
+          fluid_data.researched_forces[force_index] = to_value
         end
       end
     end
-  end
-
-  -- crafters
-  for _, crafter_ident in ipairs(recipe_data.associated_crafters) do
-    local crafter_data = recipe_book.crafter[crafter_ident.name]
-    crafter_data.researched_forces[force_index] = to_value
-  end
-
-  -- labs
-  for _, lab_ident in ipairs(recipe_data.associated_labs) do
-    local lab_data = recipe_book.lab[lab_ident.name]
-    lab_data.researched_forces[force_index] = to_value
-  end
-
-  -- offshore pumps
-  for _, offshore_pump_ident in ipairs(recipe_data.associated_offshore_pumps) do
-    local offshore_pump_data = recipe_book.offshore_pump[offshore_pump_ident.name]
-    offshore_pump_data.researched_forces[force_index] = to_value
-
-    -- research pump fluid if it's not already
-    local fluid = offshore_pump_data.fluid
-    local fluid_data = recipe_book.fluid[fluid.name]
-    if fluid_data.researched_forces then
-      fluid_data.researched_forces[force_index] = to_value
-    end
-  end
-end
-
-function global_data.handle_research_updated(technology, to_value)
-  local force_index = technology.force.index
-  local recipe_book = global.recipe_book
-  -- technology
-  local technology_data = recipe_book.technology[technology.name]
-  -- other mods can update technologies during on_configuration_changed before RB gets a chance to config change
-  if not technology_data then return end
-  technology_data.researched_forces[force_index] = to_value
-
-  for _, recipe in ipairs(technology_data.unlocks_recipes) do
-    local recipe_data = recipe_book.recipe[recipe.name]
-    update_recipe(recipe_book, recipe_data, technology.name, force_index, to_value)
   end
 end
 

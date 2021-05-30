@@ -1,5 +1,7 @@
 local math = require("__flib__.math")
 
+local constants = require("constants")
+
 local util = require("scripts.util")
 
 local fluid_proc = require("scripts.processors.fluid")
@@ -20,9 +22,6 @@ return function(recipe_book, strings, metadata)
     group_data.recipes[#group_data.recipes + 1] = {class = "recipe", name = name}
 
     local data = {
-      associated_crafters = {},
-      associated_labs = {},
-      associated_offshore_pumps = {},
       class = "recipe",
       enabled_at_start = enabled_at_start,
       energy = prototype.energy,
@@ -51,7 +50,9 @@ return function(recipe_book, strings, metadata)
         output[i] = material_io_data
         material_data.recipe_categories[#material_data.recipe_categories + 1] = category
 
-        if io_type == "products" then
+        -- Don't set enabled at start if this is an ignored recipe
+        local disabled = constants.disabled_recipe_categories[category]
+        if io_type == "products" and (not disabled or disabled ~= 0) then
           local subtable = category_data[material.type.."s"]
           subtable[#subtable + 1] = {class = material.type, name = material.name}
           if enabled_at_start then

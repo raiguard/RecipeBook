@@ -1,4 +1,5 @@
 local gui = require("__flib__.gui-beta")
+local table = require("__flib__.table")
 
 local formatter = require("scripts.formatter")
 
@@ -85,9 +86,10 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             }
           end
           local source_data = global.recipe_book[value.class][value.name]
-          -- local options = table.shallow_copy(row.options or {})
-          -- options.always_show = true
-          local info = formatter(source_data, player_data, row.options)
+          local options = table.shallow_copy(row.options or {})
+          options.label_only = true
+          options.amount_ident = value.amount_ident
+          local info = formatter(source_data, player_data, options)
           if info then
             button.caption = info.caption
             button.tooltip = info.tooltip
