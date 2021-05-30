@@ -453,7 +453,6 @@ function formatter.format(obj_data, player_data, options)
       ..rich_text(
         "font",
         "default-bold",
-        -- TODO: Perhaps don't pass an empty options table here
         rich_text("color", "heading", get_amount_string(amount_ident, player_data, {}))
       )
       .."  "

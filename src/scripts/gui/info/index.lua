@@ -279,7 +279,6 @@ function info_gui.update_contents(player, player_table, id, new_context)
   -- Generate tooltips
   local history_index = history._index
   local history_len = #history
-  -- TODO: Limit number of entries shown
   local entries = {}
   for i, history_context in ipairs(history) do
     local obj_data = global.recipe_book[history_context.class][history_context.name]
@@ -605,7 +604,6 @@ function info_gui.handle_action(msg, e)
   elseif msg.action == "open_list" then
     local list_context = msg.context
     local source = msg.source
-    -- TODO: Add `nil` checks
     local list = global.recipe_book[list_context.class][list_context.name][source]
     if list and #list > 0 then
       local first_obj = list[1]
