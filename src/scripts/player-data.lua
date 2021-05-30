@@ -94,6 +94,17 @@ function player_data.validate_favorites(favorites)
   end
 end
 
+function player_data.validate_global_history(global_history)
+  local recipe_book = global.recipe_book
+  for i = #global_history, 1, -1 do
+    local entry = global_history[i]
+    if not (recipe_book[entry.class] and recipe_book[entry.class][entry.name]) then
+      table.remove(global_history, i)
+      global_history[entry.class.."."..entry.name] = nil
+    end
+  end
+end
+
 function player_data.refresh(player, player_table)
   -- destroy GUIs
   info_gui.destroy_all(player_table)
@@ -109,9 +120,8 @@ function player_data.refresh(player, player_table)
   -- validate favorites
   player_data.validate_favorites(player_table.favorites)
 
-  -- destroy global history
-  -- TODO: Validate instead of destroy
-  player_table.global_history = {}
+  -- validate global history
+  player_data.validate_global_history(player_table.global_history)
 
   -- update settings
   player_data.update_settings(player, player_table)

@@ -42,10 +42,9 @@ return {
   end,
   ["3.0.0"] = function()
     for _, player_table in pairs(global.players) do
-      player_table.guis.info = {
-        _nextid = 1
-      }
+      player_table.guis.info = {_next_id = 1}
       player_table.history = nil
+      player_table.global_history = {}
     end
   end
 }
