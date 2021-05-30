@@ -183,6 +183,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "hidden_abbrev", localised = {"gui.rb-hidden-abbrev"}},
   {dictionary = "gui", internal = "hidden", localised = {"gui.rb-hidden"}},
   {dictionary = "gui", internal = "ingredient_in", localised = {"gui.rb-ingredient-in"}},
+  {dictionary = "gui", internal = "ingredient_limit", localised = {"gui.rb-ingredient-limit"}},
   {dictionary = "gui", internal = "ingredients", localised = {"gui.rb-ingredients"}},
   {dictionary = "gui", internal = "inputs", localised = {"gui.rb-inputs"}},
   {dictionary = "gui", internal = "item", localised = {"gui.rb-item"}},
@@ -191,9 +192,9 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "list_box_label", localised = {"gui.rb-list-box-label"}},
   {dictionary = "gui", internal = "made_in", localised = {"gui.rb-made-in"}},
   {dictionary = "gui", internal = "mined_from", localised = {"gui.rb-mined-from"}},
+  {dictionary = "gui", internal = "mining_area", localised = {"gui.rb-mining-area"}},
   {dictionary = "gui", internal = "mining_drill", localised = {"gui.rb-mining-drill"}},
   {dictionary = "gui", internal = "mining_drills", localised = {"gui.rb-mining-drills"}},
-  {dictionary = "gui", internal = "mining_area", localised = {"gui.rb-mining-area"}},
   {dictionary = "gui", internal = "mining_speed", localised = {"gui.rb-mining-speed"}},
   {dictionary = "gui", internal = "mining_time", localised = {"gui.rb-mining-time"}},
   {dictionary = "gui", internal = "offshore_pump", localised = {"gui.rb-offshore-pump"}},
@@ -371,7 +372,8 @@ constants.pages = {
     {type = "table", rows = {
       {type = "plain", source = "crafting_speed", formatter = "number"},
       {type = "goto", source = "fixed_recipe", options = {hide_glyph = true}},
-      {type = "plain", source = "rocket_parts_required", formatter = "number"}
+      {type = "plain", source = "rocket_parts_required", formatter = "number"},
+      {type = "plain", source = "ingredient_limit", formatter = "number"}
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     -- TODO: Make invisible by default
@@ -606,6 +608,7 @@ constants.tooltips = {
     {type = "plain", source = "crafting_speed", formatter = "number"},
     {type = "plain", source = "fixed_recipe", formatter = "object", options = {hide_glyph = true}},
     {type = "plain", source = "rocket_parts_required", formatter = "number"},
+    {type = "plain", source = "ingredient_limit", formatter = "number"},
     {
       type = "list",
       source = "recipe_categories",

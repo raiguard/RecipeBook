@@ -3,13 +3,17 @@ local util = require("scripts.util")
 return function(recipe_book, strings, metadata)
   -- characters as crafters
   for name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "character"}}) do
+    local ingredient_limit = prototype.ingredient_count
+    if ingredient_limit == 255 then
+      ingredient_limit = nil
+    end
     recipe_book.crafter[name] = {
       blueprintable = false,
       class = "crafter",
       compatible_recipes = {},
       crafting_speed = 1,
       hidden = false,
-      ingredient_limit = prototype.ingredient_count,
+      ingredient_limit = ingredient_limit,
       placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
       recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
@@ -46,6 +50,11 @@ return function(recipe_book, strings, metadata)
       end
     end
 
+    local ingredient_limit = prototype.ingredient_count
+    if ingredient_limit == 255 then
+      ingredient_limit = nil
+    end
+
     local is_hidden = prototype.has_flag("hidden")
     recipe_book.crafter[name] = {
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
@@ -54,6 +63,7 @@ return function(recipe_book, strings, metadata)
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = fixed_recipe,
       hidden = is_hidden,
+      ingredient_limit = ingredient_limit,
       placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
       recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
