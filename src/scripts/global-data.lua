@@ -22,20 +22,8 @@ end
 
 function global_data.build_recipe_book()
   -- the data that will actually be saved and used
-  local recipe_book = {
-    crafter = {},
-    fluid = {},
-    item = {},
-    group = {},
-    lab = {},
-    mining_drill = {},
-    offshore_pump = {},
-    recipe_category = {},
-    recipe = {},
-    resource = {},
-    resource_category = {},
-    technology = {}
-  }
+  local recipe_book = table.shallow_copy(constants.recipe_book_template)
+
   -- localised strings for translation
   local strings = {__index = 0}
   -- data that is needed for generation but will not be saved
