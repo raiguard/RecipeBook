@@ -116,7 +116,6 @@ function search_gui.handle_action(msg, e)
     end
     -- local query_len = query and #query or 0
     if query --[[ and query_len > 1 ]] then
-      -- TODO: Timeout
       -- Fuzzy search
       if player_table.settings.use_fuzzy_search then
         query = string.gsub(query, ".", "%1.*")
@@ -127,10 +126,12 @@ function search_gui.handle_action(msg, e)
       end
       -- Save query
       state.search_query = query
+      state.class_filter = class_filter
+      state.update_results_on = game.ticks_played + constants.search_timeout
     else
       state.search_query = ""
     end
-
+  elseif msg.action == "update_search_results" then
     -- Data
     local player_data = formatter.build_player_data(player, player_table)
 
@@ -142,6 +143,8 @@ function search_gui.handle_action(msg, e)
     local children = pane.children
     local add = pane.add
     local max = constants.search_results_limit
+    local class_filter = state.class_filter
+    local query = state.search_query
     if class_filter ~= false --[[ and query_len > 1 ]] then
       for class in pairs(constants.pages) do
         if not class_filter or class_filter == class then
@@ -195,10 +198,24 @@ function search_gui.handle_action(msg, e)
     for j = i + 1, #children do
       children[j].destroy()
     end
+
   elseif msg.action == "open_object" then
     local context = util.navigate_to(e)
     if context then
       shared.open_page(player, player_table, context)
+    end
+  end
+end
+
+-- FIXME: This is a brute-force way to do it and is not good
+function search_gui.check_update_search()
+  for player_index, player_table in pairs(global.players) do
+    local gui_data = player_table.guis.search
+    if gui_data then
+      local state = gui_data.state
+      if state.update_results_on == game.ticks_played then
+        search_gui.handle_action({action = "update_search_results"}, {player_index = player_index})
+      end
     end
   end
 end

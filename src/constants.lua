@@ -548,6 +548,7 @@ constants.recipe_book_template = {
 
 constants.search_results_limit = 150
 constants.search_results_visible_items  = 15
+constants.search_timeout = 30
 
 constants.session_history_size = 20
 

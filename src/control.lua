@@ -263,6 +263,7 @@ event.on_tick(function(e)
   if translation.translating_players_count() > 0 then
     translation.iterate_batch(e)
   end
+  search_gui.check_update_search()
 end)
 
 -- TRANSLATIONS
