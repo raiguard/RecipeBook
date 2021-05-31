@@ -49,9 +49,9 @@ constants.class_to_font_glyph = {
   -- TODO: Add a glyph
   recipe_category = "Z",
   recipe = "E",
-  resource = "F",
   -- TODO: Add a glyph
   resource_category = "Z",
+  resource = "F",
   technology = "A"
 }
 
@@ -532,6 +532,7 @@ constants.pages = {
 }
 
 constants.search_results_limit = 150
+constants.search_results_visible_items  = 15
 
 constants.session_history_size = 20
 

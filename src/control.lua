@@ -13,6 +13,7 @@ local shared = require("scripts.shared")
 
 local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref")
+local search_gui = require("scripts.gui.search.index")
 
 -- -----------------------------------------------------------------------------
 -- COMMANDS
@@ -173,7 +174,10 @@ event.on_lua_shortcut(function(e)
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
 
-    -- TODO: Open search GUI
+    -- TODO: Check item in hand
+
+    -- Open search GUI
+    search_gui.toggle(player, player_table)
   end
 end)
 
@@ -205,7 +209,7 @@ event.register("rb-search", function(e)
       }
       player.play_sound{path = "utility/cannot_build"}
     else
-      -- TODO: Open search GUI
+      search_gui.toggle(player, player_table)
     end
   end
 end)

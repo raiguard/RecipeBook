@@ -86,6 +86,7 @@ function info_gui.build(player, player_table, context)
           {"titlebar", "search_button"},
           {gui = "info", id = id, action = "toggle_search"}
         ),
+        -- TODO: Decide these
         -- util.frame_action_button(
         --   "rb_pin",
         --   {"gui.rb-pin-instruction"},

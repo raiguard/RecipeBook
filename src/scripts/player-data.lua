@@ -7,6 +7,7 @@ local shared = require("scripts.shared")
 
 local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref")
+local search_gui = require("scripts.gui.search.index")
 
 local player_data = {}
 
@@ -109,6 +110,9 @@ function player_data.refresh(player, player_table)
   -- destroy GUIs
   info_gui.destroy_all(player_table)
   quick_ref_gui.destroy_all(player_table)
+  if player_table.guis.search then
+    search_gui.destroy(player, player_table)
+  end
 
   -- set flag
   player_table.flags.can_open_gui = false

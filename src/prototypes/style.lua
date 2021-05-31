@@ -142,6 +142,24 @@ styles.rb_inside_warning_frame = {
   }
 }
 
+styles.rb_inside_deep_frame_under_tabs = {
+  type = "frame_style",
+  parent = "invisible_frame",
+  graphical_set = {
+    base = {
+      center = {position = {42, 8}, size = {1, 1}},
+      top = {position = {93, 0}, size = {1, 8}},
+      draw_type = "outer"
+    },
+    shadow = {
+      top = {position = {191, 128}, size = {1, 8}},
+      tint = hard_shadow_color,
+      scale = 0.5,
+      draw_type = "inner"
+    }
+  }
+}
+
 -- LABEL STYLES
 
 styles.rb_hyperlink_label = {
@@ -228,11 +246,12 @@ styles.rb_page_scroll_pane = {
   }
 }
 
--- styles.rb_search_results_scroll_pane = {
---   type = "scroll_pane_style",
---   parent = "rb_list_box_scroll_pane",
---   vertically_stretchable = "on"
--- }
+styles.rb_search_results_scroll_pane = {
+  type = "scroll_pane_style",
+  parent = "rb_list_box_scroll_pane",
+  vertically_stretchable = "on"
+  -- height = 28 * constants.search_results_visible_items
+}
 
 -- styles.rb_settings_content_scroll_pane = {
 --   type = "scroll_pane_style",
