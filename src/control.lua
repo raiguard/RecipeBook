@@ -147,6 +147,8 @@ local function read_action(e)
       info_gui.handle_action(msg, e)
     elseif msg.gui == "quick_ref" then
       quick_ref_gui.handle_action(msg, e)
+    elseif msg.gui == "search" then
+      search_gui.handle_action(msg, e)
     end
     return true
   end

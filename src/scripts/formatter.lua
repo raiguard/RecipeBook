@@ -530,6 +530,7 @@ function formatter.build_player_data(player, player_table)
   }
 end
 
+-- TEMPORARY:
 function formatter.create_test_gui(player, player_table)
   local rb = global.recipe_book
   local test_objects = {
