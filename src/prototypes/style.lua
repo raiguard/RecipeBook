@@ -178,7 +178,7 @@ styles.rb_table_label = {
 styles.rb_toolbar_label = {
   type = "label_style",
   parent = "subheader_caption_label",
-  left_padding = 4,
+  -- left_padding = 4,
   horizontally_squashable = "on"
 }
 
