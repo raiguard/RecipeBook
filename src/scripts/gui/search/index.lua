@@ -114,8 +114,8 @@ function search_gui.handle_action(msg, e)
         class_filter = false
       end
     end
-    local query_len = query and #query or 0
-    if query and query_len > 1 then
+    -- local query_len = query and #query or 0
+    if query --[[ and query_len > 1 ]] then
       -- TODO: Timeout
       -- Fuzzy search
       if player_table.settings.use_fuzzy_search then
@@ -141,7 +141,8 @@ function search_gui.handle_action(msg, e)
     local pane = refs.search_results_pane
     local children = pane.children
     local add = pane.add
-    if class_filter ~= false and query_len > 1 then
+    local max = constants.search_results_limit
+    if class_filter ~= false --[[ and query_len > 1 ]] then
       for class in pairs(constants.pages) do
         if not class_filter or class_filter == class then
           for internal, translation in pairs(player_table.translations[class]) do
@@ -177,10 +178,16 @@ function search_gui.handle_action(msg, e)
                       }
                     }
                   }
+                  if i >= max then
+                    break
+                  end
                 end
               end
             end
           end
+        end
+        if i >= max then
+          break
         end
       end
     end
