@@ -89,7 +89,7 @@ function info_gui.build(player, player_table, context)
         },
         util.frame_action_button(
           "utility/search",
-          {"gui.rb-search"},
+          {"gui.rb-search-instruction"},
           {"titlebar", "search_button"},
           {gui = "info", id = id, action = "toggle_search"}
         ),

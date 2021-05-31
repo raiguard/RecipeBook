@@ -24,5 +24,11 @@ data:extend{
     type = "custom-input",
     name = "rb-jump-to-front",
     key_sequence = "SHIFT + mouse-button-5"
+  },
+  {
+    type = "custom-input",
+    name = "rb-linked-focus-search",
+    key_sequence = "",
+    linked_game_control = "focus-search"
   }
 }
