@@ -74,7 +74,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
           item.style = style
           item.caption = info.caption
           item.tooltip = info.tooltip
-          -- item.enabled = info.is_enabled
+          item.enabled = info.enabled
           gui.update_tags(item, {context = {class = obj.class, name = obj.name}})
         else
           add{
@@ -82,7 +82,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
             style = style,
             caption = info.caption,
             tooltip = info.tooltip,
-            -- enabled = info.enabled,
+            enabled = info.enabled,
             mouse_button_filter = {"left", "middle"},
             tags = {
               [script.mod_name] = {

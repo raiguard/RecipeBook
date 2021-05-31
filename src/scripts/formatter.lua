@@ -337,15 +337,18 @@ local function get_interaction_helps(obj_data, player_data, options)
     return cached
   end
 
-  local output = ""
+  local helps_output = ""
 
   local interactions = constants.interactions[obj_data.class]
+
+  local num_interactions = 0
 
   for _, interaction in pairs(interactions) do
     local test = interaction.test
     if not test or test(obj_data, options) then
       local source = interaction.source
       if not source or obj_data[source] then
+        num_interactions = num_interactions + 1
         local action = gui_translations[interaction.label or interaction.action]
         local input_name = table.reduce(
           interaction.modifiers,
@@ -357,11 +360,12 @@ local function get_interaction_helps(obj_data, player_data, options)
           "default-semibold",
           rich_text("color", "info", gui_translations[input_name]..": ")
         )
-        output = output.."\n"..label..action
+        helps_output = helps_output.."\n"..label..action
       end
     end
   end
 
+  local output = {output = helps_output, num_interactions = num_interactions}
   cache[cache_key] = output
   return output
 end
@@ -492,14 +496,16 @@ function formatter.format(obj_data, player_data, options)
   if settings.show_detailed_tooltips and not options.base_tooltip_only then
     tooltip_output = tooltip_output..get_tooltip_deets(obj_data, player_data)
   end
+  local num_interactions = 0
   if settings.show_interaction_helps and not options.base_tooltip_only then
-    tooltip_output = tooltip_output..get_interaction_helps(obj_data, player_data, options)
+    local helps_output = get_interaction_helps(obj_data, player_data, options)
+    tooltip_output = tooltip_output..helps_output.output
+    num_interactions = helps_output.num_interactions
   end
 
   return {
     caption = caption_output,
-    -- FIXME: This actually represents whether the button should be clickable or not
-    enabled = obj_properties.enabled,
+    enabled = num_interactions > 0,
     researched  = obj_properties.researched,
     tooltip = tooltip_output,
   }
