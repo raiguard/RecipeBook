@@ -534,30 +534,6 @@ function formatter.build_player_data(player, player_table)
   }
 end
 
--- TEMPORARY:
-function formatter.create_test_gui(player, player_table)
-  local rb = global.recipe_book
-  local test_objects = {
-    {rb.crafter["rocket-silo"], {}},
-    {rb.fluid["steam.975"], {amount_ident = {amount = 55, probability = 0.75}}},
-    {rb.group["production"], {}},
-    {rb.item["loader"], {amount_ident = {amount_min = 4, amount_max = 7}}},
-    {rb.item["coal"], {amount_ident = {amount_min = 4, amount_max = 7}, amount_only = true}},
-    {rb.lab["lab"], {}},
-    {rb.recipe["advanced-oil-processing"], {amount_ident = {amount = 69}}},
-    {rb.recipe_category["crafting-with-fluid"], {}},
-    {rb.technology["kr-logo"], {}},
-  }
-  local player_data = formatter.build_player_data(player, player_table)
-  local frame = player.gui.screen.add{type = "frame", style = "deep_frame_in_shallow_frame", direction = "vertical"}
-  for _, obj in pairs(test_objects) do
-    local info = formatter(obj[1], player_data, obj[2])
-    if info then
-      frame.add{type = "button", style = "rb_list_box_item", caption = info.caption, tooltip = info.tooltip}
-    end
-  end
-end
-
 formatter.area = area
 formatter.build_cache_key = build_cache_key
 formatter.control = control
