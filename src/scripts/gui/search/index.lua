@@ -43,6 +43,7 @@ function search_gui.build(player, player_table)
                   type = "textfield",
                   style = "flib_widthless_textfield",
                   style_mods = {horizontally_stretchable = true},
+                  ref = {"search_textfield"},
                   actions = {
                     on_text_changed = {gui = "search", action = "update_search_query"}
                   }
@@ -67,6 +68,8 @@ function search_gui.build(player, player_table)
   })
 
   refs.titlebar.flow.drag_target = refs.window
+
+  refs.search_textfield.focus()
 
   player_table.guis.search = {
     state = {
