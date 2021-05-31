@@ -12,7 +12,7 @@ Date: ????
         - Resource category: resources and mining drills belonging to that category
     - Added numerous properties that were previously confined to tooltips, and new properties:
       - Crafter: Crafting speed, ingredient limit
-      - Fluid: Fuel value, group
+      - Fluid: Fuel value, default temperature, group
       - Item: Stack size, fuel value, fuel pollution, vehicle acceleration, vehicle top speed, group, place result (if the place result has RB data)
       - Recipe: Recipe category, group
     - Added settings to toggle group member visibility

@@ -61,6 +61,10 @@ local function number(value)
   return misc.delineate_number(math.round_to(value, 2))
 end
 
+local function temperature(value, gui_translations)
+  return expand_string(gui_translations.format_degrees, number(value))
+end
+
 local function area(value, gui_translations)
   return expand_string(gui_translations.format_area, number(value))
 end
@@ -567,6 +571,7 @@ formatter.rich_text = rich_text
 formatter.seconds_from_ticks = seconds_from_ticks
 formatter.seconds = seconds
 formatter.sprite = sprite
+formatter.temperature = temperature
 
 setmetatable(formatter, {__call = function(_, ...) return formatter.format(...) end})
 

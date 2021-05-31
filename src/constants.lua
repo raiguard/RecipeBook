@@ -162,6 +162,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "crafting_speed", localised = {"description.crafting-speed"}},
   {dictionary = "gui", internal = "crafting_time_desc", localised = {"gui.rb-crafting-time-desc"}},
   {dictionary = "gui", internal = "crafting_time", localised = {"gui.rb-crafting-time"}},
+  {dictionary = "gui", internal = "default_temperature", localised = {"gui.rb-default-temperature"}},
   {dictionary = "gui", internal = "disabled_abbrev", localised = {"gui.rb-disabled-abbrev"}},
   {dictionary = "gui", internal = "disabled", localised = {"entity-status.disabled"}},
   {dictionary = "gui", internal = "fixed_recipe", localised = {"gui.rb-fixed-recipe"}},
@@ -169,6 +170,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "fluids", localised = {"gui.rb-fluids"}},
   {dictionary = "gui", internal = "format_amount", localised = {"gui.rb-format-amount"}},
   {dictionary = "gui", internal = "format_area", localised = {"gui.rb-format-area"}},
+  {dictionary = "gui", internal = "format_degrees", localised = {"format-degrees-c-compact"}},
   {dictionary = "gui", internal = "format_percent", localised = {"format-percent"}},
   {dictionary = "gui", internal = "format_seconds", localised = {"time-symbol-seconds"}},
   {dictionary = "gui", internal = "format_seconds_parenthesis", localised = {"gui.rb-format-seconds-parenthesis"}},
@@ -384,6 +386,7 @@ constants.pages = {
   fluid = {
     {type = "table", rows = {
       {type = "plain", source = "fuel_value", formatter = "fuel_value"},
+      {type = "plain", source = "default_temperature", formatter = "temperature"},
       {type = "goto", source = "group", options = {hide_glyph = true}},
     }},
     {type = "list_box", source = "ingredient_in"},
@@ -635,6 +638,7 @@ constants.tooltips = {
   },
   fluid = {
     {type = "plain", source = "fuel_value", formatter = "fuel_value"},
+    {type = "plain", source = "default_temperature", formatter = "temperature"},
     {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true}}
   },
   group = {},
