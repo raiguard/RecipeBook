@@ -130,8 +130,6 @@ function search_gui.handle_action(msg, e)
     local player_data = formatter.build_player_data(player, player_table)
 
     -- Update results based on query
-    -- TODO: Separate into its own function
-    -- TODO: Spread over multiple ticks
     local i = 0
     local pane = refs.search_results_pane
     local children = pane.children
@@ -192,7 +190,6 @@ function search_gui.handle_action(msg, e)
     for j = i + 1, #children do
       children[j].destroy()
     end
-
   elseif msg.action == "open_object" then
     local context = util.navigate_to(e)
     if context then
