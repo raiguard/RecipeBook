@@ -84,12 +84,6 @@ function fluid_proc.is_within_range(base, comp, flip)
   end
 end
 
-local function append(tbl_1, tbl_2)
-  for i = 1, #tbl_2 do
-    tbl_1[#tbl_1 + 1] = tbl_2[i]
-  end
-end
-
 function fluid_proc.process_temperatures(recipe_book, strings, metadata)
   for fluid_name, fluid_data in pairs(recipe_book.fluid) do
     local temperatures = fluid_data.temperatures
@@ -158,9 +152,19 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
               local recipe_categories = temperature_data.recipe_categories
               recipe_categories[#recipe_categories + 1] = recipe_data.recipe_category.name
               -- If in product_of, append to unlocked_by
+              -- Also add this fluid to that tech's `unlocks fluids` table
               -- This is to avoid variants being "unlocked" when you can't actually get them
               if fluid_tbl_name == "product_of" then
-                append(temperature_data.unlocked_by, recipe_data.unlocked_by)
+                local temp_unlocked_by = temperature_data.unlocked_by
+                for _, technology_ident in pairs(recipe_data.unlocked_by) do
+                  temp_unlocked_by[#temp_unlocked_by + 1] = technology_ident
+                  local technology_data = recipe_book.technology[technology_ident.name]
+                  -- Don't use fluid_ident becuase it has an amount
+                  technology_data.unlocks_fluids[#technology_data.unlocks_fluids + 1] = {
+                    class = "fluid",
+                    name = temperature_data.name
+                  }
+                end
               end
             end
           end

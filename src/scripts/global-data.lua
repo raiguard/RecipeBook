@@ -94,19 +94,6 @@ function global_data.handle_research_updated(technology, to_value)
         -- Unlock base fluid
         local base_fluid_data = recipe_book.fluid[obj_data.prototype_name]
         base_fluid_data.researched_forces[force_index] = to_value
-
-        -- Unlock all temperature variants that have this technology
-        -- SLOW: Add a lookup table for unlocked_by so we don't have to iterate them like this
-        for _, temperature_data in pairs(base_fluid_data.temperatures) do
-          if temperature_data.researched_forces then
-            for _, technology_ident in pairs(temperature_data.unlocked_by) do
-              if technology_ident.name == technology.name then
-                temperature_data.researched_forces[force_index] = to_value
-                break
-              end
-            end
-          end
-        end
       elseif class == "item" then
         -- Unlock rocket launch products
         update_launch_products(recipe_book, obj_data.rocket_launch_products, force_index, to_value)
