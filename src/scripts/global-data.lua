@@ -1,3 +1,5 @@
+local table = require("__flib__.table")
+
 local constants = require("constants")
 
 local crafter_proc = require("scripts.processors.crafter")
