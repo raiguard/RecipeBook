@@ -137,6 +137,7 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
             temperature_ident = default_temperature_ident
           end
 
+          -- TODO: Variants that are not a product of anything won't ever be unlocked
           -- Iterate over all temperature variants and compare their constraints
           for _, temperature_data in pairs(temperatures) do
             if not temperature_ident
