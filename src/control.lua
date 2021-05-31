@@ -231,14 +231,18 @@ event.register("rb-search", function(e)
 end)
 
 event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front"}, function(e)
+  local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
-  if player_table.flags.can_open_gui and player_table.flags.gui_open and not player_table.flags.technology_gui_open then
+  if player_table.flags.can_open_gui and not player.opened then
     local event_properties = constants.nav_event_properties[e.input_name]
-    -- TODO: Find a way to handle these shortcuts
-    -- main_gui.handle_action(
-    --   {gui = "main", action = event_properties.action_name},
-    --   {player_index = e.player_index, shift = event_properties.shift}
-    -- )
+    local info_guis = player_table.guis.info
+    local active_id = info_guis._active_id
+    if active_id and info_guis[active_id] then
+      info_gui.handle_action(
+        {id = active_id, action = "navigate", delta = event_properties.delta},
+        {player_index = e.player_index, shift = event_properties.shift}
+      )
+    end
   end
 end)
 

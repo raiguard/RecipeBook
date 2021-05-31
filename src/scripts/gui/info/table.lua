@@ -5,7 +5,7 @@ local formatter = require("scripts.formatter")
 
 local table_comp = {}
 
-function table_comp.build(parent, index, _)
+function table_comp.build(parent, index, _, variables)
   return gui.build(parent, {
     {
       type = "frame",
@@ -13,6 +13,9 @@ function table_comp.build(parent, index, _)
       style_mods = {top_margin = 4},
       index = index,
       ref = {"root"},
+      action = {
+        on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
+      },
       {type = "table", style = "rb_info_table", column_count = 2, ref = {"table"},
         -- Dummy elements so the first row doesn't get used
         {type = "empty-widget"},

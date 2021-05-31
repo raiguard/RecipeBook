@@ -39,9 +39,16 @@ function info_gui.build(player, player_table, context)
       direction = "vertical",
       ref = {"window"},
       actions = {
+        on_click = {gui = "info", id = id, action = "set_as_active"},
         on_closed = {gui = "info", id = id, action = "close"}
       },
-      {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
+      {
+        type = "flow",
+        style = "flib_titlebar_flow",
+        ref = {"titlebar", "flow"},
+        actions = {
+          on_click = {gui = "info", id = id, action = "set_as_active"},
+        },
         util.frame_action_button(
           "rb_nav_backward",
           nil,
@@ -111,12 +118,18 @@ function info_gui.build(player, player_table, context)
         style = "inside_shallow_frame",
         direction = "vertical",
         ref = {"page_frame"},
+        action = {
+          on_click = {gui = "info", id = id, action = "set_as_active"},
+        },
         {type = "frame", style = "rb_subheader_frame", direction = "vertical",
           {
             type = "flow",
             style_mods = {vertical_align = "center"},
             visible = false,
             ref = {"header", "list_nav", "flow"},
+            action = {
+              on_click = {gui = "info", id = id, action = "set_as_active"},
+            },
             tool_button(
               "rb_nav_backward_black",
               {"gui.rb-go-backward"},
@@ -176,7 +189,10 @@ function info_gui.build(player, player_table, context)
           type = "scroll-pane",
           style = "rb_page_scroll_pane",
           style_mods = {maximal_height = 900},
-          ref = {"page_scroll_pane"}
+          ref = {"page_scroll_pane"},
+          action = {
+            on_click = {gui = "info", id = id, action = "set_as_active"},
+          },
         },
         {type = "flow", style = "rb_warning_flow", direction = "vertical", visible = false, ref = {"warning_flow"},
           {type = "label", style = "bold_label", caption = {"gui.rb-no-content-warning"}, ref = {"warning_text"}}
@@ -200,6 +216,7 @@ function info_gui.build(player, player_table, context)
       warning_shown = false
     }
   }
+  player_table.guis.info._active_id = id
 
   info_gui.update_contents(player, player_table, id, {new_context = context})
 end
@@ -214,7 +231,7 @@ end
 
 function info_gui.destroy_all(player_table)
   for id in pairs(player_table.guis.info) do
-    if id ~= "_next_id" then
+    if id ~= "_next_id" and id ~= "_active_id" then
       info_gui.destroy(player_table, id)
     end
   end
@@ -223,7 +240,7 @@ end
 function info_gui.find_open_context(player_table, context)
   local open = {}
   for id, gui_data in pairs(player_table.guis.info) do
-    if id ~= "_next_id" then
+    if id ~= "_next_id" and id ~= "_active_id" then
       local state = gui_data.state
       local opened_context = state.history[state.history._index]
       if opened_context and opened_context.class == context.class and opened_context.name == context.name then
@@ -497,7 +514,7 @@ end
 
 function info_gui.update_all(player, player_table)
   for id in pairs(player_table.guis.info) do
-    if id ~= "_next_id" then
+    if id ~= "_next_id" and id ~= "_active_id" then
       info_gui.update_contents(player, player_table, id)
     end
   end
@@ -505,7 +522,7 @@ end
 
 function info_gui.bring_all_to_front(player_table)
   for id, gui_data in pairs(player_table.guis.info) do
-    if id ~= "_next_id" then
+    if id ~= "_next_id" and id ~= "_active_id" then
       gui_data.refs.window.bring_to_front()
     end
   end
@@ -520,6 +537,9 @@ function info_gui.handle_action(msg, e)
   local refs = gui_data.refs
 
   local context = state.history[state.history._index]
+
+  -- Mark this GUI as active
+  player_table.guis.info._active_id = msg.id
 
   if msg.action == "close" then
     info_gui.destroy(player_table, msg.id)

@@ -363,10 +363,10 @@ constants.list_box_item_styles = {
 constants.max_listbox_height = 8
 
 constants.nav_event_properties = {
-  ["rb-jump-to-front"] = {action_name = "navigate_forward", shift = true},
-  ["rb-navigate-backward"] = {action_name = "navigate_backward"},
-  ["rb-navigate-forward"] = {action_name = "navigate_forward"},
-  ["rb-return-to-home"] = {action_name = "navigate_backward", shift = true}
+  ["rb-jump-to-front"] = {delta = 1, shift = true},
+  ["rb-navigate-backward"] = {delta = -1},
+  ["rb-navigate-forward"] = {delta = 1},
+  ["rb-return-to-home"] = {delta = -1, shift = true}
 }
 
 constants.pages = {
