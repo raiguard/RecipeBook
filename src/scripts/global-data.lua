@@ -85,7 +85,6 @@ function global_data.handle_research_updated(technology, to_value)
   if not technology_data then return end
   technology_data.researched_forces[force_index] = to_value
 
-  -- TODO: Disabled recipe category availability
   for _, objects in pairs{
     technology_data.unlocks_fluids,
     technology_data.unlocks_items,
