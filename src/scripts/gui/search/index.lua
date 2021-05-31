@@ -196,8 +196,10 @@ function search_gui.handle_action(msg, e)
       children[j].destroy()
     end
   elseif msg.action == "open_object" then
-    local context = gui.get_tags(e.element).context
-    shared.open_page(player, player_table, context)
+    local context = util.navigate_to(e)
+    if context then
+      shared.open_page(player, player_table, context)
+    end
   end
 end
 
