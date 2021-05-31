@@ -176,7 +176,21 @@ event.on_lua_shortcut(function(e)
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
 
-    -- TODO: Check item in hand
+    local cursor_stack = player.cursor_stack
+    if cursor_stack and cursor_stack.valid_for_read then
+      local data = global.recipe_book.item[cursor_stack.name]
+      if data then
+        shared.open_page(player, player_table, {class = "item", name = cursor_stack.name})
+      else
+        -- If we're here, the selected object has no page in RB
+        player.create_local_flying_text{
+          text = {"message.rb-object-has-no-page"},
+          create_at_cursor = true
+        }
+        player.play_sound{path = "utility/cannot_build"}
+      end
+      return
+    end
 
     -- Open search GUI
     search_gui.toggle(player, player_table)
