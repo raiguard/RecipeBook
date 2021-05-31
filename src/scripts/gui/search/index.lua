@@ -12,7 +12,7 @@ function search_gui.build(player, player_table)
   local refs = gui.build(player.gui.screen, {
     {type = "frame", direction = "vertical", ref = {"window"},
       {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
-        {type = "label", style = "frame_title", caption = "Recipe Book", ignored_by_interaction = true},
+        {type = "label", style = "frame_title", caption = {"mod-name.RecipeBook"}, ignored_by_interaction = true},
         {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
         util.frame_action_button(
           "rb_settings",
@@ -29,16 +29,10 @@ function search_gui.build(player, player_table)
       },
       {type = "frame", style = "inside_deep_frame_for_tabs", direction = "vertical",
         {type = "tabbed-pane", style = "tabbed_pane_with_no_side_padding", style_mods = {height = 540},
-          {tab = {type = "tab", caption = "Search"}, content = (
+          {tab = {type = "tab", caption = {"gui.search"}}, content = (
             -- TODO: Locale-specific widths
             {type = "frame", style = "rb_inside_deep_frame_under_tabs", style_mods = {width = 276}, direction = "vertical",
               {type = "frame", style = "rb_subheader_frame", direction = "vertical",
-                -- {type = "flow", style_mods = {vertical_align = "center"},
-                --   {type = "label", style = "subheader_caption_label", caption = "Class:"},
-                --   {type = "empty-widget", style = "flib_horizontal_pusher"},
-                --   {type = "drop-down", items = {"Crafter", "Fluid", "Group", "Lab", "Mining drill", "Offshore pump", "Item", "Recipe category", "Recipe", "Resource category", "Resource", "Technology"}}
-                -- },
-                -- {type = "line", style = "rb_dark_line"},
                 {
                   type = "textfield",
                   style = "flib_widthless_textfield",
@@ -52,12 +46,12 @@ function search_gui.build(player, player_table)
               {type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = {"search_results_pane"}}
             }
           )},
-          {tab = {type = "tab", caption = "Favorites"}, content = (
+          {tab = {type = "tab", caption = {"gui.rb-favorites"}}, content = (
             {type = "frame", style = "rb_inside_deep_frame_under_tabs", direction = "vertical",
               {type = "scroll-pane", style = "rb_search_results_scroll_pane"}
             }
           )},
-          {tab = {type = "tab", caption = "History"}, content = (
+          {tab = {type = "tab", caption = {"gui.rb-history"}}, content = (
             {type = "frame", style = "rb_inside_deep_frame_under_tabs", direction = "vertical",
               {type = "scroll-pane", style = "rb_search_results_scroll_pane"}
             }
