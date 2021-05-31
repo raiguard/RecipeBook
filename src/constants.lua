@@ -546,7 +546,7 @@ constants.recipe_book_template = {
   technology = {}
 }
 
-constants.search_results_limit = 150
+constants.search_results_limit = 500
 constants.search_results_visible_items  = 15
 constants.search_timeout = 30
 
