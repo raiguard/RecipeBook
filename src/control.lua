@@ -322,8 +322,8 @@ event.on_string_translated(function(e)
       player.print{'rb-message.can-open-gui'}
     end
     -- create GUI
-    -- TODO: Create search GUI - info GUIs are created on demand
-    -- main_gui.build(player, player_table)
+    -- TODO: Create search GUI here, then open/close it
+    -- search_gui.build(player, player_table)
     -- update flags
     player_table.flags.can_open_gui = true
     player_table.flags.translate_on_join = false -- not really needed, but is here just in case

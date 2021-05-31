@@ -37,7 +37,6 @@ function mining_drill_proc.add_resources(recipe_book)
       for _, resource_ident in pairs(category_data.resources) do
         local resource_data = recipe_book.resource[resource_ident.name]
         if not resource_data.required_fluid or drill_data.supports_fluid then
-          -- TODO: Shallow copy?
           compatible_resources[#compatible_resources + 1] = resource_ident
         end
       end

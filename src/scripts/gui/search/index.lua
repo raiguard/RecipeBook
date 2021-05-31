@@ -198,15 +198,12 @@ function search_gui.handle_action(msg, e)
   end
 end
 
--- FIXME: This is a brute-force way to do it and is not good
+-- SLOW: This is a brute-force way to do it and is not good
 function search_gui.check_update_search()
   for player_index, player_table in pairs(global.players) do
     local gui_data = player_table.guis.search
-    if gui_data then
-      local state = gui_data.state
-      if state.update_results_on == game.ticks_played then
-        search_gui.handle_action({action = "update_search_results"}, {player_index = player_index})
-      end
+    if gui_data and gui_data.state.update_results_on == game.ticks_played then
+      search_gui.handle_action({action = "update_search_results"}, {player_index = player_index})
     end
   end
 end
