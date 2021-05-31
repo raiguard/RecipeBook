@@ -114,8 +114,8 @@ function player_data.refresh(player, player_table)
   player_table.flags.can_open_gui = false
 
   -- set shortcut state
-  player.set_shortcut_toggled("rb-toggle-gui", false)
-  player.set_shortcut_available("rb-toggle-gui", false)
+  player.set_shortcut_toggled("rb-search", false)
+  player.set_shortcut_available("rb-search", false)
 
   -- validate favorites
   player_data.validate_favorites(player_table.favorites)

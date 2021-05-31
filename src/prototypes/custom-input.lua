@@ -1,7 +1,7 @@
 data:extend{
   {
     type = "custom-input",
-    name = "rb-toggle-gui",
+    name = "rb-search",
     key_sequence = "CONTROL + B",
     include_selected_prototype = true
   },

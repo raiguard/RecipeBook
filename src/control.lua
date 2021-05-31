@@ -169,7 +169,7 @@ end)
 -- INTERACTION
 
 event.on_lua_shortcut(function(e)
-  if e.prototype_name == "rb-toggle-gui" then
+  if e.prototype_name == "rb-search" then
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
 
@@ -177,7 +177,7 @@ event.on_lua_shortcut(function(e)
   end
 end)
 
-event.register("rb-toggle-gui", function(e)
+event.register("rb-search", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
@@ -292,7 +292,7 @@ event.on_string_translated(function(e)
     player_table.flags.translate_on_join = false -- not really needed, but is here just in case
     player_table.flags.show_message_after_translation = false
     -- enable shortcut
-    player.set_shortcut_available("rb-toggle-gui", true)
+    player.set_shortcut_available("rb-search", true)
   end
 end)
 
