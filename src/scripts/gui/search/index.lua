@@ -102,19 +102,30 @@ function search_gui.handle_action(msg, e)
   if msg.action == "close" then
     search_gui.destroy(player, player_table)
   elseif msg.action == "update_search_query" then
+    local class_filter
     local query = string.lower(e.element.text)
-    -- TODO: Timeout
-    -- TODO: Class prefix
-    -- Fuzzy search
-    if player_table.settings.use_fuzzy_search then
-      query = string.gsub(query, ".", "%1.*")
+    if string.find(query, "/") then
+      -- NOTE: The `_`s here are technically globals, but whatever
+      _, _, class_filter, query = string.find(query, "^/(.-)/(.-)$")
+      if not class_filter or not query or not constants.pages[class_filter] then
+        class_filter = false
+      end
     end
-    -- Input sanitization
-    for pattern, replacement in pairs(constants.input_sanitizers) do
-      query = string.gsub(query, pattern, replacement)
+    if query then
+      -- TODO: Timeout
+      -- Fuzzy search
+      if player_table.settings.use_fuzzy_search then
+        query = string.gsub(query, ".", "%1.*")
+      end
+      -- Input sanitization
+      for pattern, replacement in pairs(constants.input_sanitizers) do
+        query = string.gsub(query, pattern, replacement)
+      end
+      -- Save query
+      state.search_query = query
+    else
+      state.search_query = ""
     end
-    -- Save query
-    state.search_query = query
 
     -- Data
     local player_data = formatter.build_player_data(player, player_table)
@@ -126,40 +137,44 @@ function search_gui.handle_action(msg, e)
     local pane = refs.search_results_pane
     local children = pane.children
     local add = pane.add
-    for class in pairs(constants.pages) do
-      for internal, translation in pairs(player_table.translations[class]) do
-        -- Match against search string
-        if string.find(string.lower(translation), query) then
-          local obj_data = global.recipe_book[class][internal]
-          local info = formatter(obj_data, player_data)
+    if class_filter ~= false then
+      for class in pairs(constants.pages) do
+        if not class_filter or class_filter == class then
+          for internal, translation in pairs(player_table.translations[class]) do
+            -- Match against search string
+            if string.find(string.lower(translation), query) then
+              local obj_data = global.recipe_book[class][internal]
+              local info = formatter(obj_data, player_data)
 
-          if info then
-            i = i + 1
-            local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
-            local item = children[i]
-            if item then
-              item.style = style
-              item.caption = info.caption
-              item.tooltip = info.tooltip
-              item.enabled = info.enabled
-              gui.update_tags(item, {context = {class = class, name = internal}})
-            else
-              add{
-                type = "button",
-                style = style,
-                caption = info.caption,
-                tooltip = info.tooltip,
-                enabled = info.enabled,
-                mouse_button_filter = {"left", "middle"},
-                tags = {
-                  [script.mod_name] = {
-                    context = {class = class, name = internal},
-                    flib = {
-                      on_click = {gui = "search", action = "open_object"}
-                    },
+              if info then
+                i = i + 1
+                local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+                local item = children[i]
+                if item then
+                  item.style = style
+                  item.caption = info.caption
+                  item.tooltip = info.tooltip
+                  item.enabled = info.enabled
+                  gui.update_tags(item, {context = {class = class, name = internal}})
+                else
+                  add{
+                    type = "button",
+                    style = style,
+                    caption = info.caption,
+                    tooltip = info.tooltip,
+                    enabled = info.enabled,
+                    mouse_button_filter = {"left", "middle"},
+                    tags = {
+                      [script.mod_name] = {
+                        context = {class = class, name = internal},
+                        flib = {
+                          on_click = {gui = "search", action = "open_object"}
+                        },
+                      }
+                    }
                   }
-                }
-              }
+                end
+              end
             end
           end
         end
