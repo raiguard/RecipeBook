@@ -13,7 +13,7 @@ local shared = require("scripts.shared")
 
 local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref")
-local search_gui = require("scripts.gui.search.index")
+local search_gui = require("scripts.gui.search")
 
 -- -----------------------------------------------------------------------------
 -- COMMANDS

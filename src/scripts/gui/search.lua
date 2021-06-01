@@ -119,6 +119,8 @@ function search_gui.build(player, player_table)
     refs = refs
   }
   player.set_shortcut_toggled("rb-search", true)
+
+
 end
 
 function search_gui.destroy(player, player_table)
