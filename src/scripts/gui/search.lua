@@ -158,8 +158,7 @@ function search_gui.handle_action(msg, e)
         class_filter = false
       end
     end
-    -- local query_len = query and #query or 0
-    if query --[[ and query_len > 1 ]] then
+    if query then
       -- Fuzzy search
       if player_table.settings.use_fuzzy_search then
         query = string.gsub(query, ".", "%1.*")
@@ -187,7 +186,7 @@ function search_gui.handle_action(msg, e)
     local max = constants.search_results_limit
     local class_filter = state.class_filter
     local query = state.search_query
-    if class_filter ~= false --[[ and query_len > 1 ]] then
+    if class_filter ~= false then
       for class in pairs(constants.pages) do
         if not class_filter or class_filter == class then
           for internal, translation in pairs(player_table.translations[class]) do

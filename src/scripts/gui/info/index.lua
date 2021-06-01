@@ -426,7 +426,14 @@ function info_gui.update_contents(player, player_table, id, options)
     refs.header.open_in_tech_window_button.visible = false
   end
   if context.class == "fluid" and obj_data.temperature_ident then
-    refs.header.go_to_base_fluid_button.visible = true
+    local base_fluid_button = refs.header.go_to_base_fluid_button
+    base_fluid_button.visible = true
+    gui.set_action(base_fluid_button, "on_click", {
+      gui = "info",
+      id = id,
+      action = "navigate_to_plain",
+      context = obj_data.base_fluid
+    })
   else
     refs.header.go_to_base_fluid_button.visible = false
   end

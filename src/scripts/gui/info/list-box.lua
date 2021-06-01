@@ -126,13 +126,18 @@ function list_box.update(component, refs, object_data, player_data, variables)
       i
     )
     -- Update open list button
-    gui.set_action(refs.open_list_button, "on_click", {
-      gui = "info",
-      id = variables.gui_id,
-      action = "open_list",
-      context = variables.context,
-      source = component.source
-    })
+    if i > 1 then
+      refs.open_list_button.visible = true
+      gui.set_action(refs.open_list_button, "on_click", {
+        gui = "info",
+        id = variables.gui_id,
+        action = "open_list",
+        context = variables.context,
+        source = component.source
+      })
+    else
+      refs.open_list_button.visible = false
+    end
   else
     refs.root.visible = false
   end
