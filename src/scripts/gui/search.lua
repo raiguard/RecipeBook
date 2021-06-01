@@ -120,7 +120,8 @@ function search_gui.build(player, player_table)
   }
   player.set_shortcut_toggled("rb-search", true)
 
-
+  search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})
+  search_gui.handle_action({action = "update_history"}, {player_index = player.index})
 end
 
 function search_gui.destroy(player, player_table)
