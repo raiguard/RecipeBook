@@ -284,7 +284,7 @@ function info_gui.update_contents(player, player_table, id, options)
       end
     end
     -- Update global history
-    shared.update_global_history(player_table.global_history, new_context)
+    shared.update_global_history(player, player_table, new_context)
   end
 
   -- COMMON DATA

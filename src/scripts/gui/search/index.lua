@@ -8,6 +8,49 @@ local util = require("scripts.util")
 
 local search_gui = {}
 
+local function update_list_box(pane, source_tbl, player_data, iterator, options)
+  local i = 0
+  local children = pane.children
+  local add = pane.add
+  for _, obj_ident in iterator(source_tbl) do
+    local obj_data = global.recipe_book[obj_ident.class][obj_ident.name]
+    local info = formatter(obj_data, player_data, options)
+    if info then
+      i = i + 1
+      local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+      local item = children[i]
+      if item then
+        item.style = style
+        item.caption = info.caption
+        item.tooltip = info.tooltip
+        item.enabled = info.enabled
+        gui.update_tags(item, {context = {class = obj_ident.class, name = obj_ident.name}})
+      else
+        add{
+          type = "button",
+          style = style,
+          caption = info.caption,
+          tooltip = info.tooltip,
+          enabled = info.enabled,
+          mouse_button_filter = {"left", "middle"},
+          tags = {
+            [script.mod_name] = {
+              context = {class = obj_ident.class, name = obj_ident.name},
+              flib = {
+                on_click = {gui = "search", action = "open_object"}
+              }
+            }
+          }
+        }
+      end
+    end
+  end
+  -- Destroy extraneous items
+  for j = i + 1, #children do
+    children[j].destroy()
+  end
+end
+
 function search_gui.build(player, player_table)
   local refs = gui.build(player.gui.screen, {
     {type = "frame", direction = "vertical", ref = {"window"},
@@ -31,7 +74,11 @@ function search_gui.build(player, player_table)
         {type = "tabbed-pane", style = "tabbed_pane_with_no_side_padding", style_mods = {height = 540},
           {tab = {type = "tab", caption = {"gui.search"}}, content = (
             -- TODO: Locale-specific widths
-            {type = "frame", style = "rb_inside_deep_frame_under_tabs", style_mods = {width = 276}, direction = "vertical",
+            {
+              type = "frame",
+              style = "rb_inside_deep_frame_under_tabs",
+              style_mods = {width = 276},
+              direction = "vertical",
               {type = "frame", style = "rb_subheader_frame", direction = "vertical",
                 {
                   type = "textfield",
@@ -48,12 +95,12 @@ function search_gui.build(player, player_table)
           )},
           {tab = {type = "tab", caption = {"gui.rb-favorites"}}, content = (
             {type = "frame", style = "rb_inside_deep_frame_under_tabs", direction = "vertical",
-              {type = "scroll-pane", style = "rb_search_results_scroll_pane"}
+              {type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = {"favorites_pane"}}
             }
           )},
           {tab = {type = "tab", caption = {"gui.rb-history"}}, content = (
             {type = "frame", style = "rb_inside_deep_frame_under_tabs", direction = "vertical",
-              {type = "scroll-pane", style = "rb_search_results_scroll_pane"}
+              {type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = {"history_pane"}}
             }
           )}
         },
@@ -195,6 +242,22 @@ function search_gui.handle_action(msg, e)
     if context then
       shared.open_page(player, player_table, context)
     end
+  elseif msg.action == "update_favorites" then
+    update_list_box(
+      refs.favorites_pane,
+      player_table.favorites,
+      formatter.build_player_data(player, player_table),
+      pairs,
+      {always_show = true}
+    )
+  elseif msg.action == "update_history" then
+    update_list_box(
+      refs.history_pane,
+      player_table.global_history,
+      formatter.build_player_data(player, player_table),
+      ipairs,
+      {always_show = true}
+    )
   end
 end
 

@@ -367,15 +367,27 @@ function shared.update_header_button(player, player_table, context, button, to_s
       {player_index = player.index}
     )
   end
+  if button == "favorite_button" then
+    search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})
+  end
 end
 
 function shared.refresh_contents(player, player_table)
   formatter.create_cache(player.index)
   info_gui.update_all(player, player_table)
   quick_ref_gui.update_all(player, player_table)
+  if player_table.guis.search then
+    -- TODO: Consolidate?
+    search_gui.handle_action({action = "update_search_results"}, {player_index = player.index})
+    search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})
+    search_gui.handle_action({action = "update_history"}, {player_index = player.index})
+  end
 end
 
-function shared.update_global_history(global_history, new_context)
-  player_data.update_global_history(global_history, new_context)
+function shared.update_global_history(player, player_table, new_context)
+  player_data.update_global_history(player_table.global_history, new_context)
+  if player_table.guis.search then
+    search_gui.handle_action({action = "update_history"}, {player_index = player.index})
+  end
 end
 
