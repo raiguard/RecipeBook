@@ -38,6 +38,8 @@ return function(recipe_book, strings, metadata)
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
           recipe_data.researched_forces = {}
           unlocks_recipes[#unlocks_recipes + 1] = {class = "recipe", name = modifier.recipe}
+          -- TODO: Unlock barreling recipes are unlocked either with their actual tech (if the fluid was already
+          --       unlocked), or with their base fluid
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
             local product_data = recipe_book[product.class][product_name]
