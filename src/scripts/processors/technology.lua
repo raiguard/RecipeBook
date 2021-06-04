@@ -40,6 +40,8 @@ return function(recipe_book, strings, metadata)
           unlocks_recipes[#unlocks_recipes + 1] = {class = "recipe", name = modifier.recipe}
           -- TODO: Unlock barreling recipes are unlocked either with their actual tech (if the fluid was already
           --       unlocked), or with their base fluid
+          -- NOTE: There will be no reliable way to tell if a fluid is unlocked before or after its barreling recipe.
+          --       Therefore, we will need to add support for multiple techs required to unlock something.
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
             local product_data = recipe_book[product.class][product_name]

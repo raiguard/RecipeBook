@@ -395,9 +395,9 @@ local function get_obj_properties(obj_data, player_data, options)
   -- We have to get the current enabled status from the object itself
   -- Recipes are unlocked by "enabling" them, so only check a recipe if it's researched
   if obj_data.class == "recipe" and researched then
-    enabled = force.recipes[obj_data.prototype_name].enabled
+    enabled = player_data.force_recipes[obj_data.prototype_name].enabled
   elseif obj_data.class == "technology" then
-    enabled = force.technologies[obj_data.prototype_name].enabled
+    enabled = player_data.force_technologies[obj_data.prototype_name].enabled
   end
   local obj_properties = {hidden = obj_data.hidden or false, researched = researched, enabled = enabled}
 
@@ -528,6 +528,8 @@ end
 function formatter.build_player_data(player, player_table)
   return {
     force = player.force,
+    force_recipes = player.force.recipes,
+    force_technologies = player.force.technologies,
     player_index = player.index,
     settings = player_table.settings,
     translations = player_table.translations
