@@ -590,6 +590,7 @@ function info_gui.handle_action(msg, e)
     -- Update contents
     info_gui.update_contents(player, player_table, msg.id)
   elseif msg.action == "update_search_query" then
+    -- TODO: Timeout
     local query = string.lower(e.element.text)
     -- Fuzzy search
     if player_table.settings.use_fuzzy_search then
@@ -602,6 +603,14 @@ function info_gui.handle_action(msg, e)
     -- Save query
     state.search_query = query
 
+    if query == "" then
+      -- Update based on query
+      info_gui.update_contents(player, player_table, msg.id, {refresh = true})
+    else
+      -- Set timeout
+      state.update_results_on = game.ticks_played + constants.search_timeout
+    end
+  elseif msg.action == "update_search_results" then
     -- Update based on query
     info_gui.update_contents(player, player_table, msg.id, {refresh = true})
   elseif msg.action == "navigate_to" then
@@ -672,6 +681,17 @@ function info_gui.handle_action(msg, e)
     if new_level ~= state.selected_tech_level then
       state.selected_tech_level = new_level
       info_gui.update_contents(player, player_table, msg.id, {refresh = true})
+    end
+  end
+end
+
+-- SLOW: This is a brute-force way to do it and is not good
+function info_gui.check_update_search()
+  for player_index, player_table in pairs(global.players) do
+    for id, gui_data in pairs(player_table.guis.info) do
+      if id ~= "_next_id" and id ~= "_active_id" and gui_data.state.update_results_on == game.ticks_played then
+        info_gui.handle_action({id = id, action = "update_search_results"}, {player_index = player_index})
+      end
     end
   end
 end

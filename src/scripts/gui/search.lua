@@ -143,6 +143,7 @@ function search_gui.handle_action(msg, e)
   local player_table = global.players[e.player_index]
 
   local gui_data = player_table.guis.search
+  if not gui_data then return end -- TODO: Remove this once we no longer destroy the GUI
   local state = gui_data.state
   local refs = gui_data.refs
 
