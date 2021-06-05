@@ -53,7 +53,7 @@ end
 
 function search_gui.build(player, player_table)
   local refs = gui.build(player.gui.screen, {
-    {type = "frame", direction = "vertical", ref = {"window"},
+    {type = "frame", direction = "vertical", visible = false, ref = {"window"},
       {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
         {type = "label", style = "frame_title", caption = {"mod-name.RecipeBook"}, ignored_by_interaction = true},
         {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
@@ -71,7 +71,11 @@ function search_gui.build(player, player_table)
         )
       },
       {type = "frame", style = "inside_deep_frame_for_tabs", style_mods = {width = 276}, direction = "vertical",
-        {type = "tabbed-pane", style = "tabbed_pane_with_no_side_padding", style_mods = {height = 540},
+        {
+          type = "tabbed-pane",
+          style = "tabbed_pane_with_no_side_padding",
+          style_mods = {height = 540},
+          ref = {"tabbed_pane"},
           {tab = {type = "tab", caption = {"gui.search"}}, content = (
             -- TODO: Locale-specific widths
             {
@@ -117,7 +121,6 @@ function search_gui.build(player, player_table)
     },
     refs = refs
   }
-  player.set_shortcut_toggled("rb-search", true)
 
   search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})
   search_gui.handle_action({action = "update_history"}, {player_index = player.index})
@@ -129,11 +132,27 @@ function search_gui.destroy(player, player_table)
   player.set_shortcut_toggled("rb-search", false)
 end
 
+function search_gui.open(player, player_table)
+  local gui_data = player_table.guis.search
+  local refs = gui_data.refs
+  refs.window.visible = true
+  refs.search_textfield.select_all()
+  refs.search_textfield.focus()
+  refs.tabbed_pane.selected_tab_index = 1
+
+  player.set_shortcut_toggled("rb-search", true)
+end
+
+function search_gui.close(player, player_table)
+  player_table.guis.search.refs.window.visible = false
+  player.set_shortcut_toggled("rb-search", false)
+end
+
 function search_gui.toggle(player, player_table)
-  if player_table.guis.search then
-    search_gui.destroy(player, player_table)
+  if player_table.guis.search.refs.window.visible then
+    search_gui.close(player, player_table)
   else
-    search_gui.build(player, player_table)
+    search_gui.open(player, player_table)
   end
 end
 
@@ -147,7 +166,7 @@ function search_gui.handle_action(msg, e)
   local refs = gui_data.refs
 
   if msg.action == "close" then
-    search_gui.destroy(player, player_table)
+    search_gui.close(player, player_table)
   elseif msg.action == "update_search_query" then
     local class_filter
     local query = string.lower(e.element.text)

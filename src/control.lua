@@ -323,8 +323,7 @@ event.on_string_translated(function(e)
       player.print{'rb-message.can-open-gui'}
     end
     -- create GUI
-    -- TODO: Create search GUI here, then open/close it
-    -- search_gui.build(player, player_table)
+    search_gui.build(player, player_table)
     -- update flags
     player_table.flags.can_open_gui = true
     player_table.flags.translate_on_join = false -- not really needed, but is here just in case
@@ -377,7 +376,7 @@ function shared.refresh_contents(player, player_table)
   formatter.create_cache(player.index)
   info_gui.update_all(player, player_table)
   quick_ref_gui.update_all(player, player_table)
-  if player_table.guis.search then
+  if player_table.guis.search and player_table.guis.search.refs.window.visible then
     -- TODO: Consolidate?
     search_gui.handle_action({action = "update_search_results"}, {player_index = player.index})
     search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})
@@ -387,7 +386,7 @@ end
 
 function shared.update_global_history(player, player_table, new_context)
   player_data.update_global_history(player_table.global_history, new_context)
-  if player_table.guis.search then
+  if player_table.guis.search and player_table.guis.search.refs.window.visible then
     search_gui.handle_action({action = "update_history"}, {player_index = player.index})
   end
 end
