@@ -70,14 +70,13 @@ function search_gui.build(player, player_table)
           {gui = "search", action = "close"}
         )
       },
-      {type = "frame", style = "inside_deep_frame_for_tabs", direction = "vertical",
+      {type = "frame", style = "inside_deep_frame_for_tabs", style_mods = {width = 276}, direction = "vertical",
         {type = "tabbed-pane", style = "tabbed_pane_with_no_side_padding", style_mods = {height = 540},
           {tab = {type = "tab", caption = {"gui.search"}}, content = (
             -- TODO: Locale-specific widths
             {
               type = "frame",
               style = "rb_inside_deep_frame_under_tabs",
-              style_mods = {width = 276},
               direction = "vertical",
               {type = "frame", style = "rb_subheader_frame", direction = "vertical",
                 {
