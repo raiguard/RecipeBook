@@ -559,14 +559,17 @@ function info_gui.handle_action(msg, e)
     local search_button = refs.titlebar.search_button
     local search_textfield = refs.titlebar.search_textfield
     if opened then
-      -- Reset query and GUI properties
       search_button.sprite = "utility/search_white"
       search_button.style = "frame_action_button"
-      search_textfield.text = ""
-      state.search_query = ""
       search_textfield.visible = false
-      -- Refresh page
-      info_gui.update_contents(player, player_table, msg.id)
+
+      if state.search_query ~= "" then
+        -- Reset query
+        search_textfield.text = ""
+        state.search_query = ""
+        -- Refresh page
+        info_gui.update_contents(player, player_table, msg.id)
+      end
     else
       -- Show search textfield
       search_button.sprite = "utility/search_black"
