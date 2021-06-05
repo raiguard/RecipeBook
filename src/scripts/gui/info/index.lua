@@ -1,5 +1,6 @@
 local gui = require("__flib__.gui-beta")
 local math = require("__flib__.math")
+local on_tick_n = require("lib.on-tick-n")
 local table = require("__flib__.table")
 
 local constants = require("constants")
@@ -596,10 +597,16 @@ function info_gui.handle_action(msg, e)
       -- Update based on query
       info_gui.update_contents(player, player_table, msg.id, {refresh = true})
     else
-      -- Set timeout
-      state.update_results_on = game.ticks_played + constants.search_timeout
+      -- Update results in a while
+      state.on_tick_n_id = on_tick_n.add_task(
+        game.ticks_played + constants.search_timeout,
+        {gui = "info", id = msg.id, action = "update_search_results", player_index = e.player_index}
+      )
     end
   elseif msg.action == "update_search_results" then
+    -- Only update on the correct tick
+    if state.on_tick_n_id ~= msg.on_tick_n_id then return end
+
     -- Update based on query
     info_gui.update_contents(player, player_table, msg.id, {refresh = true})
   elseif msg.action == "navigate_to" then
