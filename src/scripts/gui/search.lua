@@ -113,8 +113,6 @@ function search_gui.build(player, player_table)
 
   refs.titlebar.flow.drag_target = refs.window
 
-  refs.search_textfield.focus()
-
   player_table.guis.search = {
     state = {
       search_query = ""
@@ -161,7 +159,7 @@ function search_gui.handle_action(msg, e)
   local player_table = global.players[e.player_index]
 
   local gui_data = player_table.guis.search
-  if not gui_data then return end -- TODO: Remove this once we no longer destroy the GUI
+  if not gui_data then return end
   local state = gui_data.state
   local refs = gui_data.refs
 

@@ -377,7 +377,6 @@ function shared.refresh_contents(player, player_table)
   info_gui.update_all(player, player_table)
   quick_ref_gui.update_all(player, player_table)
   if player_table.guis.search and player_table.guis.search.refs.window.visible then
-    -- TODO: Consolidate?
     search_gui.handle_action({action = "update_search_results"}, {player_index = player.index})
     search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})
     search_gui.handle_action({action = "update_history"}, {player_index = player.index})

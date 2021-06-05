@@ -93,19 +93,6 @@ function info_gui.build(player, player_table, context)
           {"titlebar", "search_button"},
           {gui = "info", id = id, action = "toggle_search"}
         ),
-        -- TODO: Decide these
-        -- util.frame_action_button(
-        --   "rb_pin",
-        --   {"gui.rb-pin-instruction"},
-        --   {"titlebar", "pin_button"},
-        --   {gui = "info", id = id, action = "toggle_pinned"}
-        -- ),
-        -- util.frame_action_button(
-        --   "rb_settings",
-        --   {"gui.rb-settings-instruction"},
-        --   {"titlebar", "settings_button"},
-        --   {gui = "info", id = id, action = "toggle_settings"}
-        -- ),
         util.frame_action_button(
           "utility/close",
           {"gui.close"},
@@ -593,7 +580,6 @@ function info_gui.handle_action(msg, e)
     -- Update contents
     info_gui.update_contents(player, player_table, msg.id)
   elseif msg.action == "update_search_query" then
-    -- TODO: Timeout
     local query = string.lower(e.element.text)
     -- Fuzzy search
     if player_table.settings.use_fuzzy_search then
