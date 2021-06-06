@@ -27,7 +27,7 @@ commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
   elseif e.parameter == "clear-memoizer-cache" then
     formatter.create_cache(e.player_index)
     local player = game.get_player(e.player_index)
-    player.print{"rb-message.memoizer-cache-purged"}
+    player.print{"rb-message.memoizer-cache-cleared"}
   else
     game.get_player(e.player_index).print{"rb-message.invalid-command"}
   end
