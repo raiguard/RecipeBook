@@ -51,6 +51,8 @@ function player_data.update_settings(player, player_table)
   for name in pairs(game.recipe_category_prototypes) do
     if former_categories[name] == nil then
       categories[name] = not constants.disabled_recipe_categories[name]
+    else
+      categories[name] = former_categories[name]
     end
   end
   settings.recipe_categories = categories
@@ -61,6 +63,8 @@ function player_data.update_settings(player, player_table)
   for name in pairs(global.recipe_book.group) do
     if former_groups[name] == nil then
       groups[name] = not constants.disabled_groups[name]
+    else
+      groups[name] = former_groups[name]
     end
   end
   settings.groups = groups
