@@ -5,6 +5,7 @@ local on_tick_n = {}
 on_tick_n.event_id = script.generate_event_name()
 
 function on_tick_n.add_task(tick, payload)
+  if not global.tasks then return end
   local tasks = global.tasks[tick]
   if not tasks then
     tasks = {}
@@ -20,6 +21,7 @@ function on_tick_n.init()
 end
 
 function on_tick_n.iterate(e)
+  if not global.tasks then return end
   local tasks = global.tasks[e.tick]
   if tasks then
     e.tasks = tasks

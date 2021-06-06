@@ -599,7 +599,7 @@ function info_gui.handle_action(msg, e)
     else
       -- Update results in a while
       state.on_tick_n_id = on_tick_n.add_task(
-        game.ticks_played + constants.search_timeout,
+        game.tick + constants.search_timeout,
         {gui = "info", id = msg.id, action = "update_search_results", player_index = e.player_index}
       )
     end
