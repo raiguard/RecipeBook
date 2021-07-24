@@ -7,6 +7,8 @@ local formatter = require("scripts.formatter")
 local shared = require("scripts.shared")
 local util = require("scripts.util")
 
+local settings_gui = require("scripts.gui.settings")
+
 local search_gui = {}
 
 local function update_list_box(pane, source_tbl, player_data, iterator, options)
@@ -166,6 +168,8 @@ function search_gui.handle_action(msg, e)
 
   if msg.action == "close" then
     search_gui.close(player, player_table)
+  elseif msg.action == "toggle_settings" then
+    settings_gui.toggle(player, player_table)
   elseif msg.action == "update_search_query" then
     local class_filter
     local query = string.lower(e.element.text)

@@ -15,6 +15,7 @@ local shared = require("scripts.shared")
 local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref")
 local search_gui = require("scripts.gui.search")
+local settings_gui = require("scripts.gui.settings")
 
 -- -----------------------------------------------------------------------------
 -- COMMANDS
@@ -151,6 +152,8 @@ local function read_action(e)
       quick_ref_gui.handle_action(msg, e)
     elseif msg.gui == "search" then
       search_gui.handle_action(msg, e)
+    elseif msg.gui == "settings" then
+      settings_gui.handle_action(msg, e)
     end
     return true
   end
@@ -168,6 +171,16 @@ event.on_gui_click(function(e)
       info_gui.bring_all_to_front(player_table)
       quick_ref_gui.bring_all_to_front(player_table)
     end
+  end
+end)
+
+event.register("rb-linked-confirm-gui", function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+
+  local gui_data = player_table.guis.settings
+  if gui_data and player.opened == gui_data.refs.window then
+    settings_gui.handle_action({action = "confirm"}, {player_index = e.player_index})
   end
 end)
 
