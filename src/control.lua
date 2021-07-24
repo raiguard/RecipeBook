@@ -1,7 +1,6 @@
 local event = require("__flib__.event")
 local gui = require("__flib__.gui-beta")
 local migration = require("__flib__.migration")
-local on_tick_n = require("lib.on-tick-n")
 local translation = require("__flib__.translation")
 
 local constants = require("constants")
@@ -91,7 +90,6 @@ end)
 -- BOOTSTRAP
 
 event.on_init(function()
-  on_tick_n.init()
   translation.init()
 
   global_data.init()
@@ -308,21 +306,8 @@ event.on_tick(function(e)
   if translation.translating_players_count() > 0 then
     translation.iterate_batch(e)
   end
-  on_tick_n.iterate(e)
-end)
-
-event.register(on_tick_n.event_id, function(e)
-  local tasks = e.tasks
-  if tasks then
-    for id, task in pairs(tasks) do
-      task.on_tick_n_id = id
-      if task.gui == "search" then
-        search_gui.handle_action(task, {player_index = task.player_index})
-      elseif task.gui == "info" then
-        info_gui.handle_action(task, {player_index = task.player_index})
-      end
-    end
-  end
+  info_gui.check_update_search()
+  search_gui.check_update_search()
 end)
 
 -- TRANSLATIONS
