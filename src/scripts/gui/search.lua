@@ -1,4 +1,5 @@
 local gui = require("__flib__.gui-beta")
+local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
 
@@ -191,7 +192,14 @@ function search_gui.handle_action(msg, e)
       -- Save query
       state.search_query = query
       state.class_filter = class_filter
-      state.update_results_on = game.ticks_played + constants.search_timeout
+      -- Update in a while
+      if state.update_results_ident then
+        on_tick_n.remove(state.update_results_ident)
+      end
+      state.update_results_ident = on_tick_n.add(
+        game.tick + constants.search_timeout,
+        {gui = "search", action = "update_search_results", player_index = e.player_index}
+      )
     else
       state.search_query = ""
     end
@@ -281,16 +289,6 @@ function search_gui.handle_action(msg, e)
       ipairs,
       {always_show = true}
     )
-  end
-end
-
--- SLOW: This is a brute-force way to do it and is not good
-function search_gui.check_update_search()
-  for player_index, player_table in pairs(global.players) do
-    local gui_data = player_table.guis.search
-    if gui_data and gui_data.state.update_results_on == game.ticks_played then
-      search_gui.handle_action({action = "update_search_results"}, {player_index = player_index})
-    end
   end
 end
 

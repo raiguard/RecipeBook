@@ -1,6 +1,7 @@
 local event = require("__flib__.event")
 local gui = require("__flib__.gui-beta")
 local migration = require("__flib__.migration")
+local on_tick_n = require("__flib__.on-tick-n")
 local translation = require("__flib__.translation")
 
 local constants = require("constants")
@@ -95,6 +96,8 @@ event.on_init(function()
   global_data.init()
   global_data.build_recipe_book()
   global_data.check_forces()
+
+  on_tick_n.init()
   for i, player in pairs(game.players) do
     player_data.init(i)
     player_data.refresh(player, global.players[i])
@@ -141,28 +144,32 @@ end)
 
 -- GUI
 
-local function read_action(e)
+local function handle_gui_action(msg, e)
+  if msg.gui == "info" then
+    info_gui.handle_action(msg, e)
+  elseif msg.gui == "quick_ref" then
+    quick_ref_gui.handle_action(msg, e)
+  elseif msg.gui == "search" then
+    search_gui.handle_action(msg, e)
+  elseif msg.gui == "settings" then
+    settings_gui.handle_action(msg, e)
+  end
+end
+
+local function read_gui_action(e)
   local msg = gui.read_action(e)
   if msg then
-    if msg.gui == "info" then
-      info_gui.handle_action(msg, e)
-    elseif msg.gui == "quick_ref" then
-      quick_ref_gui.handle_action(msg, e)
-    elseif msg.gui == "search" then
-      search_gui.handle_action(msg, e)
-    elseif msg.gui == "settings" then
-      settings_gui.handle_action(msg, e)
-    end
+    handle_gui_action(msg, e)
     return true
   end
   return false
 end
 
-gui.hook_events(read_action)
+gui.hook_events(read_gui_action)
 
 event.on_gui_click(function(e)
   -- If clicking on the Factory Planner dimmer frame
-  if not read_action(e) and e.element.style.name == "fp_frame_semitransparent" then
+  if not read_gui_action(e) and e.element.style.name == "fp_frame_semitransparent" then
     -- Bring all GUIs to the front
     local player_table = global.players[e.player_index]
     if player_table.flags.can_open_gui then
@@ -315,8 +322,14 @@ event.on_tick(function(e)
   if translation.translating_players_count() > 0 then
     translation.iterate_batch(e)
   end
-  info_gui.check_update_search()
-  search_gui.check_update_search()
+  local actions = on_tick_n.retrieve(e.tick)
+  if actions then
+    for _, msg in pairs(actions) do
+      if msg.gui then
+        handle_gui_action(msg, {player_index = msg.player_index})
+      end
+    end
+  end
 end)
 
 -- TRANSLATIONS

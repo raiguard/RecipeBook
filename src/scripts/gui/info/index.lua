@@ -1,5 +1,6 @@
 local gui = require("__flib__.gui-beta")
 local math = require("__flib__.math")
+local on_tick_n = require("__flib__.on-tick-n")
 local table = require("__flib__.table")
 
 local constants = require("constants")
@@ -592,12 +593,20 @@ function info_gui.handle_action(msg, e)
     -- Save query
     state.search_query = query
 
+    -- Remove scheduled update if one exists
+    if state.update_results_ident then
+      on_tick_n.remove(state.update_results_ident)
+    end
+
     if query == "" then
-      -- Update based on query
+      -- Update now
       info_gui.update_contents(player, player_table, msg.id, {refresh = true})
     else
-      -- Set timeout
-      state.update_results_on = game.ticks_played + constants.search_timeout
+      -- Update in a while
+      state.update_results_ident = on_tick_n.add(
+        game.tick + constants.search_timeout,
+        {gui = "info", id = msg.id, action = "update_search_results", player_index = e.player_index}
+      )
     end
   elseif msg.action == "update_search_results" then
     -- Update based on query
@@ -670,17 +679,6 @@ function info_gui.handle_action(msg, e)
     if new_level ~= state.selected_tech_level then
       state.selected_tech_level = new_level
       info_gui.update_contents(player, player_table, msg.id, {refresh = true})
-    end
-  end
-end
-
--- SLOW: This is a brute-force way to do it and is not good
-function info_gui.check_update_search()
-  for player_index, player_table in pairs(global.players) do
-    for id, gui_data in pairs(player_table.guis.info) do
-      if id ~= "_next_id" and id ~= "_active_id" and gui_data.state.update_results_on == game.ticks_played then
-        info_gui.handle_action({id = id, action = "update_search_results"}, {player_index = player_index})
-      end
     end
   end
 end

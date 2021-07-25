@@ -1,3 +1,4 @@
+local on_tick_n = require("__flib__.on-tick-n")
 local translation = require("__flib__.translation")
 
 local global_data = require("scripts.global-data")
@@ -41,6 +42,7 @@ return {
     end
   end,
   ["3.0.0"] = function()
+    on_tick_n.init()
     for _, player_table in pairs(global.players) do
       player_table.guis.info = {_next_id = 1}
       player_table.history = nil
