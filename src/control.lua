@@ -425,3 +425,10 @@ function shared.update_global_history(player, player_table, new_context)
   end
 end
 
+function shared.deselect_settings_button(player, player_table)
+  local gui_data = player_table.guis.search
+  if gui_data then
+    search_gui.handle_action({action = "deselect_settings_button"}, {player_index = player.index})
+  end
+end
+

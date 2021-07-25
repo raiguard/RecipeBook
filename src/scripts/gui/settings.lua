@@ -1,5 +1,6 @@
 local gui = require("__flib__.gui-beta")
 
+local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 local settings_gui = {}
@@ -57,6 +58,7 @@ function settings_gui.handle_action(msg, e)
 
   if msg.action == "close" then
     settings_gui.destroy(player_table)
+    shared.deselect_settings_button(player, player_table)
   elseif msg.action == "confirm" then
     player.play_sound{path = "utility/confirm"}
   end

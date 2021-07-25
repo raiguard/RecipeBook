@@ -170,6 +170,18 @@ function search_gui.handle_action(msg, e)
     search_gui.close(player, player_table)
   elseif msg.action == "toggle_settings" then
     settings_gui.toggle(player, player_table)
+    local settings_button = refs.titlebar.settings_button
+    if player_table.guis.settings then
+      settings_button.style = "flib_selected_frame_action_button"
+      settings_button.sprite = "rb_settings_black"
+    else
+      settings_button.style = "frame_action_button"
+      settings_button.sprite = "rb_settings_white"
+    end
+  elseif msg.action == "deselect_settings_button" then
+    local settings_button = refs.titlebar.settings_button
+    settings_button.style = "frame_action_button"
+    settings_button.sprite = "rb_settings_white"
   elseif msg.action == "update_search_query" then
     local class_filter
     local query = string.lower(e.element.text)
