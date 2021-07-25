@@ -195,6 +195,7 @@ function search_gui.handle_action(msg, e)
       -- Update in a while
       if state.update_results_ident then
         on_tick_n.remove(state.update_results_ident)
+        state.update_results_ident = nil
       end
       state.update_results_ident = on_tick_n.add(
         game.tick + constants.search_timeout,

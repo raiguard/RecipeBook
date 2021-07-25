@@ -596,6 +596,7 @@ function info_gui.handle_action(msg, e)
     -- Remove scheduled update if one exists
     if state.update_results_ident then
       on_tick_n.remove(state.update_results_ident)
+      state.update_results_ident = nil
     end
 
     if query == "" then
