@@ -210,30 +210,39 @@ event.on_lua_shortcut(function(e)
   end
 end)
 
-event.register("rb-search", function(e)
+event.register({"rb-search", "rb-open-selected"}, function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
-  -- Open the selected prototype
   if player_table.flags.can_open_gui then
-    local selected_prototype = e.selected_prototype
-    if selected_prototype then
-      local class = constants.derived_type_to_class[selected_prototype.base_type]
-        or constants.derived_type_to_class[selected_prototype.derived_type]
-      -- Not everything will have a Recipe Book entry
-      if class then
-        local name = selected_prototype.name
-        local obj_data = global.recipe_book[class][name]
-        if obj_data then
-          local context = {class = class, name = name}
-          shared.open_page(player, player_table, context)
-          return
+    if e.input_name == "rb-open-selected" then
+      -- Open the selected prototype
+      local selected_prototype = e.selected_prototype
+      if selected_prototype then
+        local class = constants.derived_type_to_class[selected_prototype.base_type]
+          or constants.derived_type_to_class[selected_prototype.derived_type]
+        -- Not everything will have a Recipe Book entry
+        if class then
+          local name = selected_prototype.name
+          local obj_data = global.recipe_book[class][name]
+          if obj_data then
+            local context = {class = class, name = name}
+            shared.open_page(player, player_table, context)
+            return
+          end
         end
-      end
 
-      -- If we're here, the selected object has no page in RB
+        -- If we're here, the selected object has no page in RB
+        player.create_local_flying_text{
+          text = {"message.rb-object-has-no-page"},
+          create_at_cursor = true
+        }
+        player.play_sound{path = "utility/cannot_build"}
+        return
+      end
+      -- If we're here, the player did not have an object selected
       player.create_local_flying_text{
-        text = {"message.rb-object-has-no-page"},
+        text = {"message.rb-did-not-select-object"},
         create_at_cursor = true
       }
       player.play_sound{path = "utility/cannot_build"}

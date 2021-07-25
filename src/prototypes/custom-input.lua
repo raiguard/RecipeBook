@@ -1,8 +1,14 @@
 data:extend{
   {
     type = "custom-input",
-    name = "rb-search",
+    name = "rb-open-selected",
     key_sequence = "CONTROL + B",
+    include_selected_prototype = true,
+  },
+  {
+    type = "custom-input",
+    name = "rb-search",
+    key_sequence = "CONTROL + SHIFT + B",
     include_selected_prototype = true,
   },
   {
