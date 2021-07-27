@@ -555,72 +555,79 @@ constants.search_timeout = 30
 
 constants.session_history_size = 20
 
--- TODO: Redo entire settings functionality
 constants.settings = {
-  interface = {
-    show_hidden = {
+  content = {
+    show_disabled = {
+      type = "bool",
+      has_tooltip = true,
       default_value = false,
-      has_tooltip = true
+    },
+    show_hidden = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = true,
     },
     show_unresearched = {
+      type = "bool",
+      has_tooltip = true,
       default_value = true,
-      has_tooltip = true
     },
-    show_disabled = {
-      default_value = false,
-      has_tooltip = true
+    show_names = {
+      type = "or",
+      options = {"internal", "localised"},
+      has_tooltip = true,
+      default_value = "localised",
     },
-    show_glyphs = {
-      default_value = true,
-      has_tooltip = false
-    },
+  },
+  tooltips = {
     show_alternate_name = {
+      type = "bool",
+      has_tooltip = true,
       default_value = false,
-      has_tooltip = true
-    },
-    use_internal_names = {
-      default_value = false,
-      has_tooltip = true
     },
     show_descriptions = {
+      type = "bool",
+      has_tooltip = false,
       default_value = true,
-      has_tooltip = true
     },
     show_detailed_tooltips = {
+      type = "bool",
+      has_tooltip = true,
       default_value = true,
-      has_tooltip = true
     },
     show_interaction_helps = {
+      type = "bool",
+      has_tooltip = false,
       default_value = true,
-      has_tooltip = true
     },
-    preserve_session = {
-      default_value = false,
-      has_tooltip = true
-    },
-    highlight_last_selected = {
-      default_value = true,
-      has_tooltip = true
-    },
-    show_made_in_in_quick_ref = {
-      default_value = true,
-      has_tooltip = false
-    }
   },
   search = {
-    use_fuzzy_search = {
+    fuzzy_search = {
+      type = "bool",
+      has_tooltip = true,
       default_value = false,
-      has_tooltip = true
     },
-    show_fluid_temperatures = {
-      default_value = true,
-      has_tooltip = true
+    search_type = {
+      type = "enum",
+      options = {
+        "both",
+        "internal",
+        "localised",
+      },
+      has_tooltip = true,
+      default_value = "localised",
     },
     show_fluid_temperature_ranges = {
+      type = "bool",
+      has_tooltip = false,
       default_value = true,
-      has_tooltip = true
-    }
-  }
+    },
+    show_fluid_temperatures = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    },
+  },
 }
 
 constants.tooltips = {
