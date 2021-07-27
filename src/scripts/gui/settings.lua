@@ -19,7 +19,14 @@ function settings_gui.build(player, player_table)
       {type = "flow", style = "dialog_buttons_horizontal_flow",
         {type = "button", style = "back_button", caption = {"gui.cancel"}},
         {type = "empty-widget", style = "flib_dialog_footer_drag_handle", ref = {"footer_drag_handle"}},
-        {type = "button", style = "confirm_button", caption = {"gui.confirm"}},
+        {
+          type = "button",
+          style = "confirm_button",
+          caption = {"gui.confirm"},
+          actions = {
+            on_click = {gui = "settings", action = "confirm"},
+          },
+        },
       }
     }
   })
@@ -29,9 +36,8 @@ function settings_gui.build(player, player_table)
 
   player_table.guis.settings = {
     refs = refs,
-    settings = {
-      -- TODO:
-    }
+    state = {
+    },
   }
 end
 
@@ -60,7 +66,12 @@ function settings_gui.handle_action(msg, e)
     settings_gui.destroy(player_table)
     shared.deselect_settings_button(player, player_table)
   elseif msg.action == "confirm" then
-    player.play_sound{path = "utility/confirm"}
+    if e.name == defines.events.on_gui_click then
+      settings_gui.destroy(player_table)
+      shared.deselect_settings_button(player, player_table)
+    else
+      player.play_sound{path = "utility/confirm"}
+    end
   end
 end
 

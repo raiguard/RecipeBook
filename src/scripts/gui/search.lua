@@ -62,7 +62,7 @@ function search_gui.build(player, player_table)
         {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
         util.frame_action_button(
           "rb_settings",
-          nil,
+          {"gui.rb-settings-instruction"},
           {"titlebar", "settings_button"},
           {gui = "search", action = "toggle_settings"}
         ),
