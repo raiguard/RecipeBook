@@ -77,7 +77,7 @@ function search_gui.build(player, player_table)
         {
           type = "tabbed-pane",
           style = "tabbed_pane_with_no_side_padding",
-          style_mods = {height = 540},
+          style_mods = {height = 532},
           ref = {"tabbed_pane"},
           {tab = {type = "tab", caption = {"gui.search"}}, content = (
             -- TODO: Locale-specific widths
@@ -101,11 +101,19 @@ function search_gui.build(player, player_table)
           )},
           {tab = {type = "tab", caption = {"gui.rb-favorites"}}, content = (
             {type = "frame", style = "rb_inside_deep_frame_under_tabs", direction = "vertical",
+              {type = "frame", style = "subheader_frame",
+                {type = "empty-widget", style = "flib_horizontal_pusher"},
+                {type = "sprite-button", style = "tool_button_red", sprite = "utility/trash"},
+              },
               {type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = {"favorites_pane"}}
             }
           )},
           {tab = {type = "tab", caption = {"gui.rb-history"}}, content = (
             {type = "frame", style = "rb_inside_deep_frame_under_tabs", direction = "vertical",
+              {type = "frame", style = "subheader_frame",
+                {type = "empty-widget", style = "flib_horizontal_pusher"},
+                {type = "sprite-button", style = "tool_button_red", sprite = "utility/trash"},
+              },
               {type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = {"history_pane"}}
             }
           )}
