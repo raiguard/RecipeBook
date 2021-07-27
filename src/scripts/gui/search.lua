@@ -166,9 +166,11 @@ function search_gui.handle_action(msg, e)
   local state = gui_data.state
   local refs = gui_data.refs
 
-  if msg.action == "close" then
+  local action = msg.action
+
+  if action == "close" then
     search_gui.close(player, player_table)
-  elseif msg.action == "toggle_settings" then
+  elseif action == "toggle_settings" then
     settings_gui.toggle(player, player_table)
     local settings_button = refs.titlebar.settings_button
     if player_table.guis.settings then
@@ -178,11 +180,11 @@ function search_gui.handle_action(msg, e)
       settings_button.style = "frame_action_button"
       settings_button.sprite = "rb_settings_white"
     end
-  elseif msg.action == "deselect_settings_button" then
+  elseif action == "deselect_settings_button" then
     local settings_button = refs.titlebar.settings_button
     settings_button.style = "frame_action_button"
     settings_button.sprite = "rb_settings_white"
-  elseif msg.action == "update_search_query" then
+  elseif action == "update_search_query" then
     local class_filter
     local query = string.lower(e.element.text)
     if string.find(query, "/") then
@@ -216,7 +218,7 @@ function search_gui.handle_action(msg, e)
     else
       state.search_query = ""
     end
-  elseif msg.action == "update_search_results" then
+  elseif action == "update_search_results" then
     -- Data
     local player_data = formatter.build_player_data(player, player_table)
 
@@ -281,12 +283,12 @@ function search_gui.handle_action(msg, e)
     for j = i + 1, #children do
       children[j].destroy()
     end
-  elseif msg.action == "open_object" then
+  elseif action == "open_object" then
     local context = util.navigate_to(e)
     if context then
       shared.open_page(player, player_table, context)
     end
-  elseif msg.action == "update_favorites" then
+  elseif action == "update_favorites" then
     update_list_box(
       refs.favorites_pane,
       player_table.favorites,
@@ -294,7 +296,7 @@ function search_gui.handle_action(msg, e)
       pairs,
       {always_show = true}
     )
-  elseif msg.action == "update_history" then
+  elseif action == "update_history" then
     update_list_box(
       refs.history_pane,
       player_table.global_history,

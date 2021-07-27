@@ -62,10 +62,12 @@ function settings_gui.handle_action(msg, e)
   local state = gui_data.state
   local refs = gui_data.refs
 
-  if msg.action == "close" then
+  local action = msg.action
+
+  if action == "close" then
     settings_gui.destroy(player_table)
     shared.deselect_settings_button(player, player_table)
-  elseif msg.action == "confirm" then
+  elseif action == "confirm" then
     if e.name == defines.events.on_gui_click then
       settings_gui.destroy(player_table)
       shared.deselect_settings_button(player, player_table)

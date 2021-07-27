@@ -531,16 +531,18 @@ function info_gui.handle_action(msg, e)
   local state = gui_data.state
   local refs = gui_data.refs
 
+  local action = msg.action
+
   local context = state.history[state.history._index]
 
   -- Mark this GUI as active
   player_table.guis.info._active_id = msg.id
 
-  if msg.action == "close" then
+  if action == "close" then
     info_gui.destroy(player_table, msg.id)
-  elseif msg.action == "bring_to_front" then
+  elseif action == "bring_to_front" then
     refs.window.bring_to_front()
-  elseif msg.action == "toggle_search" then
+  elseif action == "toggle_search" then
     local opened = state.search_opened
     state.search_opened = not opened
 
@@ -565,7 +567,7 @@ function info_gui.handle_action(msg, e)
       search_textfield.visible = true
       search_textfield.focus()
     end
-  elseif msg.action == "navigate" then
+  elseif action == "navigate" then
     -- Update position in history
     local delta = msg.delta
     local history = state.history
@@ -580,7 +582,7 @@ function info_gui.handle_action(msg, e)
     end
     -- Update contents
     info_gui.update_contents(player, player_table, msg.id)
-  elseif msg.action == "update_search_query" then
+  elseif action == "update_search_query" then
     local query = string.lower(e.element.text)
     -- Fuzzy search
     if player_table.settings.use_fuzzy_search then
@@ -609,10 +611,10 @@ function info_gui.handle_action(msg, e)
         {gui = "info", id = msg.id, action = "update_search_results", player_index = e.player_index}
       )
     end
-  elseif msg.action == "update_search_results" then
+  elseif action == "update_search_results" then
     -- Update based on query
     info_gui.update_contents(player, player_table, msg.id, {refresh = true})
-  elseif msg.action == "navigate_to" then
+  elseif action == "navigate_to" then
     local context = util.navigate_to(e)
     if context then
       if e.button == defines.mouse_button_type.middle then
@@ -621,16 +623,16 @@ function info_gui.handle_action(msg, e)
         info_gui.update_contents(player, player_table, msg.id, {new_context = context})
       end
     end
-  elseif msg.action == "navigate_to_plain" then
+  elseif action == "navigate_to_plain" then
     info_gui.update_contents(player, player_table, msg.id, {new_context = msg.context})
-  elseif msg.action == "open_in_tech_window" then
+  elseif action == "open_in_tech_window" then
     player.open_technology_gui(context.name)
-  elseif msg.action == "go_to_base_fluid" then
+  elseif action == "go_to_base_fluid" then
     local base_fluid = global.recipe_book.fluid[context.name].prototype_name
     info_gui.update_contents(player, player_table, msg.id, {class = "fluid", name = base_fluid})
-  elseif msg.action == "toggle_quick_ref" then
+  elseif action == "toggle_quick_ref" then
     shared.toggle_quick_ref(player, player_table, context.name)
-  elseif msg.action == "toggle_favorite" then
+  elseif action == "toggle_favorite" then
     local favorites = player_table.favorites
     local combined_name = context.class.."."..context.name
     local to_state
@@ -643,7 +645,7 @@ function info_gui.handle_action(msg, e)
       to_state = true
     end
     shared.update_header_button(player, player_table, context, "favorite_button", to_state)
-  elseif msg.action == "update_header_button" then
+  elseif action == "update_header_button" then
     local button = refs.header[msg.button]
     if msg.to_state then
       button.style = "flib_selected_tool_button"
@@ -652,7 +654,7 @@ function info_gui.handle_action(msg, e)
       button.style = "tool_button"
       button.tooltip = constants.header_button_tooltips[msg.button].unselected
     end
-  elseif msg.action == "open_list" then
+  elseif action == "open_list" then
     local list_context = msg.context
     local source = msg.source
     local list = global.recipe_book[list_context.class][list_context.name][source]
@@ -672,7 +674,7 @@ function info_gui.handle_action(msg, e)
         }
       )
     end
-  elseif msg.action == "change_tech_level" then
+  elseif action == "change_tech_level" then
     local context_data = global.recipe_book[context.class][context.name]
     local min = context_data.min_level
     local max = context_data.max_level
