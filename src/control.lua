@@ -85,6 +85,13 @@ commands.add_command("rb-print-object", nil, function(e)
   end
 end)
 
+commands.add_command("rb-count-objects", nil, function(e)
+  local player = game.get_player(e.player_index)
+  for name, tbl in pairs(global.recipe_book) do
+    player.print(name..": "..table_size(tbl))
+  end
+end)
+
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
