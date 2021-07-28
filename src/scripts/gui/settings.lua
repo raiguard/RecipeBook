@@ -15,7 +15,13 @@ function settings_gui.build(player, player_table)
       actions = {
         on_closed = {gui = "settings", action = "close"},
       },
-      {type = "frame", style = "inside_shallow_frame", style_mods = {width = 500, height = 500}},
+      {type = "frame", style = "inside_deep_frame_for_tabs",
+        {type = "tabbed-pane", style = "tabbed_pane_with_no_side_padding",
+          {tab = {type = "tab", caption = {"gui.rb-general"}}, content = {type = "scroll-pane", style = "flib_naked_scroll_pane_under_tabs", style_mods = {width = 500, height = 500}}},
+          {tab = {type = "tab", caption = {"gui.rb-categories"}}, content = {type = "scroll-pane", style = "flib_naked_scroll_pane_under_tabs", style_mods = {width = 500, height = 500}}},
+          {tab = {type = "tab", caption = {"gui.rb-pages"}}, content = {type = "scroll-pane", style = "flib_naked_scroll_pane_under_tabs", style_mods = {width = 500, height = 500}}},
+        }
+      },
       {type = "flow", style = "dialog_buttons_horizontal_flow",
         {type = "button", style = "back_button", caption = {"gui.cancel"}},
         {type = "empty-widget", style = "flib_dialog_footer_drag_handle", ref = {"footer_drag_handle"}},
