@@ -203,6 +203,7 @@ function search_gui.handle_action(msg, e)
       end
       if not class_filter or not query or not constants.pages[class_filter] then
         class_filter = false
+        query = nil
       end
     end
     -- Remove results update action if there is one
@@ -227,8 +228,14 @@ function search_gui.handle_action(msg, e)
         game.tick + constants.search_timeout,
         {gui = "search", action = "update_search_results", player_index = e.player_index}
       )
+      refs.search_textfield.style = "flib_widthless_textfield"
+      -- HACK: Make this a data stage style
+      refs.search_textfield.style.horizontally_stretchable = true
     else
       state.search_query = ""
+      refs.search_textfield.style = "flib_widthless_invalid_textfield"
+      -- HACK: Make this a data stage style
+      refs.search_textfield.style.horizontally_stretchable = true
     end
   elseif action == "update_search_results" then
     -- Data
