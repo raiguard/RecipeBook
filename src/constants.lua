@@ -634,6 +634,11 @@ constants.settings = {
       has_tooltip = false,
       default_value = true,
     },
+    close_search_when_moving_info_pages = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    },
   },
 }
 
