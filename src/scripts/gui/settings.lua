@@ -139,6 +139,7 @@ function settings_gui.handle_action(msg, e)
   local player_table = global.players[e.player_index]
 
   local gui_data = player_table.guis.settings
+  if not gui_data then return end
   local state = gui_data.state
   local refs = gui_data.refs
 
