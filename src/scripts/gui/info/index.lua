@@ -346,6 +346,22 @@ function info_gui.update_contents(player, player_table, id, options)
   local label = refs.titlebar.label
   label.caption = gui_translations[context.class]
 
+  -- Reset search when moving pages
+  if not options.refresh and state.search_opened then
+    state.search_opened = false
+    local search_button = refs.titlebar.search_button
+    local search_textfield = refs.titlebar.search_textfield
+    search_button.sprite = "utility/search_white"
+    search_button.style = "frame_action_button"
+    search_textfield.visible = false
+
+    if state.search_query ~= "" then
+      -- Reset query
+      search_textfield.text = ""
+      state.search_query = ""
+    end
+  end
+
   -- HEADER
 
   -- List navigation
