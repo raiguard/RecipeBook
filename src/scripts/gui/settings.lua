@@ -53,6 +53,7 @@ function settings_gui.build(player, player_table)
             style = "tool_button_red",
             sprite = "utility/reset",
             tooltip = {"reset-to-defaults-disabled"},
+            enabled = false,
             ref = {"toolbar", "reset_button"},
             actions = {
               on_click = {gui = "settings", action = "reset_to_defaults"},
@@ -100,6 +101,7 @@ function settings_gui.build(player, player_table)
           type = "button",
           style = "confirm_button",
           caption = {"gui.confirm"},
+          enabled = false,
           actions = {
             on_click = {gui = "settings", action = "confirm"},
           },
