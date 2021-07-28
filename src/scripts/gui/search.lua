@@ -202,6 +202,11 @@ function search_gui.handle_action(msg, e)
         class_filter = false
       end
     end
+    -- Remove results update action if there is one
+    if state.update_results_ident then
+      on_tick_n.remove(state.update_results_ident)
+      state.update_results_ident = nil
+    end
     if query then
       -- Fuzzy search
       if player_table.settings.use_fuzzy_search then
@@ -215,10 +220,6 @@ function search_gui.handle_action(msg, e)
       state.search_query = query
       state.class_filter = class_filter
       -- Update in a while
-      if state.update_results_ident then
-        on_tick_n.remove(state.update_results_ident)
-        state.update_results_ident = nil
-      end
       state.update_results_ident = on_tick_n.add(
         game.tick + constants.search_timeout,
         {gui = "search", action = "update_search_results", player_index = e.player_index}
