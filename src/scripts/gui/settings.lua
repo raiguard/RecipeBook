@@ -20,14 +20,14 @@ function settings_gui.build(player, player_table)
       },
       {type = "frame", style = "inside_deep_frame", direction = "vertical",
         {type = "frame", style = "subheader_frame", style_mods = {left_padding = 12},
-          {
-            type = "checkbox",
-            caption = "Keep open",
-            state = false,
-            action = {
-              on_click = {gui = "settings", action = "toggle_keep_open"},
-            },
-          },
+          -- {
+          --   type = "checkbox",
+          --   caption = "Keep open",
+          --   state = false,
+          --   action = {
+          --     on_click = {gui = "settings", action = "toggle_keep_open"},
+          --   },
+          -- },
           {type = "empty-widget", style = "flib_horizontal_pusher"},
           {
             type = "textfield",
@@ -116,7 +116,7 @@ function settings_gui.build(player, player_table)
   player_table.guis.settings = {
     refs = refs,
     state = {
-      keep_open = false,
+      -- keep_open = false,
       search_opened = false,
       search_query = "",
     },
@@ -157,9 +157,9 @@ function settings_gui.handle_action(msg, e)
     else
       player.play_sound{path = "utility/confirm"}
     end
-  elseif action == "toggle_keep_open" then
-    state.keep_open = not state.keep_open
-    refs.toolbar.keep_open_checkbox.state = state.keep_open
+  -- elseif action == "toggle_keep_open" then
+  --   state.keep_open = not state.keep_open
+  --   refs.toolbar.keep_open_checkbox.state = state.keep_open
   elseif action == "toggle_search" then
     local opened = state.search_opened
     state.search_opened = not opened
