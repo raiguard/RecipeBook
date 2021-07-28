@@ -198,6 +198,9 @@ function search_gui.handle_action(msg, e)
     if string.find(query, "/") then
       -- NOTE: The `_`s here are technically globals, but whatever
       _, _, class_filter, query = string.find(query, "^/(.-)/(.-)$")
+      if class_filter then
+        class_filter = string.gsub(class_filter, " ", "_")
+      end
       if not class_filter or not query or not constants.pages[class_filter] then
         class_filter = false
       end
