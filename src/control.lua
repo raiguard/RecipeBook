@@ -419,6 +419,21 @@ function shared.update_header_button(player, player_table, context, button, to_s
   end
 end
 
+function shared.update_all_favorite_buttons(player, player_table)
+  local favorites = player_table.favorites
+  for id, gui_data in pairs(player_table.guis.info) do
+    if id ~= "_next_id" and id ~= "_active_id" then
+      local state = gui_data.state
+      local opened_context = state.history[state.history._index]
+      local to_state = favorites[opened_context.class.."."..opened_context.name]
+      info_gui.handle_action(
+        {id = id, action = "update_header_button", button = "favorite_button", to_state = to_state},
+        {player_index = player.index}
+      )
+    end
+  end
+end
+
 function shared.refresh_contents(player, player_table)
   formatter.create_cache(player.index)
   info_gui.update_all(player, player_table)

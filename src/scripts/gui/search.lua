@@ -103,7 +103,16 @@ function search_gui.build(player, player_table)
             {type = "frame", style = "rb_inside_deep_frame_under_tabs", direction = "vertical",
               {type = "frame", style = "subheader_frame",
                 {type = "empty-widget", style = "flib_horizontal_pusher"},
-                {type = "sprite-button", style = "tool_button_red", sprite = "utility/trash"},
+                {
+                  type = "sprite-button",
+                  style = "tool_button_red",
+                  sprite = "utility/trash",
+                  tooltip = {"gui.rb-delete-favorites"},
+                  ref = {"delete_favorites_button"},
+                  actions = {
+                    on_click = {gui = "search", action = "delete_favorites"},
+                  },
+                },
               },
               {type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = {"favorites_pane"}}
             }
@@ -112,7 +121,16 @@ function search_gui.build(player, player_table)
             {type = "frame", style = "rb_inside_deep_frame_under_tabs", direction = "vertical",
               {type = "frame", style = "subheader_frame",
                 {type = "empty-widget", style = "flib_horizontal_pusher"},
-                {type = "sprite-button", style = "tool_button_red", sprite = "utility/trash"},
+                {
+                  type = "sprite-button",
+                  style = "tool_button_red",
+                  sprite = "utility/trash",
+                  tooltip = {"gui.rb-delete-history"},
+                  ref = {"delete_history_button"},
+                  actions = {
+                    on_click = {gui = "search", action = "delete_history"},
+                  },
+                },
               },
               {type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = {"history_pane"}}
             }
@@ -315,6 +333,8 @@ function search_gui.handle_action(msg, e)
       pairs,
       {always_show = true}
     )
+    refs.delete_favorites_button.enabled = table_size(player_table.favorites) > 0 and true or false
+    shared.update_all_favorite_buttons(player, player_table)
   elseif action == "update_history" then
     update_list_box(
       refs.history_pane,
@@ -323,6 +343,14 @@ function search_gui.handle_action(msg, e)
       ipairs,
       {always_show = true}
     )
+    refs.delete_history_button.enabled = table_size(player_table.global_history) > 0 and true or false
+  elseif action == "delete_favorites" then
+    -- TODO: Update all favorite buttons
+    player_table.favorites = {}
+    search_gui.handle_action({action = "update_favorites"}, e)
+  elseif action == "delete_history" then
+    player_table.global_history = {}
+    search_gui.handle_action({action = "update_history"}, e)
   end
 end
 
