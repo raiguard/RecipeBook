@@ -572,12 +572,19 @@ constants.settings = {
       has_tooltip = true,
       default_value = true,
     },
+  },
+  captions = {
     show_names = {
       type = "or",
       options = {"internal", "localised"},
       has_tooltip = true,
       default_value = "localised",
     },
+    show_glyphs = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    }
   },
   tooltips = {
     show_alternate_name = {
