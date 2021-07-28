@@ -189,6 +189,23 @@ event.register("rb-linked-confirm-gui", function(e)
   end
 end)
 
+event.register("rb-linked-focus-search", function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  if player_table.flags.can_open_gui and not player.opened then
+    local info_guis = player_table.guis.info
+    local active_id = info_guis._active_id
+    if active_id and info_guis[active_id] then
+      info_gui.handle_action({id = active_id, action = "toggle_search"}, {player_index = e.player_index})
+    end
+  else
+    local gui_data = player_table.guis.settings
+    if gui_data and player.opened == gui_data.refs.window then
+      settings_gui.handle_action({action = "toggle_search"}, {player_index = e.player_index})
+    end
+  end
+end)
+
 -- INTERACTION
 
 event.on_lua_shortcut(function(e)
@@ -271,18 +288,6 @@ event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-hom
         {id = active_id, action = "navigate", delta = event_properties.delta},
         {player_index = e.player_index, shift = event_properties.shift}
       )
-    end
-  end
-end)
-
-event.register("rb-linked-focus-search", function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  if player_table.flags.can_open_gui and not player.opened then
-    local info_guis = player_table.guis.info
-    local active_id = info_guis._active_id
-    if active_id and info_guis[active_id] then
-      info_gui.handle_action({id = active_id, action = "toggle_search"}, {player_index = e.player_index})
     end
   end
 end)
