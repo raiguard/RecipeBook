@@ -87,7 +87,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
           item.caption = info.caption
           item.tooltip = info.tooltip
           item.enabled = info.enabled
-          gui.update_tags(item, {context = {class = obj.class, name = obj.name}})
+          gui.update_tags(item, {blueprint_recipe = blueprint_recipe, context = {class = obj.class, name = obj.name}})
         else
           add{
             type = "button",
