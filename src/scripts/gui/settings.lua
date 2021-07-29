@@ -61,7 +61,7 @@ function settings_gui.build(player, player_table)
             },
           },
         },
-        {type = "tabbed-pane", style = "flib_tabbed_pane_with_no_padding", style_mods = {top_padding = 12},
+        {type = "tabbed-pane", style = "flib_tabbed_pane_with_no_padding", style_mods = {top_padding = 12, width = 500},
           {
             tab = {type = "tab", caption = {"gui.rb-general"}},
             -- TODO: Does this need to be a scroll pane?
@@ -89,7 +89,7 @@ function settings_gui.build(player, player_table)
                   {
                     type = "frame",
                     style = "bordered_frame",
-                    style_mods = {width = 300, vertically_stretchable = true},
+                    style_mods = {horizontally_stretchable = true, vertically_stretchable = true},
                     direction = "vertical",
                     ref = {"categories", "pane"},
                   },
@@ -100,13 +100,26 @@ function settings_gui.build(player, player_table)
           {
             tab = {type = "tab", caption = {"gui.rb-pages"}},
             content = {
-              type = "scroll-pane",
-              style = "flib_naked_scroll_pane_under_tabs",
-              style_mods = {top_padding = 4},
-              -- {type = "flow", style_mods = {horizontal_spacing = 12},
-              --   {type = "list-box", style = "list_box_in_shallow_frame", style_mods = {vertically_stretchable = true, width = 150, top_margin = 2, bottom_margin = 2}, items = constants.classes, selected_index = 1},
-              --   {type = "frame", style = "bordered_frame", style_mods = {width = 300, vertically_stretchable = true}, direction = "vertical", ref = {"pages", "pane"}},
-              -- },
+              type = "flow",
+              style_mods = {horizontal_spacing = 12, padding = {8, 12, 0, 12}},
+              {
+                type = "list-box",
+                style = "list_box_in_shallow_frame",
+                style_mods = {height = 504, width = 150},
+                items = constants.classes,
+                selected_index = 1
+              },
+              {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 504},
+                {type = "scroll-pane", style = "flib_naked_scroll_pane", style_mods = {padding = 4},
+                  {
+                    type = "table",
+                    style = "bordered_table",
+                    style_mods = {horizontally_stretchable = true, vertically_stretchable = true},
+                    column_count = 1,
+                    ref = {"pages", "pane"},
+                  },
+                },
+              },
             },
           },
         },
