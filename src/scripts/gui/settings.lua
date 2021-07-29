@@ -61,25 +61,39 @@ function settings_gui.build(player, player_table)
             },
           },
         },
-        {type = "tabbed-pane", style = "tabbed_pane_with_no_side_padding", style_mods = {top_padding = 12},
+        {type = "tabbed-pane", style = "flib_tabbed_pane_with_no_padding", style_mods = {top_padding = 12},
           {
             tab = {type = "tab", caption = {"gui.rb-general"}},
+            -- TODO: Does this need to be a scroll pane?
             content = {
-              type = "scroll-pane",
-              style = "flib_naked_scroll_pane_under_tabs",
+              type = "flow",
               style_mods = {padding = 4},
+              direction = "vertical",
               ref = {"general", "pane"},
             },
           },
           {
             tab = {type = "tab", caption = {"gui.rb-categories"}},
             content = {
-              type = "scroll-pane",
-              style = "flib_naked_scroll_pane_under_tabs",
-              style_mods = {top_padding = 4},
-              {type = "flow", style_mods = {horizontal_spacing = 12},
-                {type = "list-box", style = "list_box_in_shallow_frame", style_mods = {vertically_stretchable = true, width = 150, top_margin = 2, bottom_margin = 2}, items = constants.category_classes, selected_index = 1},
-                {type = "frame", style = "bordered_frame", style_mods = {width = 300, vertically_stretchable = true}, direction = "vertical", ref = {"categories", "pane"}},
+              type = "flow",
+              style_mods = {horizontal_spacing = 12, padding = {8, 12, 0, 12}},
+              {
+                type = "list-box",
+                style = "list_box_in_shallow_frame",
+                style_mods = {height = 504, width = 150},
+                items = constants.category_classes,
+                selected_index = 1
+              },
+              {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 504},
+                {type = "scroll-pane", style = "flib_naked_scroll_pane", style_mods = {padding = 4},
+                  {
+                    type = "frame",
+                    style = "bordered_frame",
+                    style_mods = {width = 300, vertically_stretchable = true},
+                    direction = "vertical",
+                    ref = {"categories", "pane"},
+                  },
+                },
               },
             },
           },
@@ -89,10 +103,10 @@ function settings_gui.build(player, player_table)
               type = "scroll-pane",
               style = "flib_naked_scroll_pane_under_tabs",
               style_mods = {top_padding = 4},
-              {type = "flow", style_mods = {horizontal_spacing = 12},
-                {type = "list-box", style = "list_box_in_shallow_frame", style_mods = {vertically_stretchable = true, width = 150, top_margin = 2, bottom_margin = 2}, items = constants.classes, selected_index = 1},
-                {type = "frame", style = "bordered_frame", style_mods = {width = 300, vertically_stretchable = true}, direction = "vertical", ref = {"pages", "pane"}},
-              },
+              -- {type = "flow", style_mods = {horizontal_spacing = 12},
+              --   {type = "list-box", style = "list_box_in_shallow_frame", style_mods = {vertically_stretchable = true, width = 150, top_margin = 2, bottom_margin = 2}, items = constants.classes, selected_index = 1},
+              --   {type = "frame", style = "bordered_frame", style_mods = {width = 300, vertically_stretchable = true}, direction = "vertical", ref = {"pages", "pane"}},
+              -- },
             },
           },
         },
@@ -158,6 +172,9 @@ function settings_gui.build(player, player_table)
   local dummy_category = constants.category_classes[2]
   for category_name in pairs(global.recipe_book[dummy_category]) do
     categories_pane.add{type = "checkbox", caption = category_name, state = true}
+  end
+  for i = 1, 15 do
+    categories_pane.add{type = "checkbox", caption = i, state = true}
   end
 end
 
