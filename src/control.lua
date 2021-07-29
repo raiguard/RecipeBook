@@ -92,6 +92,23 @@ commands.add_command("rb-count-objects", nil, function(e)
   end
 end)
 
+commands.add_command("rb-set-pane", nil, function(e)
+  local parameters = split(e.parameter, " ")
+  if #parameters ~= 2 then
+    game.print("Invalid command")
+    return
+  end
+
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+
+  local gui_data = player_table.guis.settings
+  if gui_data then
+    local pane = gui_data.refs.categories.pane
+    pane.style[parameters[1]] = tonumber(parameters[2]) or parameters[2]
+  end
+end)
+
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
