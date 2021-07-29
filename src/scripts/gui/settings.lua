@@ -78,12 +78,9 @@ function settings_gui.build(player, player_table)
               style = "flib_naked_scroll_pane_under_tabs",
               style_mods = {top_padding = 4},
               {type = "flow", style_mods = {horizontal_spacing = 12},
-                {type = "list-box", style = "list_box_in_shallow_frame", style_mods = {vertically_stretchable = true, width = 150}, items = constants.category_classes, selected_index = 1},
-                {type = "frame", style = "bordered_frame", style_mods = {width = 300, vertically_stretchable = true},
-                  {type = "checkbox", caption = "foo", state = true},
-                }
-              }
-
+                {type = "list-box", style = "list_box_in_shallow_frame", style_mods = {vertically_stretchable = true, width = 150, top_margin = 2, bottom_margin = 2}, items = constants.category_classes, selected_index = 1},
+                {type = "frame", style = "bordered_frame", style_mods = {width = 300, vertically_stretchable = true}, direction = "vertical", ref = {"categories", "pane"}},
+              },
             },
           },
           {
@@ -93,11 +90,9 @@ function settings_gui.build(player, player_table)
               style = "flib_naked_scroll_pane_under_tabs",
               style_mods = {top_padding = 4},
               {type = "flow", style_mods = {horizontal_spacing = 12},
-                {type = "list-box", style = "list_box_in_shallow_frame", style_mods = {vertically_stretchable = true, width = 150}, items = constants.classes, selected_index = 1},
-                {type = "frame", style = "bordered_frame", style_mods = {width = 300, vertically_stretchable = true},
-                  {type = "checkbox", caption = "foo", state = true},
-                }
-              }
+                {type = "list-box", style = "list_box_in_shallow_frame", style_mods = {vertically_stretchable = true, width = 150, top_margin = 2, bottom_margin = 2}, items = constants.classes, selected_index = 1},
+                {type = "frame", style = "bordered_frame", style_mods = {width = 300, vertically_stretchable = true}, direction = "vertical", ref = {"pages", "pane"}},
+              },
             },
           },
         },
@@ -159,6 +154,11 @@ function settings_gui.build(player, player_table)
 
   -- CATEGOREIS
 
+  local categories_pane = refs.categories.pane
+  local dummy_category = constants.category_classes[2]
+  for category_name in pairs(global.recipe_book[dummy_category]) do
+    categories_pane.add{type = "checkbox", caption = category_name, state = true}
+  end
 end
 
 function settings_gui.destroy(player_table)
