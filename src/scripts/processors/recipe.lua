@@ -51,7 +51,7 @@ return function(recipe_book, strings, metadata)
         material_data.recipe_categories[#material_data.recipe_categories + 1] = category
 
         -- Don't set enabled at start if this is an ignored recipe
-        local disabled = constants.disabled_recipe_categories[category]
+        local disabled = constants.disabled_categories.recipe_category[category]
         if io_type == "products" and (not disabled or disabled ~= 0) then
           local subtable = category_data[material.type.."s"]
           subtable[#subtable + 1] = {class = material.type, name = material.name}

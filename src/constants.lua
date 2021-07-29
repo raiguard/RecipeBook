@@ -2,38 +2,10 @@ local table = require("__flib__.table")
 
 local constants = {}
 
--- Dictionary category -> modifier
--- `0` - Disabled by default, does not affect object availability
--- `1` - Disabled by default
-constants.disabled_recipe_categories = {
-  -- Creative mod
-  ["creative-mod_free-fluids"] = 1,
-  ["creative-mod_energy-absorption"] = 1,
-  -- Editor extensions
-  ["ee-testing-tool"] = 1,
-  -- Deep storage unit
-  ["deep-storage-item"] = 0,
-  ["deep-storage-fluid"] = 0,
-  ["deep-storage-item-big"] = 0,
-  ["deep-storage-fluid-big"] = 0,
-  ["deep-storage-item-mk2/3"] = 0,
-  ["deep-storage-fluid-mk2/3"] = 0,
-  -- Krastorio 2
-  ["void-crushing"] = 0, -- This doesn't actually exist yet, but will soon!
-  -- Mining drones
-  ["mining-depot"] = 0,
-  -- Pyanodon's
-  ["py-runoff"] = 1,
-  ["py-venting"] = 1,
-  -- Transport drones
-  ["fuel-depot"] = 0,
-  ["transport-drone-request"] = 0,
-  ["transport-fluid-request"] = 0
-}
-
-constants.disabled_groups = {
-  -- Editor extensions
-  ["ee-tools"] = true
+constants.category_classes = {
+  "group",
+  "recipe_category",
+  "resource_category",
 }
 
 constants.classes = {
@@ -133,6 +105,42 @@ constants.derived_type_to_class = {
   ["resource-catgory"] = "resource_category",
   ["rocket-silo"] = "crafter",
   ["technology"] = "technology",
+}
+
+constants.disabled_categories = {
+  group = {
+    -- Editor extensions
+    ["ee-tools"] = true
+  },
+  -- Dictionary category -> modifier
+  -- `0` - Disabled by default, does not affect object availability
+  -- `1` - Disabled by default
+  recipe_category = {
+    -- Creative mod
+    ["creative-mod_free-fluids"] = 1,
+    ["creative-mod_energy-absorption"] = 1,
+    -- Editor extensions
+    ["ee-testing-tool"] = 1,
+    -- Deep storage unit
+    ["deep-storage-item"] = 0,
+    ["deep-storage-fluid"] = 0,
+    ["deep-storage-item-big"] = 0,
+    ["deep-storage-fluid-big"] = 0,
+    ["deep-storage-item-mk2/3"] = 0,
+    ["deep-storage-fluid-mk2/3"] = 0,
+    -- Krastorio 2
+    ["void-crushing"] = 0, -- This doesn't actually exist yet, but will soon!
+    -- Mining drones
+    ["mining-depot"] = 0,
+    -- Pyanodon's
+    ["py-runoff"] = 1,
+    ["py-venting"] = 1,
+    -- Transport drones
+    ["fuel-depot"] = 0,
+    ["transport-drone-request"] = 0,
+    ["transport-fluid-request"] = 0
+  },
+  resource_category = {}
 }
 
 constants.empty_translations_table = {
@@ -247,12 +255,6 @@ constants.general_settings = {
       default_value = "localised",
     },
   },
-}
-
-constants.category_classes = {
-  "group",
-  "recipe_category",
-  "resource_category",
 }
 
 constants.global_history_size = 30

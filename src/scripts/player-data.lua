@@ -28,7 +28,11 @@ function player_data.init(player_index)
       },
       quick_ref = {}
     },
-    settings = {},
+    settings = {
+      general = {},
+      categories = {},
+      pages = {},
+    },
     translations = nil -- assigned its initial value in player_data.refresh
   }
   global.players[player_index] = data
@@ -36,38 +40,33 @@ end
 
 function player_data.update_settings(player, player_table)
   local former_settings = player_table.settings
-  local settings = {}
+  local settings = {
+    general = {},
+    categories = {},
+    pages = {},
+  }
 
   -- General settings
-  for _, settings_data in pairs(constants.general_settings) do
-    for name, data in pairs(settings_data) do
-      settings[name] = former_settings[name] or data.default_value
+  for category_name, settings_data in pairs(constants.general_settings) do
+    local former_category_settings = former_settings.general[category_name] or {}
+    local category_settings = {}
+    settings.general[category_name] = category_settings
+    for setting_name, setting_ident in pairs(settings_data) do
+      -- TODO: Validate `enum` settings
+      category_settings[setting_name] = former_category_settings[setting_name] or setting_ident.default_value
     end
   end
 
-  -- Recipe categories
-  local former_categories = former_settings.recipe_categories or {}
-  local categories = {}
-  for name in pairs(game.recipe_category_prototypes) do
-    if former_categories[name] == nil then
-      categories[name] = not constants.disabled_recipe_categories[name]
-    else
-      categories[name] = former_categories[name]
+  -- Categories
+  for _, category_class_name in pairs(constants.category_classes) do
+    local former_category_settings = former_settings.categories[category_class_name] or {}
+    local category_settings = {}
+    settings.categories[category_class_name] = category_settings
+    for category_name in pairs(global.recipe_book[category_class_name]) do
+      local disabled_by_default = constants.disabled_categories[category_class_name][category_name]
+      category_settings[category_name] = former_category_settings[category_name] or not disabled_by_default
     end
   end
-  settings.recipe_categories = categories
-
-  -- Groups
-  local former_groups = former_settings.groups or {}
-  local groups = {}
-  for name in pairs(global.recipe_book.group) do
-    if former_groups[name] == nil then
-      groups[name] = not constants.disabled_groups[name]
-    else
-      groups[name] = former_groups[name]
-    end
-  end
-  settings.groups = groups
 
   -- Save to `global`
   player_table.settings = settings

@@ -176,7 +176,7 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   local class = obj_data.class
 
   local before = ""
-  if settings.show_glyphs and not options.hide_glyph then
+  if settings.general.captions.show_glyphs and not options.hide_glyph then
     before = rich_text(
       "font",
       "RecipeBook",
@@ -197,7 +197,7 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   end
 
   local after
-  if settings.use_internal_names then
+  if settings.general.captions.show_internal_names then
     after = name
   else
     after = player_data.translations[class][name]
@@ -239,7 +239,7 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
   end
 
   local name_str
-  if settings.use_internal_names then
+  if settings.general.captions.use_internal_names then
     name_str = name
   else
     name_str = player_data.translations[class][name]
@@ -247,7 +247,7 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
 
   local after = rich_text("font", "default-semibold", rich_text("color", "heading", name_str)).."\n"
 
-  if settings.show_descriptions then
+  if settings.general.tooltips.show_descriptions then
     local description = player_data.translations[class.."_description"][name]
     if description then
       after = after..description.."\n"
@@ -378,9 +378,9 @@ local function get_obj_properties(obj_data, player_data, options)
   -- Player data
   local force = player_data.force
   local player_settings = player_data.settings
-  local show_hidden = player_settings.show_hidden
-  local show_unresearched = player_settings.show_unresearched
-  local show_disabled = player_settings.show_disabled
+  local show_hidden = player_settings.general.captions.show_hidden
+  local show_unresearched = player_settings.general.content.show_unresearched
+  local show_disabled = player_settings.general.content.show_disabled
 
   -- Actually get object properties
   local researched
@@ -412,18 +412,18 @@ local function get_obj_properties(obj_data, player_data, options)
     -- Check group
     -- NOTE: Group members won't be shown on their own page if disabled
     local group = obj_data.group
-    if not group or player_settings.groups[group.name] then
+    if not group or player_settings.categories.group[group.name] then
       -- For recipes - check category to see if it should be shown
       -- NOTE: Recipe category  members won't be shown on their own page if disabled
       local recipe_category = obj_data.recipe_category
       local recipe_categories = obj_data.recipe_categories_lookup
       if recipe_category then
-        if player_settings.recipe_categories[recipe_category.name] then
+        if player_settings.categories.recipe_category[recipe_category.name] then
           should_show = true
         end
       -- For materials - check if any of their recipe categories are enabled
       elseif recipe_categories then
-        local category_settings = player_settings.recipe_categories
+        local category_settings = player_settings.categories.recipe_category
         for category_name in pairs(recipe_categories) do
           if category_settings[category_name] then
             should_show = true
@@ -497,11 +497,11 @@ function formatter.format(obj_data, player_data, options)
     tooltip_output = base_tooltip.before..base_tooltip.after
   end
   local settings = player_data.settings
-  if settings.show_detailed_tooltips and not options.base_tooltip_only then
+  if settings.general.tooltips.show_detailed_tooltips and not options.base_tooltip_only then
     tooltip_output = tooltip_output..get_tooltip_deets(obj_data, player_data)
   end
   local num_interactions = 0
-  if settings.show_interaction_helps and not options.base_tooltip_only then
+  if settings.general.tooltips.show_interaction_helps and not options.base_tooltip_only then
     local helps_output = get_interaction_helps(obj_data, player_data, options)
     tooltip_output = tooltip_output..helps_output.output
     num_interactions = helps_output.num_interactions
