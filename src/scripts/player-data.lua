@@ -38,8 +38,8 @@ function player_data.update_settings(player, player_table)
   local former_settings = player_table.settings
   local settings = {}
 
-  -- Generic settings
-  for _, settings_data in pairs(constants.settings) do
+  -- General settings
+  for _, settings_data in pairs(constants.general_settings) do
     for name, data in pairs(settings_data) do
       settings[name] = former_settings[name] or data.default_value
     end

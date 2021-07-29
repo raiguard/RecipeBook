@@ -1,5 +1,6 @@
 local gui = require("__flib__.gui-beta")
 local on_tick_n = require("__flib__.on-tick-n")
+local table = require("__flib__.table")
 
 local constants = require("constants")
 
@@ -66,8 +67,9 @@ function settings_gui.build(player, player_table)
             content = {
               type = "scroll-pane",
               style = "flib_naked_scroll_pane_under_tabs",
-              style_mods = {width = 500, height = 500},
-            }
+              style_mods = {padding = 4},
+              ref = {"general", "pane"},
+            },
           },
           {
             tab = {type = "tab", caption = {"gui.rb-categories"}},
@@ -121,6 +123,27 @@ function settings_gui.build(player, player_table)
       search_query = "",
     },
   }
+
+  -- GENERAL
+
+  local general_pane = refs.general.pane
+
+  for category, settings in pairs(constants.general_settings) do
+    local category_frame = general_pane.add{type = "frame", style = "bordered_frame", direction = "vertical", caption = category}
+    -- local spacer = category_frame.add{type = "empty-widget"}
+    -- spacer.style.size = {100, 100}
+    for setting_name, setting_ident in pairs(settings) do
+      if setting_ident.type == "bool" then
+        local checkbox = category_frame.add{type = "checkbox", caption = setting_name, state = setting_ident.default_value}
+      elseif setting_ident.type == "enum" then
+        local flow = category_frame.add{type = "flow"}
+        flow.style.vertical_align = "center"
+        flow.add{type = "label", caption = setting_name}
+        flow.add{type = "empty-widget", style = "flib_horizontal_pusher"}
+        flow.add{type = "drop-down", items = setting_ident.options, selected_index = table.find(setting_ident.options, setting_ident.default_value)}
+      end
+    end
+  end
 end
 
 function settings_gui.destroy(player_table)

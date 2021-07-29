@@ -148,6 +148,92 @@ constants.empty_translations_table = {
   technology_description = {}
 }
 
+constants.general_settings = {
+  content = {
+    show_disabled = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = false,
+    },
+    show_hidden = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = true,
+    },
+    show_unresearched = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = true,
+    },
+  },
+  captions = {
+    show_internal_names = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = false,
+    },
+    show_glyphs = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    }
+  },
+  tooltips = {
+    show_alternate_name = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = false,
+    },
+    show_descriptions = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    },
+    show_detailed_tooltips = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = true,
+    },
+    show_interaction_helps = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    },
+  },
+  search = {
+    fuzzy_search = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = false,
+    },
+    show_fluid_temperature_ranges = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    },
+    show_fluid_temperatures = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    },
+    close_search_when_moving_info_pages = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    },
+    search_type = {
+      type = "enum",
+      options = {
+        "both",
+        "internal",
+        "localised",
+      },
+      has_tooltip = true,
+      default_value = "localised",
+    },
+  },
+}
+
 constants.global_history_size = 30
 
 constants.gui_strings = {
@@ -276,8 +362,8 @@ constants.interactions = {
         return options.blueprint_recipe and obj_data.blueprintable
       end
     },
-    {
       modifiers = {"control"},
+    {
       action = "view_source",
       label = "view_fixed_recipe",
       source = "fixed_recipe",
@@ -554,93 +640,6 @@ constants.search_results_visible_items = 15
 constants.search_timeout = 30
 
 constants.session_history_size = 20
-
-constants.settings = {
-  content = {
-    show_disabled = {
-      type = "bool",
-      has_tooltip = true,
-      default_value = false,
-    },
-    show_hidden = {
-      type = "bool",
-      has_tooltip = true,
-      default_value = true,
-    },
-    show_unresearched = {
-      type = "bool",
-      has_tooltip = true,
-      default_value = true,
-    },
-  },
-  captions = {
-    show_names = {
-      type = "or",
-      options = {"internal", "localised"},
-      has_tooltip = true,
-      default_value = "localised",
-    },
-    show_glyphs = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    }
-  },
-  tooltips = {
-    show_alternate_name = {
-      type = "bool",
-      has_tooltip = true,
-      default_value = false,
-    },
-    show_descriptions = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    },
-    show_detailed_tooltips = {
-      type = "bool",
-      has_tooltip = true,
-      default_value = true,
-    },
-    show_interaction_helps = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    },
-  },
-  search = {
-    fuzzy_search = {
-      type = "bool",
-      has_tooltip = true,
-      default_value = false,
-    },
-    search_type = {
-      type = "enum",
-      options = {
-        "both",
-        "internal",
-        "localised",
-      },
-      has_tooltip = true,
-      default_value = "localised",
-    },
-    show_fluid_temperature_ranges = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    },
-    show_fluid_temperatures = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    },
-    close_search_when_moving_info_pages = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    },
-  },
-}
 
 constants.tooltips = {
   crafter = {
