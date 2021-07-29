@@ -234,6 +234,12 @@ constants.general_settings = {
   },
 }
 
+constants.category_classes = {
+  "group",
+  "recipe_category",
+  "resource_category",
+}
+
 constants.global_history_size = 30
 
 constants.gui_strings = {
