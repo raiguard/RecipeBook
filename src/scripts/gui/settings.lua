@@ -83,6 +83,7 @@ function settings_gui.build(player, player_table)
                   {type = "checkbox", caption = "foo", state = true},
                 }
               }
+
             },
           },
           {
@@ -90,7 +91,13 @@ function settings_gui.build(player, player_table)
             content = {
               type = "scroll-pane",
               style = "flib_naked_scroll_pane_under_tabs",
-              style_mods = {width = 500, height = 500},
+              style_mods = {top_padding = 4},
+              {type = "flow", style_mods = {horizontal_spacing = 12},
+                {type = "list-box", style = "list_box_in_shallow_frame", style_mods = {vertically_stretchable = true, width = 150}, items = constants.classes, selected_index = 1},
+                {type = "frame", style = "bordered_frame", style_mods = {width = 300, vertically_stretchable = true},
+                  {type = "checkbox", caption = "foo", state = true},
+                }
+              }
             },
           },
         },
@@ -133,7 +140,6 @@ function settings_gui.build(player, player_table)
   -- GENERAL
 
   local general_pane = refs.general.pane
-
   for category, settings in pairs(constants.general_settings) do
     local category_frame = general_pane.add{type = "frame", style = "bordered_frame", direction = "vertical", caption = category}
     -- local spacer = category_frame.add{type = "empty-widget"}
@@ -150,6 +156,9 @@ function settings_gui.build(player, player_table)
       end
     end
   end
+
+  -- CATEGOREIS
+
 end
 
 function settings_gui.destroy(player_table)

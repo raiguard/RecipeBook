@@ -36,6 +36,21 @@ constants.disabled_groups = {
   ["ee-tools"] = true
 }
 
+constants.classes = {
+  "crafter",
+  "fluid",
+  "item",
+  "group",
+  "lab",
+  "mining_drill",
+  "offshore_pump",
+  "recipe_category",
+  "recipe",
+  "resource",
+  "resource_category",
+  "technology",
+}
+
 constants.class_to_font_glyph = {
   crafter = "D",
   fluid = "B",
