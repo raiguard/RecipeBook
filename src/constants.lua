@@ -385,8 +385,8 @@ constants.interactions = {
         return options.blueprint_recipe and obj_data.blueprintable
       end
     },
-      modifiers = {"control"},
     {
+      modifiers = {"control"},
       action = "view_source",
       label = "view_fixed_recipe",
       source = "fixed_recipe",
@@ -469,6 +469,7 @@ constants.list_box_item_styles = {
   unresearched = "rb_unresearched_list_box_item"
 }
 
+-- TODO: Rename
 constants.max_listbox_height = 8
 
 constants.nav_event_properties = {
@@ -488,7 +489,7 @@ constants.pages = {
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     -- TODO: Make invisible by default
-    {type = "list_box", source = "recipe_categories"},
+    {type = "list_box", source = "recipe_categories", default_state = "disabled"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },
