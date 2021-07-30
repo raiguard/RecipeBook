@@ -9,6 +9,8 @@ local formatter = require("scripts.formatter")
 local shared = require("scripts.shared")
 local util = require("scripts.util")
 
+local quick_ref_root = require("scripts.gui.quick-ref.root")
+
 local components = {
   list_box = require("scripts.gui.info.list-box"),
   table = require("scripts.gui.info.table")
@@ -648,7 +650,7 @@ function info_gui.handle_action(msg, e)
     local base_fluid = global.recipe_book.fluid[context.name].prototype_name
     info_gui.update_contents(player, player_table, msg.id, {class = "fluid", name = base_fluid})
   elseif action == "toggle_quick_ref" then
-    shared.toggle_quick_ref(player, player_table, context.name)
+    quick_ref_root.toggle(player, player_table, context.name)
   elseif action == "toggle_favorite" then
     local favorites = player_table.favorites
     local combined_name = context.class.."."..context.name

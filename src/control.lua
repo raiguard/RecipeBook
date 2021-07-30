@@ -13,7 +13,7 @@ local remote_interface = require("scripts.remote-interface")
 local shared = require("scripts.shared")
 
 local info_gui = require("scripts.gui.info.index")
-local quick_ref_gui = require("scripts.gui.quick-ref")
+local quick_ref_gui = require("scripts.gui.quick-ref.index")
 local search_gui = require("scripts.gui.search")
 local settings_gui = require("scripts.gui.settings.index")
 
@@ -161,7 +161,7 @@ event.register({defines.events.on_research_finished, defines.events.on_research_
     local player_table = global.players[player.index]
     if player_table and player_table.flags.can_open_gui then
       info_gui.update_all(player, player_table)
-      quick_ref_gui.update_all(player, player_table)
+      quick_ref_gui.actions.update_all(player, player_table)
     end
   end
 end)
@@ -198,7 +198,7 @@ event.on_gui_click(function(e)
     local player_table = global.players[e.player_index]
     if player_table.flags.can_open_gui then
       info_gui.bring_all_to_front(player_table)
-      quick_ref_gui.bring_all_to_front(player_table)
+      quick_ref_gui.actions.bring_all_to_front(player_table)
     end
   end
 end)
@@ -414,16 +414,6 @@ function shared.open_page(player, player_table, context)
   end
 end
 
-function shared.toggle_quick_ref(player, player_table, recipe_name)
-  if player_table.guis.quick_ref[recipe_name] then
-    quick_ref_gui.destroy(player_table, recipe_name)
-    shared.update_header_button(player, player_table, {class = "recipe", name = recipe_name}, "quick_ref_button", false)
-  else
-    quick_ref_gui.build(player, player_table, recipe_name)
-    shared.update_header_button(player, player_table, {class = "recipe", name = recipe_name}, "quick_ref_button", true)
-  end
-end
-
 function shared.update_header_button(player, player_table, context, button, to_state)
   for _, id in pairs(info_gui.find_open_context(player_table, context)) do
     info_gui.handle_action(
@@ -454,7 +444,7 @@ end
 function shared.refresh_contents(player, player_table)
   formatter.create_cache(player.index)
   info_gui.update_all(player, player_table)
-  quick_ref_gui.update_all(player, player_table)
+  quick_ref_gui.actions.update_all(player, player_table)
   if player_table.guis.search and player_table.guis.search.refs.window.visible then
     search_gui.handle_action({action = "update_search_results"}, {player_index = player.index})
     search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})
