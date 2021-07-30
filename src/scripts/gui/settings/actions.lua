@@ -64,8 +64,7 @@ function actions.update_search_query(data)
 
   if query == "" then
     -- Update now
-    -- TODO:
-    -- info_gui.update_contents(player, player_table, msg.id, {refresh = true})
+    actions.update_search_results(data)
   else
     -- Update in a while
     state.update_results_ident = on_tick_n.add(
@@ -76,6 +75,7 @@ function actions.update_search_query(data)
 end
 
 function actions.update_search_results(data)
+  game.print("update!")
   -- TODO:
 end
 
