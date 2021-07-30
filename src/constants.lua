@@ -234,15 +234,30 @@ constants.general_settings = {
       has_tooltip = false,
       default_value = true,
     },
-    show_fluid_temperatures = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    },
     close_search_when_moving_info_pages = {
       type = "bool",
       has_tooltip = false,
       default_value = true,
+    },
+    close_search_gui_after_selection = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = false,
+    },
+    preserve_search_query = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    },
+    show_fluid_temperatures = {
+      type = "enum",
+      options = {
+        "off",
+        "absolute_only",
+        "all",
+      },
+      has_tooltip = true,
+      default_value = "all",
     },
     search_type = {
       type = "enum",
