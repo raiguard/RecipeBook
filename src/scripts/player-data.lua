@@ -3,11 +3,10 @@ local translation = require("__flib__.translation")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
-local shared = require("scripts.shared")
 
 local info_gui = require("scripts.gui.info.index")
-local quick_ref_gui = require("scripts.gui.quick-ref")
-local search_gui = require("scripts.gui.search")
+local quick_ref_gui = require("scripts.gui.quick-ref.index")
+local search_gui = require("scripts.gui.search.index")
 
 local player_data = {}
 
@@ -135,9 +134,9 @@ end
 function player_data.refresh(player, player_table)
   -- destroy GUIs
   info_gui.destroy_all(player_table)
-  quick_ref_gui.destroy_all(player_table)
+  quick_ref_gui.root.destroy_all(player_table)
   if player_table.guis.search then
-    search_gui.destroy(player, player_table)
+    search_gui.root.destroy(player, player_table)
   end
 
   -- set flag

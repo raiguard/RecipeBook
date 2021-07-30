@@ -14,7 +14,7 @@ local shared = require("scripts.shared")
 
 local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref.index")
-local search_gui = require("scripts.gui.search")
+local search_gui = require("scripts.gui.search.index")
 local settings_gui = require("scripts.gui.settings.index")
 
 -- -----------------------------------------------------------------------------
@@ -254,7 +254,7 @@ event.on_lua_shortcut(function(e)
     end
 
     -- Open search GUI
-    search_gui.toggle(player, player_table)
+    search_gui.root.toggle(player, player_table)
   end
 end)
 
@@ -295,7 +295,7 @@ event.register({"rb-search", "rb-open-selected"}, function(e)
       }
       player.play_sound{path = "utility/cannot_build"}
     else
-      search_gui.toggle(player, player_table)
+      search_gui.root.toggle(player, player_table)
     end
   end
 end)
@@ -387,7 +387,7 @@ event.on_string_translated(function(e)
       player.print{'rb-message.can-open-gui'}
     end
     -- create GUI
-    search_gui.build(player, player_table)
+    search_gui.root.build(player, player_table)
     -- update flags
     player_table.flags.can_open_gui = true
     player_table.flags.translate_on_join = false -- not really needed, but is here just in case
@@ -456,13 +456,6 @@ function shared.update_global_history(player, player_table, new_context)
   player_data.update_global_history(player_table.global_history, new_context)
   if player_table.guis.search and player_table.guis.search.refs.window.visible then
     search_gui.handle_action({action = "update_history"}, {player_index = player.index})
-  end
-end
-
-function shared.deselect_settings_button(player, player_table)
-  local gui_data = player_table.guis.search
-  if gui_data then
-    search_gui.handle_action({action = "deselect_settings_button"}, {player_index = player.index})
   end
 end
 

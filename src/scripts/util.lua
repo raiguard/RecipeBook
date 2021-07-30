@@ -194,5 +194,48 @@ function util.navigate_to(e)
   end
 end
 
+function util.update_list_box(pane, source_tbl, player_data, iterator, options)
+  local i = 0
+  local children = pane.children
+  local add = pane.add
+  for _, obj_ident in iterator(source_tbl) do
+    local obj_data = global.recipe_book[obj_ident.class][obj_ident.name]
+    local info = formatter(obj_data, player_data, options)
+    if info then
+      i = i + 1
+      local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+      local item = children[i]
+      if item then
+        item.style = style
+        item.caption = info.caption
+        item.tooltip = info.tooltip
+        item.enabled = info.enabled
+        gui.update_tags(item, {context = {class = obj_ident.class, name = obj_ident.name}})
+      else
+        add{
+          type = "button",
+          style = style,
+          caption = info.caption,
+          tooltip = info.tooltip,
+          enabled = info.enabled,
+          mouse_button_filter = {"left", "middle"},
+          tags = {
+            [script.mod_name] = {
+              context = {class = obj_ident.class, name = obj_ident.name},
+              flib = {
+                on_click = {gui = "search", action = "open_object"}
+              }
+            }
+          }
+        }
+      end
+    end
+  end
+  -- Destroy extraneous items
+  for j = i + 1, #children do
+    children[j].destroy()
+  end
+end
+
 return util
 

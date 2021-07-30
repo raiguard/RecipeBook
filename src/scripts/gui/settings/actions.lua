@@ -4,12 +4,12 @@ local constants = require("constants")
 local shared = require("scripts.shared")
 
 local root = require("scripts.gui.settings.root")
+local search_actions = require("scripts.gui.search.actions")
 
 local actions = {}
 
 function actions.close(data)
-  -- TODO: This won't need to be shared anymore!
-  shared.deselect_settings_button(data.player, data.player_table)
+  search_actions.deselect_settings_button(search_actions.get_action_data(data.msg, data.e))
   root.destroy(data.player_table)
 end
 
