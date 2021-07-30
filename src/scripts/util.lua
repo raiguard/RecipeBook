@@ -194,5 +194,23 @@ function util.navigate_to(e)
   end
 end
 
+function util.get_action_data(msg, e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+
+  local gui_data = player_table.guis.settings
+  if not gui_data then return end
+
+  return {
+    e = e,
+    gui_data = gui_data,
+    msg = msg,
+    player = player,
+    player_table = player_table,
+    refs = gui_data.refs,
+    state = gui_data.state,
+  }
+end
+
 return util
 

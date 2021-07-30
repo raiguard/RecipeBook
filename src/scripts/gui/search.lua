@@ -7,7 +7,7 @@ local formatter = require("scripts.formatter")
 local shared = require("scripts.shared")
 local util = require("scripts.util")
 
-local settings_gui = require("scripts.gui.settings")
+local settings_root = require("scripts.gui.settings.root")
 
 local search_gui = {}
 
@@ -197,7 +197,7 @@ function search_gui.handle_action(msg, e)
   if action == "close" then
     search_gui.close(player, player_table)
   elseif action == "toggle_settings" then
-    settings_gui.toggle(player, player_table)
+    settings_root.toggle(player, player_table)
     local settings_button = refs.titlebar.settings_button
     if player_table.guis.settings then
       settings_button.style = "flib_selected_frame_action_button"
