@@ -5,7 +5,6 @@ local table = require("__flib__.table")
 local constants = require("constants")
 
 local shared = require("scripts.shared")
-local util = require("scripts.util")
 
 local settings_gui = {}
 
