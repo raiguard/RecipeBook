@@ -229,11 +229,6 @@ constants.general_settings = {
       has_tooltip = true,
       default_value = false,
     },
-    show_fluid_temperature_ranges = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    },
     close_search_when_moving_info_pages = {
       type = "bool",
       has_tooltip = false,
@@ -248,6 +243,16 @@ constants.general_settings = {
       type = "bool",
       has_tooltip = false,
       default_value = true,
+    },
+    search_gui_location = {
+      type = "enum",
+      options = {
+        "screen",
+        "mod_gui",
+        "left",
+      },
+      has_tooltip = false,
+      default_value = "mod_gui",
     },
     show_fluid_temperatures = {
       type = "enum",
