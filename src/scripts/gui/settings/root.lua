@@ -131,6 +131,7 @@ function root.build(player, player_table)
   })
 
   refs.window.force_auto_center()
+  refs.titlebar.flow.drag_target = refs.window
   player.opened = refs.window
 
   player_table.guis.settings = {
