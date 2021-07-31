@@ -142,47 +142,7 @@ function root.build(player, player_table)
     },
   }
 
-  -- GENERAL
-
-  local general_pane = refs.general.pane
-  for category, settings in pairs(constants.general_settings) do
-    local category_frame = general_pane.add{
-      type = "frame",
-      style = "bordered_frame",
-      direction = "vertical",
-      caption = category,
-    }
-    for setting_name, setting_ident in pairs(settings) do
-      if setting_ident.type == "bool" then
-        local checkbox = category_frame.add{
-          type = "checkbox",
-          caption = setting_name,
-          state = setting_ident.default_value,
-        }
-      elseif setting_ident.type == "enum" then
-        local flow = category_frame.add{type = "flow"}
-        flow.style.vertical_align = "center"
-        flow.add{type = "label", caption = setting_name}
-        flow.add{type = "empty-widget", style = "flib_horizontal_pusher"}
-        flow.add{
-          type = "drop-down",
-          items = setting_ident.options,
-          selected_index = table.find(setting_ident.options, setting_ident.default_value),
-        }
-      end
-    end
-  end
-
-  -- CATEGORIES
-
-  local categories_pane = refs.categories.pane
-  local dummy_category = constants.category_classes[2]
-  for category_name in pairs(global.recipe_book[dummy_category]) do
-    categories_pane.add{type = "checkbox", caption = category_name, state = true}
-  end
-  for i = 1, 15 do
-    categories_pane.add{type = "checkbox", caption = i, state = true}
-  end
+  root.update_contents(player, player_table)
 end
 
 function root.destroy(player_table)
@@ -195,6 +155,87 @@ function root.toggle(player, player_table)
     root.destroy(player_table)
   else
     root.build(player, player_table)
+  end
+end
+
+function root.update_contents(player, player_table)
+  local gui_data = player_table.guis.settings
+  local refs = gui_data.refs
+  local state = gui_data.state
+
+  local query = state.search_query
+
+  local gui_translations = player_table.translations.gui
+
+  -- NOTE: For simplicity's sake, since there's not _that much_ going on here, we will just destroy and recreate things
+  --       instead of updating them.
+
+  -- GENERAL
+
+  local general_pane = refs.general.pane
+  general_pane.clear()
+  for category, settings in pairs(constants.general_settings) do
+    local children = {}
+    for setting_name, setting_ident in pairs(settings) do
+      local caption = gui_translations[setting_name] or setting_name
+      if string.find(string.lower(caption), query) then
+        local converted_setting_name = string.gsub(setting_name, "_", "-")
+        local tooltip = ""
+        if setting_ident.has_tooltip then
+          tooltip = {"gui.rb-"..converted_setting_name.."-description"}
+          caption = caption.." [img=info]"
+        end
+        if setting_ident.type == "bool" then
+            children[#children + 1] = {
+              type = "checkbox",
+              caption = caption,
+              tooltip = tooltip,
+              state = setting_ident.default_value,
+            }
+        elseif setting_ident.type == "enum" then
+          children[#children + 1] = {
+            type = "flow",
+            style_mods = {vertical_align = "center"},
+            {type = "label", caption = caption, tooltip = tooltip},
+            {type = "empty-widget", style = "flib_horizontal_pusher"},
+            {
+              type = "drop-down",
+              items = table.map(
+                setting_ident.options,
+                function(option_name)
+                  return {"gui.rb-"..converted_setting_name.."-"..string.gsub(option_name, "_", "-")}
+                end
+              ),
+              selected_index = table.find(setting_ident.options, setting_ident.default_value),
+            },
+          }
+        end
+      end
+    end
+    if #children > 0 then
+      gui.build(general_pane, {
+        {
+          type = "frame",
+          style = "bordered_frame",
+          direction = "vertical",
+          caption = gui_translations[category] or category,
+          children = children,
+        }
+      })
+    end
+  end
+
+  -- CATEGORIES
+  -- TODO: Dynamically generate listbox contents based on search
+
+  local categories_pane = refs.categories.pane
+  categories_pane.clear()
+  local dummy_category = constants.category_classes[2]
+  for category_name in pairs(global.recipe_book[dummy_category]) do
+    categories_pane.add{type = "checkbox", caption = category_name, state = true}
+  end
+  for i = 1, 15 do
+    categories_pane.add{type = "checkbox", caption = i, state = true}
   end
 end
 

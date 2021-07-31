@@ -434,7 +434,7 @@ end
 function shared.refresh_contents(player, player_table)
   formatter.create_cache(player.index)
   info_gui.root.update_all(player, player_table)
-  quick_ref_gui.actions.update_all(player, player_table)
+  quick_ref_gui.root.update_all(player, player_table)
   if player_table.guis.search and player_table.guis.search.refs.window.visible then
     search_gui.handle_action({action = "update_search_results"}, {player_index = player.index})
     search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})

@@ -30,7 +30,8 @@ function actions.toggle_search(data)
       -- Reset query
       search_textfield.text = ""
       state.search_query = ""
-      -- TODO: Refresh page
+      -- Immediately refresh page
+      actions.update_search_results(data)
     end
   else
     -- Show search textfield
@@ -76,8 +77,7 @@ function actions.update_search_query(data)
 end
 
 function actions.update_search_results(data)
-  game.print("update!")
-  -- TODO:
+  root.update_contents(data.player, data.player_table)
 end
 
 return actions
