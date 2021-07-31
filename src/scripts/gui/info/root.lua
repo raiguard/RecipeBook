@@ -527,7 +527,7 @@ end
 function root.update_all(player, player_table)
   for id in pairs(player_table.guis.info) do
     if id ~= "_next_id" and id ~= "_active_id" then
-      root.update_contents(player, player_table, id)
+      root.update_contents(player, player_table, id, {refresh = true})
     end
   end
 end
