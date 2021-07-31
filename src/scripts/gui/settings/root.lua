@@ -191,6 +191,15 @@ function root.update_contents(player, player_table)
               caption = caption,
               tooltip = tooltip,
               state = setting_ident.default_value,
+              actions = {
+                on_click = {
+                  gui = "settings",
+                  action = "change_general_setting",
+                  type = setting_ident.type,
+                  category = category,
+                  name = setting_name,
+                }
+              },
             }
         elseif setting_ident.type == "enum" then
           children[#children + 1] = {
@@ -207,6 +216,15 @@ function root.update_contents(player, player_table)
                 end
               ),
               selected_index = table.find(setting_ident.options, setting_ident.default_value),
+              actions = {
+                on_click = {
+                  gui = "settings",
+                  action = "change_general_setting",
+                  type = setting_ident.type,
+                  category = category,
+                  name = setting_name,
+                }
+              },
             },
           }
         end

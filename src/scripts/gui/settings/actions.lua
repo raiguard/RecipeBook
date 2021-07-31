@@ -2,6 +2,8 @@ local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
 
+local shared = require("scripts.shared")
+
 local root = require("scripts.gui.settings.root")
 local search_actions = require("scripts.gui.search.actions")
 
@@ -78,6 +80,34 @@ end
 
 function actions.update_search_results(data)
   root.update_contents(data.player, data.player_table)
+end
+
+function actions.change_general_setting(data)
+  local msg = data.msg
+  local type = msg.type
+  local category = msg.category
+  local name = msg.name
+  local setting_ident = constants.general_settings[category][name]
+  local settings = data.player_table.settings.general[category]
+
+  local new_value
+  local element = data.e.element
+
+  -- NOTE: This shouldn't ever happen, but we will avoid a crash just in case!
+  if not element.valid then return end
+
+  if type == "bool" then
+    new_value = element.state
+  elseif type == "enum" then
+    local selected_index = element.selected_index
+    new_value = setting_ident.options[selected_index]
+  end
+
+  -- NOTE: This _also_ shouldn't ever happen, but you can't be too safe!
+  if new_value ~= nil then
+    settings[name] = new_value
+    shared.refresh_contents(data.player, data.player_table)
+  end
 end
 
 return actions
