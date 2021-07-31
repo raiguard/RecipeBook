@@ -3,6 +3,8 @@ local gui = require("__flib__.gui-beta")
 local shared = require("scripts.shared")
 local util = require("scripts.util")
 
+local root = require("scripts.gui.quick-ref.root")
+
 local actions = {}
 
 function actions.bring_all_to_front(player_table)
@@ -12,18 +14,7 @@ function actions.bring_all_to_front(player_table)
 end
 
 function actions.close(data)
-  local msg = data.msg
-
-  data.refs.window.destroy()
-  data.player_table.guis.quick_ref[msg.id] = nil
-  -- TODO: Shared can go away!
-  shared.update_header_button(
-    data.player,
-    data.player_table,
-    {class = "recipe", name = msg.id},
-    "quick_ref_button",
-    false
-  )
+  root.destroy(data.player, data.player_table, data.msg.id)
 end
 
 function actions.handle_button_click(data)

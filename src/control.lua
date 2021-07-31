@@ -160,7 +160,7 @@ event.register({defines.events.on_research_finished, defines.events.on_research_
   for _, player in pairs(e.research.force.players) do
     local player_table = global.players[player.index]
     if player_table and player_table.flags.can_open_gui then
-      info_gui.update_all(player, player_table)
+      info_gui.root.update_all(player, player_table)
       quick_ref_gui.actions.update_all(player, player_table)
     end
   end
@@ -197,7 +197,7 @@ event.on_gui_click(function(e)
     -- Bring all GUIs to the front
     local player_table = global.players[e.player_index]
     if player_table.flags.can_open_gui then
-      info_gui.bring_all_to_front(player_table)
+      info_gui.root.bring_all_to_front(player_table)
       quick_ref_gui.actions.bring_all_to_front(player_table)
     end
   end
@@ -406,16 +406,16 @@ remote.add_interface("RecipeBook", remote_interface)
 -- SHARED FUNCTIONS
 
 function shared.open_page(player, player_table, context)
-  local existing_id = info_gui.find_open_context(player_table, context)[1]
+  local existing_id = info_gui.root.find_open_context(player_table, context)[1]
   if existing_id then
     info_gui.handle_action({id = existing_id, action = "bring_to_front"}, {player_index = player.index})
   else
-    info_gui.build(player, player_table, context)
+    info_gui.root.build(player, player_table, context)
   end
 end
 
 function shared.update_header_button(player, player_table, context, button, to_state)
-  for _, id in pairs(info_gui.find_open_context(player_table, context)) do
+  for _, id in pairs(info_gui.root.find_open_context(player_table, context)) do
     info_gui.handle_action(
       {id = id, action = "update_header_button", button = button, to_state = to_state},
       {player_index = player.index}
@@ -443,18 +443,11 @@ end
 
 function shared.refresh_contents(player, player_table)
   formatter.create_cache(player.index)
-  info_gui.update_all(player, player_table)
+  info_gui.root.update_all(player, player_table)
   quick_ref_gui.actions.update_all(player, player_table)
   if player_table.guis.search and player_table.guis.search.refs.window.visible then
     search_gui.handle_action({action = "update_search_results"}, {player_index = player.index})
     search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})
-    search_gui.handle_action({action = "update_history"}, {player_index = player.index})
-  end
-end
-
-function shared.update_global_history(player, player_table, new_context)
-  player_data.update_global_history(player_table.global_history, new_context)
-  if player_table.guis.search and player_table.guis.search.refs.window.visible then
     search_gui.handle_action({action = "update_history"}, {player_index = player.index})
   end
 end

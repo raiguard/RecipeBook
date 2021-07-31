@@ -58,17 +58,25 @@ function root.build(player, player_table, recipe_name)
   root.update_contents(player, player_table, recipe_name)
 end
 
-function root.destroy(player_table, recipe_name)
+function root.destroy(player, player_table, recipe_name)
   local gui_data = player_table.guis.quick_ref[recipe_name]
   if gui_data then
     gui_data.refs.window.destroy()
     player_table.guis.quick_ref[recipe_name] = nil
+    -- TODO: Shared can go away!
+    shared.update_header_button(
+      player,
+      player_table,
+      {class = "recipe", name = recipe_name},
+      "quick_ref_button",
+      false
+    )
   end
 end
 
 function root.toggle(player, player_table, recipe_name)
   if player_table.guis.quick_ref[recipe_name] then
-    root.destroy(player_table, recipe_name)
+    root.destroy(player, player_table, recipe_name)
     -- TODO: Doesn't need to be shared anymore!
     shared.update_header_button(player, player_table, {class = "recipe", name = recipe_name}, "quick_ref_button", false)
   else
@@ -77,9 +85,9 @@ function root.toggle(player, player_table, recipe_name)
   end
 end
 
-function root.destroy_all(player_table)
+function root.destroy_all(player, player_table)
   for recipe_name in pairs(player_table.guis.quick_ref) do
-    root.destroy(player_table, recipe_name)
+    root.destroy(player, player_table, recipe_name)
   end
 end
 

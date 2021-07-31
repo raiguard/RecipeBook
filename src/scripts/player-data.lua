@@ -133,8 +133,8 @@ end
 
 function player_data.refresh(player, player_table)
   -- destroy GUIs
-  info_gui.destroy_all(player_table)
-  quick_ref_gui.root.destroy_all(player_table)
+  info_gui.root.destroy_all(player_table)
+  quick_ref_gui.root.destroy_all(player, player_table)
   if player_table.guis.search then
     search_gui.root.destroy(player, player_table)
   end
