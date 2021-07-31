@@ -1,7 +1,6 @@
 local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
-local shared = require("scripts.shared")
 
 local root = require("scripts.gui.settings.root")
 local search_actions = require("scripts.gui.search.actions")
@@ -20,10 +19,11 @@ function actions.toggle_search(data)
   local opened = state.search_opened
   state.search_opened = not opened
 
-  local search_button = refs.toolbar.search_button
-  local search_textfield = refs.toolbar.search_textfield
+  local search_button = refs.titlebar.search_button
+  local search_textfield = refs.titlebar.search_textfield
   if opened then
-    search_button.style = "tool_button"
+    search_button.style = "frame_action_button"
+    search_button.sprite = "utility/search_white"
     search_textfield.visible = false
 
     if state.search_query ~= "" then
@@ -34,7 +34,8 @@ function actions.toggle_search(data)
     end
   else
     -- Show search textfield
-    search_button.style = "flib_selected_tool_button"
+    search_button.style = "flib_selected_frame_action_button"
+    search_button.sprite = "utility/search_black"
     search_textfield.visible = true
     search_textfield.focus()
   end

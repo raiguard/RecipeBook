@@ -3,6 +3,8 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
+local util = require("scripts.util")
+
 local root = {}
 
 function root.build(player, player_table)
@@ -10,49 +12,43 @@ function root.build(player, player_table)
     {
       type = "frame",
       direction = "vertical",
-      caption = {"gui.rb-settings"},
       ref = {"window"},
       actions = {
         on_closed = {gui = "settings", action = "close"},
       },
-      {type = "frame", style = "inside_deep_frame", direction = "vertical",
-        {type = "frame", style = "subheader_frame", style_mods = {left_padding = 12},
-          {type = "empty-widget", style = "flib_horizontal_pusher"},
-          {
-            type = "textfield",
-            style_mods = {width = 200},
-            visible = false,
-            ref = {"toolbar", "search_textfield"},
-            actions = {
-              on_text_changed = {gui = "settings", action = "update_search_query"}
-            }
+      {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
+        {type = "label", style = "frame_title", caption = {"gui.rb-settings"}, ignored_by_interaction = true},
+        {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
+        {
+          type = "textfield",
+          style_mods = {
+            top_margin = -3,
+            right_padding = 3,
+            width = 120
           },
-          {
-            type = "sprite-button",
-            style = "tool_button",
-            sprite = "utility/search_icon",
-            tooltip = {"gui.rb-search-instruction"},
-            ref = {"toolbar", "search_button"},
-            actions = {
-              on_click = {gui = "settings", action = "toggle_search"},
-            },
-          },
-          {
-            type = "sprite-button",
-            style = "tool_button_red",
-            sprite = "utility/reset",
-            tooltip = {"reset-to-defaults-disabled"},
-            enabled = false,
-            ref = {"toolbar", "reset_button"},
-            actions = {
-              on_click = {gui = "settings", action = "reset_to_defaults"},
-            },
-          },
+          visible = false,
+          ref = {"titlebar", "search_textfield"},
+          actions = {
+            on_text_changed = {gui = "settings", action = "update_search_query"}
+          }
         },
-        {type = "tabbed-pane", style = "flib_tabbed_pane_with_no_padding", style_mods = {top_padding = 12, width = 500},
+        util.frame_action_button(
+          "utility/search",
+          {"gui.rb-search-instruction"},
+          {"titlebar", "search_button"},
+          {gui = "settings", action = "toggle_search"}
+        ),
+        util.frame_action_button(
+          "utility/close",
+          {"gui.close"},
+          {"titlebar", "close_button"},
+          {gui = "settings", action = "close"}
+        ),
+      },
+      {type = "frame", style = "inside_deep_frame_for_tabs", direction = "vertical",
+        {type = "tabbed-pane", style = "flib_tabbed_pane_with_no_padding", style_mods = {width = 500},
           {
             tab = {type = "tab", caption = {"gui.rb-general"}},
-            -- TODO: Does this need to be a scroll pane?
             content = {
               type = "flow",
               style_mods = {padding = 4},
@@ -131,26 +127,6 @@ function root.build(player, player_table)
           }
         },
       },
-      {type = "flow", style = "dialog_buttons_horizontal_flow",
-        {
-          type = "button",
-          style = "back_button",
-          caption = {"gui.cancel"},
-          actions = {
-            on_click = {gui = "settings", action = "close"}
-          }
-        },
-        {type = "empty-widget", style = "flib_dialog_footer_drag_handle", ref = {"footer_drag_handle"}},
-        {
-          type = "button",
-          style = "confirm_button",
-          caption = {"gui.confirm"},
-          enabled = false,
-          actions = {
-            on_click = {gui = "settings", action = "confirm"},
-          },
-        },
-      }
     }
   })
 

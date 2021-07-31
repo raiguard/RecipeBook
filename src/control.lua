@@ -203,16 +203,6 @@ event.on_gui_click(function(e)
   end
 end)
 
-event.register("rb-linked-confirm-gui", function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-
-  local gui_data = player_table.guis.settings
-  if gui_data and player.opened == gui_data.refs.window then
-    settings_gui.handle_action({action = "confirm"}, {player_index = e.player_index})
-  end
-end)
-
 event.register("rb-linked-focus-search", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]

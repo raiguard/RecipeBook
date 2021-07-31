@@ -37,10 +37,4 @@ data:extend{
     key_sequence = "",
     linked_game_control = "focus-search",
   },
-  {
-    type = "custom-input",
-    name = "rb-linked-confirm-gui",
-    key_sequence = "",
-    linked_game_control = "confirm-gui",
-  },
 }
