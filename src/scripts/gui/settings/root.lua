@@ -248,6 +248,10 @@ function root.update_contents(player, player_table)
   for category_name in pairs(global.recipe_book[selected_class]) do
     local category_translation = class_translations[category_name] or category_name
     if string.find(string.lower(category_translation), query) then
+      local img_type = constants.class_to_type[selected_class]
+      if img_type then
+        category_translation = "[img="..img_type.."/"..category_name.."]  "..category_translation
+      end
       children[#children + 1] = {
         type = "checkbox",
         caption = category_translation,
