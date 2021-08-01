@@ -229,31 +229,31 @@ constants.general_settings = {
       has_tooltip = true,
       default_value = false,
     },
-    close_search_when_moving_info_pages = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    },
-    close_search_gui_after_selection = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = false,
-    },
-    preserve_search_query = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = true,
-    },
-    search_gui_location = {
-      type = "enum",
-      options = {
-        "screen",
-        "mod_gui",
-        "left",
-      },
-      has_tooltip = false,
-      default_value = "mod_gui",
-    },
+    -- close_search_when_moving_info_pages = {
+    --   type = "bool",
+    --   has_tooltip = false,
+    --   default_value = true,
+    -- },
+    -- close_search_gui_after_selection = {
+    --   type = "bool",
+    --   has_tooltip = false,
+    --   default_value = false,
+    -- },
+    -- preserve_search_query = {
+    --   type = "bool",
+    --   has_tooltip = false,
+    --   default_value = true,
+    -- },
+    -- search_gui_location = {
+    --   type = "enum",
+    --   options = {
+    --     "screen",
+    --     "mod_gui",
+    --     "left",
+    --   },
+    --   has_tooltip = false,
+    --   default_value = "mod_gui",
+    -- },
     show_fluid_temperatures = {
       type = "enum",
       options = {
@@ -264,16 +264,16 @@ constants.general_settings = {
       has_tooltip = true,
       default_value = "all",
     },
-    search_type = {
-      type = "enum",
-      options = {
-        "both",
-        "internal",
-        "localised",
-      },
-      has_tooltip = true,
-      default_value = "localised",
-    },
+    -- search_type = {
+    --   type = "enum",
+    --   options = {
+    --     "both",
+    --     "internal",
+    --     "localised",
+    --   },
+    --   has_tooltip = true,
+    --   default_value = "localised",
+    -- },
   },
 }
 
