@@ -40,7 +40,7 @@ end)
 
 commands.add_command("rb-print-object", nil, function(e)
   local player = game.get_player(e.player_index)
-  local _, _, class, name = string.find(e.parameter, "^(%w+) (%w+)$")
+  local _, _, class, name = string.find(e.parameter, "^(.+) (.+)$")
   if not class or not name then
     player.print("Invalid arguments format")
     return
@@ -72,9 +72,14 @@ commands.add_command("rb-dump-data", nil, function(e)
     player.print("You must be an admin to use this command.")
     return
   end
-  game.print("[color=red]DUMPING ALL RECIPE BOOK DATA[/color]")
-  game.print("Get comfortable, this could take a while!")
-  on_tick_n.add(game.tick + 1, {action = "dump_data", player_index = e.player_index})
+  if __DebugAdapter then
+    __DebugAdapter.print(recipe_book)
+    game.print("Recipe Book data has been dumped to the debug console.")
+  else
+    game.print("[color=red]DUMPING ALL RECIPE BOOK DATA[/color]")
+    game.print("Get comfortable, this could take a while!")
+    on_tick_n.add(game.tick + 1, {action = "dump_data", player_index = e.player_index})
+  end
 end)
 
 -- -----------------------------------------------------------------------------
