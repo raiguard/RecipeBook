@@ -102,7 +102,7 @@ function root.update_contents(player, player_table, recipe_name)
   local gui_data = player_table.guis.quick_ref[recipe_name]
   local refs = gui_data.refs
 
-  local show_made_in = player_table.settings.show_made_in_in_quick_ref
+  local show_made_in = player_table.settings.general.content.show_made_in_in_quick_ref
 
   local recipe_data = recipe_book.recipe[recipe_name]
   local player_data = formatter.build_player_data(player, player_table)
@@ -148,7 +148,7 @@ function root.update_contents(player, player_table, recipe_name)
 
         local button = buttons[i]
 
-        if button then
+        if button and button.valid then
           button.style = button_style
           button.sprite = constants.class_to_type[object.class].."/"..object_data.prototype_name
           button.tooltip = object_info.tooltip

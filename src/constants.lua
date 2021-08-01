@@ -188,6 +188,11 @@ constants.general_settings = {
       has_tooltip = false,
       default_value = true,
     },
+    show_made_in_in_quick_ref = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = false,
+    },
   },
   captions = {
     show_internal_names = {
@@ -366,6 +371,7 @@ constants.gui_strings = {
   {dictionary = "gui", internal = "show_hidden", localised = {"gui.rb-show-hidden"}},
   {dictionary = "gui", internal = "show_interaction_helps", localised = {"gui.rb-show-interaction-helps"}},
   {dictionary = "gui", internal = "show_internal_names", localised = {"gui.rb-show-internal-names"}},
+  {dictionary = "gui", internal = "show_made_in_in_quick_ref", localised = {"gui.rb-show-made-in-in-quick-ref"}},
   {dictionary = "gui", internal = "show_unresearched", localised = {"gui.rb-show-unresearched"}},
   {dictionary = "gui", internal = "si_joule", localised = {"si-unit-symbol-joule"}},
   {dictionary = "gui", internal = "stack_size", localised = {"gui.rb-stack-size"}},
