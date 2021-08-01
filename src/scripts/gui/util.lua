@@ -59,7 +59,7 @@ function gui_util.navigate_to(e)
             end
           else
             player.create_local_flying_text{
-              text = {"rb-message.cannot-create-blueprint"},
+              text = {"message.rb-cannot-create-blueprint"},
               create_at_cursor = true
             }
             player.play_sound{path = "utility/cannot_build"}

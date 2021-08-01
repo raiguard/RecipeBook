@@ -22,17 +22,17 @@ local settings_gui = require("scripts.gui.settings.index")
 -- COMMANDS
 
 -- User-facing command
-commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
+commands.add_command("RecipeBook", {"command-help.RecipeBook"}, function(e)
   if e.parameter == "refresh-player-data" then
     local player = game.get_player(e.player_index)
-    player.print{"rb-message.refreshing-player-data"}
+    player.print{"message.rb-refreshing-player-data"}
     player_data.refresh(player, global.players[e.player_index])
   elseif e.parameter == "clear-memoizer-cache" then
     formatter.create_cache(e.player_index)
     local player = game.get_player(e.player_index)
-    player.print{"rb-message.memoizer-cache-cleared"}
+    player.print{"message.rb-memoizer-cache-cleared"}
   else
-    game.get_player(e.player_index).print{"rb-message.invalid-command"}
+    game.get_player(e.player_index).print{"message.rb-invalid-command"}
   end
 end)
 
@@ -352,7 +352,7 @@ event.on_string_translated(function(e)
     local player_table = global.players[e.player_index]
     -- show message if needed
     if player_table.flags.show_message_after_translation then
-      player.print{'rb-message.can-open-gui'}
+      player.print{"message.rb-can-open-gui"}
     end
     -- create GUI
     search_gui.root.build(player, player_table)
