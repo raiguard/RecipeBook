@@ -322,7 +322,8 @@ event.on_tick(function(e)
       if msg.gui then
         handle_gui_action(msg, {player_index = msg.player_index})
       elseif msg.action == "dump_data" then
-        game.write_file("rb-dump.lua", serpent.block(recipe_book), false, msg.player_index)
+        game.write_file("rb-dump.txt", serpent.block(recipe_book), false, msg.player_index)
+        game.print("[color=green]Dumped RB data to script-output/rb-dump.txt[/color]")
       end
     end
   end
