@@ -56,16 +56,27 @@ function list_box.update(component, refs, object_data, player_data, variables)
   local always_show = component.always_show
   local context = variables.context
   local blueprint_recipe = context.class == "recipe" and component.source == "made_in" and context.name or nil
-  local search_query = variables.search_query
+  local query = variables.search_query
+
+  local search_type = player_data.settings.general.search.search_type
 
   -- Add items
   local i = 0
   local iterator = component.use_pairs and pairs or ipairs
   local objects = object_data[component.source]
   for _, obj in iterator(objects or {}) do
-    -- Match against search string
     local translation = player_data.translations[obj.class][obj.name]
-    if string.find(string.lower(translation), search_query) then
+    -- Match against search string
+    local matched
+    if search_type == "both" then
+      matched = string.find(string.lower(obj.name), query) or string.find(string.lower(translation), query)
+    elseif search_type == "internal" then
+      matched = string.find(string.lower(obj.name), query)
+    elseif search_type == "localised" then
+      matched = string.find(string.lower(translation), query)
+    end
+
+    if matched then
       local obj_data = recipe_book[obj.class][obj.name]
       local info = formatter(
         obj_data,

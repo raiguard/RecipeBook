@@ -264,16 +264,16 @@ constants.general_settings = {
       has_tooltip = true,
       default_value = "all",
     },
-    -- search_type = {
-    --   type = "enum",
-    --   options = {
-    --     "both",
-    --     "internal",
-    --     "localised",
-    --   },
-    --   has_tooltip = true,
-    --   default_value = "localised",
-    -- },
+    search_type = {
+      type = "enum",
+      options = {
+        "localised",
+        "internal",
+        "both",
+      },
+      has_tooltip = true,
+      default_value = "localised",
+    },
   },
 }
 

@@ -112,6 +112,7 @@ function actions.update_search_results(data)
   -- Data
   local player_data = formatter.build_player_data(player, player_table)
   local show_fluid_temperatures = player_table.settings.general.search.show_fluid_temperatures
+  local search_type = player_table.settings.general.search.search_type
 
   -- Update results based on query
   local i = 0
@@ -126,7 +127,16 @@ function actions.update_search_results(data)
       if not class_filter or class_filter == class then
         for internal, translation in pairs(player_table.translations[class]) do
           -- Match against search string
-          if string.find(string.lower(translation), query) then
+          local matched
+          if search_type == "both" then
+            matched = string.find(string.lower(internal), query) or string.find(string.lower(translation), query)
+          elseif search_type == "internal" then
+            matched = string.find(string.lower(internal), query)
+          elseif search_type == "localised" then
+            matched = string.find(string.lower(translation), query)
+          end
+
+          if matched then
             local obj_data = global.recipe_book[class][internal]
 
             -- Check temperature settings
