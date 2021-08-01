@@ -244,16 +244,6 @@ constants.general_settings = {
     --   has_tooltip = false,
     --   default_value = true,
     -- },
-    -- search_gui_location = {
-    --   type = "enum",
-    --   options = {
-    --     "screen",
-    --     "mod_gui",
-    --     "left",
-    --   },
-    --   has_tooltip = false,
-    --   default_value = "mod_gui",
-    -- },
     show_fluid_temperatures = {
       type = "enum",
       options = {
