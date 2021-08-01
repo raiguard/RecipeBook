@@ -3,6 +3,7 @@ local translation = require("__flib__.translation")
 
 local global_data = require("scripts.global-data")
 local player_data = require("scripts.player-data")
+local recipe_book = require("scripts.recipe-book")
 
 return {
   ["2.0.0"] = function()
@@ -42,11 +43,24 @@ return {
     end
   end,
   ["3.0.0"] = function()
+    -- TODO: Destroy GUIs
+
+    -- NUKE EVERYTHING
+    global = {}
+
+    -- Re-init everything
+    translation.init()
+
+    global_data.init()
+    global_data.build_prototypes()
+
+    recipe_book.build()
+    recipe_book.check_forces()
+
     on_tick_n.init()
-    for _, player_table in pairs(global.players) do
-      player_table.guis.info = {_next_id = 1}
-      player_table.history = nil
-      player_table.global_history = {}
+    for i, player in pairs(game.players) do
+      player_data.init(i)
+      player_data.refresh(player, global.players[i])
     end
   end
 }
