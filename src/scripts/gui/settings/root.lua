@@ -217,7 +217,7 @@ function root.update_contents(player, player_table)
               ),
               selected_index = table.find(setting_ident.options, setting_ident.default_value),
               actions = {
-                on_click = {
+                on_selection_state_changed = {
                   gui = "settings",
                   action = "change_general_setting",
                   type = setting_ident.type,
