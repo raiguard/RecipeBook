@@ -262,6 +262,9 @@ event.register({"rb-search", "rb-open-selected"}, function(e)
     else
       search_gui.root.toggle(player, player_table)
     end
+  else
+    player.print{"message.rb-cannot-open-gui"}
+    player_table.flags.show_message_after_translation = true
   end
 end)
 
