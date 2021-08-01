@@ -72,13 +72,13 @@ commands.add_command("rb-dump-data", nil, function(e)
     player.print("You must be an admin to use this command.")
     return
   end
-  if __DebugAdapter then
+  if __DebugAdapter and #e.parameter == 0 then
     __DebugAdapter.print(recipe_book)
     game.print("Recipe Book data has been dumped to the debug console.")
   else
     game.print("[color=red]DUMPING ALL RECIPE BOOK DATA[/color]")
     game.print("Get comfortable, this could take a while!")
-    on_tick_n.add(game.tick + 1, {action = "dump_data", player_index = e.player_index})
+    on_tick_n.add(game.tick + 1, {action = "dump_data", player_index = e.player_index, raw = e.parameter == "raw"})
   end
 end)
 
@@ -330,7 +330,8 @@ event.on_tick(function(e)
       if msg.gui then
         handle_gui_action(msg, {player_index = msg.player_index})
       elseif msg.action == "dump_data" then
-        game.write_file("rb-dump.txt", serpent.block(recipe_book), false, msg.player_index)
+        local func = msg.raw and serpent.dump or serpent.block
+        game.write_file("rb-dump.txt", func(recipe_book), false, msg.player_index)
         game.print("[color=green]Dumped RB data to script-output/rb-dump.txt[/color]")
       end
     end
