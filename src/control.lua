@@ -66,6 +66,17 @@ commands.add_command("rb-count-objects", nil, function(e)
   end
 end)
 
+commands.add_command("rb-dump-data", nil, function(e)
+  local player = game.get_player(e.player_index)
+  if not player.admin then
+    player.print("You must be an admin to use this command.")
+    return
+  end
+  game.print("[color=red]DUMPING ALL RECIPE BOOK DATA[/color]")
+  game.print("Get comfortable, this could take a while!")
+  on_tick_n.add(game.tick + 1, {action = "dump_data", player_index = e.player_index})
+end)
+
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
@@ -310,6 +321,8 @@ event.on_tick(function(e)
     for _, msg in pairs(actions) do
       if msg.gui then
         handle_gui_action(msg, {player_index = msg.player_index})
+      elseif msg.action == "dump_data" then
+        game.write_file("rb-dump.lua", serpent.block(recipe_book), false, msg.player_index)
       end
     end
   end
