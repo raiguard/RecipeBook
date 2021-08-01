@@ -47,8 +47,7 @@ function recipe_book.build()
   mining_drill_proc.add_resources(recipe_book)
 
   strings.__index = nil
-  global.recipe_book = recipe_book
-  global.strings = strings
+  recipe_book.strings = strings
 end
 
 local function update_launch_products(launch_products, force_index, to_value)
@@ -112,7 +111,7 @@ function recipe_book.check_force(force)
 end
 
 function recipe_book.check_forces()
-  for _, force in pairs(game.forces) do
+  for _, force in pairs(global.forces) do
     recipe_book.check_force(force)
   end
 end

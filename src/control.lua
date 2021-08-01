@@ -9,6 +9,7 @@ local formatter = require("scripts.formatter")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
+local recipe_book = require("scripts.recipe-book")
 local remote_interface = require("scripts.remote-interface")
 local shared = require("scripts.shared")
 
@@ -52,15 +53,15 @@ commands.add_command("rb-print-object", nil, function(e)
     game.print("Invalid command")
   end
   if __DebugAdapter then
-    __DebugAdapter.print(global.recipe_book[parameters[1]][parameters[2]])
+    __DebugAdapter.print(recipe_book[parameters[1]][parameters[2]])
   else
-    log(serpent.block(global.recipe_book[parameters[1]][parameters[2]]))
+    log(serpent.block(recipe_book[parameters[1]][parameters[2]]))
   end
 end)
 
 commands.add_command("rb-count-objects", nil, function(e)
   local player = game.get_player(e.player_index)
-  for name, tbl in pairs(global.recipe_book) do
+  for name, tbl in pairs(recipe_book) do
     player.print(name..": "..table_size(tbl))
   end
 end)
@@ -74,8 +75,10 @@ event.on_init(function()
   translation.init()
 
   global_data.init()
-  global_data.build_recipe_book()
-  global_data.check_forces()
+  global_data.build_prototypes()
+
+  recipe_book.build()
+  recipe_book.check_forces()
 
   on_tick_n.init()
   for i, player in pairs(game.players) do
@@ -86,14 +89,15 @@ end)
 
 event.on_load(function()
   formatter.create_all_caches()
+  recipe_book.build()
+  recipe_book.check_forces()
 end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
     translation.init()
 
-    global_data.build_recipe_book()
-    global_data.check_forces()
+    global_data.build_prototypes()
 
     for i, player in pairs(game.players) do
       player_data.refresh(player, global.players[i])
@@ -104,8 +108,8 @@ end)
 -- FORCE
 
 event.on_force_created(function(e)
-  local force = e.force
-  global_data.check_force(force)
+  global_data.add_force(e.force)
+  recipe_book.check_force(e.force)
 end)
 
 event.register({defines.events.on_research_finished, defines.events.on_research_reversed}, function(e)
@@ -185,7 +189,7 @@ event.on_lua_shortcut(function(e)
 
     local cursor_stack = player.cursor_stack
     if cursor_stack and cursor_stack.valid_for_read then
-      local data = global.recipe_book.item[cursor_stack.name]
+      local data = recipe_book.item[cursor_stack.name]
       if data then
         shared.open_page(player, player_table, {class = "item", name = cursor_stack.name})
       else
@@ -218,7 +222,7 @@ event.register({"rb-search", "rb-open-selected"}, function(e)
         -- Not everything will have a Recipe Book entry
         if class then
           local name = selected_prototype.name
-          local obj_data = global.recipe_book[class][name]
+          local obj_data = recipe_book[class][name]
           if obj_data then
             local context = {class = class, name = name}
             shared.open_page(player, player_table, context)
