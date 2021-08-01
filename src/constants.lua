@@ -528,8 +528,7 @@ constants.pages = {
       {type = "plain", source = "ingredient_limit", formatter = "number"}
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
-    -- TODO: Make invisible by default
-    {type = "list_box", source = "recipe_categories", default_state = "disabled"},
+    {type = "list_box", source = "recipe_categories"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },

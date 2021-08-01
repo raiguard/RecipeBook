@@ -31,7 +31,6 @@ function root.build(player, player_table)
           style_mods = {height = 532},
           ref = {"tabbed_pane"},
           {tab = {type = "tab", caption = {"gui.search"}}, content = (
-            -- TODO: Locale-specific widths
             {
               type = "frame",
               style = "rb_inside_deep_frame_under_tabs",
