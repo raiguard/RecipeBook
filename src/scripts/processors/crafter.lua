@@ -1,8 +1,8 @@
 local util = require("scripts.util")
 
 return function(recipe_book, strings, metadata)
-  -- characters as crafters
-  for name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "character"}}) do
+  -- Characters as crafters
+  for name, prototype in pairs(global.prototypes.character) do
     local ingredient_limit = prototype.ingredient_count
     if ingredient_limit == 255 then
       ingredient_limit = nil
@@ -28,22 +28,17 @@ return function(recipe_book, strings, metadata)
     })
   end
 
-  -- actual crafters
-  local crafter_prototypes = game.get_filtered_entity_prototypes{
-    {filter = "type", type = "assembling-machine"},
-    {filter = "type", type = "furnace"},
-    {filter = "type", type = "rocket-silo"}
-  }
+  -- Actual crafters
   metadata.fixed_recipes = {}
   local rocket_silo_categories = {}
-  for name, prototype in pairs(crafter_prototypes) do
-    -- fixed recipe
+  for name, prototype in pairs(global.prototypes.crafter) do
+    -- Fixed recipe
     local fixed_recipe
     if prototype.fixed_recipe then
       metadata.fixed_recipes[prototype.fixed_recipe] = true
       fixed_recipe = {class = "recipe", name = prototype.fixed_recipe}
     end
-    -- rocket silo categories
+    -- Rocket silo categories
     if prototype.rocket_parts_required then
       for category in pairs(prototype.crafting_categories) do
         rocket_silo_categories[category] = true

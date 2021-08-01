@@ -10,7 +10,7 @@ function item_proc.build(recipe_book, strings, metadata)
   local place_results = {}
   local rocket_launch_payloads = {}
 
-  for name, prototype in pairs(game.item_prototypes) do
+  for name, prototype in pairs(global.prototypes.item) do
     -- Group
     local group = prototype.group
     local group_data = recipe_book.group[group.name]

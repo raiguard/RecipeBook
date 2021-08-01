@@ -3,7 +3,7 @@ local util = require("scripts.util")
 local mining_drill_proc = {}
 
 function mining_drill_proc.build(recipe_book, strings)
-  for name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "mining-drill"}}) do
+  for name, prototype in pairs(global.prototypes.mining_drill) do
     for category in pairs(prototype.resource_categories) do
       local category_data = recipe_book.resource_category[category]
       category_data.mining_drills[#category_data.mining_drills + 1] = {class = "mining_drill", name = name}

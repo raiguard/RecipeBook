@@ -5,14 +5,14 @@ local constants = require("constants")
 local util = require("scripts.util")
 
 return function(recipe_book, strings, metadata)
-  for name, prototype in pairs(game.technology_prototypes) do
+  for name, prototype in pairs(global.prototypes.technology) do
     local unlocks_fluids = util.unique_obj_array()
     local unlocks_items = util.unique_obj_array()
     local unlocks_machines = util.unique_obj_array()
     local unlocks_recipes = util.unique_obj_array()
     local research_ingredients_per_unit = {}
 
-    -- research units and ingredients per unit
+    -- Research units and ingredients per unit
     for _, ingredient in ipairs(prototype.research_unit_ingredients) do
       research_ingredients_per_unit[#research_ingredients_per_unit + 1] = {
         class = ingredient.type,
@@ -97,7 +97,7 @@ return function(recipe_book, strings, metadata)
       upgrade = prototype.upgrade
     }
 
-    -- assemble name
+    -- Assemble name
     local localised_name
     if level ~= max_level then
       localised_name = {
@@ -121,9 +121,9 @@ return function(recipe_book, strings, metadata)
     })
   end
 
-  -- generate prerequisites and prerequisite_of
+  -- Generate prerequisites and prerequisite_of
   for name, technology in pairs(recipe_book.technology) do
-    local prototype = game.technology_prototypes[name]
+    local prototype = global.prototypes.technology[name]
 
     if prototype.prerequisites then
       for prerequisite_name in pairs(prototype.prerequisites) do

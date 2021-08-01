@@ -3,9 +3,9 @@ local util = require("scripts.util")
 local offshore_pump_proc = {}
 
 function offshore_pump_proc.build(recipe_book, strings)
-  -- iterate offshore pumps
-  for name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "offshore-pump"}}) do
-    -- add to material
+  -- Iterate offshore pumps
+  for name, prototype in pairs(global.prototypes.offshore_pump) do
+    -- Add to material
     local fluid = prototype.fluid
     local fluid_data = recipe_book.fluid[fluid.name]
     if fluid_data then
@@ -44,7 +44,7 @@ function offshore_pump_proc.check_enabled_at_start(recipe_book)
   end
 end
 
--- when calling the module directly, call fluid_proc.build
+-- When calling the module directly, call fluid_proc.build
 setmetatable(offshore_pump_proc, { __call = function(_, ...) return offshore_pump_proc.build(...) end })
 
 return offshore_pump_proc

@@ -1,7 +1,7 @@
 local util = require("scripts.util")
 
 return function(recipe_book, strings)
-  for name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "resource"}}) do
+  for name, prototype in pairs(global.prototypes.resource) do
     local products = prototype.mineable_properties.products
     if products then
       for _, product in ipairs(products) do

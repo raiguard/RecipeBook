@@ -7,7 +7,7 @@ local util = require("scripts.util")
 local fluid_proc = require("scripts.processors.fluid")
 
 return function(recipe_book, strings, metadata)
-  for name, prototype in pairs(game.recipe_prototypes) do
+  for name, prototype in pairs(global.prototypes.recipe) do
     local category = prototype.category
     local group = prototype.group
 

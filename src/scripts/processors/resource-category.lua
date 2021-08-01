@@ -1,7 +1,7 @@
 local util = require("scripts.util")
 
 return function(recipe_book, strings)
-  for name, prototype in pairs(game.resource_category_prototypes) do
+  for name, prototype in pairs(global.prototypes.resource_category) do
     recipe_book.resource_category[name] = {
       class = "resource_category",
       enabled_at_start = true,

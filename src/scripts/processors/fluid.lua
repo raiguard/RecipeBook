@@ -4,7 +4,7 @@ local fluid_proc = {}
 
 function fluid_proc.build(recipe_book, strings, metadata)
   local localised_fluids = {}
-  for name, prototype in pairs(game.fluid_prototypes) do
+  for name, prototype in pairs(global.prototypes.fluid) do
     -- Group
     local group = prototype.group
     local group_data = recipe_book.group[group.name]
