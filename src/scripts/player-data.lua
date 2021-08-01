@@ -30,7 +30,6 @@ function player_data.init(player_index)
     settings = {
       general = {},
       categories = {},
-      pages = {},
     },
     translations = nil -- assigned its initial value in player_data.refresh
   }
@@ -42,7 +41,6 @@ function player_data.update_settings(player, player_table)
   local settings = {
     general = {},
     categories = {},
-    pages = {},
   }
 
   -- General settings
@@ -64,29 +62,6 @@ function player_data.update_settings(player, player_table)
     for category_name in pairs(global.recipe_book[category_class_name]) do
       local disabled_by_default = constants.disabled_categories[category_class_name][category_name]
       category_settings[category_name] = former_category_settings[category_name] or not disabled_by_default
-    end
-  end
-
-  -- Pages
-  for class, components in pairs(constants.pages) do
-    local former_page_settings = former_settings.pages[class]
-    local page_settings = {}
-    settings.pages[class] = page_settings
-    local table_count = 0
-    for _, component in pairs(components) do
-      if component.type == "table" then
-        local component_settings = {}
-        for _, row in pairs(component.rows) do
-          component_settings[row.source] = not row.disabled_by_default
-        end
-        table_count = table_count + 1
-        page_settings["table_"..table_count] = component_settings
-      elseif component.type == "list_box" then
-        page_settings[component.source] = {
-          state = component.default_state or "shown",
-          max_rows = component.max_rows or constants.max_listbox_height,
-        }
-      end
     end
   end
 

@@ -59,11 +59,16 @@ function root.build(player, player_table)
             },
           },
           {
-            tab = {type = "tab", caption = {"gui.rb-categories"}},
+            tab = {
+              type = "tab",
+              style_mods = {padding = {7, 10, 8, 10}},
+              caption = {"", {"gui.rb-categories"}, " [img=info]"},
+              tooltip = {"gui.rb-categories-description"},
+            },
             content = {
               type = "flow",
               -- TODO: Make a data stage style?
-              style_mods = {horizontal_spacing = 12, padding = {8, 12, 0, 12}},
+              style_mods = {horizontal_spacing = 12, padding = {8, 12, 12, 12}},
               {
                 type = "list-box",
                 style = "list_box_in_shallow_frame",
@@ -89,34 +94,9 @@ function root.build(player, player_table)
               },
             },
           },
-          {
-            tab = {type = "tab", caption = {"gui.rb-pages"}},
-            content = {
-              type = "flow",
-              style_mods = {horizontal_spacing = 12, padding = {8, 12, 12, 12}},
-              {
-                type = "list-box",
-                style = "list_box_in_shallow_frame",
-                style_mods = {height = 504, width = 150},
-                items = constants.classes,
-                selected_index = 1
-              },
-              {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 504},
-                {type = "scroll-pane", style = "flib_naked_scroll_pane", style_mods = {padding = 4},
-                  {
-                    type = "table",
-                    style = "bordered_table",
-                    style_mods = {horizontally_stretchable = true, vertically_stretchable = true},
-                    column_count = 1,
-                    ref = {"pages", "pane"},
-                  },
-                },
-              },
-            },
-          },
         },
       },
-    }
+    },
   })
 
   refs.window.force_auto_center()
