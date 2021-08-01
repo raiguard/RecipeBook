@@ -40,8 +40,8 @@ function global_data.build_prototypes()
   for key, filters in pairs(filtered_entities) do
     prototypes[key] = game.get_filtered_entity_prototypes(filters)
   end
-  for key, type in pairs(straight_conversions) do
-    prototypes[key] = table.shallow_copy(game[type.."_prototypes"])
+  for _, type in pairs(straight_conversions) do
+    prototypes[type] = table.shallow_copy(game[type.."_prototypes"])
   end
 
   global.prototypes = prototypes
