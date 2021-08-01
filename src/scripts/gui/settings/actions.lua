@@ -50,7 +50,7 @@ function actions.update_search_query(data)
 
   local query = string.lower(data.e.element.text)
   -- Fuzzy search
-  if player_table.settings.use_fuzzy_search then
+  if player_table.settings.general.search.fuzzy_search then
     query = string.gsub(query, ".", "%1.*")
   end
   -- Input sanitization
