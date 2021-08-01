@@ -1,4 +1,4 @@
-local gui = require("__flib__.gui-beta")
+local gui = require("__flib__.gui")
 local table = require("__flib__.table")
 
 local formatter = require("scripts.formatter")

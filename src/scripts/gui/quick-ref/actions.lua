@@ -1,4 +1,4 @@
-local gui = require("__flib__.gui-beta")
+local gui = require("__flib__.gui")
 
 local gui_util = require("scripts.gui.util")
 local shared = require("scripts.shared")

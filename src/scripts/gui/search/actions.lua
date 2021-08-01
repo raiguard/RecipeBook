@@ -1,4 +1,4 @@
-local gui = require("__flib__.gui-beta")
+local gui = require("__flib__.gui")
 local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")

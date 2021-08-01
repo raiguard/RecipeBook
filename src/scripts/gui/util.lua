@@ -1,5 +1,5 @@
 local area = require("__flib__.area")
-local gui = require("__flib__.gui-beta")
+local gui = require("__flib__.gui")
 local math = require("__flib__.math")
 local table = require("__flib__.table")
 
