@@ -212,6 +212,8 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
   local settings = player_data.settings
   local gui_translations = player_data.translations.gui
 
+  local show_internal_names = settings.general.captions.show_internal_names
+
   local prototype_name = obj_data.prototype_name
   local name = obj_data.name or prototype_name
   local class = obj_data.class
@@ -239,13 +241,23 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
   end
 
   local name_str
-  if settings.general.captions.use_internal_names then
+  if show_internal_names then
     name_str = name
   else
     name_str = player_data.translations[class][name]
   end
 
   local after = rich_text("font", "default-semibold", rich_text("color", "heading", name_str)).."\n"
+
+  if settings.general.tooltips.show_alternate_name then
+    local alternate_name
+    if show_internal_names then
+      alternate_name = player_data.translations[class][name]
+    else
+      alternate_name = name
+    end
+    after = after..rich_text("color", "green", alternate_name).."\n"
+  end
 
   if settings.general.tooltips.show_descriptions then
     local description = player_data.translations[class.."_description"][name]
