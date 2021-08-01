@@ -111,6 +111,7 @@ function actions.update_search_results(data)
 
   -- Data
   local player_data = formatter.build_player_data(player, player_table)
+  local show_fluid_temperatures = player_table.settings.general.search.show_fluid_temperatures
 
   -- Update results based on query
   local i = 0
@@ -127,8 +128,25 @@ function actions.update_search_results(data)
           -- Match against search string
           if string.find(string.lower(translation), query) then
             local obj_data = global.recipe_book[class][internal]
-            local info = formatter(obj_data, player_data)
 
+            -- Check temperature settings
+            if obj_data.class == "fluid" then
+              local temperature_ident = obj_data.temperature_ident
+              if temperature_ident then
+                local is_range = temperature_ident.min ~= temperature_ident.max
+                if is_range then
+                  if show_fluid_temperatures ~= "all" then
+                    goto continue
+                  end
+                else
+                  if show_fluid_temperatures == "off" then
+                    goto continue
+                  end
+                end
+              end
+            end
+
+            local info = formatter(obj_data, player_data)
             if info then
               i = i + 1
               local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
@@ -162,6 +180,8 @@ function actions.update_search_results(data)
               end
             end
           end
+
+          ::continue::
         end
       end
       if i >= max then
