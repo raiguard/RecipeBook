@@ -25,6 +25,8 @@ Date: ????
     - Recipe time-to-craft is now displayed in a generic info table, rather than as a fake ingredient
     - Split the universal "search" hotkey into separate search and open selected object hotkeys
     - Unresearched objects are shown by default
+  Optimizations:
+    - Reduced the mod's script data footprint by more than 10x
   Bugfixes:
     - Fixed that recipe "made in" didn't account for ingredient count limits on assemblers
     - Fixed that rocket launch products were always marked as their own payload
