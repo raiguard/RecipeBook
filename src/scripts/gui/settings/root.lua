@@ -85,7 +85,7 @@ function root.build(player, player_table)
             tab = {type = "tab", caption = {"gui.rb-pages"}},
             content = {
               type = "flow",
-              style_mods = {horizontal_spacing = 12, padding = {8, 12, 0, 12}},
+              style_mods = {horizontal_spacing = 12, padding = {8, 12, 12, 12}},
               {
                 type = "list-box",
                 style = "list_box_in_shallow_frame",
@@ -110,7 +110,7 @@ function root.build(player, player_table)
             tab = {type = "tab", caption = {"gui.rb-admin"}},
             content = {
               type = "flow",
-              style_mods = {padding = {8, 12, 0, 12}},
+              style_mods = {padding = {8, 12, 12, 12}},
               direction = "vertical",
               {
                 type = "button",
