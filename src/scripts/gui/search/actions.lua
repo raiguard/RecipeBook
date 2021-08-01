@@ -122,7 +122,7 @@ function actions.update_search_results(data)
   local max = constants.search_results_limit
   local class_filter = state.class_filter
   local query = state.search_query
-  if class_filter ~= false then
+  if class_filter ~= false and (class_filter or #query >= 2) then
     for class in pairs(constants.pages) do
       if not class_filter or class_filter == class then
         for internal, translation in pairs(player_table.translations[class]) do
