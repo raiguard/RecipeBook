@@ -72,6 +72,9 @@ function root.build(player, player_table)
                   return gui_translations[class] or class
                 end),
                 selected_index = 1,
+                actions = {
+                  on_selection_state_changed = {gui = "settings", action = "change_category"},
+                },
               },
               {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 504},
                 {type = "scroll-pane", style = "flib_naked_scroll_pane", style_mods = {padding = 4},
@@ -268,6 +271,14 @@ function root.update_contents(player, player_table)
         type = "checkbox",
         caption = category_translation,
         state = class_settings[category_name],
+        actions = {
+          on_checked_state_changed = {
+            gui = "settings",
+            action = "change_category_setting",
+            class = selected_class,
+            name = category_name,
+          },
+        },
       }
     end
   end
