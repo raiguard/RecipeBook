@@ -683,21 +683,6 @@ constants.pages = {
   }
 }
 
-constants.recipe_book_template = {
-  crafter = {},
-  fluid = {},
-  item = {},
-  group = {},
-  lab = {},
-  mining_drill = {},
-  offshore_pump = {},
-  recipe_category = {},
-  recipe = {},
-  resource = {},
-  resource_category = {},
-  technology = {}
-}
-
 constants.search_results_limit = 500
 constants.search_results_visible_items = 15
 constants.search_timeout = 30
