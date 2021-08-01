@@ -8,6 +8,8 @@ local util = require("scripts.util")
 local root = {}
 
 function root.build(player, player_table)
+  local gui_translations = player_table.translations.gui
+
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
@@ -60,13 +62,16 @@ function root.build(player, player_table)
             tab = {type = "tab", caption = {"gui.rb-categories"}},
             content = {
               type = "flow",
+              -- TODO: Make a data stage style?
               style_mods = {horizontal_spacing = 12, padding = {8, 12, 0, 12}},
               {
                 type = "list-box",
                 style = "list_box_in_shallow_frame",
                 style_mods = {height = 504, width = 150},
-                items = constants.category_classes,
-                selected_index = 1
+                items = table.map(constants.category_classes, function(class)
+                  return gui_translations[class] or class
+                end),
+                selected_index = 1,
               },
               {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 504},
                 {type = "scroll-pane", style = "flib_naked_scroll_pane", style_mods = {padding = 4},
@@ -75,7 +80,7 @@ function root.build(player, player_table)
                     style = "bordered_frame",
                     style_mods = {horizontally_stretchable = true, vertically_stretchable = true},
                     direction = "vertical",
-                    ref = {"categories", "pane"},
+                    ref = {"categories", "frame"},
                   },
                 },
               },
@@ -139,6 +144,7 @@ function root.build(player, player_table)
     state = {
       search_opened = false,
       search_query = "",
+      selected_category = 1,
     },
   }
 
@@ -165,7 +171,8 @@ function root.update_contents(player, player_table)
 
   local query = state.search_query
 
-  local gui_translations = player_table.translations.gui
+  local translations = player_table.translations
+  local gui_translations = translations.gui
   local actual_settings = player_table.settings
 
   -- NOTE: For simplicity's sake, since there's not _that much_ going on here, we will just destroy and recreate things
@@ -232,6 +239,7 @@ function root.update_contents(player, player_table)
         end
       end
     end
+
     if #children > 0 then
       gui.build(general_pane, {
         {
@@ -246,16 +254,26 @@ function root.update_contents(player, player_table)
   end
 
   -- CATEGORIES
-  -- TODO: Dynamically generate listbox contents based on search
 
-  local categories_pane = refs.categories.pane
-  categories_pane.clear()
-  local dummy_category = constants.category_classes[2]
-  for category_name in pairs(global.recipe_book[dummy_category]) do
-    categories_pane.add{type = "checkbox", caption = category_name, state = true}
+  local categories_frame = refs.categories.frame
+  categories_frame.clear()
+  local selected_class = constants.category_classes[state.selected_category]
+  local class_settings = actual_settings.categories[selected_class]
+  local class_translations = translations[selected_class]
+  local children = {}
+  for category_name in pairs(global.recipe_book[selected_class]) do
+    local category_translation = class_translations[category_name] or category_name
+    if string.find(string.lower(category_translation), query) then
+      children[#children + 1] = {
+        type = "checkbox",
+        caption = category_translation,
+        state = class_settings[category_name],
+      }
+    end
   end
-  for i = 1, 15 do
-    categories_pane.add{type = "checkbox", caption = i, state = true}
+
+  if #children > 0 then
+    gui.build(categories_frame, children)
   end
 end
 
