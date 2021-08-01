@@ -44,33 +44,6 @@ local function split(str, sep)
   return t
 end
 
-commands.add_command("rb-set-option", nil, function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local parameters = split(e.parameter, " ")
-  if #parameters ~= 2 then
-    game.print("Invalid command")
-  end
-  player_table.settings[parameters[1]] = parameters[2] == "true" and true or false
-  shared.refresh_contents(player, player_table)
-end)
-
-commands.add_command("rb-toggle-group", nil, function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local groups = player_table.settings.groups
-  groups[e.parameter] = not groups[e.parameter]
-  shared.refresh_contents(player, player_table)
-end)
-
-commands.add_command("rb-toggle-category", nil, function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local categories = player_table.settings.recipe_categories
-  categories[e.parameter] = not categories[e.parameter]
-  shared.refresh_contents(player, player_table)
-end)
-
 commands.add_command("rb-print-object", nil, function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
@@ -89,23 +62,6 @@ commands.add_command("rb-count-objects", nil, function(e)
   local player = game.get_player(e.player_index)
   for name, tbl in pairs(global.recipe_book) do
     player.print(name..": "..table_size(tbl))
-  end
-end)
-
-commands.add_command("rb-set-pane", nil, function(e)
-  local parameters = split(e.parameter, " ")
-  if #parameters ~= 2 then
-    game.print("Invalid command")
-    return
-  end
-
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-
-  local gui_data = player_table.guis.settings
-  if gui_data then
-    local pane = gui_data.refs.categories.pane
-    pane.style[parameters[1]] = tonumber(parameters[2]) or parameters[2]
   end
 end)
 
