@@ -21,6 +21,7 @@ local settings_gui = require("scripts.gui.settings.index")
 -- -----------------------------------------------------------------------------
 -- COMMANDS
 
+-- User-facing command
 commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
   if e.parameter == "refresh-player-data" then
     local player = game.get_player(e.player_index)
@@ -35,27 +36,22 @@ commands.add_command("RecipeBook", {"rb-message.command-help"}, function(e)
   end
 end)
 
--- TEMPORARY: FOR DEBUGGING ONLY
-
-local function split(str, sep)
-  local t = {}
-  for substr in string.gmatch(str, "([^"..sep.."]+)") do
-    table.insert(t, substr)
-  end
-  return t
-end
+-- Debug commands
 
 commands.add_command("rb-print-object", nil, function(e)
   local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local parameters = split(e.parameter, " ")
-  if #parameters ~= 2 then
-    game.print("Invalid command")
+  local _, _, class, name = string.find(e.parameter, "^(%w+) (%w+)$")
+  if not class or not name then
+    player.print("Invalid arguments format")
+    return
   end
+  local obj = recipe_book[class][name]
   if __DebugAdapter then
-    __DebugAdapter.print(recipe_book[parameters[1]][parameters[2]])
+    __DebugAdapter.print(obj)
+    player.print("Object data has been printed to the debug console.")
   else
-    log(serpent.block(recipe_book[parameters[1]][parameters[2]]))
+    log(serpent.block(obj))
+    player.print("Object data has been printed to the log file.")
   end
 end)
 
@@ -63,7 +59,9 @@ commands.add_command("rb-count-objects", nil, function(e)
   local player = game.get_player(e.player_index)
   for name, tbl in pairs(recipe_book) do
     if type(tbl) == "table" then
-      player.print(name..": "..table_size(tbl))
+      local output = name..": "..table_size(tbl)
+      player.print(output)
+      log(output)
     end
   end
 end)
