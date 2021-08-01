@@ -114,25 +114,6 @@ function root.build(player, player_table)
               },
             },
           },
-          {
-            tab = {type = "tab", caption = {"gui.rb-admin"}},
-            content = {
-              type = "flow",
-              style_mods = {padding = {8, 12, 12, 12}},
-              direction = "vertical",
-              {
-                type = "button",
-                style_mods = {horizontally_stretchable = true},
-                caption = {"gui.rb-clear-memoizer-cache"}
-              },
-              {
-                type = "button",
-                style = "red_button",
-                style_mods = {horizontally_stretchable = true},
-                caption = {"gui.rb-reset-player-data"}
-              },
-            },
-          }
         },
       },
     }
