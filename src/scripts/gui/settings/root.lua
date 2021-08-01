@@ -166,6 +166,7 @@ function root.update_contents(player, player_table)
   local query = state.search_query
 
   local gui_translations = player_table.translations.gui
+  local actual_settings = player_table.settings
 
   -- NOTE: For simplicity's sake, since there's not _that much_ going on here, we will just destroy and recreate things
   --       instead of updating them.
@@ -175,6 +176,7 @@ function root.update_contents(player, player_table)
   local general_pane = refs.general.pane
   general_pane.clear()
   for category, settings in pairs(constants.general_settings) do
+    local actual_category_settings = actual_settings.general[category]
     local children = {}
     for setting_name, setting_ident in pairs(settings) do
       local caption = gui_translations[setting_name] or setting_name
@@ -190,7 +192,7 @@ function root.update_contents(player, player_table)
               type = "checkbox",
               caption = caption,
               tooltip = tooltip,
-              state = setting_ident.default_value,
+              state = actual_category_settings[setting_name],
               actions = {
                 on_click = {
                   gui = "settings",
@@ -215,7 +217,7 @@ function root.update_contents(player, player_table)
                   return {"gui.rb-"..converted_setting_name.."-"..string.gsub(option_name, "_", "-")}
                 end
               ),
-              selected_index = table.find(setting_ident.options, setting_ident.default_value),
+              selected_index = table.find(setting_ident.options, actual_category_settings[setting_name]),
               actions = {
                 on_selection_state_changed = {
                   gui = "settings",
