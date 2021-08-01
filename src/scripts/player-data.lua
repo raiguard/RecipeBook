@@ -8,6 +8,7 @@ local recipe_book = require("scripts.recipe-book")
 local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref.index")
 local search_gui = require("scripts.gui.search.index")
+local settings_gui = require("scripts.gui.settings.index")
 
 local player_data = {}
 
@@ -111,6 +112,9 @@ function player_data.refresh(player, player_table)
   quick_ref_gui.root.destroy_all(player, player_table)
   if player_table.guis.search then
     search_gui.root.destroy(player, player_table)
+  end
+  if player_table.guis.settings then
+    settings_gui.root.destroy(player_table)
   end
 
   -- set flag
