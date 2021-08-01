@@ -26,6 +26,8 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
+local recipe_book = require("scripts.recipe-book")
+
 local caches = {}
 
 local formatter = {}
@@ -90,7 +92,7 @@ local function per_second(value, gui_translations)
 end
 
 local function object(obj, _, player_data, options)
-  local obj_data = global.recipe_book[obj.class][obj.name]
+  local obj_data = recipe_book[obj.class][obj.name]
   local obj_options = options and table.shallow_copy(options) or {}
   obj_options.amount_ident = obj.amount_ident
   local info = formatter(obj_data, player_data, obj_options)

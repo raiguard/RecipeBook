@@ -2,6 +2,7 @@ local gui = require("__flib__.gui-beta")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
+local recipe_book = require("scripts.recipe-book")
 
 local list_box = {}
 
@@ -45,7 +46,7 @@ function list_box.build(parent, index, component, variables)
 end
 
 function list_box.update(component, refs, object_data, player_data, variables)
-  local recipe_book = global.recipe_book
+  local recipe_book = recipe_book
 
   -- Scroll pane
   local scroll = refs.scroll_pane

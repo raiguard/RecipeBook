@@ -3,6 +3,7 @@ local gui = require("__flib__.gui-beta")
 local constants = require("constants")
 
 local formatter = require("scripts.formatter")
+local recipe_book = require("scripts.recipe-book")
 local shared = require("scripts.shared")
 local util = require("scripts.util")
 
@@ -103,7 +104,7 @@ function root.update_contents(player, player_table, recipe_name)
 
   local show_made_in = player_table.settings.show_made_in_in_quick_ref
 
-  local recipe_data = global.recipe_book.recipe[recipe_name]
+  local recipe_data = recipe_book.recipe[recipe_name]
   local player_data = formatter.build_player_data(player, player_table)
 
   -- Label
@@ -129,7 +130,7 @@ function root.update_contents(player, player_table, recipe_name)
     local buttons = table.children
     local i = 0
     for _, object in pairs(recipe_data[source]) do
-      local object_data = global.recipe_book[object.class][object.name]
+      local object_data = recipe_book[object.class][object.name]
       local object_info = formatter(
         object_data,
         player_data,

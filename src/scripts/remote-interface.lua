@@ -1,5 +1,6 @@
 local constants = require("constants")
 
+local recipe_book = require("scripts.recipe-book")
 local shared = require("scripts.shared")
 
 local remote_interface = {}
@@ -11,7 +12,7 @@ function remote_interface.open_page(player_index, class, name)
     return false, "Did not provide a valid class"
   end
   if not name then return false, "Did not provide a name" end
-  local data = global.recipe_book[class][name]
+  local data = recipe_book[class][name]
   if not data then return false, "Did not provide a valid object" end
 
   local player = game.get_player(player_index)

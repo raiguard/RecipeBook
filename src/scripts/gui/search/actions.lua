@@ -4,8 +4,9 @@ local on_tick_n = require("__flib__.on-tick-n")
 local constants = require("constants")
 
 local formatter = require("scripts.formatter")
+local gui_util = require("scripts.gui.util")
+local recipe_book = require("scripts.recipe-book")
 local shared = require("scripts.shared")
-local util = require("scripts.util")
 
 local root = require("scripts.gui.search.root")
 local settings_root = require("scripts.gui.settings.root")
@@ -137,7 +138,7 @@ function actions.update_search_results(data)
           end
 
           if matched then
-            local obj_data = global.recipe_book[class][internal]
+            local obj_data = recipe_book[class][internal]
 
             -- Check temperature settings
             if obj_data.class == "fluid" then
@@ -206,7 +207,7 @@ function actions.update_search_results(data)
 end
 
 function actions.open_object(data)
-  local context = util.navigate_to(data.e)
+  local context = gui_util.navigate_to(data.e)
   if context then
     -- TODO: Shared won't be needed any more!
     shared.open_page(data.player, data.player_table, context)
@@ -220,7 +221,7 @@ function actions.update_favorites(data)
   local player = data.player
   local player_table = data.player_table
   local refs = data.refs
-  util.update_list_box(
+  gui_util.update_list_box(
     refs.favorites_pane,
     player_table.favorites,
     formatter.build_player_data(player, player_table),
@@ -235,7 +236,7 @@ function actions.update_history(data)
   local player = data.player
   local player_table = data.player_table
   local refs = data.refs
-  util.update_list_box(
+  gui_util.update_list_box(
     refs.history_pane,
     player_table.global_history,
     formatter.build_player_data(player, player_table),

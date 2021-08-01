@@ -116,5 +116,4 @@ function recipe_book.check_forces()
   end
 end
 
-
 return recipe_book

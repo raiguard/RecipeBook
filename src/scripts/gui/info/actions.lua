@@ -3,8 +3,9 @@ local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
 
+local gui_util = require("scripts.gui.util")
+local recipe_book = require("scripts.recipe-book")
 local shared = require("scripts.shared")
-local util = require("scripts.util")
 
 local quick_ref_root = require("scripts.gui.quick-ref.root")
 
@@ -141,7 +142,7 @@ end
 
 function actions.navigate_to(data)
   local e = data.e
-  local context = util.navigate_to(e)
+  local context = gui_util.navigate_to(e)
   if context then
     if e.button == defines.mouse_button_type.middle then
       root.build(data.player, data.player_table, context)
@@ -161,7 +162,7 @@ function actions.open_in_tech_window(data)
 end
 
 function actions.go_to_base_fluid(data)
-  local base_fluid = global.recipe_book.fluid[data.context.name].prototype_name
+  local base_fluid = recipe_book.fluid[data.context.name].prototype_name
   root.update_contents(data.player, data.player_table, data.msg.id, {class = "fluid", name = base_fluid})
 end
 
@@ -202,7 +203,7 @@ function actions.open_list(data)
   local msg = data.msg
   local list_context = msg.context
   local source = msg.source
-  local list = global.recipe_book[list_context.class][list_context.name][source]
+  local list = recipe_book[list_context.class][list_context.name][source]
   if list and #list > 0 then
     local first_obj = list[1]
     shared.open_page(
@@ -226,7 +227,7 @@ function actions.change_tech_level(data)
   local msg = data.msg
   local state = data.state
 
-  local context_data = global.recipe_book[context.class][context.name]
+  local context_data = recipe_book[context.class][context.name]
   local min = context_data.min_level
   local max = context_data.max_level
   local new_level = math.clamp(state.selected_tech_level + msg.delta, min, max)

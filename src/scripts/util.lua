@@ -1,19 +1,8 @@
-local area = require("__flib__.area")
-local gui = require("__flib__.gui-beta")
 local math = require("__flib__.math")
+local misc = require("__flib__.misc")
 local table = require("__flib__.table")
 
-local constants = require("constants")
-
-local formatter = require("scripts.formatter")
-
 local util = {}
-
-function util.append(tbl, name)
-  local new_tbl = table.shallow_copy(tbl)
-  new_tbl[#new_tbl + 1] = name
-  return new_tbl
-end
 
 function util.build_amount_ident(input)
   return {
@@ -25,22 +14,27 @@ function util.build_amount_ident(input)
   }
 end
 
+-- HACK: Requiring `formatter` in this file causes a dependency loop
+local function format_number(value)
+  return misc.delineate_number(math.round_to(value, 2))
+end
+
 function util.build_temperature_ident(fluid)
   local temperature = fluid.temperature
   local temperature_min = fluid.minimum_temperature
   local temperature_max = fluid.maximum_temperature
   local temperature_string
   if temperature then
-    temperature_string = formatter.number(temperature)
+    temperature_string = format_number(temperature)
     temperature_min = temperature
     temperature_max = temperature
   elseif temperature_min and temperature_max then
     if temperature_min == math.min_double then
-      temperature_string = "≤"..formatter.number(temperature_max)
+      temperature_string = "≤"..format_number(temperature_max)
     elseif temperature_max == math.max_double then
-      temperature_string = "≥"..formatter.number(temperature_min)
+      temperature_string = "≥"..format_number(temperature_min)
     else
-      temperature_string = ""..formatter.number(temperature_min).."-"..formatter.number(temperature_max)
+      temperature_string = ""..format_number(temperature_min).."-"..format_number(temperature_max)
     end
   end
 
@@ -125,116 +119,6 @@ function util.convert_categories(source_tbl, class)
     categories[#categories + 1] = {class = class, name = category}
   end
   return categories
-end
-
--- The calling GUI will navigate to the context that is returned, if any
--- Actions that do not open a page will not return a context
-function util.navigate_to(e)
-  local tags = gui.get_tags(e.element)
-  local context = tags.context
-
-  local modifiers = {}
-  for name, modifier in pairs{control = e.control, shift = e.shift, alt = e.alt} do
-    if modifier then
-      modifiers[#modifiers + 1] = name
-    end
-  end
-
-  for _, interaction in pairs(constants.interactions[context.class]) do
-    if table.deep_compare(interaction.modifiers, modifiers) then
-      local action = interaction.action
-      local context_data = global.recipe_book[context.class][context.name]
-      local player = game.get_player(e.player_index)
-
-      if action == "view_details" then
-        return context
-      elseif action == "get_blueprint" then
-        local blueprint_recipe = tags.blueprint_recipe
-        if blueprint_recipe then
-          if context_data.blueprintable then
-            local cursor_stack = player.cursor_stack
-            player.clear_cursor()
-            if cursor_stack and cursor_stack.valid then
-              local CollisionBox = area.load(game.entity_prototypes[context.name].collision_box)
-              local height = CollisionBox:height()
-              local width = CollisionBox:width()
-              cursor_stack.set_stack{name = "blueprint", count = 1}
-              cursor_stack.set_blueprint_entities{
-                {
-                  entity_number = 1,
-                  name = context.name,
-                  position = {
-                    -- Entities with an even number of tiles to a side need to be set at -0.5 instead of 0
-                    math.ceil(width) % 2 == 0 and -0.5 or 0,
-                    math.ceil(height) % 2 == 0 and -0.5 or 0
-                  },
-                  recipe = blueprint_recipe
-                }
-              }
-              player.add_to_clipboard(cursor_stack)
-              player.activate_paste()
-            end
-          else
-            player.create_local_flying_text{
-              text = {"rb-message.cannot-create-blueprint"},
-              create_at_cursor = true
-            }
-            player.play_sound{path = "utility/cannot_build"}
-          end
-        end
-      elseif action == "open_in_technology_window" then
-        player.open_technology_gui(context.name)
-      elseif action == "view_source" then
-        local source = context_data[interaction.source]
-        if source then
-          return source
-        end
-      end
-    end
-  end
-end
-
-function util.update_list_box(pane, source_tbl, player_data, iterator, options)
-  local i = 0
-  local children = pane.children
-  local add = pane.add
-  for _, obj_ident in iterator(source_tbl) do
-    local obj_data = global.recipe_book[obj_ident.class][obj_ident.name]
-    local info = formatter(obj_data, player_data, options)
-    if info then
-      i = i + 1
-      local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
-      local item = children[i]
-      if item then
-        item.style = style
-        item.caption = info.caption
-        item.tooltip = info.tooltip
-        item.enabled = info.enabled
-        gui.update_tags(item, {context = {class = obj_ident.class, name = obj_ident.name}})
-      else
-        add{
-          type = "button",
-          style = style,
-          caption = info.caption,
-          tooltip = info.tooltip,
-          enabled = info.enabled,
-          mouse_button_filter = {"left", "middle"},
-          tags = {
-            [script.mod_name] = {
-              context = {class = obj_ident.class, name = obj_ident.name},
-              flib = {
-                on_click = {gui = "search", action = "open_object"}
-              }
-            }
-          }
-        }
-      end
-    end
-  end
-  -- Destroy extraneous items
-  for j = i + 1, #children do
-    children[j].destroy()
-  end
 end
 
 return util

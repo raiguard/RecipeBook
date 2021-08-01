@@ -1,7 +1,7 @@
 local gui = require("__flib__.gui-beta")
 
+local gui_util = require("scripts.gui.util")
 local shared = require("scripts.shared")
-local util = require("scripts.util")
 
 local root = require("scripts.gui.quick-ref.root")
 
@@ -30,7 +30,7 @@ function actions.handle_button_click(data)
       button.style = "flib_slot_button_green"
     end
   else
-    local context = util.navigate_to(e)
+    local context = gui_util.navigate_to(e)
     if context then
       shared.open_page(data.player, data.player_table, context)
     end

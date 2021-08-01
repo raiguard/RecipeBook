@@ -3,6 +3,7 @@ local translation = require("__flib__.translation")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
+local recipe_book = require("scripts.recipe-book")
 
 local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref.index")
@@ -59,7 +60,7 @@ function player_data.update_settings(player, player_table)
     local former_category_settings = former_settings.categories[category_class_name] or {}
     local category_settings = {}
     settings.categories[category_class_name] = category_settings
-    for category_name in pairs(global.recipe_book[category_class_name]) do
+    for category_name in pairs(recipe_book[category_class_name]) do
       local disabled_by_default = constants.disabled_categories[category_class_name][category_name]
       category_settings[category_name] = former_category_settings[category_name] or not disabled_by_default
     end
@@ -74,11 +75,10 @@ end
 
 function player_data.start_translations(player_index)
   translation.add_requests(player_index, constants.gui_strings)
-  translation.add_requests(player_index, global.strings)
+  translation.add_requests(player_index, recipe_book.strings)
 end
 
 function player_data.validate_favorites(favorites)
-  local recipe_book = global.recipe_book
   local i = 1
   while true do
     local obj = favorites[i]
@@ -96,7 +96,6 @@ function player_data.validate_favorites(favorites)
 end
 
 function player_data.validate_global_history(global_history)
-  local recipe_book = global.recipe_book
   for i = #global_history, 1, -1 do
     local entry = global_history[i]
     if not (recipe_book[entry.class] and recipe_book[entry.class][entry.name]) then
@@ -148,7 +147,7 @@ function player_data.check_cursor_stack(player)
     if cursor_stack
       and cursor_stack.valid
       and cursor_stack.valid_for_read
-      and global.recipe_book.item[cursor_stack.name]
+      and recipe_book.item[cursor_stack.name]
     then
       return cursor_stack.name
     end

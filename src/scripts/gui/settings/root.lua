@@ -3,6 +3,7 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
+local recipe_book = require("scripts.recipe-book")
 local util = require("scripts.util")
 
 local root = {}
@@ -225,7 +226,7 @@ function root.update_contents(player, player_table)
   local class_settings = actual_settings.categories[selected_class]
   local class_translations = translations[selected_class]
   local children = {}
-  for category_name in pairs(global.recipe_book[selected_class]) do
+  for category_name in pairs(recipe_book[selected_class]) do
     local category_translation = class_translations[category_name] or category_name
     if string.find(string.lower(category_translation), query) then
       local img_type = constants.class_to_type[selected_class]

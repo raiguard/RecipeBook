@@ -62,7 +62,9 @@ end)
 commands.add_command("rb-count-objects", nil, function(e)
   local player = game.get_player(e.player_index)
   for name, tbl in pairs(recipe_book) do
-    player.print(name..": "..table_size(tbl))
+    if type(tbl) == "table" then
+      player.print(name..": "..table_size(tbl))
+    end
   end
 end)
 
@@ -89,6 +91,7 @@ end)
 
 event.on_load(function()
   formatter.create_all_caches()
+
   recipe_book.build()
   recipe_book.check_forces()
 end)
@@ -98,6 +101,9 @@ event.on_configuration_changed(function(e)
     translation.init()
 
     global_data.build_prototypes()
+
+    recipe_book.build()
+    recipe_book.check_forces()
 
     for i, player in pairs(game.players) do
       player_data.refresh(player, global.players[i])
@@ -114,7 +120,7 @@ end)
 
 event.register({defines.events.on_research_finished, defines.events.on_research_reversed}, function(e)
   if not global.players then return end
-  global_data.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
+  recipe_book.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
 
   -- refresh all GUIs to reflect finished research
   for _, player in pairs(e.research.force.players) do
