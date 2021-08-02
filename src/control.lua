@@ -136,14 +136,7 @@ event.register({defines.events.on_research_finished, defines.events.on_research_
   if not global.players then return end
   recipe_book.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
 
-  -- refresh all GUIs to reflect finished research
-  for _, player in pairs(e.research.force.players) do
-    local player_table = global.players[player.index]
-    if player_table and player_table.flags.can_open_gui then
-      info_gui.root.update_all(player, player_table)
-      quick_ref_gui.root.update_all(player, player_table)
-    end
-  end
+  shared.refresh_contents(player, player_table, true)
 end)
 
 -- GUI
@@ -418,8 +411,10 @@ function shared.update_all_favorite_buttons(player, player_table)
   end
 end
 
-function shared.refresh_contents(player, player_table)
-  formatter.create_cache(player.index)
+function shared.refresh_contents(player, player_table, skip_memoizer_purge)
+  if not skip_memoizer_purge then
+    formatter.create_cache(player.index)
+  end
   info_gui.root.update_all(player, player_table)
   quick_ref_gui.root.update_all(player, player_table)
   if player_table.guis.search and player_table.guis.search.refs.window.visible then
