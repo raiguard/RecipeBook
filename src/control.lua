@@ -141,7 +141,7 @@ event.register({defines.events.on_research_finished, defines.events.on_research_
     local player_table = global.players[player.index]
     if player_table and player_table.flags.can_open_gui then
       info_gui.root.update_all(player, player_table)
-      quick_ref_gui.actions.update_all(player, player_table)
+      quick_ref_gui.root.update_all(player, player_table)
     end
   end
 end)
