@@ -130,6 +130,7 @@ constants.disabled_categories = {
     -- Mining drones
     ["mining-depot"] = 0,
     -- Pyanodon's
+    ["py-incineration"] = 1,
     ["py-runoff"] = 1,
     ["py-venting"] = 1,
     -- Transport drones
