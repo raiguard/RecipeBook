@@ -516,9 +516,6 @@ constants.list_box_item_styles = {
   unresearched = "rb_unresearched_list_box_item"
 }
 
--- TODO: Rename
-constants.max_listbox_height = 8
-
 constants.nav_event_properties = {
   ["rb-jump-to-front"] = {delta = 1, shift = true},
   ["rb-navigate-backward"] = {delta = -1},
