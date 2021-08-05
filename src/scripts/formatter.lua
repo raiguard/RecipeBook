@@ -402,7 +402,7 @@ local function get_obj_properties(obj_data, player_data, options)
   -- Player data
   local force = player_data.force
   local player_settings = player_data.settings
-  local show_hidden = player_settings.general.captions.show_hidden
+  local show_hidden = player_settings.general.content.show_hidden
   local show_unresearched = player_settings.general.content.show_unresearched
   local show_disabled = player_settings.general.content.show_disabled
 
