@@ -344,6 +344,8 @@ end
 local function get_interaction_helps(obj_data, player_data, options)
   local gui_translations = player_data.translations.gui
 
+  local show_interaction_helps = player_data.settings.general.tooltips.show_interaction_helps
+
   local cache = caches[player_data.player_index]
   local cache_key = build_cache_key(
     "interaction_helps",
@@ -367,24 +369,26 @@ local function get_interaction_helps(obj_data, player_data, options)
       local source = interaction.source
       if not source or obj_data[source] then
         num_interactions = num_interactions + 1
-        local action = gui_translations[interaction.label or interaction.action]
-        local input_name = table.reduce(
-          interaction.modifiers,
-          function(acc, modifier) return acc..modifier.."_" end,
-          ""
-        ).."click"
-        local button = interaction.button
-        if button then
-          button = button.."_"
-        else
-          button = ""
+        if show_interaction_helps then
+          local action = gui_translations[interaction.label or interaction.action]
+          local input_name = table.reduce(
+            interaction.modifiers,
+            function(acc, modifier) return acc..modifier.."_" end,
+            ""
+          ).."click"
+          local button = interaction.button
+          if button then
+            button = button.."_"
+          else
+            button = ""
+          end
+          local label = rich_text(
+            "font",
+            "default-semibold",
+            rich_text("color", "info", gui_translations[button..input_name]..": ")
+          )
+          helps_output = helps_output.."\n"..label..action
         end
-        local label = rich_text(
-          "font",
-          "default-semibold",
-          rich_text("color", "info", gui_translations[button..input_name]..": ")
-        )
-        helps_output = helps_output.."\n"..label..action
       end
     end
   end
@@ -521,7 +525,7 @@ function formatter.format(obj_data, player_data, options)
     tooltip_output = tooltip_output..get_tooltip_deets(obj_data, player_data)
   end
   local num_interactions = 0
-  if settings.general.tooltips.show_interaction_helps and not options.base_tooltip_only then
+  if not options.base_tooltip_only then
     local helps_output = get_interaction_helps(obj_data, player_data, options)
     tooltip_output = tooltip_output..helps_output.output
     num_interactions = helps_output.num_interactions
