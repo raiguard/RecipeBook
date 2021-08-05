@@ -1,6 +1,6 @@
 local util = require("scripts.util")
 
-return function(recipe_book, strings)
+return function(recipe_book, dictionaries)
   for name, prototype in pairs(global.prototypes.resource) do
     local products = prototype.mineable_properties.products
     if products then
@@ -63,15 +63,7 @@ return function(recipe_book, strings)
       resource_category = {class = "resource_category", name = resource_category},
       required_fluid = required_fluid
     }
-    util.add_string(strings, {
-      dictionary = "resource",
-      internal = name,
-      localised = prototype.localised_name
-    })
-    util.add_string(strings, {
-      dictionary = "resource_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.resource:add(name, prototype.localised_name)
+    dictionaries.resource_description:add(name, prototype.localised_description)
   end
 end

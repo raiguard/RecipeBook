@@ -2,7 +2,7 @@ local util = require("scripts.util")
 
 local offshore_pump_proc = {}
 
-function offshore_pump_proc.build(recipe_book, strings)
+function offshore_pump_proc.build(recipe_book, dictionaries)
   -- Iterate offshore pumps
   for name, prototype in pairs(global.prototypes.offshore_pump) do
     -- Add to material
@@ -21,16 +21,8 @@ function offshore_pump_proc.build(recipe_book, strings)
       pumping_speed = prototype.pumping_speed * 60,
       unlocked_by = {}
     }
-    util.add_string(strings, {
-      dictionary = "offshore_pump",
-      internal = name,
-      localised = prototype.localised_name
-    })
-    util.add_string(strings, {
-      dictionary = "offshore_pump_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.offshore_pump:add(name, prototype.localised_name)
+    dictionaries.offshore_pump_description:add(name, prototype.localised_description)
   end
 end
 

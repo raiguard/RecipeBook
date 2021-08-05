@@ -1,8 +1,8 @@
 local event = require("__flib__.event")
+local dictionary = require("__flib__.dictionary")
 local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
 local on_tick_n = require("__flib__.on-tick-n")
-local translation = require("__flib__.translation")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
@@ -88,7 +88,7 @@ end)
 -- BOOTSTRAP
 
 event.on_init(function()
-  translation.init()
+  dictionary.init()
 
   global_data.init()
   global_data.build_prototypes()
@@ -104,6 +104,8 @@ event.on_init(function()
 end)
 
 event.on_load(function()
+  dictionary.load()
+
   formatter.create_all_caches()
 
   recipe_book.build()
@@ -112,7 +114,7 @@ end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
-    translation.init()
+    dictionary.init()
 
     global_data.build_prototypes()
 
@@ -304,26 +306,18 @@ event.on_player_removed(function(e)
 end)
 
 event.on_player_joined_game(function(e)
-  local player_table = global.players[e.player_index]
-  if player_table.flags.translate_on_join then
-    player_table.flags.translate_on_join = false
-    player_data.start_translations(e.player_index)
-  end
+  dictionary.translate(game.get_player(e.player_index))
 end)
 
 event.on_player_left_game(function(e)
-  if translation.is_translating(e.player_index) then
-    translation.cancel(e.player_index)
-    global.players[e.player_index].flags.translate_on_join = true
-  end
+  dictionary.cancel_translation(e.player_index)
 end)
 
 -- TICK
 
 event.on_tick(function(e)
-  if translation.translating_players_count() > 0 then
-    translation.iterate_batch(e)
-  end
+  dictionary.check_skipped()
+
   local actions = on_tick_n.retrieve(e.tick)
   if actions then
     for _, msg in pairs(actions) do
@@ -340,36 +334,26 @@ end)
 
 -- TRANSLATIONS
 
--- TODO: Revisit translations system as a whole in flib
-event.on_string_translated(function(e)
-  local names, finished = translation.process_result(e)
-  if names then
-    local player_table = global.players[e.player_index]
-    local translations = player_table.translations
-    for dictionary_name, internal_names in pairs(names) do
-      local is_name = not string.find(dictionary_name, "description")
-      local dictionary = translations[dictionary_name]
-      for i = 1, #internal_names do
-        local internal_name = internal_names[i]
-        local result = e.translated and e.result or (is_name and internal_name or nil)
-        dictionary[internal_name] = result
-      end
-    end
-  end
-  if finished then
-    local player = game.get_player(e.player_index)
-    local player_table = global.players[e.player_index]
-    -- show message if needed
+event.on_string_translated(dictionary.process_translation)
+
+event.register(dictionary.on_language_translated, function(e)
+  for _, player_index in pairs(e.players) do
+    local player = game.get_player(player_index)
+    local player_table = global.players[player_index]
+
+    player_table.translations = e.dictionaries
+
+    -- Show message if needed
     if player_table.flags.show_message_after_translation then
       player.print{"message.rb-can-open-gui"}
+      player_table.flags.show_message_after_translation = false
     end
-    -- create GUI
+
+    -- Create GUI
     search_gui.root.build(player, player_table)
-    -- update flags
+    -- Update flags
     player_table.flags.can_open_gui = true
-    player_table.flags.translate_on_join = false -- not really needed, but is here just in case
-    player_table.flags.show_message_after_translation = false
-    -- enable shortcut
+    -- Enable shortcut
     player.set_shortcut_available("rb-search", true)
   end
 end)

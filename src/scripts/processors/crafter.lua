@@ -1,6 +1,6 @@
 local util = require("scripts.util")
 
-return function(recipe_book, strings, metadata)
+return function(recipe_book, dictionaries, metadata)
   -- Characters as crafters
   for name, prototype in pairs(global.prototypes.character) do
     local ingredient_limit = prototype.ingredient_count
@@ -20,12 +20,8 @@ return function(recipe_book, strings, metadata)
       recipe_categories_lookup = prototype.crafting_categories,
       unlocked_by = {}
     }
-    util.add_string(strings, {dictionary = "crafter", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "crafter_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.crafter:add(name, prototype.localised_name)
+    dictionaries.crafter_description:add(name, prototype.localised_description)
   end
 
   -- Actual crafters
@@ -66,12 +62,8 @@ return function(recipe_book, strings, metadata)
       rocket_parts_required = prototype.rocket_parts_required,
       unlocked_by = {}
     }
-    util.add_string(strings, {dictionary = "crafter", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "crafter_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.crafter:add(name, prototype.localised_name)
+    dictionaries.crafter_description:add(name, prototype.localised_description)
   end
 
   local processed_rocket_silo_categories = {}

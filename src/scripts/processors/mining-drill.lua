@@ -2,7 +2,7 @@ local util = require("scripts.util")
 
 local mining_drill_proc = {}
 
-function mining_drill_proc.build(recipe_book, strings)
+function mining_drill_proc.build(recipe_book, dictionaries)
   for name, prototype in pairs(global.prototypes.mining_drill) do
     for category in pairs(prototype.resource_categories) do
       local category_data = recipe_book.resource_category[category]
@@ -20,12 +20,8 @@ function mining_drill_proc.build(recipe_book, strings)
       supports_fluid = #prototype.fluidbox_prototypes > 0,
       unlocked_by = {}
     }
-    util.add_string(strings, {dictionary = "mining_drill", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "mining_drill_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.mining_drill:add(name, prototype.localised_name)
+    dictionaries.mining_drill_description:add(name, prototype.localised_description)
   end
 end
 

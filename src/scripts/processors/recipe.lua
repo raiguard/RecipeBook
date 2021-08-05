@@ -6,7 +6,7 @@ local util = require("scripts.util")
 
 local fluid_proc = require("scripts.processors.fluid")
 
-return function(recipe_book, strings, metadata)
+return function(recipe_book, dictionaries, metadata)
   for name, prototype in pairs(global.prototypes.recipe) do
     local category = prototype.category
     local group = prototype.group
@@ -67,7 +67,7 @@ return function(recipe_book, strings, metadata)
             material_io_data.temperature_ident = temperature_ident
             fluid_proc.add_temperature(
               recipe_book,
-              strings,
+              dictionaries,
               metadata,
               recipe_book.fluid[material.name],
               temperature_ident
@@ -96,15 +96,7 @@ return function(recipe_book, strings, metadata)
     end
 
     recipe_book.recipe[name] = data
-    util.add_string(strings, {
-      dictionary = "recipe",
-      internal = name,
-      localised = prototype.localised_name
-    })
-    util.add_string(strings, {
-      dictionary = "recipe_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.recipe:add(name, prototype.localised_name)
+    dictionaries.recipe_description:add(name, prototype.localised_description)
   end
 end

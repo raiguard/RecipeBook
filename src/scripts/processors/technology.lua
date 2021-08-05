@@ -4,7 +4,7 @@ local constants = require("constants")
 
 local util = require("scripts.util")
 
-return function(recipe_book, strings, metadata)
+return function(recipe_book, dictionaries, metadata)
   for name, prototype in pairs(global.prototypes.technology) do
     local unlocks_fluids = util.unique_obj_array()
     local unlocks_items = util.unique_obj_array()
@@ -109,16 +109,8 @@ return function(recipe_book, strings, metadata)
       localised_name = prototype.localised_name
     end
 
-    util.add_string(strings, {
-      dictionary = "technology",
-      internal = prototype.name,
-      localised = localised_name
-    })
-    util.add_string(strings, {
-      dictionary = "technology_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.technology:add(prototype.name, localised_name)
+    dictionaries.technology_description:add(name, prototype.localised_description)
   end
 
   -- Generate prerequisites and prerequisite_of

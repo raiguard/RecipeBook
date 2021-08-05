@@ -2,7 +2,7 @@ local table = require("__flib__.table")
 
 local util = require("scripts.util")
 
-return function(recipe_book, strings)
+return function(recipe_book, dictionaries)
   for name, prototype in pairs(global.prototypes.lab) do
     -- Add to items
     for _, item_name in ipairs(prototype.lab_inputs) do
@@ -21,11 +21,7 @@ return function(recipe_book, strings)
       researching_speed = prototype.researching_speed,
       unlocked_by = {}
     }
-    util.add_string(strings, {dictionary = "lab", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "lab_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.lab:add(name, prototype.localised_name)
+    dictionaries.lab_description:add(name, prototype.localised_description)
   end
 end

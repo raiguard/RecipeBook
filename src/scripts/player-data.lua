@@ -1,5 +1,5 @@
+local dictionary = require("__flib__.dictionary")
 local table = require("__flib__.table")
-local translation = require("__flib__.translation")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
@@ -20,20 +20,17 @@ function player_data.init(player_index)
       gui_open = false,
       technology_gui_open = false,
       show_message_after_translation = false,
-      translate_on_join = false
     },
     global_history = {},
     guis = {
-      info = {
-        _next_id = 1
-      },
+      info = {_next_id = 1},
       quick_ref = {}
     },
     settings = {
       general = {},
       categories = {},
     },
-    translations = nil -- assigned its initial value in player_data.refresh
+    translations =  nil, -- assigned its initial value in player_data.refresh
   }
   global.players[player_index] = data
 end
@@ -72,11 +69,6 @@ function player_data.update_settings(player, player_table)
 
   -- Create or purge memoizer cache
   formatter.create_cache(player.index)
-end
-
-function player_data.start_translations(player_index)
-  translation.add_requests(player_index, constants.gui_strings)
-  translation.add_requests(player_index, recipe_book.strings)
 end
 
 function player_data.validate_favorites(favorites)
@@ -133,12 +125,10 @@ function player_data.refresh(player, player_table)
   -- update settings
   player_data.update_settings(player, player_table)
 
-  -- run translations
-  player_table.translations = table.deep_copy(constants.empty_translations_table)
+  -- Run translations
+  player_table.translations = nil
   if player.connected then
-    player_data.start_translations(player.index)
-  else
-    player_table.flags.translate_on_join = true
+    dictionary.translate(player)
   end
 end
 

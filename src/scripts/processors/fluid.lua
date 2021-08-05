@@ -2,7 +2,7 @@ local util = require("scripts.util")
 
 local fluid_proc = {}
 
-function fluid_proc.build(recipe_book, strings, metadata)
+function fluid_proc.build(recipe_book, dictionaries, metadata)
   local localised_fluids = {}
   for name, prototype in pairs(global.prototypes.fluid) do
     -- Group
@@ -26,19 +26,15 @@ function fluid_proc.build(recipe_book, strings, metadata)
       unlocked_by = util.unique_obj_array()
     }
     -- Add strings
-    util.add_string(strings, {dictionary = "fluid", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "fluid_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.fluid:add(name, prototype.localised_name)
+    dictionaries.fluid_description:add(name, prototype.localised_description)
     localised_fluids[name] = prototype.localised_name
   end
   metadata.localised_fluids = localised_fluids
 end
 
 -- Adds a fluid temperature definition if one doesn't exist yet
-function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, temperature_ident)
+function fluid_proc.add_temperature(recipe_book, dictionaries, metadata, fluid_data, temperature_ident)
   local temperature_string = temperature_ident.string
 
   local temperatures = fluid_data.temperatures
@@ -61,17 +57,17 @@ function fluid_proc.add_temperature(recipe_book, strings, metadata, fluid_data, 
     }
     temperatures[temperature_string] = temperature_data
     recipe_book.fluid[combined_name] = temperature_data
-    util.add_string(strings, {
-      dictionary = "fluid",
-      internal = combined_name,
-      localised = {
+    dictionaries.fluid:add(
+      "fluid",
+      combined_name,
+      {
         "",
         metadata.localised_fluids[fluid_data.prototype_name],
         " (",
         {"format-degrees-c-compact", temperature_string},
         ")"
       }
-    })
+    )
   end
 end
 
@@ -84,7 +80,7 @@ function fluid_proc.is_within_range(base, comp, flip)
   end
 end
 
-function fluid_proc.process_temperatures(recipe_book, strings, metadata)
+function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
   for fluid_name, fluid_data in pairs(recipe_book.fluid) do
     local temperatures = fluid_data.temperatures
     if temperatures and table_size(temperatures) > 0 then
@@ -94,7 +90,7 @@ function fluid_proc.process_temperatures(recipe_book, strings, metadata)
       if not temperatures[default_temperature_ident.string] then
         fluid_proc.add_temperature(
           recipe_book,
-          strings,
+          dictionaries,
           metadata,
           fluid_data,
           default_temperature_ident

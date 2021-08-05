@@ -6,7 +6,7 @@ local util = require("scripts.util")
 
 local item_proc = {}
 
-function item_proc.build(recipe_book, strings, metadata)
+function item_proc.build(recipe_book, dictionaries, metadata)
   local place_results = {}
   local rocket_launch_payloads = {}
 
@@ -90,12 +90,8 @@ function item_proc.build(recipe_book, strings, metadata)
       stack_size = prototype.stack_size,
       unlocked_by = util.unique_obj_array()
     }
-    util.add_string(strings, {dictionary = "item", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "item_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.item:add(name, prototype.localised_name)
+    dictionaries.item_description:add(name, prototype.localised_description)
   end
 
   -- Add rocket launch payloads to their material tables

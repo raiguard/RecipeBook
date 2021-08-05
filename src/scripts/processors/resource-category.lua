@@ -1,6 +1,6 @@
 local util = require("scripts.util")
 
-return function(recipe_book, strings)
+return function(recipe_book, dictionaries)
   for name, prototype in pairs(global.prototypes.resource_category) do
     recipe_book.resource_category[name] = {
       class = "resource_category",
@@ -9,11 +9,7 @@ return function(recipe_book, strings)
       prototype_name = name,
       resources = util.unique_obj_array{},
     }
-    util.add_string(strings, {dictionary = "resource_category", internal = name, localised = prototype.localised_name})
-    util.add_string(strings, {
-      dictionary = "resource_category_description",
-      internal = name,
-      localised = prototype.localised_description
-    })
+    dictionaries.resource_category:add(name, prototype.localised_name)
+    dictionaries.resource_category_description:add(name, prototype.localised_description)
   end
 end

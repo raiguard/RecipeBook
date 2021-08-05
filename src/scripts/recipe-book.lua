@@ -1,3 +1,6 @@
+local dictionary = require("__flib__.dictionary")
+dictionary.set_use_local_storage(true)
+
 local constants = require("constants")
 
 local crafter_proc = require("scripts.processors.crafter")
@@ -21,33 +24,37 @@ function recipe_book.build()
     recipe_book[class] = {}
   end
 
-  -- localised strings for translation
-  local strings = {__index = 0}
-  -- data that is needed for generation but will not be saved
+  -- Dictionaries for translation
+  local dictionaries = {}
+  for _, class in pairs(constants.classes) do
+    dictionaries[class] = dictionary.new(class, true)
+    local desc_name = class.."_description"
+    dictionaries[desc_name] = dictionary.new(desc_name)
+  end
+  dictionary.new("gui", true, constants.gui_strings)
+
+  -- Data that is needed for generation but will not be saved
   local metadata = {}
 
-  group_proc(recipe_book, strings)
-  recipe_category_proc(recipe_book, strings)
-  resource_category_proc(recipe_book, strings)
+  group_proc(recipe_book, dictionaries)
+  recipe_category_proc(recipe_book, dictionaries)
+  resource_category_proc(recipe_book, dictionaries)
 
-  crafter_proc(recipe_book, strings, metadata)
-  fluid_proc(recipe_book, strings, metadata)
-  item_proc(recipe_book, strings, metadata)
-  lab_proc(recipe_book, strings)
-  mining_drill_proc(recipe_book, strings)
-  offshore_pump_proc(recipe_book, strings)
-  recipe_proc(recipe_book, strings, metadata)
-  resource_proc(recipe_book, strings)
-  technology_proc(recipe_book, strings, metadata)
+  crafter_proc(recipe_book, dictionaries, metadata)
+  fluid_proc(recipe_book, dictionaries, metadata)
+  item_proc(recipe_book, dictionaries, metadata)
+  lab_proc(recipe_book, dictionaries)
+  mining_drill_proc(recipe_book, dictionaries)
+  offshore_pump_proc(recipe_book, dictionaries)
+  recipe_proc(recipe_book, dictionaries, metadata)
+  resource_proc(recipe_book, dictionaries)
+  technology_proc(recipe_book, dictionaries, metadata)
 
   offshore_pump_proc.check_enabled_at_start(recipe_book)
 
-  fluid_proc.process_temperatures(recipe_book, strings, metadata)
+  fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
 
   mining_drill_proc.add_resources(recipe_book)
-
-  strings.__index = nil
-  recipe_book.strings = strings
 end
 
 local function update_launch_products(launch_products, force_index, to_value)
