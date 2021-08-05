@@ -366,7 +366,8 @@ function root.update_contents(player, player_table, id, options)
   -- HEADER
 
   -- List navigation
-  -- TODO: Calculate list length instead of just taking it, and skip objects we don't want to see
+  -- List nav is kind of weird because it doesn't respect your settings, but making it respect the settings would be
+  -- too much work
   local list_context = context.list
   if list_context then
     local source = list_context.context
