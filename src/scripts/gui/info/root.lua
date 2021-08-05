@@ -263,7 +263,6 @@ function root.update_contents(player, player_table, id, options)
     history[new_index] = new_context
     history._index = new_index
     -- Limit the length
-    -- SLOW: This is O(n)
     local max_size = constants.session_history_size
     if new_index > max_size then
       history._index = max_size

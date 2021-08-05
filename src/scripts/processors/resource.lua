@@ -54,7 +54,6 @@ return function(recipe_book, dictionaries)
     local resource_category_data = recipe_book.resource_category[resource_category]
     resource_category_data.resources[#resource_category_data.resources + 1] = {class = "resource", name = name}
 
-    -- TODO: Mining rates for infinite resources
     recipe_book.resource[name] = {
       class = "resource",
       compatible_mining_drills = compatible_mining_drills,

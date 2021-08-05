@@ -209,7 +209,6 @@ end
 function actions.open_object(data)
   local context = gui_util.navigate_to(data.e)
   if context then
-    -- TODO: Shared won't be needed any more!
     shared.open_page(data.player, data.player_table, context)
     if data.player_table.settings.general.search.close_search_gui_after_selection then
       actions.close(data)
