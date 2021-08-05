@@ -48,8 +48,16 @@ function player_data.update_settings(player, player_table)
     local category_settings = {}
     settings.general[category_name] = category_settings
     for setting_name, setting_ident in pairs(settings_data) do
-      -- TODO: Validate `enum` settings
-      category_settings[setting_name] = former_category_settings[setting_name] or setting_ident.default_value
+      if setting_ident.type == "bool" then
+        category_settings[setting_name] = former_category_settings[setting_name] or setting_ident.default_value
+      elseif setting_ident.type == "enum" then
+        local former_setting = former_category_settings[setting_name]
+        if former_setting and table.find(setting_ident.options, former_setting) then
+          category_settings[setting_name] = former_setting
+        else
+          category_settings[setting_name] = setting_ident.default_value
+        end
+      end
     end
   end
 
