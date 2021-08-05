@@ -5,9 +5,8 @@ local constants = require("constants")
 
 local formatter = require("scripts.formatter")
 local recipe_book = require("scripts.recipe-book")
+local shared = require("scripts.shared")
 local util = require("scripts.util")
-
-local search_actions = require("scripts.gui.search.actions")
 
 local components = {
   list_box = require("scripts.gui.info.list-box"),
@@ -272,13 +271,15 @@ function root.update_contents(player, player_table, id, options)
         table.remove(history, 1)
       end
     end
-    -- Update global history
-    search_actions.update_history(search_actions.get_action_data({}, {player_index = player.index}))
+  end
+
+  local context = new_context or history[history._index]
+  if not refresh then
+    shared.update_global_history(player, player_table, context)
   end
 
   -- COMMON DATA
 
-  local context = new_context or history[history._index]
   local obj_data = recipe_book[context.class][context.name]
 
   local player_data = formatter.build_player_data(player, player_table)

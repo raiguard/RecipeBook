@@ -402,6 +402,13 @@ function shared.update_all_favorite_buttons(player, player_table)
   end
 end
 
+function shared.update_global_history(player, player_table, new_context)
+  player_data.update_global_history(player_table.global_history, new_context)
+  if player_table.guis.search and player_table.guis.search.refs.window.visible then
+    search_gui.handle_action({action = "update_history"}, {player_index = player.index})
+  end
+end
+
 function shared.refresh_contents(player, player_table, skip_memoizer_purge)
   if not skip_memoizer_purge then
     formatter.create_cache(player.index)
