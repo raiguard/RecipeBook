@@ -373,10 +373,16 @@ local function get_interaction_helps(obj_data, player_data, options)
           function(acc, modifier) return acc..modifier.."_" end,
           ""
         ).."click"
+        local button = interaction.button
+        if button then
+          button = button.."_"
+        else
+          button = ""
+        end
         local label = rich_text(
           "font",
           "default-semibold",
-          rich_text("color", "info", gui_translations[input_name]..": ")
+          rich_text("color", "info", gui_translations[button..input_name]..": ")
         )
         helps_output = helps_output.."\n"..label..action
       end

@@ -297,8 +297,8 @@ constants.gui_strings = {
   format_area = {"gui.rb-format-area"},
   format_degrees = {"format-degrees-c-compact"},
   format_percent = {"format-percent"},
-  format_seconds = {"time-symbol-seconds"},
   format_seconds_parenthesis = {"gui.rb-format-seconds-parenthesis"},
+  format_seconds = {"time-symbol-seconds"},
   fuel_pollution = {"description.fuel-pollution"},
   fuel_value = {"description.fuel-value"},
   fuzzy_search = {"gui.rb-fuzzy-search"},
@@ -319,6 +319,7 @@ constants.gui_strings = {
   lab = {"gui.rb-lab"},
   list_box_label = {"gui.rb-list-box-label"},
   made_in = {"gui.rb-made-in"},
+  middle_click = {"gui.rb-middle-click"},
   mined_from = {"gui.rb-mined-from"},
   mining_area = {"gui.rb-mining-area"},
   mining_drill = {"gui.rb-mining-drill"},
@@ -390,6 +391,7 @@ constants.gui_strings = {
   vehicle_top_speed = {"description.fuel-top-speed"},
   view_base_fluid = {"gui.rb-view-base-fluid"},
   view_details = {"gui.rb-view-details"},
+  view_details_in_new_window = {"gui.rb-view-details-in-new-window"},
   view_fixed_recipe = {"gui.rb-view-fixed-recipe"},
   view_fluid = {"gui.rb-view-fluid"},
   view_required_fluid = {"gui.rb-view-required-fluid"},
@@ -411,6 +413,7 @@ constants.header_button_tooltips = {
 constants.interactions = {
   crafter = {
     {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
     {
       modifiers = {"shift"},
       action = "get_blueprint",
@@ -428,6 +431,7 @@ constants.interactions = {
   },
   fluid = {
     {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
     {
       modifiers = {"shift"},
       action = "view_source",
@@ -436,19 +440,24 @@ constants.interactions = {
     }
   },
   item = {
-    {modifiers = {}, action = "view_details"}
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
   group = {
-    {modifiers = {}, action = "view_details"}
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
   lab = {
-    {modifiers = {}, action = "view_details"}
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
   mining_drill = {
     {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
   offshore_pump = {
     {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
     {
       modifiers = {"shift"},
       action = "view_source",
@@ -457,13 +466,16 @@ constants.interactions = {
     }
   },
   recipe_category = {
-    {modifiers = {}, action = "view_details"}
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
   recipe = {
-    {modifiers = {}, action = "view_details"}
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
   resource = {
     {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
     {
       modifiers = {"shift"},
       action = "view_source",
@@ -472,10 +484,12 @@ constants.interactions = {
     }
   },
   resource_category = {
-    {modifiers = {}, action = "view_details"}
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
   technology = {
     {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
     {modifiers = {"shift"}, action = "open_in_technology_window"}
   }
 }
