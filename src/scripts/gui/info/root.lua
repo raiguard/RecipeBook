@@ -366,6 +366,7 @@ function root.update_contents(player, player_table, id, options)
   -- HEADER
 
   -- List navigation
+  -- TODO: Calculate list length instead of just taking it, and skip objects we don't want to see
   local list_context = context.list
   if list_context then
     local source = list_context.context
