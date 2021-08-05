@@ -93,7 +93,9 @@ function recipe_book.handle_research_updated(technology, to_value)
       if class == "fluid" and obj_data.temperature_ident then
         -- Unlock base fluid
         local base_fluid_data = recipe_book.fluid[obj_data.prototype_name]
-        base_fluid_data.researched_forces[force_index] = to_value
+        if base_fluid_data.researched_forces then
+          base_fluid_data.researched_forces[force_index] = to_value
+        end
       elseif class == "item" then
         -- Unlock rocket launch products
         update_launch_products(obj_data.rocket_launch_products, force_index, to_value)
