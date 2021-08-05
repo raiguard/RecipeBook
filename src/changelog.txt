@@ -27,7 +27,9 @@ Date: ????
     - Split the universal "search" hotkey into separate search and open selected object hotkeys
     - Unresearched objects are shown by default
   Optimizations:
+    - Reduced network traffic taken up by translation requests by a ridiculous amount
     - Reduced the mod's script data footprint by more than 10x
+    - Significantly reduced the amount of time translating takes
   Bugfixes:
     - Fixed that recipe "made in" didn't account for ingredient count limits on assemblers
     - Fixed that rocket launch products were always marked as their own payload
