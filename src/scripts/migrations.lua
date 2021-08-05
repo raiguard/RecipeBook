@@ -43,8 +43,6 @@ return {
     end
   end,
   ["3.0.0"] = function()
-    -- TODO: Destroy GUIs
-
     -- NUKE EVERYTHING
     global = {}
 
@@ -59,6 +57,14 @@ return {
 
     on_tick_n.init()
     for i, player in pairs(game.players) do
+      -- Destroy all old Recipe Book GUIs
+      for _, window in pairs(player.gui.screen.children) do
+        if window.get_mod() == "RecipeBook" then
+          window.destroy()
+        end
+      end
+
+      -- Re-init player
       player_data.init(i)
       player_data.refresh(player, global.players[i])
     end
