@@ -1,3 +1,5 @@
+local table = require("__flib__.table")
+
 local util = require("scripts.util")
 
 local fluid_proc = {}
@@ -111,7 +113,7 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
 
           -- Get the matching fluid
           local fluid_ident
-          -- SLOW: Find a way to do this without iterating all of the materials again
+          -- This is kind of a slow way to do it, but I don't really care
           for _, material_ident in pairs(recipe_data[recipe_tbl_name]) do
             if material_ident.name == fluid_name then
               fluid_ident = material_ident
@@ -128,11 +130,11 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
           elseif recipe_tbl_name == "products" then
             -- Change the name of the material to the default temperature
             fluid_ident.name = fluid_ident.name.."."..default_temperature_ident.string
+            fluid_ident.temperature_ident = nil
             -- Use the default temperature for matching
             temperature_ident = default_temperature_ident
           end
 
-          -- FIXME: Variants that are not a product of anything won't ever be unlocked
           -- Iterate over all temperature variants and compare their constraints
           for _, temperature_data in pairs(temperatures) do
             if not temperature_ident
@@ -163,6 +165,21 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
                 end
               end
             end
+          end
+        end
+      end
+
+      -- Step 4: If this variant is not produced by anything, unlock with the base fluid
+      for _, temperature_data in pairs(temperatures) do
+        if #temperature_data.product_of == 0 and #temperature_data.unlocked_by == 0 then
+          temperature_data.unlocked_by = table.deep_copy(fluid_data.unlocked_by)
+          for _, technology_ident in pairs(fluid_data.unlocked_by) do
+            local technology_data = recipe_book.technology[technology_ident.name]
+            -- Don't use fluid_ident becuase it has an amount
+            technology_data.unlocks_fluids[#technology_data.unlocks_fluids + 1] = {
+              class = "fluid",
+              name = temperature_data.name
+            }
           end
         end
       end
