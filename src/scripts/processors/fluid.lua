@@ -58,7 +58,6 @@ function fluid_proc.add_temperature(recipe_book, dictionaries, metadata, fluid_d
     temperatures[temperature_string] = temperature_data
     recipe_book.fluid[combined_name] = temperature_data
     dictionaries.fluid:add(
-      "fluid",
       combined_name,
       {
         "",
