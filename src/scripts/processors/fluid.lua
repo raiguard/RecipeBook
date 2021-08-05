@@ -152,7 +152,8 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
               -- If in product_of, append to unlocked_by
               -- Also add this fluid to that tech's `unlocks fluids` table
               -- This is to avoid variants being "unlocked" when you can't actually get them
-              if fluid_tbl_name == "product_of" then
+              -- If this is an "empty X barrel" recipe, ignore it
+              if fluid_tbl_name == "product_of" and not string.find(recipe_ident.name, "^empty%-.+%-barrel$") then
                 local temp_unlocked_by = temperature_data.unlocked_by
                 for _, technology_ident in pairs(recipe_data.unlocked_by) do
                   temp_unlocked_by[#temp_unlocked_by + 1] = technology_ident
