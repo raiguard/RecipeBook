@@ -281,5 +281,13 @@ styles.rb_info_table = {
 
 styles.rb_search_textfield = {
   type = "textbox_style",
-  width = 250
+  parent = "flib_widthless_textfield",
+  horizontally_stretchable = "on",
 }
+
+styles.rb_search_invalid_textfield = {
+  type = "textbox_style",
+  parent = "flib_widthless_invalid_textfield",
+  horizontally_stretchable = "on",
+}
+

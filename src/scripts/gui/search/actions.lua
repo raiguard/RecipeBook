@@ -93,14 +93,10 @@ function actions.update_search_query(data)
       game.tick + constants.search_timeout,
       {gui = "search", action = "update_search_results", player_index = data.e.player_index}
     )
-    refs.search_textfield.style = "flib_widthless_textfield"
-    -- HACK: Make this a data stage style
-    refs.search_textfield.style.horizontally_stretchable = true
+    refs.search_textfield.style = "rb_search_textfield"
   else
     state.search_query = ""
-    refs.search_textfield.style = "flib_widthless_invalid_textfield"
-    -- HACK: Make this a data stage style
-    refs.search_textfield.style.horizontally_stretchable = true
+    refs.search_textfield.style = "rb_search_invalid_textfield"
   end
 end
 

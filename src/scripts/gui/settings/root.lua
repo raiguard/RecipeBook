@@ -68,7 +68,6 @@ function root.build(player, player_table)
             },
             content = {
               type = "flow",
-              -- TODO: Make a data stage style?
               style_mods = {horizontal_spacing = 12, padding = {8, 12, 12, 12}},
               {
                 type = "list-box",
