@@ -60,7 +60,7 @@ return function(recipe_book, dictionaries, metadata)
           end
         end
 
-        -- fluid temperatures
+        -- Fluid temperatures
         if material.type == "fluid" then
           local temperature_ident = util.build_temperature_ident(material)
           if temperature_ident then
