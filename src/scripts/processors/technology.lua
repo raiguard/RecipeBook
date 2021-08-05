@@ -38,24 +38,24 @@ return function(recipe_book, dictionaries, metadata)
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
           recipe_data.researched_forces = {}
           unlocks_recipes[#unlocks_recipes + 1] = {class = "recipe", name = modifier.recipe}
-          -- TODO: Unlock barreling recipes are unlocked either with their actual tech (if the fluid was already
-          --       unlocked), or with their base fluid
-          -- NOTE: There will be no reliable way to tell if a fluid is unlocked before or after its barreling recipe.
-          --       Therefore, we will need to add support for multiple techs required to unlock something.
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
             local product_data = recipe_book[product.class][product_name]
-
-            product_data.researched_forces = {}
-
             local product_ident = {class = product_data.class, name = product_data.prototype_name}
 
-            product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
+            -- For "empty X barrel" recipes, do not unlock the fluid with the recipe
+            -- This is to avoid fluids getting "unlocked" when they are in reality still 100 hours away
+            local is_empty_barrel_recipe = string.find(modifier.recipe, "^empty%-.+%-barrel$")
+
+            if product_data.class ~= "fluid" or not is_empty_barrel_recipe then
+              product_data.researched_forces = {}
+              product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
+            end
 
             -- Materials
             if product_data.class == "item" then
               unlocks_items[#unlocks_items + 1] = product_ident
-            elseif product_data.class == "fluid" then
+            elseif product_data.class == "fluid" and not is_empty_barrel_recipe then
               unlocks_fluids[#unlocks_fluids + 1] = product_ident
             end
 

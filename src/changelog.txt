@@ -22,6 +22,7 @@ Date: ????
     - Search and information have been separated into separate GUIs
     - You can open as many information windows as you want simultaneously
   Changes:
+    - "Empty X barrel" recipes will no longer unlock the fluid that they empty
     - Recipe time-to-craft is now displayed in a generic info table, rather than as a fake ingredient
     - Split the universal "search" hotkey into separate search and open selected object hotkeys
     - Unresearched objects are shown by default

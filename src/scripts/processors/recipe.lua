@@ -34,7 +34,7 @@ return function(recipe_book, dictionaries, metadata)
       used_as_fixed_recipe = metadata.fixed_recipes[name]
     }
 
-    -- ingredients / products
+    -- Ingredients / products
     for lookup_type, io_type in pairs{ingredient_in = "ingredients", product_of = "products"} do
       local output = {}
       for i, material in ipairs(prototype[io_type]) do
@@ -79,7 +79,7 @@ return function(recipe_book, dictionaries, metadata)
       data[io_type] = output
     end
 
-    -- made in
+    -- Made in
     local num_ingredients = #data.ingredients
     for crafter_name, crafter_data in pairs(recipe_book.crafter) do
       if (crafter_data.ingredient_limit or 255) >= num_ingredients
