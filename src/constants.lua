@@ -141,34 +141,6 @@ constants.disabled_categories = {
   resource_category = {}
 }
 
-constants.empty_translations_table = {
-  gui = {},
-  crafter = {},
-  crafter_description = {},
-  fluid = {},
-  fluid_description = {},
-  group = {},
-  group_description = {},
-  item = {},
-  item_description = {},
-  lab = {},
-  lab_description = {},
-  mining_drill = {},
-  mining_drill_description = {},
-  offshore_pump = {},
-  offshore_pump_description = {},
-  recipe = {},
-  recipe_category = {},
-  recipe_category_description = {},
-  recipe_description = {},
-  resource = {},
-  resource_category = {},
-  resource_category_description = {},
-  resource_description = {},
-  technology = {},
-  technology_description = {}
-}
-
 constants.general_settings = {
   content = {
     show_disabled = {
