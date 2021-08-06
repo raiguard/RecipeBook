@@ -6,22 +6,31 @@ local recipe_book = require("scripts.recipe-book")
 
 local table_comp = {}
 
-function table_comp.build(parent, index, _, variables)
-  return gui.build(parent, {
+function table_comp.build(parent, index, component, variables)
+    local has_label = (component.label or component.source) and true or false
+    return gui.build(parent, {
     {
-      type = "frame",
-      style = "deep_frame_in_shallow_frame",
-      style_mods = {top_margin = 4},
+      type = "flow",
+      style_mods = (not has_label or index == 1) and {top_margin = 4} or nil,
+      direction = "vertical",
       index = index,
       ref = {"root"},
       action = {
         on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
       },
-      {type = "table", style = "rb_info_table", column_count = 2, ref = {"table"},
-        -- Dummy elements so the first row doesn't get used
-        {type = "empty-widget"},
-        {type = "empty-widget"}
-      }
+      {type = "label", style = "rb_list_box_label", ref = {"label"}, visible = has_label},
+      {
+        type = "frame",
+        style = "deep_frame_in_shallow_frame",
+        action = {
+          on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
+        },
+        {type = "table", style = "rb_info_table", column_count = 2, ref = {"table"},
+          -- Dummy elements so the first row doesn't get used
+          {type = "empty-widget"},
+          {type = "empty-widget"}
+        }
+      },
     }
   })
 end
@@ -34,9 +43,14 @@ function table_comp.update(component, refs, object_data, player_data, variables)
 
   local search_query = variables.search_query
 
+  if component.source or component.label then
+    refs.label.caption = gui_translations[component.source or component.label]
+  end
+
   local i = 2
-  for _, row in ipairs(component.rows) do
-    local value = object_data[row.source]
+  local source_tbl = component.source and object_data[component.source] or component.rows
+  for _, row in ipairs(source_tbl) do
+    local value = row.value or object_data[row.source]
     if value then
       local caption = gui_translations[row.label or row.source]
       if string.find(string.lower(caption), search_query) then
