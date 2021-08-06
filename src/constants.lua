@@ -258,6 +258,7 @@ constants.gui_strings = {
   close_search_gui_after_selection = {"gui.rb-close-search-gui-after-selection"},
   close_search_when_moving_info_pages = {"gui.rb-close-search-when-moving-info-pages"},
   compatible_mining_drills = {"gui.rb-compatible-mining-drills"},
+  compatible_modules = {"gui.rb-compatible-modules"},
   compatible_recipes = {"gui.rb-compatible-recipes"},
   compatible_resources = {"gui.rb-compatible-resources"},
   content = {"gui.rb-content"},
@@ -307,6 +308,8 @@ constants.gui_strings = {
   mining_time = {"gui.rb-mining-time"},
   module_categories = {"gui.rb-module-categories"},
   module_category = {"gui.rb-module-category"},
+  module_limitations = {"gui.rb-module-limitations"},
+  modules = {"gui.rb-modules"},
   offshore_pump = {"gui.rb-offshore-pump"},
   open_in_technology_window = {"gui.rb-open-in-technology-window"},
   per_second_suffix = {"gui.rb-per-second-suffix"},
@@ -571,7 +574,8 @@ constants.pages = {
     {type = "list_box", source = "rocket_launch_products"},
     {type = "list_box", source = "mined_from"},
     {type = "list_box", source = "researched_in"},
-    {type = "list_box", source = "unlocked_by"}
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "module_limitations"},
   },
   lab = {
     {type = "table", rows = {
@@ -597,7 +601,9 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },
-  module_category = {},
+  module_category = {
+    {type = "list_box", source = "modules"},
+  },
   offshore_pump = {
     {type = "table", rows = {
       {type ="plain", source = "pumping_speed", formatter = "per_second"},
@@ -620,13 +626,14 @@ constants.pages = {
         source = "energy",
         label = "crafting_time",
         label_tooltip = "crafting_time_desc",
-        formatter = "seconds_from_ticks"
+        formatter = "seconds_from_ticks",
       },
     }},
     {type = "list_box", source = "ingredients", always_show = true},
     {type = "list_box", source = "products", always_show = true},
     {type = "list_box", source = "made_in"},
-    {type = "list_box", source = "unlocked_by"}
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "compatible_modules"},
   },
   resource = {
     {type = "table", rows = {

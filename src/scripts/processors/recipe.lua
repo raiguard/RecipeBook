@@ -23,6 +23,7 @@ return function(recipe_book, dictionaries, metadata)
 
     local data = {
       class = "recipe",
+      compatible_modules = {},
       enabled_at_start = enabled_at_start,
       energy = prototype.energy,
       group = {class = "group", name = group.name},
@@ -92,6 +93,13 @@ return function(recipe_book, dictionaries, metadata)
           amount_ident = util.build_amount_ident{amount = crafting_time, format = "format_seconds_parenthesis"}
         }
         crafter_data.compatible_recipes[#crafter_data.compatible_recipes + 1] = {class = "recipe", name = name}
+      end
+    end
+
+    -- Compatible modules
+    for module_name, module_limitations in pairs(metadata.modules) do
+      if table_size(module_limitations) == 0 or module_limitations[name] then
+        data.compatible_modules[#data.compatible_modules + 1] = {class = "item", name = module_name}
       end
     end
 

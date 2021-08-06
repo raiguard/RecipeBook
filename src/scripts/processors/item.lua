@@ -7,6 +7,7 @@ local util = require("scripts.util")
 local item_proc = {}
 
 function item_proc.build(recipe_book, dictionaries, metadata)
+  local modules = {}
   local place_results = {}
   local rocket_launch_payloads = {}
 
@@ -55,6 +56,20 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     local fuel_emissions_multiplier = prototype.fuel_emissions_multiplier
     local fuel_top_speed_multiplier = prototype.fuel_top_speed_multiplier
 
+    local module_limitations = {}
+    if prototype.type == "module" then
+      module_limitations = table.map(
+        prototype.limitations,
+        function(recipe)
+          return {class = "recipe", name = recipe}
+        end
+      )
+      modules[name] = table.invert(prototype.limitations)
+      local module_category = prototype.category
+      local category_data = recipe_book.module_category[module_category]
+      category_data.modules[#category_data.modules + 1] = {class = "item", name = name}
+    end
+
     recipe_book.item[name] = {
       class = "item",
       fuel_acceleration_multiplier = (
@@ -81,6 +96,8 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       ingredient_in = {},
       mined_from = {},
       module_category = util.convert_to_ident("module_category", prototype.category),
+      module_effects = prototype.module_effects,
+      module_limitations = module_limitations,
       place_result = place_result,
       product_of = {},
       prototype_name = name,
@@ -109,6 +126,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     end
   end
 
+  metadata.modules = modules
   metadata.place_results = place_results
 end
 
