@@ -13,8 +13,8 @@ Date: ????
     - Added numerous properties that were previously confined to tooltips, and new properties:
       - Crafter: Crafting speed, ingredient limit
       - Fluid: Fuel value, default temperature, group
-      - Item: Stack size, fuel value, fuel pollution, vehicle acceleration, vehicle top speed, group, place result (if the place result has RB data)
-      - Recipe: Recipe category, group
+      - Item: Stack size, fuel value, fuel pollution, vehicle acceleration, vehicle top speed, group, place result (if the place result has RB data), module effects
+      - Recipe: Recipe category, group, compatible modules
     - Added settings to toggle group member visibility
     - Added text search to information pages
     - Alt-clicking an ingredient or product in a quick ref window will mark it green
