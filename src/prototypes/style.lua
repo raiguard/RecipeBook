@@ -182,6 +182,12 @@ styles.rb_toolbar_label = {
   horizontally_squashable = "on"
 }
 
+styles.rb_unresearched_toolbar_label = {
+  type = "label_style",
+  parent = "rb_toolbar_label",
+  font_color = constants.colors.unresearched.tbl,
+}
+
 styles.rb_slot_label = {
   type = "label_style",
   parent = "count_label",

@@ -110,6 +110,7 @@ function root.update_contents(player, player_table, recipe_name)
   local label = refs.label
   label.caption = recipe_info.caption
   label.tooltip = recipe_info.tooltip
+  label.style = recipe_info.researched and "rb_toolbar_label" or "rb_unresearched_toolbar_label"
 
   -- Slot boxes
   for _, source in ipairs{"ingredients", "products", "made_in"} do

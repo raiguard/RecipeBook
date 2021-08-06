@@ -425,6 +425,7 @@ function root.update_contents(player, player_table, id, options)
   local label = refs.header.label
   label.caption = title_info.caption
   label.tooltip = title_info.tooltip
+  label.style = title_info.researched and "rb_toolbar_label" or "rb_unresearched_toolbar_label"
 
   -- Buttons
   if context.class == "technology" then
