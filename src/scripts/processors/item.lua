@@ -56,7 +56,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     local fuel_emissions_multiplier = prototype.fuel_emissions_multiplier
     local fuel_top_speed_multiplier = prototype.fuel_top_speed_multiplier
 
-    local module_limitations = {}
+    local module_effects = {}
     if prototype.type == "module" then
       -- Add to internal list of modules
       modules[name] = table.invert(prototype.limitations)
@@ -64,6 +64,15 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       local module_category = prototype.category
       local category_data = recipe_book.module_category[module_category]
       category_data.modules[#category_data.modules + 1] = {class = "item", name = name}
+      -- Process effects
+      for effect_name, effect in pairs(prototype.module_effects) do
+        module_effects[#module_effects + 1] = {
+          type = "plain",
+          label = effect_name.."_bonus",
+          value = effect.bonus,
+          formatter = "percent",
+        }
+      end
     end
 
     recipe_book.item[name] = {
@@ -92,7 +101,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       ingredient_in = {},
       mined_from = {},
       module_category = util.convert_to_ident("module_category", prototype.category),
-      module_effects = prototype.module_effects,
+      module_effects = module_effects,
       place_result = place_result,
       product_of = {},
       prototype_name = name,
