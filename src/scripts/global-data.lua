@@ -26,6 +26,7 @@ local straight_conversions = {
   "fluid",
   "item",
   "item_group",
+  "module_category",
   "recipe",
   "recipe_category",
   "resource_category",

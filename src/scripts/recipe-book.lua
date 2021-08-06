@@ -9,6 +9,7 @@ local group_proc = require("scripts.processors.group")
 local item_proc = require("scripts.processors.item")
 local lab_proc = require("scripts.processors.lab")
 local mining_drill_proc = require("scripts.processors.mining-drill")
+local module_category_proc = require("scripts.processors.module-category")
 local offshore_pump_proc = require("scripts.processors.offshore-pump")
 local recipe_category_proc = require("scripts.processors.recipe-category")
 local recipe_proc = require("scripts.processors.recipe")
@@ -37,6 +38,7 @@ function recipe_book.build()
   local metadata = {}
 
   group_proc(recipe_book, dictionaries)
+  module_category_proc(recipe_book, dictionaries)
   recipe_category_proc(recipe_book, dictionaries)
   resource_category_proc(recipe_book, dictionaries)
 

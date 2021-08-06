@@ -121,5 +121,11 @@ function util.convert_categories(source_tbl, class)
   return categories
 end
 
+function util.convert_to_ident(class, source)
+  if source then
+    return {class = class, name = source}
+  end
+end
+
 return util
 

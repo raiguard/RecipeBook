@@ -80,6 +80,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       hidden = prototype.has_flag("hidden"),
       ingredient_in = {},
       mined_from = {},
+      module_category = util.convert_to_ident("module_category", prototype.category),
       place_result = place_result,
       product_of = {},
       prototype_name = name,
