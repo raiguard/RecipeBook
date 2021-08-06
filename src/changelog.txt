@@ -10,6 +10,7 @@ Date: ????
       - Recipe category: fluids, items, and recipes belonging to each recipe category
       - Resource: resource category, required fluid, mining time, products, compatible mining drills
       - Resource category: resources and mining drills belonging to that category
+      - Tile: pollution absorption, vehicle friction, walking speed, unlocked by, and placeable by
     - Added numerous properties that were previously confined to tooltips, and new properties:
       - Crafter: Crafting speed, ingredient limit
       - Fluid: Fuel value, default temperature, group

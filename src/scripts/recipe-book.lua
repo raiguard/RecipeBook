@@ -15,6 +15,7 @@ local recipe_proc = require("scripts.processors.recipe")
 local resource_category_proc = require("scripts.processors.resource-category")
 local resource_proc = require("scripts.processors.resource")
 local technology_proc = require("scripts.processors.technology")
+local tile_proc = require("scripts.processors.tile")
 
 local recipe_book = {}
 
@@ -48,6 +49,8 @@ function recipe_book.build()
   offshore_pump_proc(recipe_book, dictionaries)
   recipe_proc(recipe_book, dictionaries, metadata)
   resource_proc(recipe_book, dictionaries)
+  tile_proc(recipe_book, dictionaries)
+
   technology_proc(recipe_book, dictionaries, metadata)
 
   offshore_pump_proc.check_enabled_at_start(recipe_book)
@@ -79,7 +82,8 @@ function recipe_book.handle_research_updated(technology, to_value)
     technology_data.unlocks_fluids,
     technology_data.unlocks_items,
     technology_data.unlocks_machines,
-    technology_data.unlocks_recipes
+    technology_data.unlocks_recipes,
+    technology_data.unlocks_tiles,
   } do
     for _, obj_ident in ipairs(objects) do
       local class = obj_ident.class

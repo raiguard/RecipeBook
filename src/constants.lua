@@ -21,6 +21,7 @@ constants.classes = {
   "resource",
   "resource_category",
   "technology",
+  "tile",
 }
 
 -- TODO: Add missing glyphs
@@ -36,7 +37,8 @@ constants.class_to_font_glyph = {
   recipe = "E",
   resource_category = "Z",
   resource = "F",
-  technology = "A"
+  technology = "A",
+  tile = "Z",
 }
 
 constants.class_to_type = {
@@ -51,7 +53,8 @@ constants.class_to_type = {
   recipe = "recipe",
   resource_category = false,
   resource = "entity",
-  technology = "technology"
+  technology = "technology",
+  tile = "tile",
 }
 
 constants.colors = {
@@ -102,6 +105,7 @@ constants.derived_type_to_class = {
   ["resource"] = "resource",
   ["rocket-silo"] = "crafter",
   ["technology"] = "technology",
+  ["tile"] = "tile",
 }
 
 constants.disabled_categories = {
@@ -307,7 +311,9 @@ constants.gui_strings = {
   open_in_technology_window = {"gui.rb-open-in-technology-window"},
   per_second_suffix = {"gui.rb-per-second-suffix"},
   placeable_by = {"gui.rb-placeable-by"},
+  place_as_tile_result = {"gui.rb-place-as-tile-result"},
   place_result = {"gui.rb-place-result"},
+  pollution_absorption = {"gui.rb-pollution-absorption"},
   pollution_bonus = {"description.pollution-bonus"},
   prerequisite_of = {"gui.rb-prerequisite-of"},
   prerequisites = {"gui.rb-prerequisites"},
@@ -357,6 +363,7 @@ constants.gui_strings = {
   tech_level = {"gui.rb-tech-level"},
   technology = {"gui.rb-technology"},
   temperatures = {"gui.rb-temperatures"},
+  tile = {"gui.rb-tile"},
   time_per_unit_desc = {"gui.rb-time-per-unit-desc"},
   time_per_unit = {"gui.rb-time-per-unit"},
   toggle_completed = {"gui.rb-toggle-completed"},
@@ -366,8 +373,10 @@ constants.gui_strings = {
   unlocks_items = {"gui.rb-unlocks-items"},
   unlocks_machines = {"gui.rb-unlocks-machines"},
   unlocks_recipes = {"gui.rb-unlocks-recipes"},
+  unlocks_tiles = {"gui.rb-unlocks-tiles"},
   unresearched = {"gui.rb-unresearched"},
   vehicle_acceleration = {"description.fuel-acceleration"},
+  vehicle_friction = {"gui.rb-vehicle-friction"},
   vehicle_top_speed = {"description.fuel-top-speed"},
   view_base_fluid = {"gui.rb-view-base-fluid"},
   view_details = {"gui.rb-view-details"},
@@ -376,6 +385,7 @@ constants.gui_strings = {
   view_fluid = {"gui.rb-view-fluid"},
   view_required_fluid = {"gui.rb-view-required-fluid"},
   view_technology = {"gui.rb-view-technology"},
+  walking_speed = {"description.walking-speed"},
 }
 
 constants.header_button_tooltips = {
@@ -471,7 +481,11 @@ constants.interactions = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
     {modifiers = {"shift"}, action = "open_in_technology_window"}
-  }
+  },
+  tile = {
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
+  },
 }
 
 constants.input_sanitizers = {
@@ -558,6 +572,7 @@ constants.pages = {
       },
       {type = "goto", source = "group", options = {hide_glyph = true}},
       {type = "goto", source = "place_result"},
+      {type = "goto", source = "place_as_tile_result"},
     }},
     {type = "table", source = "module_effects"},
     {type = "list_box", source = "ingredient_in"},
@@ -664,9 +679,19 @@ constants.pages = {
     {type = "list_box", source = "unlocks_items"},
     {type = "list_box", source = "unlocks_machines"},
     {type = "list_box", source = "unlocks_recipes"},
+    {type = "list_box", source = "unlocks_tiles"},
     {type = "list_box", source = "prerequisites"},
     {type = "list_box", source = "prerequisite_of"}
-  }
+  },
+  tile = {
+    {type = "table", rows = {
+      {type = "plain", source = "pollution_absorption", formatter = "per_second"},
+      {type = "plain", source = "vehicle_friction", formatter = "percent"},
+      {type = "plain", source = "walking_speed", formatter = "percent"},
+    }},
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "placeable_by"},
+  },
 }
 
 constants.search_results_limit = 500
@@ -749,7 +774,12 @@ constants.tooltips = {
     {type = "plain", source = "research_unit_count", label = "required_units", formatter = "number"},
     {type = "plain", source = "research_unit_energy", label = "time_per_unit", formatter = "seconds_from_ticks"},
     {type = "list", source = "research_ingredients_per_unit", formatter = "object", options = {always_show = true}}
-  }
+  },
+  tile = {
+    {type = "plain", source = "pollution_absorption", formatter = "per_second"},
+    {type = "plain", source = "vehicle_friction", formatter = "percent"},
+    {type = "plain", source = "walking_speed", formatter = "percent"},
+  },
 }
 
 return constants

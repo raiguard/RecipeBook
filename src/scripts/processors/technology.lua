@@ -10,6 +10,7 @@ return function(recipe_book, dictionaries, metadata)
     local unlocks_items = util.unique_obj_array()
     local unlocks_machines = util.unique_obj_array()
     local unlocks_recipes = util.unique_obj_array()
+    local unlocks_tiles = util.unique_obj_array()
     local research_ingredients_per_unit = {}
 
     -- Research units and ingredients per unit
@@ -69,6 +70,17 @@ return function(recipe_book, dictionaries, metadata)
                 unlocks_machines[#unlocks_machines + 1] = place_result
               end
             end
+
+            -- Tiles
+            local place_as_tile_result = metadata.place_as_tile_results[product_name]
+            if place_as_tile_result then
+              local tile_data = recipe_book.tile[place_as_tile_result.name]
+              if tile_data then
+                tile_data.researched_forces = {}
+                tile_data.unlocked_by[#tile_data.unlocked_by + 1] = {class = "technology", name = name}
+                unlocks_tiles[#unlocks_tiles + 1] = place_as_tile_result
+              end
+            end
           end
         end
       end
@@ -94,6 +106,7 @@ return function(recipe_book, dictionaries, metadata)
       unlocks_items = unlocks_items,
       unlocks_machines = unlocks_machines,
       unlocks_recipes = unlocks_recipes,
+      unlocks_tiles = unlocks_tiles,
       upgrade = prototype.upgrade
     }
 
