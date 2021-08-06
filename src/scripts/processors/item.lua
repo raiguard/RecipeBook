@@ -65,7 +65,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       local category_data = recipe_book.module_category[module_category]
       category_data.modules[#category_data.modules + 1] = {class = "item", name = name}
       -- Process effects
-      for effect_name, effect in pairs(prototype.module_effects) do
+      for effect_name, effect in pairs(prototype.module_effects or {}) do
         module_effects[#module_effects + 1] = {
           type = "plain",
           label = effect_name.."_bonus",
