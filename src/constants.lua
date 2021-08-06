@@ -308,7 +308,6 @@ constants.gui_strings = {
   mining_time = {"gui.rb-mining-time"},
   module_categories = {"gui.rb-module-categories"},
   module_category = {"gui.rb-module-category"},
-  module_limitations = {"gui.rb-module-limitations"},
   modules = {"gui.rb-modules"},
   offshore_pump = {"gui.rb-offshore-pump"},
   open_in_technology_window = {"gui.rb-open-in-technology-window"},
@@ -575,7 +574,6 @@ constants.pages = {
     {type = "list_box", source = "mined_from"},
     {type = "list_box", source = "researched_in"},
     {type = "list_box", source = "unlocked_by"},
-    {type = "list_box", source = "module_limitations"},
   },
   lab = {
     {type = "table", rows = {

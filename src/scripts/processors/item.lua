@@ -58,13 +58,9 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 
     local module_limitations = {}
     if prototype.type == "module" then
-      module_limitations = table.map(
-        prototype.limitations,
-        function(recipe)
-          return {class = "recipe", name = recipe}
-        end
-      )
+      -- Add to internal list of modules
       modules[name] = table.invert(prototype.limitations)
+      -- Add to module category
       local module_category = prototype.category
       local category_data = recipe_book.module_category[module_category]
       category_data.modules[#category_data.modules + 1] = {class = "item", name = name}
@@ -97,7 +93,6 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       mined_from = {},
       module_category = util.convert_to_ident("module_category", prototype.category),
       module_effects = prototype.module_effects,
-      module_limitations = module_limitations,
       place_result = place_result,
       product_of = {},
       prototype_name = name,
