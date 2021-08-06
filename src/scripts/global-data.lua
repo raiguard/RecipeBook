@@ -31,7 +31,6 @@ local straight_conversions = {
   "recipe_category",
   "resource_category",
   "technology",
-  "tile",
 }
 
 function global_data.build_prototypes()

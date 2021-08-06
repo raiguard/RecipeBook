@@ -9,7 +9,6 @@ local item_proc = {}
 function item_proc.build(recipe_book, dictionaries, metadata)
   local modules = {}
   local place_results = {}
-  local place_as_tile_results = {}
   local rocket_launch_payloads = {}
 
   for name, prototype in pairs(global.prototypes.item) do
@@ -49,13 +48,6 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       else
         place_result = nil
       end
-    end
-
-    -- TODO: Account for variants (i.e. hazard concrete right)
-    local place_as_tile_result = prototype.place_as_tile_result
-    if place_as_tile_result then
-      place_as_tile_result = {class = "tile", name = place_as_tile_result.result.name}
-      place_as_tile_results[name] = place_as_tile_result
     end
 
     local fuel_value = prototype.fuel_value
@@ -107,7 +99,6 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       module_category = util.convert_to_ident("module_category", prototype.category),
       module_effects = module_effects,
       place_result = place_result,
-      place_as_tile_result = place_as_tile_result,
       product_of = {},
       prototype_name = name,
       recipe_categories = default_categories,
@@ -137,10 +128,9 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 
   metadata.modules = modules
   metadata.place_results = place_results
-  metadata.place_as_tile_results = place_as_tile_results
 end
 
--- When calling the module directly, call item_proc.build
+-- When calling the module directly, call fluid_proc.build
 setmetatable(item_proc, { __call = function(_, ...) return item_proc.build(...) end })
 
 return item_proc
