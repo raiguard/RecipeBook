@@ -19,6 +19,7 @@ function offshore_pump_proc.build(recipe_book, dictionaries)
       placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
       pumping_speed = prototype.pumping_speed * 60,
+      size = util.get_size(prototype),
       unlocked_by = {}
     }
     dictionaries.offshore_pump:add(name, prototype.localised_name)

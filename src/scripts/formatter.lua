@@ -68,7 +68,12 @@ local function temperature(value, gui_translations)
 end
 
 local function area(value, gui_translations)
-  return expand_string(gui_translations.format_area, number(value))
+  if type(value) == "number" then
+    local formatted = number(value)
+    return expand_string(gui_translations.format_area, formatted, formatted)
+  else
+    return expand_string(gui_translations.format_area, number(value.width), number(value.height))
+  end
 end
 
 local function fuel_value(value, gui_translations)

@@ -357,6 +357,7 @@ constants.gui_strings = {
   show_made_in_in_quick_ref = {"gui.rb-show-made-in-in-quick-ref"},
   show_unresearched = {"gui.rb-show-unresearched"},
   si_joule = {"si-unit-symbol-joule"},
+  size = {"gui.rb-size"},
   speed_bonus = {"description.speed-bonus"},
   stack_size = {"gui.rb-stack-size"},
   tech_level_desc = {"gui.rb-tech-level-desc"},
@@ -523,7 +524,8 @@ constants.pages = {
       {type = "plain", source = "crafting_speed", formatter = "number"},
       {type = "goto", source = "fixed_recipe", options = {hide_glyph = true}},
       {type = "plain", source = "rocket_parts_required", formatter = "number"},
-      {type = "plain", source = "ingredient_limit", formatter = "number"}
+      {type = "plain", source = "ingredient_limit", formatter = "number"},
+      {type = "plain", source = "size", formatter = "area"},
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     {type = "list_box", source = "recipe_categories"},
@@ -591,7 +593,8 @@ constants.pages = {
         label = "research_speed",
         label_tooltip = "research_speed_desc",
         formatter = "number"
-      }
+      },
+      {type = "plain", source = "size", formatter = "area"},
     }},
     {type = "list_box", source = "inputs"},
     {type = "list_box", source = "unlocked_by"},
@@ -600,7 +603,8 @@ constants.pages = {
   mining_drill = {
     {type = "table", rows = {
       {type = "plain", source = "mining_speed", formatter = "per_second"},
-      {type = "plain", source = "mining_area", formatter = "area"}
+      {type = "plain", source = "mining_area", formatter = "area"},
+      {type = "plain", source = "size", formatter = "area"},
     }},
     {type = "list_box", source = "compatible_resources"},
     {type = "list_box", source = "resource_categories"},
@@ -611,6 +615,7 @@ constants.pages = {
     {type = "table", rows = {
       {type ="plain", source = "pumping_speed", formatter = "per_second"},
       {type = "goto", source = "fluid", options = {always_show = true, hide_glyph = true}},
+      {type = "plain", source = "size", formatter = "area"},
     }},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}

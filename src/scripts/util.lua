@@ -1,3 +1,4 @@
+local area = require("__flib__.area")
 local math = require("__flib__.math")
 local misc = require("__flib__.misc")
 local table = require("__flib__.table")
@@ -124,6 +125,13 @@ end
 function util.convert_to_ident(class, source)
   if source then
     return {class = class, name = source}
+  end
+end
+
+function util.get_size(prototype)
+  if prototype.selection_box then
+    local box = area.load(prototype.selection_box)
+    return {height = math.ceil(box:height()), width = math.ceil(box:width())}
   end
 end
 

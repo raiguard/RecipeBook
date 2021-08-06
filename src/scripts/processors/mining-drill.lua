@@ -18,6 +18,7 @@ function mining_drill_proc.build(recipe_book, dictionaries)
       resource_categories_lookup = prototype.resource_categories,
       resource_categories = util.convert_categories(prototype.resource_categories, "resource_category"),
       supports_fluid = #prototype.fluidbox_prototypes > 0,
+      size = util.get_size(prototype),
       unlocked_by = {}
     }
     dictionaries.mining_drill:add(name, prototype.localised_name)

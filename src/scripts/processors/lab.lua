@@ -19,6 +19,7 @@ return function(recipe_book, dictionaries)
       placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
       researching_speed = prototype.researching_speed,
+      size = util.get_size(prototype),
       unlocked_by = {}
     }
     dictionaries.lab:add(name, prototype.localised_name)
