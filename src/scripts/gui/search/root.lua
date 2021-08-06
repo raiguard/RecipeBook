@@ -40,6 +40,7 @@ function root.build(player, player_table)
                   type = "textfield",
                   style = "flib_widthless_textfield",
                   style_mods = {horizontally_stretchable = true},
+                  clear_and_focus_on_right_click = true,
                   ref = {"search_textfield"},
                   actions = {
                     on_text_changed = {gui = "search", action = "update_search_query"}

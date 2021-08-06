@@ -81,6 +81,7 @@ function root.build(player, player_table, context)
             right_padding = 3,
             width = 120
           },
+          clear_and_focus_on_right_click = true,
           visible = false,
           ref = {"titlebar", "search_textfield"},
           actions = {
