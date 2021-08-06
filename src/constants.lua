@@ -157,7 +157,7 @@ constants.general_settings = {
     show_hidden = {
       type = "bool",
       has_tooltip = true,
-      default_value = true,
+      default_value = false,
     },
     show_unresearched = {
       type = "bool",
