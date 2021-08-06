@@ -3,13 +3,13 @@ Version: 3.0.0
 Date: ????
   Features:
     - Added new pages:
-        - Group: fluids, items, and recipes belonging to each group
-        - Lab: research speed, compatible science packs, unlocked by, and placeable by
-        - Mining drill: mining speed, mining area, compatible resources, resource categories, unlocked by, placeable by
-        - Offshore pump: pumping speed, output fluid, unlocked by, placeable by
-        - Recipe category: fluids, items, and recipes belonging to each recipe category
-        - Resource: resource category, required fluid, mining time, products, compatible mining drills
-        - Resource category: resources and mining drills belonging to that category
+      - Group: fluids, items, and recipes belonging to each group
+      - Lab: research speed, compatible science packs, unlocked by, and placeable by
+      - Mining drill: mining speed, mining area, compatible resources, resource categories, unlocked by, placeable by
+      - Offshore pump: pumping speed, output fluid, unlocked by, placeable by
+      - Recipe category: fluids, items, and recipes belonging to each recipe category
+      - Resource: resource category, required fluid, mining time, products, compatible mining drills
+      - Resource category: resources and mining drills belonging to that category
     - Added numerous properties that were previously confined to tooltips, and new properties:
       - Crafter: Crafting speed, ingredient limit
       - Fluid: Fuel value, default temperature, group
