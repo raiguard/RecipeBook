@@ -43,10 +43,6 @@ function table_comp.update(component, refs, object_data, player_data, variables)
 
   local search_query = variables.search_query
 
-  if component.source or component.label then
-    refs.label.caption = gui_translations[component.source or component.label]
-  end
-
   local i = 2
   local source_tbl = component.source and object_data[component.source] or component.rows
   for _, row in ipairs(source_tbl) do
@@ -172,6 +168,15 @@ function table_comp.update(component, refs, object_data, player_data, variables)
 
   if i > 3 then
     refs.root.visible = true
+
+    local label_source = component.source or component.label
+    if label_source then
+      refs.label.caption = formatter.expand_string(
+        gui_translations.list_box_label,
+        gui_translations[label_source] or label_source,
+        i / 2 - 1
+      )
+    end
   else
     refs.root.visible = false
   end
