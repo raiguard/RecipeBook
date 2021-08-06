@@ -53,7 +53,7 @@ function table_comp.update(component, refs, object_data, player_data, variables)
         -- Label
         i = i + 1
         local label_label = children[i]
-        if not label_label then
+        if not label_label or not label_label.valid then
           label_label = tbl.add{
             type = "label",
             style = "rb_table_label",
