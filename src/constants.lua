@@ -8,6 +8,12 @@ constants.category_classes = {
   "resource_category",
 }
 
+constants.category_class_plurals = {
+  group = "groups",
+  recipe_category = "recipe_categories",
+  resource_category = "resource_categories",
+}
+
 constants.classes = {
   "crafter",
   "fluid",
@@ -481,11 +487,6 @@ constants.input_sanitizers = {
 }
 
 constants.interface_version = 4
-
-constants.list_box_item_styles = {
-  available = "rb_list_box_item",
-  unresearched = "rb_unresearched_list_box_item"
-}
 
 constants.nav_event_properties = {
   ["rb-jump-to-front"] = {delta = 1, shift = true},
