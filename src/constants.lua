@@ -4,7 +4,6 @@ local constants = {}
 
 constants.category_classes = {
   "group",
-  "module_category",
   "recipe_category",
   "resource_category",
 }
@@ -16,7 +15,6 @@ constants.classes = {
   "item",
   "lab",
   "mining_drill",
-  "module_category",
   "offshore_pump",
   "recipe",
   "recipe_category",
@@ -33,7 +31,6 @@ constants.class_to_font_glyph = {
   item = "C",
   lab = "D",
   mining_drill = "D",
-  module_category = "Z",
   offshore_pump = "D",
   recipe_category = "Z",
   recipe = "E",
@@ -49,7 +46,6 @@ constants.class_to_type = {
   item = "item",
   lab = "entity",
   mining_drill = "entity",
-  module_category = false,
   offshore_pump = "entity",
   recipe_category = false,
   recipe = "recipe",
@@ -99,7 +95,6 @@ constants.derived_type_to_class = {
   ["item"] = "item",
   ["lab"] = "lab",
   ["mining-drill"] = "mining_drill",
-  ["module-catgory"] = "module_category",
   ["offshore-pump"] = "offshore_pump",
   ["recipe-catgory"] = "recipe_category",
   ["recipe"] = "recipe",
@@ -114,7 +109,6 @@ constants.disabled_categories = {
     -- Editor extensions
     ["ee-tools"] = true
   },
-  module_category = {},
   -- Dictionary category -> modifier
   -- `0` - Disabled by default, does not affect object availability
   -- `1` - Disabled by default
@@ -307,8 +301,6 @@ constants.gui_strings = {
   mining_drills = {"gui.rb-mining-drills"},
   mining_speed = {"gui.rb-mining-speed"},
   mining_time = {"gui.rb-mining-time"},
-  module_categories = {"gui.rb-module-categories"},
-  module_category = {"gui.rb-module-category"},
   module_effects = {"gui.rb-module-effects"},
   modules = {"gui.rb-modules"},
   offshore_pump = {"gui.rb-offshore-pump"},
@@ -443,10 +435,6 @@ constants.interactions = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
-  module_category = {
-    {modifiers = {}, action = "view_details"},
-    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
-  },
   offshore_pump = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
@@ -570,7 +558,6 @@ constants.pages = {
       },
       {type = "goto", source = "group", options = {hide_glyph = true}},
       {type = "goto", source = "place_result"},
-      {type = "goto", source = "module_category"},
     }},
     {type = "table", source = "module_effects"},
     {type = "list_box", source = "ingredient_in"},
@@ -604,9 +591,6 @@ constants.pages = {
     {type = "list_box", source = "resource_categories"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
-  },
-  module_category = {
-    {type = "list_box", source = "modules"},
   },
   offshore_pump = {
     {type = "table", rows = {
@@ -727,7 +711,6 @@ constants.tooltips = {
     {type = "plain", source = "mining_area", formatter = "area"},
     {type = "list", source = "resource_categories", formatter = "object"}
   },
-  module_category = {},
   offshore_pump = {
     {type = "plain", source = "pumping_speed", formatter = "per_second"},
     {
