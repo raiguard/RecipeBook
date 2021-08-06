@@ -438,31 +438,29 @@ local function get_obj_properties(obj_data, player_data, options)
     and (show_unresearched or obj_properties.researched)
     and (show_disabled or obj_properties.enabled)
   then
-    -- Check group
-    -- NOTE: Group members won't be shown on their own page if disabled
-    local group = obj_data.group
-    if not group or player_settings.categories.group[group.name] then
-      -- For recipes - check category to see if it should be shown
-      -- NOTE: Recipe category  members won't be shown on their own page if disabled
-      local recipe_category = obj_data.recipe_category
-      local recipe_categories = obj_data.recipe_categories_lookup
-      if recipe_category then
-        if player_settings.categories.recipe_category[recipe_category.name] then
+    -- Check categories
+    local had_category = false
+    for _, category in pairs(constants.category_classes) do
+      local obj_category = obj_data[category]
+      local obj_categories = obj_data[constants.category_class_plurals[category]]
+      if obj_category then
+        had_category = true
+        if player_settings.categories[category][obj_category.name] then
           should_show = true
         end
-      -- For materials - check if any of their recipe categories are enabled
-      elseif recipe_categories then
-        local category_settings = player_settings.categories.recipe_category
-        for category_name in pairs(recipe_categories) do
+      elseif obj_categories then
+        had_category = true
+        local category_settings = player_settings.categories[category]
+        for _, category_name in pairs(obj_categories) do
           if category_settings[category_name] then
             should_show = true
             break
           end
         end
-      else
-        should_show = true
       end
+      if should_show then break end
     end
+    if not had_category then should_show = true end
   end
   return should_show and obj_properties or false
 end
