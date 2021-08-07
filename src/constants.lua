@@ -681,6 +681,33 @@ constants.pages = {
   }
 }
 
+constants.prototypes = {}
+
+constants.prototypes.filtered_entities = {
+  character = {{filter = "type", type = "character"}},
+  crafter = {
+    {filter = "type", type = "assembling-machine"},
+    {filter = "type", type = "furnace"},
+    {filter = "type", type = "rocket-silo"},
+  },
+  lab = {{filter = "type", type = "lab"}},
+  mining_drill = {{filter = "type", type = "mining-drill"}},
+  offshore_pump = {{filter = "type", type = "offshore-pump"}},
+  resource = {{filter = "type", type = "resource"}},
+}
+
+constants.prototypes.straight_conversions = {
+  "fluid",
+  "fuel_category",
+  "item",
+  "item_group",
+  "module_category",
+  "recipe",
+  "recipe_category",
+  "resource_category",
+  "technology",
+}
+
 constants.search_results_limit = 500
 constants.search_results_visible_items = 15
 constants.search_timeout = 30
