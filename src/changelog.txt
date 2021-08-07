@@ -15,7 +15,7 @@ Date: ????
       - Fluid: Fuel value, default temperature, group
       - Item: Stack size, fuel value, fuel pollution, vehicle acceleration, vehicle top speed, group, place result (if the place result has RB data), module effects
       - Recipe: Recipe category, group, compatible modules
-    - Added settings to toggle group member visibility
+    - Added settings to toggle group and resource category member visibility
     - Added text search to information pages
     - Alt-clicking an ingredient or product in a quick ref window will mark it green
     - Middle-clicking an object will open that object in a new window
