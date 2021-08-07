@@ -89,6 +89,7 @@ end)
 
 event.on_init(function()
   dictionary.init()
+  on_tick_n.init()
 
   global_data.init()
   global_data.build_prototypes()
@@ -96,7 +97,6 @@ event.on_init(function()
   recipe_book.build()
   recipe_book.check_forces()
 
-  on_tick_n.init()
   for i, player in pairs(game.players) do
     player_data.init(i)
     player_data.refresh(player, global.players[i])
