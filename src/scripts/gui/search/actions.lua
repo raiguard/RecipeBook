@@ -213,36 +213,14 @@ function actions.open_object(data)
 end
 
 function actions.update_favorites(data)
-  local player = data.player
-  local player_table = data.player_table
-  local refs = data.refs
-  gui_util.update_list_box(
-    refs.favorites_pane,
-    player_table.favorites,
-    formatter.build_player_data(player, player_table),
-    pairs,
-    {always_show = true}
-  )
-  refs.delete_favorites_button.enabled = table_size(player_table.favorites) > 0 and true or false
-  shared.update_all_favorite_buttons(player, player_table)
+  root.update_favorites(data.player, data.player_table)
 end
 
 function actions.update_history(data)
-  local player = data.player
-  local player_table = data.player_table
-  local refs = data.refs
-  gui_util.update_list_box(
-    refs.history_pane,
-    player_table.global_history,
-    formatter.build_player_data(player, player_table),
-    ipairs,
-    {always_show = true}
-  )
-  refs.delete_history_button.enabled = table_size(player_table.global_history) > 0 and true or false
-  end
+  root.update_history(data.player, data.player_table)
+end
 
 function actions.delete_favorites(data)
-  -- TODO: Update all favorite buttons
   data.player_table.favorites = {}
   actions.update_favorites(data)
 end

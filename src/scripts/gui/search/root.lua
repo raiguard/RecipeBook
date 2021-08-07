@@ -1,6 +1,8 @@
 local gui = require("__flib__.gui")
 
 local formatter = require("scripts.formatter")
+local gui_util = require("scripts.gui.util")
+local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 local root = {}
@@ -100,7 +102,8 @@ function root.build(player, player_table)
     refs = refs
   }
 
-  -- TODO: Update favorites and history
+  root.update_favorites(player, player_table)
+  root.update_history(player, player_table)
 end
 
 function root.destroy(player, player_table)
@@ -132,6 +135,35 @@ function root.toggle(player, player_table)
   else
     root.open(player, player_table)
   end
+end
+
+function root.update_favorites(player, player_table)
+  local gui_data = player_table.guis.search
+  if not gui_data then return end
+  local refs = gui_data.refs
+  gui_util.update_list_box(
+    refs.favorites_pane,
+    player_table.favorites,
+    formatter.build_player_data(player, player_table),
+    pairs,
+    {always_show = true}
+  )
+  refs.delete_favorites_button.enabled = table_size(player_table.favorites) > 0 and true or false
+  shared.update_all_favorite_buttons(player, player_table)
+end
+
+function root.update_history(player, player_table)
+  local gui_data = player_table.guis.search
+  if not gui_data then return end
+  local refs = gui_data.refs
+  gui_util.update_list_box(
+    refs.history_pane,
+    player_table.global_history,
+    formatter.build_player_data(player, player_table),
+    ipairs,
+    {always_show = true}
+  )
+  refs.delete_history_button.enabled = table_size(player_table.global_history) > 0 and true or false
 end
 
 return root
