@@ -132,17 +132,24 @@ function item_proc.build(recipe_book, dictionaries, metadata)
   metadata.place_results = place_results
 end
 
--- TODO: Add fuel compatibility for fluids
 function item_proc.process_burned_in(recipe_book)
   for _, machine_class in pairs(constants.machine_classes) do
     for machine_name, machine_data in pairs(recipe_book[machine_class]) do
       local compatible_fuels = machine_data.compatible_fuels
-      for _, category_ident in pairs(machine_data.fuel_categories or {}) do
+      for i, category_ident in pairs(machine_data.fuel_categories or {}) do
         local category_data = recipe_book.fuel_category[category_ident.name]
-        for _, item_ident in pairs(category_data.items) do
-          local item_data = recipe_book.item[item_ident.name]
-          item_data.burned_in[#item_data.burned_in + 1] = {class = machine_class, name = machine_name}
-          compatible_fuels[#compatible_fuels + 1] = table.shallow_copy(item_ident)
+        if category_data then
+          -- Add fluids and items to the compatible fuels, and add the machine to the material's burned in table
+          for _, objects in pairs{category_data.fluids, category_data.items} do
+            for _, obj_ident in pairs(objects) do
+              local obj_data = recipe_book[obj_ident.class][obj_ident.name]
+              obj_data.burned_in[#obj_data.burned_in + 1] = {class = machine_class, name = machine_name}
+              compatible_fuels[#compatible_fuels + 1] = table.shallow_copy(obj_ident)
+            end
+          end
+        else
+          -- Remove this category from the machine
+          table.remove(machine_data.fuel_categories. i)
         end
       end
     end

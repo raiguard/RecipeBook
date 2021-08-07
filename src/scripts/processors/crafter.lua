@@ -55,7 +55,7 @@ return function(recipe_book, dictionaries, metadata)
       compatible_recipes = {},
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = fixed_recipe,
-      fuel_categories = util.process_burner(prototype),
+      fuel_categories = util.process_energy_source(prototype),
       hidden = is_hidden,
       ingredient_limit = ingredient_limit,
       placeable_by = util.process_placeable_by(prototype),
