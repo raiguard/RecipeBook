@@ -113,9 +113,10 @@ function root.open(player, player_table)
   local gui_data = player_table.guis.search
   local refs = gui_data.refs
   refs.window.visible = true
+  refs.window.bring_to_front()
+  refs.tabbed_pane.selected_tab_index = 1
   refs.search_textfield.select_all()
   refs.search_textfield.focus()
-  refs.tabbed_pane.selected_tab_index = 1
 
   player.set_shortcut_toggled("rb-search", true)
 end
