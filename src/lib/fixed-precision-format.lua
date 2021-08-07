@@ -1,5 +1,3 @@
--- TODO: add to flib
---
 -- FixedPrecisionFormat v4.0.0 by SilverAzide
 --
 -- This work is licensed under a Creative Commons Attribution-Noncommercial-Share Alike 3.0 License.
