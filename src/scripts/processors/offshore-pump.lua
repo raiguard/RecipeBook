@@ -16,7 +16,7 @@ function offshore_pump_proc.build(recipe_book, dictionaries)
       class = "offshore_pump",
       fluid = {class = "fluid", name = fluid.name},
       hidden = prototype.has_flag("hidden"),
-      placeable_by = util.process_placeable_by(prototype),
+      placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       pumping_speed = prototype.pumping_speed * 60,
       size = util.get_size(prototype),

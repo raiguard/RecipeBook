@@ -101,10 +101,10 @@ function util.frame_action_button(sprite, tooltip, ref, action)
   }
 end
 
-function util.process_placeable_by(prototype)
-  local placeable_by = prototype.items_to_place_this
-  if placeable_by then
-    return table.map(placeable_by, function(item_stack)
+function util.process_placed_by(prototype)
+  local placed_by = prototype.items_to_place_this
+  if placed_by then
+    return table.map(placed_by, function(item_stack)
       return {
         class = "item",
         name = item_stack.name,

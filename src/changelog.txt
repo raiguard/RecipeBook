@@ -25,6 +25,7 @@ Date: ????
   Changes:
     - "Empty X barrel" recipes will no longer unlock the fluid that they empty
     - Recipe time-to-craft is now displayed in a generic info table, rather than as a fake ingredient
+    - Renamed "placeable by" to "placed by"
     - Split the universal "search" hotkey into separate search and open selected object hotkeys
     - Unresearched objects are shown by default
   Optimizations:

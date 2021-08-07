@@ -312,7 +312,7 @@ constants.gui_strings = {
   offshore_pump = {"gui.rb-offshore-pump"},
   open_in_technology_window = {"gui.rb-open-in-technology-window"},
   per_second_suffix = {"gui.rb-per-second-suffix"},
-  placeable_by = {"gui.rb-placeable-by"},
+  placed_by = {"gui.rb-placed-by"},
   place_result = {"gui.rb-place-result"},
   pollution_bonus = {"description.pollution-bonus"},
   prerequisite_of = {"gui.rb-prerequisite-of"},
@@ -530,7 +530,7 @@ constants.pages = {
     {type = "list_box", source = "compatible_fuels"},
     {type = "list_box", source = "fuel_categories"},
     {type = "list_box", source = "unlocked_by"},
-    {type = "list_box", source = "placeable_by"}
+    {type = "list_box", source = "placed_by"}
   },
   fluid = {
     {type = "table", rows = {
@@ -607,7 +607,7 @@ constants.pages = {
     {type = "list_box", source = "compatible_fuels"},
     {type = "list_box", source = "fuel_categories"},
     {type = "list_box", source = "unlocked_by"},
-    {type = "list_box", source = "placeable_by"}
+    {type = "list_box", source = "placed_by"}
   },
   mining_drill = {
     {type = "table", rows = {
@@ -620,7 +620,7 @@ constants.pages = {
     {type = "list_box", source = "compatible_fuels"},
     {type = "list_box", source = "fuel_categories"},
     {type = "list_box", source = "unlocked_by"},
-    {type = "list_box", source = "placeable_by"}
+    {type = "list_box", source = "placed_by"}
   },
   offshore_pump = {
     {type = "table", rows = {
@@ -629,7 +629,7 @@ constants.pages = {
       {type = "plain", source = "size", formatter = "area"},
     }},
     {type = "list_box", source = "unlocked_by"},
-    {type = "list_box", source = "placeable_by"}
+    {type = "list_box", source = "placed_by"}
   },
   recipe_category = {
     {type = "list_box", source = "fluids"},

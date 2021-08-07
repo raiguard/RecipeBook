@@ -18,7 +18,7 @@ return function(recipe_book, dictionaries)
       fuel_categories = util.process_energy_source(prototype),
       hidden = prototype.has_flag("hidden"),
       inputs = table.map(prototype.lab_inputs, function(v) return {class = "item", name = v} end),
-      placeable_by = util.process_placeable_by(prototype),
+      placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       researching_speed = prototype.researching_speed,
       size = util.get_size(prototype),

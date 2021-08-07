@@ -15,7 +15,7 @@ function mining_drill_proc.build(recipe_book, dictionaries)
       fuel_categories = util.process_energy_source(prototype),
       mining_area = math.ceil(prototype.mining_drill_radius * 2),
       mining_speed = prototype.mining_speed,
-      placeable_by = util.process_placeable_by(prototype),
+      placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       resource_categories_lookup = prototype.resource_categories,
       resource_categories = util.convert_categories(prototype.resource_categories, "resource_category"),
