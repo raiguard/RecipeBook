@@ -3,12 +3,14 @@ local table = require("__flib__.table")
 local constants = {}
 
 constants.category_classes = {
+  "fuel_category",
   "group",
   "recipe_category",
   "resource_category",
 }
 
 constants.category_class_plurals = {
+  fuel_category = "fuel_categories",
   group = "groups",
   recipe_category = "recipe_categories",
   resource_category = "resource_categories",
@@ -17,6 +19,7 @@ constants.category_class_plurals = {
 constants.classes = {
   "crafter",
   "fluid",
+  "fuel_category",
   "group",
   "item",
   "lab",
@@ -33,6 +36,7 @@ constants.classes = {
 constants.class_to_font_glyph = {
   crafter = "D",
   fluid = "B",
+  fuel_category = "Z",
   group = "Z",
   item = "C",
   lab = "D",
@@ -48,6 +52,7 @@ constants.class_to_font_glyph = {
 constants.class_to_type = {
   crafter = "entity",
   fluid = "fluid",
+  fuel_category = false,
   group = "item-group",
   item = "item",
   lab = "entity",
@@ -96,6 +101,7 @@ constants.default_max_rows = 8
 constants.derived_type_to_class = {
   ["assembling-machine"] = "crafter",
   ["fluid"] = "fluid",
+  ["fuel-category"] = "fuel_category",
   ["furnace"] = "crafter",
   ["item-group"] = "group",
   ["item"] = "item",
@@ -111,6 +117,7 @@ constants.derived_type_to_class = {
 }
 
 constants.disabled_categories = {
+  fuel_category = {},
   group = {
     -- Editor extensions
     ["ee-tools"] = true
@@ -270,6 +277,7 @@ constants.gui_strings = {
   format_percent = {"format-percent"},
   format_seconds_parenthesis = {"gui.rb-format-seconds-parenthesis"},
   format_seconds = {"time-symbol-seconds"},
+  fuel_category = {"gui.rb-fuel-category"},
   fuel_pollution = {"description.fuel-pollution"},
   fuel_value = {"description.fuel-value"},
   fuzzy_search = {"gui.rb-fuzzy-search"},
@@ -416,6 +424,10 @@ constants.interactions = {
       source = "base_fluid"
     }
   },
+  fuel_category = {
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
+  },
   item = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
@@ -521,6 +533,10 @@ constants.pages = {
     {type = "list_box", source = "pumped_by"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "temperatures", use_pairs = true}
+  },
+  fuel_category = {
+    {type = "list_box", source = "fluid"},
+    {type = "list_box", source = "items"},
   },
   group = {
     {type = "list_box", source = "fluids"},
@@ -689,6 +705,7 @@ constants.tooltips = {
     {type = "plain", source = "default_temperature", formatter = "temperature"},
     {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true}}
   },
+  fuel_category = {},
   group = {},
   item = {
     {type = "plain", source = "stack_size", formatter = "number"},

@@ -24,6 +24,7 @@ local filtered_entities = {
 
 local straight_conversions = {
   "fluid",
+  "fuel_category",
   "item",
   "item_group",
   "module_category",

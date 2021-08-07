@@ -5,6 +5,7 @@ local constants = require("constants")
 
 local crafter_proc = require("scripts.processors.crafter")
 local fluid_proc = require("scripts.processors.fluid")
+local fuel_category_proc = require("scripts.processors.fuel-category")
 local group_proc = require("scripts.processors.group")
 local item_proc = require("scripts.processors.item")
 local lab_proc = require("scripts.processors.lab")
@@ -36,6 +37,7 @@ function recipe_book.build()
   -- Data that is needed for generation but will not be saved
   local metadata = {}
 
+  fuel_category_proc(recipe_book, dictionaries)
   group_proc(recipe_book, dictionaries)
   recipe_category_proc(recipe_book, dictionaries)
   resource_category_proc(recipe_book, dictionaries)
