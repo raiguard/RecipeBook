@@ -10,14 +10,15 @@ return function(recipe_book, dictionaries, metadata)
     recipe_book.crafter[name] = {
       blueprintable = false,
       class = "crafter",
+      compatible_fuels = {}, -- Always empty
       compatible_recipes = {},
       crafting_speed = 1,
       hidden = false,
       ingredient_limit = ingredient_limit,
       placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
-      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       recipe_categories_lookup = prototype.crafting_categories,
+      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       unlocked_by = {}
     }
     dictionaries.crafter:add(name, prototype.localised_name)
@@ -50,15 +51,17 @@ return function(recipe_book, dictionaries, metadata)
     recipe_book.crafter[name] = {
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       class = "crafter",
+      compatible_fuels = {},
       compatible_recipes = {},
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = fixed_recipe,
+      fuel_categories = util.process_burner(prototype),
       hidden = is_hidden,
       ingredient_limit = ingredient_limit,
       placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
-      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       recipe_categories_lookup = prototype.crafting_categories,
+      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       rocket_parts_required = prototype.rocket_parts_required,
       size = util.get_size(prototype),
       unlocked_by = {}

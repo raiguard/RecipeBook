@@ -14,6 +14,8 @@ return function(recipe_book, dictionaries)
 
     recipe_book.lab[name] = {
       class = "lab",
+      compatible_fuels = {},
+      fuel_categories = util.process_burner(prototype),
       hidden = prototype.has_flag("hidden"),
       inputs = table.map(prototype.lab_inputs, function(v) return {class = "item", name = v} end),
       placeable_by = util.process_placeable_by(prototype),

@@ -279,6 +279,7 @@ constants.gui_strings = {
   format_percent = {"format-percent"},
   format_seconds_parenthesis = {"gui.rb-format-seconds-parenthesis"},
   format_seconds = {"time-symbol-seconds"},
+  fuel_categories = {"gui.rb-fuel-categories"},
   fuel_category = {"gui.rb-fuel-category"},
   fuel_pollution = {"description.fuel-pollution"},
   fuel_value = {"description.fuel-value"},
@@ -520,6 +521,7 @@ constants.pages = {
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     {type = "list_box", source = "recipe_categories"},
+    {type = "list_box", source = "fuel_categories"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },
@@ -593,6 +595,7 @@ constants.pages = {
       {type = "plain", source = "size", formatter = "area"},
     }},
     {type = "list_box", source = "inputs"},
+    {type = "list_box", source = "fuel_categories"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },
@@ -604,6 +607,7 @@ constants.pages = {
     }},
     {type = "list_box", source = "compatible_resources"},
     {type = "list_box", source = "resource_categories"},
+    {type = "list_box", source = "fuel_categories"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
   },

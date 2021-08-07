@@ -135,5 +135,13 @@ function util.get_size(prototype)
   end
 end
 
+-- TODO: Process fluid energy sources
+function util.process_burner(prototype)
+  local burner = prototype.burner_prototype
+  if burner then
+    return util.convert_categories(burner.fuel_categories, "fuel_category")
+  end
+end
+
 return util
 

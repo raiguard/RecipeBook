@@ -11,14 +11,16 @@ function mining_drill_proc.build(recipe_book, dictionaries)
 
     recipe_book.mining_drill[name] = {
       class = "mining_drill",
+      compatible_fuels = {},
+      fuel_categories = util.process_burner(prototype),
       mining_area = math.ceil(prototype.mining_drill_radius * 2),
       mining_speed = prototype.mining_speed,
       placeable_by = util.process_placeable_by(prototype),
       prototype_name = name,
       resource_categories_lookup = prototype.resource_categories,
       resource_categories = util.convert_categories(prototype.resource_categories, "resource_category"),
-      supports_fluid = #prototype.fluidbox_prototypes > 0,
       size = util.get_size(prototype),
+      supports_fluid = #prototype.fluidbox_prototypes > 0,
       unlocked_by = {}
     }
     dictionaries.mining_drill:add(name, prototype.localised_name)
