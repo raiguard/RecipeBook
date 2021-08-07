@@ -132,6 +132,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
   metadata.place_results = place_results
 end
 
+-- TODO: Add fuel compatibility for fluids
 function item_proc.process_burned_in(recipe_book)
   for _, machine_class in pairs(constants.machine_classes) do
     for machine_name, machine_data in pairs(recipe_book[machine_class]) do
