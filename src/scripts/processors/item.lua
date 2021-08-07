@@ -78,6 +78,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     end
 
     recipe_book.item[name] = {
+      burned_in = {},
       class = "item",
       fuel_acceleration_multiplier = has_fuel_value
         and fuel_acceleration_multiplier ~= 1
@@ -129,6 +130,26 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 
   metadata.modules = modules
   metadata.place_results = place_results
+end
+
+function item_proc.process_burned_in(recipe_book)
+  for category_name, category_data in pairs(recipe_book.fuel_category) do
+    local items = category_data.items
+    for _, machine_class in pairs(constants.machine_classes) do
+      for machine_name, machine_data in pairs(recipe_book[machine_class]) do
+        for _, category_ident in pairs(machine_data.fuel_categories or {}) do
+          if category_ident.name == category_name then
+            local compatible_fuels = machine_data.compatible_fuels
+            for _, item_ident in pairs(items) do
+              local item_data = recipe_book.item[item_ident.name]
+              item_data.burned_in[#item_data.burned_in + 1] = {class = machine_class, name = machine_name}
+              compatible_fuels[#compatible_fuels + 1] = table.shallow_copy(item_ident)
+            end
+          end
+        end
+      end
+    end
+  end
 end
 
 -- When calling the module directly, call fluid_proc.build

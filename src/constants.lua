@@ -251,11 +251,13 @@ constants.global_history_size = 30
 
 constants.gui_strings = {
   alt_click = {"gui.rb-alt-click"},
+  burned_in = {"gui.rb-burned-in"},
   captions = {"gui.rb-captions"},
   category = {"gui.rb-category"},
   click = {"gui.rb-click"},
   close_search_gui_after_selection = {"gui.rb-close-search-gui-after-selection"},
   close_search_when_moving_info_pages = {"gui.rb-close-search-when-moving-info-pages"},
+  compatible_fuels = {"gui.rb-compatible-fuels"},
   compatible_mining_drills = {"gui.rb-compatible-mining-drills"},
   compatible_modules = {"gui.rb-compatible-modules"},
   compatible_recipes = {"gui.rb-compatible-recipes"},
@@ -503,6 +505,13 @@ constants.input_sanitizers = {
 
 constants.interface_version = 4
 
+constants.machine_classes = {
+  "crafter",
+  "lab",
+  "mining_drill",
+  -- "offshore_pump",
+}
+
 constants.nav_event_properties = {
   ["rb-jump-to-front"] = {delta = 1, shift = true},
   ["rb-navigate-backward"] = {delta = -1},
@@ -521,6 +530,7 @@ constants.pages = {
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
     {type = "list_box", source = "recipe_categories"},
+    {type = "list_box", source = "compatible_fuels"},
     {type = "list_box", source = "fuel_categories"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
@@ -581,6 +591,7 @@ constants.pages = {
     {type = "list_box", source = "rocket_launch_products"},
     {type = "list_box", source = "mined_from"},
     {type = "list_box", source = "researched_in"},
+    {type = "list_box", source = "burned_in"},
     {type = "list_box", source = "unlocked_by"},
   },
   lab = {
@@ -595,6 +606,7 @@ constants.pages = {
       {type = "plain", source = "size", formatter = "area"},
     }},
     {type = "list_box", source = "inputs"},
+    {type = "list_box", source = "compatible_fuels"},
     {type = "list_box", source = "fuel_categories"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}
@@ -607,6 +619,7 @@ constants.pages = {
     }},
     {type = "list_box", source = "compatible_resources"},
     {type = "list_box", source = "resource_categories"},
+    {type = "list_box", source = "compatible_fuels"},
     {type = "list_box", source = "fuel_categories"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placeable_by"}

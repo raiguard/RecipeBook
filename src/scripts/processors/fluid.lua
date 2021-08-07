@@ -22,6 +22,7 @@ function fluid_proc.build(recipe_book, dictionaries, metadata)
     end
     -- Save to recipe book
     recipe_book.fluid[name] = {
+      burned_in = {},
       class = "fluid",
       default_temperature = prototype.default_temperature,
       fuel_category = fuel_category,
