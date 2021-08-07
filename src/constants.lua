@@ -32,19 +32,18 @@ constants.classes = {
   "technology",
 }
 
--- TODO: Add missing glyphs
 constants.class_to_font_glyph = {
-  crafter = "D",
+  crafter = "E",
   fluid = "B",
-  fuel_category = "Z",
-  group = "Z",
+  fuel_category = "G",
+  group = "G",
   item = "C",
   lab = "D",
-  mining_drill = "D",
-  offshore_pump = "D",
-  recipe_category = "Z",
-  recipe = "E",
-  resource_category = "Z",
+  mining_drill = "E",
+  offshore_pump = "E",
+  recipe_category = "G",
+  recipe = "D",
+  resource_category = "G",
   resource = "F",
   technology = "A"
 }
