@@ -188,7 +188,7 @@ local function get_caption(obj_data, obj_properties, player_data, options)
       "font",
       "RecipeBook",
       constants.class_to_font_glyph[class] or constants.class_to_font_glyph[class]
-    ).."  "
+    )
   end
 
   if obj_properties.hidden then

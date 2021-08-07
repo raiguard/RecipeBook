@@ -3,7 +3,7 @@ data:extend{
     type = "font",
     name = "RecipeBook",
     from = "RecipeBook",
-    size = 12,
+    size = 18,
     filtered = true
   }
 }
