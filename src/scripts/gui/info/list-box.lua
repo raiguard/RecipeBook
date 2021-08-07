@@ -28,7 +28,7 @@ function list_box.build(parent, index, component, variables)
           type = "sprite-button",
           style = "mini_button_aligned_to_text_vertically_when_centered",
           tooltip = {"gui.rb-open-list-in-new-window"},
-          -- TODO: Add a sprite
+          sprite = "rb_export_black",
           ref = {"open_list_button"}
           -- NOTE: Actions are set in the update function
         }
@@ -46,8 +46,6 @@ function list_box.build(parent, index, component, variables)
 end
 
 function list_box.update(component, refs, object_data, player_data, variables)
-  local recipe_book = recipe_book
-
   -- Scroll pane
   local scroll = refs.scroll_pane
   local add = scroll.add

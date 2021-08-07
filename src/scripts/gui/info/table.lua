@@ -123,11 +123,10 @@ function table_comp.update(component, refs, object_data, player_data, variables)
             if flow then flow.destroy() end
             flow = gui.build(tbl, {
               {type = "flow", style_mods = {vertical_align = "center"}, index = i, ref = {"flow"},
-                -- TODO: Arrow button styles
                 {
-                  type = "button",
+                  type = "sprite-button",
                   style = "mini_button_aligned_to_text_vertically_when_centered",
-                  caption = "-",
+                  sprite = "rb_minus_black",
                   mouse_button_filter = {"left"},
                   actions = {
                     on_click = {gui = "info", id = variables.gui_id, action = "change_tech_level", delta = -1}
@@ -135,9 +134,9 @@ function table_comp.update(component, refs, object_data, player_data, variables)
                 },
                 {type = "label", name = "tech_level_label"},
                 {
-                  type = "button",
+                  type = "sprite-button",
                   style = "mini_button_aligned_to_text_vertically_when_centered",
-                  caption = "+",
+                  sprite = "rb_plus_black",
                   mouse_button_filter = {"left"},
                   actions = {
                     on_click = {gui = "info", id = variables.gui_id, action = "change_tech_level", delta = 1}

@@ -5,7 +5,7 @@ local tool_icons = "__RecipeBook__/graphics/tool-icons.png"
 local small_tool_icons = "__RecipeBook__/graphics/small-tool-icons.png"
 
 data:extend{
-  -- frame action icons
+  -- Frame action icons
   data_util.build_sprite("rb_nav_backward_black", {0, 0}, frame_action_icons, 32),
   data_util.build_sprite("rb_nav_backward_white", {32, 0}, frame_action_icons, 32),
   data_util.build_sprite("rb_nav_backward_disabled", {64, 0}, frame_action_icons, 32),
@@ -18,12 +18,15 @@ data:extend{
   data_util.build_sprite("rb_settings_white", {32, 96}, frame_action_icons, 32),
   data_util.build_sprite("rb_expand_black", {0, 128}, frame_action_icons, 32),
   data_util.build_sprite("rb_expand_white", {32, 128}, frame_action_icons, 32),
-  -- tool icons
+  -- Tool icons
   data_util.build_sprite("rb_favorite_black", {0, 0}, tool_icons, 32, 2),
   data_util.build_sprite("rb_clipboard_black", {0, 32}, tool_icons, 32, 2),
   data_util.build_sprite("rb_fluid_black", {0, 64}, tool_icons, 32, 2),
   data_util.build_sprite("rb_technology_gui_black", {0, 96}, tool_icons, 32, 2),
-  -- small tool icons
+  data_util.build_sprite("rb_list_nav_backward_black", {0, 128}, tool_icons, 32, 2),
+  data_util.build_sprite("rb_list_nav_forward_black", {0, 160}, tool_icons, 32, 2),
+  data_util.build_sprite("rb_export_black", {0, 192}, tool_icons, 32, 2),
+  -- Small tool icons
   data_util.build_sprite("rb_plus_black", {0, 0}, small_tool_icons, 16, 2),
   data_util.build_sprite("rb_minus_black", {0, 16}, small_tool_icons, 16, 2)
 }

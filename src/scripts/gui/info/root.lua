@@ -13,10 +13,11 @@ local components = {
   table = require("scripts.gui.info.table")
 }
 
-local function tool_button(sprite, tooltip, ref, action)
+local function tool_button(sprite, tooltip, ref, action, style_mods)
   return {
     type = "sprite-button",
     style = "tool_button",
+    style_mods = style_mods,
     sprite = sprite,
     tooltip = tooltip,
     mouse_button_filter = {"left"},
@@ -119,9 +120,11 @@ function root.build(player, player_table, context)
               on_click = {gui = "info", id = id, action = "set_as_active"},
             },
             tool_button(
-              "rb_nav_backward_black",
+              "rb_list_nav_backward_black",
               {"gui.rb-go-backward"},
-              {"header", "list_nav", "back_button"}
+              {"header", "list_nav", "back_button"},
+              nil,
+              {padding = 3}
             ),
             {type = "empty-widget", style = "flib_horizontal_pusher"},
             {
@@ -138,9 +141,11 @@ function root.build(player, player_table, context)
             },
             {type = "empty-widget", style = "flib_horizontal_pusher"},
             tool_button(
-              "rb_nav_forward_black",
+              "rb_list_nav_forward_black",
               {"gui.rb-go-forward"},
-              {"header", "list_nav", "forward_button"}
+              {"header", "list_nav", "forward_button"},
+              nil,
+              {padding = 3}
             ),
           },
           {type = "line", style = "rb_dark_line", direction = "horizontal", visible = false, ref = {"header", "line"}},
