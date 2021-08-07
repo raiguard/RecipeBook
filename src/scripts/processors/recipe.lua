@@ -49,7 +49,10 @@ return function(recipe_book, dictionaries, metadata)
         local lookup_table = material_data[lookup_type]
         lookup_table[#lookup_table + 1] = {class = "recipe", name = name}
         output[i] = material_io_data
-        material_data.recipe_categories[#material_data.recipe_categories + 1] = category
+        material_data.recipe_categories[#material_data.recipe_categories + 1] = {
+          class = "recipe_category",
+          name = category
+        }
 
         -- Don't set enabled at start if this is an ignored recipe
         local disabled = constants.disabled_categories.recipe_category[category]

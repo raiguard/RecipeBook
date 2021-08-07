@@ -26,7 +26,7 @@ return function(recipe_book, dictionaries, metadata)
 
   -- Actual crafters
   metadata.fixed_recipes = {}
-  local rocket_silo_categories = {}
+  local rocket_silo_categories = util.unique_obj_array()
   for name, prototype in pairs(global.prototypes.crafter) do
     -- Fixed recipe
     local fixed_recipe
@@ -37,7 +37,7 @@ return function(recipe_book, dictionaries, metadata)
     -- Rocket silo categories
     if prototype.rocket_parts_required then
       for category in pairs(prototype.crafting_categories) do
-        rocket_silo_categories[category] = true
+        table.insert(rocket_silo_categories, {class = "recipe_category", name = category})
       end
     end
 
@@ -67,9 +67,5 @@ return function(recipe_book, dictionaries, metadata)
     dictionaries.crafter_description:add(name, prototype.localised_description)
   end
 
-  local processed_rocket_silo_categories = {}
-  for category in pairs(rocket_silo_categories) do
-    processed_rocket_silo_categories[#processed_rocket_silo_categories + 1] = category
-  end
-  metadata.rocket_silo_categories = processed_rocket_silo_categories
+  metadata.rocket_silo_categories = rocket_silo_categories
 end

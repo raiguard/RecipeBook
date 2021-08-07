@@ -439,28 +439,31 @@ local function get_obj_properties(obj_data, player_data, options)
     and (show_disabled or obj_properties.enabled)
   then
     -- Check categories
-    local had_category = false
+    -- Logic: At least one entry from each category that the object has must be enabled
+    local matched_categories = 0
+    local good_categories = 0
     for _, category in pairs(constants.category_classes) do
       local obj_category = obj_data[category]
       local obj_categories = obj_data[constants.category_class_plurals[category]]
       if obj_category then
-        had_category = true
+        good_categories = good_categories + 1
         if player_settings.categories[category][obj_category.name] then
-          should_show = true
+          matched_categories = matched_categories + 1
         end
       elseif obj_categories then
-        had_category = true
+        good_categories = good_categories + 1
         local category_settings = player_settings.categories[category]
-        for _, category_name in pairs(obj_categories) do
-          if category_settings[category_name] then
-            should_show = true
+        for _, category_ident in pairs(obj_categories) do
+          if category_settings[category_ident.name] then
+            matched_categories = matched_categories + 1
             break
           end
         end
       end
-      if should_show then break end
     end
-    if not had_category then should_show = true end
+    if matched_categories == good_categories then
+      should_show = true
+    end
   end
   return should_show and obj_properties or false
 end

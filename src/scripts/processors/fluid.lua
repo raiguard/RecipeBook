@@ -23,7 +23,7 @@ function fluid_proc.build(recipe_book, dictionaries, metadata)
       product_of = {},
       prototype_name = name,
       pumped_by = {},
-      recipe_categories = util.unique_string_array(),
+      recipe_categories = util.unique_obj_array(),
       temperatures = {},
       unlocked_by = util.unique_obj_array()
     }
@@ -53,7 +53,7 @@ function fluid_proc.add_temperature(recipe_book, dictionaries, metadata, fluid_d
       name = combined_name,
       product_of = {},
       prototype_name = fluid_data.prototype_name,
-      recipe_categories = util.unique_string_array(),
+      recipe_categories = util.unique_obj_array(),
       temperature_ident = temperature_ident,
       unlocked_by = util.unique_obj_array()
     }
@@ -148,7 +148,7 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
               temperature_data[fluid_tbl_name][#temperature_data[fluid_tbl_name] + 1] = recipe_ident
               -- Add recipe category
               local recipe_categories = temperature_data.recipe_categories
-              recipe_categories[#recipe_categories + 1] = recipe_data.recipe_category.name
+              recipe_categories[#recipe_categories + 1] = table.shallow_copy(recipe_data.recipe_category)
               -- If in product_of, append to unlocked_by
               -- Also add this fluid to that tech's `unlocks fluids` table
               -- This is to avoid variants being "unlocked" when you can't actually get them
