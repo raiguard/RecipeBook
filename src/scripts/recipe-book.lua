@@ -53,10 +53,9 @@ function recipe_book.build()
   technology_proc(recipe_book, dictionaries, metadata)
 
   offshore_pump_proc.check_enabled_at_start(recipe_book)
-
   fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
-
   mining_drill_proc.add_resources(recipe_book)
+  fuel_category_proc.check_fake_category(recipe_book, dictionaries)
 end
 
 local function update_launch_products(launch_products, force_index, to_value)

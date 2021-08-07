@@ -1,5 +1,7 @@
 local table = require("__flib__.table")
 
+local constants = require("constants")
+
 local util = require("scripts.util")
 
 local fluid_proc = {}
@@ -11,10 +13,18 @@ function fluid_proc.build(recipe_book, dictionaries, metadata)
     local group = prototype.group
     local group_data = recipe_book.group[group.name]
     group_data.fluids[#group_data.fluids + 1] = {class = "fluid", name = name}
+    -- Fake fuel category
+    local fuel_category
+    if prototype.fuel_value > 0 then
+      fuel_category = {class = "fuel_category", name = constants.fake_fluid_fuel_category}
+      local fluids = recipe_book.fuel_category[constants.fake_fluid_fuel_category].fluids
+      fluids[#fluids + 1] = {class = "fluid", name = name}
+    end
     -- Save to recipe book
     recipe_book.fluid[name] = {
       class = "fluid",
       default_temperature = prototype.default_temperature,
+      fuel_category = fuel_category,
       fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
       group = {class = "group", name = group.name},
       hidden = prototype.hidden,

@@ -71,26 +71,27 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       end
     end
 
+    local fuel_category = util.convert_to_ident("fuel_category", prototype.fuel_category)
+    if fuel_category then
+      local items = recipe_book.fuel_category[fuel_category.name].items
+      items[#items + 1] = {class = "item", name = name}
+    end
+
     recipe_book.item[name] = {
       class = "item",
-      fuel_acceleration_multiplier = (
-        has_fuel_value
+      fuel_acceleration_multiplier = has_fuel_value
         and fuel_acceleration_multiplier ~= 1
         and fuel_acceleration_multiplier
-        or nil
-      ),
-      fuel_emissions_multiplier = (
-        has_fuel_value
+        or nil,
+      fuel_category = fuel_category,
+      fuel_emissions_multiplier = has_fuel_value
         and fuel_emissions_multiplier ~= 1
         and fuel_emissions_multiplier
-        or nil
-      ),
-      fuel_top_speed_multiplier = (
-        has_fuel_value
+        or nil,
+      fuel_top_speed_multiplier = has_fuel_value
         and fuel_top_speed_multiplier ~= 1
         and fuel_top_speed_multiplier
-        or nil
-      ),
+        or nil,
       fuel_value = has_fuel_value and fuel_value or nil,
       group = {class = "group", name = group.name},
       hidden = prototype.has_flag("hidden"),

@@ -154,6 +154,8 @@ constants.disabled_categories = {
   resource_category = {}
 }
 
+constants.fake_fluid_fuel_category = "burnable-fluid"
+
 constants.general_settings = {
   content = {
     show_disabled = {
@@ -523,8 +525,9 @@ constants.pages = {
   },
   fluid = {
     {type = "table", rows = {
-      {type = "plain", source = "fuel_value", formatter = "fuel_value"},
       {type = "plain", source = "default_temperature", formatter = "temperature"},
+      {type = "plain", source = "fuel_value", formatter = "fuel_value"},
+      {type = "goto", source = "fuel_category", options = {hide_glyph = true}},
       {type = "goto", source = "group", options = {hide_glyph = true}},
     }},
     {type = "list_box", source = "ingredient_in"},
@@ -535,7 +538,7 @@ constants.pages = {
     {type = "list_box", source = "temperatures", use_pairs = true}
   },
   fuel_category = {
-    {type = "list_box", source = "fluid"},
+    {type = "list_box", source = "fluids"},
     {type = "list_box", source = "items"},
   },
   group = {
@@ -565,6 +568,7 @@ constants.pages = {
         label = "vehicle_top_speed",
         formatter = "percent"
       },
+      {type = "goto", source = "fuel_category", options = {hide_glyph = true}},
       {type = "goto", source = "group", options = {hide_glyph = true}},
       {type = "goto", source = "place_result"},
     }},
@@ -728,8 +732,9 @@ constants.tooltips = {
     }
   },
   fluid = {
-    {type = "plain", source = "fuel_value", formatter = "fuel_value"},
     {type = "plain", source = "default_temperature", formatter = "temperature"},
+    {type = "plain", source = "fuel_value", formatter = "fuel_value"},
+    {type = "plain", source = "fuel_category", formatter = "object", options = {hide_glyph = true}},
     {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true}}
   },
   fuel_category = {},
@@ -740,6 +745,7 @@ constants.tooltips = {
     {type = "plain", source = "fuel_emissions_multiplier", label = "fuel_pollution", formatter = "percent"},
     {type = "plain", source = "fuel_acceleration_multiplier", label = "vehicle_acceleration", formatter = "percent"},
     {type = "plain", source = "fuel_top_speed_multiplier", label = "vehicle_top_speed", formatter = "percent"},
+    {type = "plain", source = "fuel_category", formatter = "object", options = {hide_glyph = true}},
     {type = "plain", source = "group", formatter = "object", options = {hide_glyph = true}},
   },
   lab = {
