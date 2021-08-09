@@ -520,7 +520,7 @@ constants.pages = {
   crafter = {
     {type = "table", rows = {
       {type = "plain", source = "crafting_speed", formatter = "number"},
-      {type = "goto", source = "fixed_recipe", options = {hide_glyph = true}},
+      {type = "goto", source = "fixed_recipe", options = {always_show = true, hide_glyph = true}},
       {type = "plain", source = "rocket_parts_required", formatter = "number"},
       {type = "plain", source = "ingredient_limit", formatter = "number"},
       {type = "plain", source = "size", formatter = "area"},
