@@ -337,27 +337,28 @@ end)
 
 -- TRANSLATIONS
 
-event.on_string_translated(dictionary.process_translation)
+event.on_string_translated(function(e)
+  local language_data = dictionary.process_translation(e)
+  if language_data then
+    for _, player_index in pairs(language_data.players) do
+      local player = game.get_player(player_index)
+      local player_table = global.players[player_index]
 
-event.register(dictionary.on_language_translated, function(e)
-  for _, player_index in pairs(e.players) do
-    local player = game.get_player(player_index)
-    local player_table = global.players[player_index]
+      player_table.translations = language_data.dictionaries
 
-    player_table.translations = e.dictionaries
+      -- Show message if needed
+      if player_table.flags.show_message_after_translation then
+        player.print{"message.rb-can-open-gui"}
+        player_table.flags.show_message_after_translation = false
+      end
 
-    -- Show message if needed
-    if player_table.flags.show_message_after_translation then
-      player.print{"message.rb-can-open-gui"}
-      player_table.flags.show_message_after_translation = false
+      -- Create GUI
+      search_gui.root.build(player, player_table)
+      -- Update flags
+      player_table.flags.can_open_gui = true
+      -- Enable shortcut
+      player.set_shortcut_available("rb-search", true)
     end
-
-    -- Create GUI
-    search_gui.root.build(player, player_table)
-    -- Update flags
-    player_table.flags.can_open_gui = true
-    -- Enable shortcut
-    player.set_shortcut_available("rb-search", true)
   end
 end)
 
