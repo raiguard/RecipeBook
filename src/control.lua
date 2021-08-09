@@ -108,8 +108,11 @@ event.on_load(function()
 
   formatter.create_all_caches()
 
-  recipe_book.build()
-  recipe_book.check_forces()
+  -- When migrating from pre-3.0, the prototypes table won't exist yet
+  if global.prototypes then
+    recipe_book.build()
+    recipe_book.check_forces()
+  end
 end)
 
 event.on_configuration_changed(function(e)
