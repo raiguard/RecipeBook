@@ -345,20 +345,28 @@ event.on_string_translated(function(e)
       local player = game.get_player(player_index)
       local player_table = global.players[player_index]
 
-      player_table.translations = language_data.dictionaries
+      -- If the translations table already exists then this player just joined the game
+      -- If the player changed languages, then just refresh the GUI contents
+      if player_table.translations and (player_table.language or "") ~= language_data.language then
+        player_table.language = language_data.language
+        player_table.translations = language_data.dictionaries
+        shared.refresh_contents(player, player_table)
+      else
+        player_table.language = language_data.language
+        player_table.translations = language_data.dictionaries
+        -- Show message if needed
+        if player_table.flags.show_message_after_translation then
+          player.print{"message.rb-can-open-gui"}
+          player_table.flags.show_message_after_translation = false
+        end
 
-      -- Show message if needed
-      if player_table.flags.show_message_after_translation then
-        player.print{"message.rb-can-open-gui"}
-        player_table.flags.show_message_after_translation = false
+        -- Create GUI
+        search_gui.root.build(player, player_table)
+        -- Update flags
+        player_table.flags.can_open_gui = true
+        -- Enable shortcut
+        player.set_shortcut_available("rb-search", true)
       end
-
-      -- Create GUI
-      search_gui.root.build(player, player_table)
-      -- Update flags
-      player_table.flags.can_open_gui = true
-      -- Enable shortcut
-      player.set_shortcut_available("rb-search", true)
     end
   end
 end)

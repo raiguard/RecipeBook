@@ -134,6 +134,7 @@ function player_data.refresh(player, player_table)
   player_data.update_settings(player, player_table)
 
   -- Run translations
+  player_table.language = nil
   player_table.translations = nil
   if player.connected then
     dictionary.translate(player)
