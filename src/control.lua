@@ -143,7 +143,6 @@ event.register({defines.events.on_research_finished, defines.events.on_research_
   if not global.players then return end
   recipe_book.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
 
-
   -- Refresh all GUIs to reflect finished research
   for _, player in pairs(e.research.force.players) do
     local player_table = global.players[player.index]
