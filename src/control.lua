@@ -18,8 +18,8 @@ local quick_ref_gui = require("scripts.gui.quick-ref.index")
 local search_gui = require("scripts.gui.search.index")
 local settings_gui = require("scripts.gui.settings.index")
 
--- -----------------------------------------------------------------------------
 -- COMMANDS
+-- -----------------------------------------------------------------------------
 
 -- Debug commands
 
@@ -398,12 +398,20 @@ remote.add_interface("RecipeBook", remote_interface)
 -- -----------------------------------------------------------------------------
 -- SHARED FUNCTIONS
 
-function shared.open_page(player, player_table, context)
-  local existing_id = info_gui.root.find_open_context(player_table, context)[1]
+function shared.open_page(player, player_table, context, sticky)
+  local existing_id = sticky
+    and player_table.guis.info._sticky_id
+    or info_gui.root.find_open_context(player_table, context)[1]
+
   if existing_id then
-    info_gui.handle_action({id = existing_id, action = "bring_to_front"}, {player_index = player.index})
+    if sticky then
+      info_gui.root.update_contents(player, player_table, existing_id, {new_context = context})
+      return
+    else
+      info_gui.handle_action({id = existing_id, action = "bring_to_front"}, {player_index = player.index})
+    end
   else
-    info_gui.root.build(player, player_table, context)
+    info_gui.root.build(player, player_table, context, sticky)
   end
 end
 
@@ -422,7 +430,7 @@ end
 function shared.update_all_favorite_buttons(player, player_table)
   local favorites = player_table.favorites
   for id, gui_data in pairs(player_table.guis.info) do
-    if id ~= "_next_id" and id ~= "_active_id" then
+    if not constants.ignored_info_ids[id] then
       local state = gui_data.state
       local opened_context = state.history[state.history._index]
       local to_state = favorites[opened_context.class.."."..opened_context.name]

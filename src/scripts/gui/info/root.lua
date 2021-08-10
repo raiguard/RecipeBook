@@ -30,10 +30,16 @@ end
 
 local root = {}
 
-function root.build(player, player_table, context)
+function root.build(player, player_table, context, sticky)
   local id = player_table.guis.info._next_id
   player_table.guis.info._next_id = id + 1
-  local refs = gui.build(player.gui.screen, {
+  local root_elem
+  if sticky then
+    root_elem = player_table.guis.search.refs.window
+  else
+    root_elem = player.gui.screen
+  end
+  local refs = gui.build(root_elem, {
     {
       type = "frame",
       style_mods = {width = 430},
@@ -105,6 +111,7 @@ function root.build(player, player_table, context)
       {
         type = "frame",
         style = "inside_shallow_frame",
+        style_mods = {vertically_stretchable = sticky},
         direction = "vertical",
         ref = {"page_frame"},
         action = {
@@ -194,8 +201,12 @@ function root.build(player, player_table, context)
     }
   })
 
-  refs.titlebar.flow.drag_target = refs.window
-  refs.window.force_auto_center()
+  if sticky then
+    refs.titlebar.flow.drag_target = root_elem
+  else
+    refs.titlebar.flow.drag_target = refs.window
+    refs.window.force_auto_center()
+  end
 
   refs.page_components = {}
 
@@ -207,10 +218,14 @@ function root.build(player, player_table, context)
       search_opened = false,
       search_query = "",
       selected_tech_level = 0,
+      sticky = sticky,
       warning_shown = false
     }
   }
   player_table.guis.info._active_id = id
+  if sticky then
+    player_table.guis.info._sticky_id = id
+  end
 
   root.update_contents(player, player_table, id, {new_context = context})
 end
@@ -220,12 +235,15 @@ function root.destroy(player_table, id)
   if gui_data then
     gui_data.refs.window.destroy()
     player_table.guis.info[id] = nil
+    if gui_data.state.sticky then
+      player_table.guis.info._sticky_id = nil
+    end
   end
 end
 
 function root.destroy_all(player_table)
   for id in pairs(player_table.guis.info) do
-    if id ~= "_next_id" and id ~= "_active_id" then
+    if not constants.ignored_info_ids[id] then
       root.destroy(player_table, id)
     end
   end
@@ -234,11 +252,13 @@ end
 function root.find_open_context(player_table, context)
   local open = {}
   for id, gui_data in pairs(player_table.guis.info) do
-    if id ~= "_next_id" and id ~= "_active_id" then
+    if not constants.ignored_info_ids[id] then
       local state = gui_data.state
-      local opened_context = state.history[state.history._index]
-      if opened_context and opened_context.class == context.class and opened_context.name == context.name then
-        open[#open + 1] = id
+      if not state.sticky then
+        local opened_context = state.history[state.history._index]
+        if opened_context and opened_context.class == context.class and opened_context.name == context.name then
+          open[#open + 1] = id
+        end
       end
     end
   end
@@ -519,6 +539,7 @@ function root.update_contents(player, player_table, id, options)
     state.warning_shown = true
     pane.visible = false
     refs.page_frame.style = "rb_inside_warning_frame"
+    refs.page_frame.style.vertically_stretchable = state.sticky
     refs.warning_flow.visible = true
     if state.search_query == "" then
       refs.warning_text.caption = {"gui.rb-no-content-warning"}
@@ -529,13 +550,14 @@ function root.update_contents(player, player_table, id, options)
     state.warning_shown = false
     pane.visible = true
     refs.page_frame.style = "inside_shallow_frame"
+    refs.page_frame.style.vertically_stretchable = state.sticky
     refs.warning_flow.visible = false
   end
-end
 
+end
 function root.update_all(player, player_table)
   for id in pairs(player_table.guis.info) do
-    if id ~= "_next_id" and id ~= "_active_id" then
+    if not constants.ignored_info_ids[id] then
       root.update_contents(player, player_table, id, {refresh = true})
     end
   end
@@ -543,7 +565,7 @@ end
 
 function root.bring_all_to_front(player_table)
   for id, gui_data in pairs(player_table.guis.info) do
-    if id ~= "_next_id" and id ~= "_active_id" then
+    if not constants.ignored_info_ids[id] then
       gui_data.refs.window.bring_to_front()
     end
   end

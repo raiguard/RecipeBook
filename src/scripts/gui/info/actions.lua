@@ -49,7 +49,9 @@ function actions.close(data)
 end
 
 function actions.bring_to_front(data)
-  data.refs.window.bring_to_front()
+  if not data.state.sticky then
+    data.refs.window.bring_to_front()
+  end
 end
 
 function actions.toggle_search(data)

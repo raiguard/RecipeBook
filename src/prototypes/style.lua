@@ -71,7 +71,8 @@ styles.rb_warning_flow = {
   horizontal_align = "center",
   vertical_align = "center",
   vertical_spacing = 8,
-  horizontally_stretchable = "on"
+  horizontally_stretchable = "on",
+  vertically_stretchable = "on",
 }
 
 -- FRAME STYLES

@@ -1,3 +1,5 @@
+local table = require("__flib__.table")
+
 local constants = {}
 
 constants.category_classes = {
@@ -404,6 +406,8 @@ constants.header_button_tooltips = {
     unselected = {"gui.rb-add-to-favorites"}
   },
 }
+
+constants.ignored_info_ids = table.invert{"_next_id", "_active_id", "_sticky_id"}
 
 -- NOTE: Modifiers must be in the order of "control", "shift", "alt" for those that are present
 constants.interactions = {
