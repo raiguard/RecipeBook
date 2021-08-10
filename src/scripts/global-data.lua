@@ -5,7 +5,6 @@ local constants = require("constants")
 local global_data = {}
 
 function global_data.init()
-  global.flags = {}
   global.forces = {}
   global.players = {}
   global.prototypes = {}
