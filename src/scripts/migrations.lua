@@ -33,5 +33,12 @@ return {
       player_data.init(i)
       player_data.refresh(player, global.players[i])
     end
+  end,
+  ["3.0.2"] = function()
+    global.flags = nil
+    for _, player_table in pairs(global.players) do
+      player_table.flags.gui_open = nil
+      player_table.flags.technology_gui_open = nil
+    end
   end
 }

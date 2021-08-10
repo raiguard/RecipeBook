@@ -21,31 +21,36 @@ local settings_gui = require("scripts.gui.settings.index")
 -- -----------------------------------------------------------------------------
 -- COMMANDS
 
--- User-facing command
-commands.add_command("RecipeBook", {"command-help.RecipeBook"}, function(e)
-  if e.parameter == "refresh-player-data" then
-    local player = game.get_player(e.player_index)
-    player.print{"message.rb-refreshing-player-data"}
-    player_data.refresh(player, global.players[e.player_index])
-  elseif e.parameter == "clear-memoizer-cache" then
-    formatter.create_cache(e.player_index)
-    local player = game.get_player(e.player_index)
-    player.print{"message.rb-memoizer-cache-cleared"}
-  else
-    game.get_player(e.player_index).print{"message.rb-invalid-command"}
-  end
-end)
-
 -- Debug commands
+
+commands.add_command("rb-refresh-all", {"command-help.rb-refresh-all"}, function(e)
+  local player = game.get_player(e.player_index)
+  if not player.admin then
+    player.print{"cant-run-command-not-admin", "rb-refresh-all"}
+    return
+  end
+
+  game.print("[color=red]REFRESHING RECIPE BOOK[/color]")
+  game.print("Get comfortable, this could take a while!")
+  on_tick_n.add(game.tick + 1, {action = "refresh_all"})
+end)
 
 commands.add_command("rb-print-object", nil, function(e)
   local player = game.get_player(e.player_index)
+  if not player.admin then
+    player.print{"cant-run-command-not-admin", "rb-dump-data"}
+    return
+  end
   local _, _, class, name = string.find(e.parameter, "^(.+) (.+)$")
   if not class or not name then
     player.print("Invalid arguments format")
     return
   end
-  local obj = recipe_book[class][name]
+  local obj = recipe_book[class] and recipe_book[class][name]
+  if not obj then
+    player.print("Not a valid object")
+    return
+  end
   if __DebugAdapter then
     __DebugAdapter.print(obj)
     player.print("Object data has been printed to the debug console.")
@@ -57,6 +62,10 @@ end)
 
 commands.add_command("rb-count-objects", nil, function(e)
   local player = game.get_player(e.player_index)
+  if not player.admin then
+    player.print{"cant-run-command-not-admin", "rb-dump-data"}
+    return
+  end
   for name, tbl in pairs(recipe_book) do
     if type(tbl) == "table" then
       local output = name..": "..table_size(tbl)
@@ -69,7 +78,7 @@ end)
 commands.add_command("rb-dump-data", nil, function(e)
   local player = game.get_player(e.player_index)
   if not player.admin then
-    player.print("You must be an admin to use this command.")
+    player.print{"cant-run-command-not-admin", "rb-dump-data"}
     return
   end
   if __DebugAdapter and e.parameter and #e.parameter == 0 then
@@ -92,6 +101,7 @@ event.on_init(function()
   on_tick_n.init()
 
   global_data.init()
+  global_data.update_sync_data()
   global_data.build_prototypes()
 
   recipe_book.build()
@@ -108,8 +118,8 @@ event.on_load(function()
 
   formatter.create_all_caches()
 
-  -- When migrating from pre-3.0, the prototypes table won't exist yet
-  if global.prototypes then
+  -- When mod configuration changes, don't bother to build anything because it'll have to be built again anyway
+  if global_data.check_should_load() then
     recipe_book.build()
     recipe_book.check_forces()
   end
@@ -119,6 +129,7 @@ event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
     dictionary.init()
 
+    global_data.update_sync_data()
     global_data.build_prototypes()
 
     recipe_book.build()
@@ -140,7 +151,6 @@ end)
 event.register({defines.events.on_research_finished, defines.events.on_research_reversed}, function(e)
   if not global.players then return end
   recipe_book.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
-
 
   -- Refresh all GUIs to reflect finished research
   for _, player in pairs(e.research.force.players) do
@@ -330,6 +340,16 @@ event.on_tick(function(e)
         local func = msg.raw and serpent.dump or serpent.block
         game.write_file("rb-dump.txt", func(recipe_book), false, msg.player_index)
         game.print("[color=green]Dumped RB data to script-output/rb-dump.txt[/color]")
+      elseif msg.action == "refresh_all" then
+        dictionary.init()
+        recipe_book.build()
+        recipe_book.check_forces()
+        for player_index, player in pairs(game.players) do
+          local player_table = global.players[player_index]
+          player_data.refresh(player, player_table)
+          player_table.flags.show_message_after_translation = true
+        end
+        game.print("[color=green]Data refresh complete, retranslating dictionaries...[/color]")
       end
     end
   end
@@ -344,20 +364,28 @@ event.on_string_translated(function(e)
       local player = game.get_player(player_index)
       local player_table = global.players[player_index]
 
-      player_table.translations = language_data.dictionaries
+      -- If the translations table already exists then this player just joined the game
+      -- If the player changed languages, then just refresh the GUI contents
+      if player_table.translations and (player_table.language or "") ~= language_data.language then
+        player_table.language = language_data.language
+        player_table.translations = language_data.dictionaries
+        shared.refresh_contents(player, player_table)
+      else
+        player_table.language = language_data.language
+        player_table.translations = language_data.dictionaries
+        -- Show message if needed
+        if player_table.flags.show_message_after_translation then
+          player.print{"message.rb-can-open-gui"}
+          player_table.flags.show_message_after_translation = false
+        end
 
-      -- Show message if needed
-      if player_table.flags.show_message_after_translation then
-        player.print{"message.rb-can-open-gui"}
-        player_table.flags.show_message_after_translation = false
+        -- Create GUI
+        search_gui.root.build(player, player_table)
+        -- Update flags
+        player_table.flags.can_open_gui = true
+        -- Enable shortcut
+        player.set_shortcut_available("rb-search", true)
       end
-
-      -- Create GUI
-      search_gui.root.build(player, player_table)
-      -- Update flags
-      player_table.flags.can_open_gui = true
-      -- Enable shortcut
-      player.set_shortcut_available("rb-search", true)
     end
   end
 end)

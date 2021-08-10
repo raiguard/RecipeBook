@@ -17,8 +17,6 @@ function player_data.init(player_index)
     favorites = {},
     flags = {
       can_open_gui = false,
-      gui_open = false,
-      technology_gui_open = false,
       show_message_after_translation = false,
     },
     global_history = {},
@@ -134,6 +132,7 @@ function player_data.refresh(player, player_table)
   player_data.update_settings(player, player_table)
 
   -- Run translations
+  player_table.language = nil
   player_table.translations = nil
   if player.connected then
     dictionary.translate(player)
