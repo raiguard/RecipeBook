@@ -92,6 +92,7 @@ event.on_init(function()
   on_tick_n.init()
 
   global_data.init()
+  global_data.update_sync_data()
   global_data.build_prototypes()
 
   recipe_book.build()
@@ -108,8 +109,8 @@ event.on_load(function()
 
   formatter.create_all_caches()
 
-  -- When migrating from pre-3.0, the prototypes table won't exist yet
-  if global.prototypes then
+  -- When mod configuration changes, don't bother to build anything because it'll have to be built again anyway
+  if global_data.check_should_load() then
     recipe_book.build()
     recipe_book.check_forces()
   end
@@ -119,6 +120,7 @@ event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
     dictionary.init()
 
+    global_data.update_sync_data()
     global_data.build_prototypes()
 
     recipe_book.build()

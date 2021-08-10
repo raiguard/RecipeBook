@@ -26,8 +26,22 @@ function global_data.build_prototypes()
   global.prototypes = prototypes
 end
 
+function global_data.update_sync_data()
+  global.sync_data = {
+    active_mods = script.active_mods,
+    settings = table.map(settings.startup, function(v) return v end),
+  }
+end
+
 function global_data.add_force(force)
   table.insert(global.forces, force)
+end
+
+function global_data.check_should_load()
+  local sync_data = global.sync_data or {active_mods = {}, settings = {}}
+  return global.prototypes
+    and table.deep_compare(sync_data.active_mods, script.active_mods)
+    and table.deep_compare(sync_data.settings, settings.startup)
 end
 
 return global_data
