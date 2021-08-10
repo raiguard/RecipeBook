@@ -21,31 +21,36 @@ local settings_gui = require("scripts.gui.settings.index")
 -- -----------------------------------------------------------------------------
 -- COMMANDS
 
--- User-facing command
-commands.add_command("RecipeBook", {"command-help.RecipeBook"}, function(e)
-  if e.parameter == "refresh-player-data" then
-    local player = game.get_player(e.player_index)
-    player.print{"message.rb-refreshing-player-data"}
-    player_data.refresh(player, global.players[e.player_index])
-  elseif e.parameter == "clear-memoizer-cache" then
-    formatter.create_cache(e.player_index)
-    local player = game.get_player(e.player_index)
-    player.print{"message.rb-memoizer-cache-cleared"}
-  else
-    game.get_player(e.player_index).print{"message.rb-invalid-command"}
-  end
-end)
-
 -- Debug commands
+
+commands.add_command("rb-refresh-all", {"command-help.rb-refresh-all"}, function(e)
+  local player = game.get_player(e.player_index)
+  if not player.admin then
+    player.print{"cant-run-command-not-admin", "rb-refresh-all"}
+    return
+  end
+
+  game.print("[color=red]REFRESHING RECIPE BOOK[/color]")
+  game.print("Get comfortable, this could take a while!")
+  on_tick_n.add(game.tick + 1, {action = "refresh_all"})
+end)
 
 commands.add_command("rb-print-object", nil, function(e)
   local player = game.get_player(e.player_index)
+  if not player.admin then
+    player.print{"cant-run-command-not-admin", "rb-dump-data"}
+    return
+  end
   local _, _, class, name = string.find(e.parameter, "^(.+) (.+)$")
   if not class or not name then
     player.print("Invalid arguments format")
     return
   end
-  local obj = recipe_book[class][name]
+  local obj = recipe_book[class] and recipe_book[class][name]
+  if not obj then
+    player.print("Not a valid object")
+    return
+  end
   if __DebugAdapter then
     __DebugAdapter.print(obj)
     player.print("Object data has been printed to the debug console.")
@@ -57,6 +62,10 @@ end)
 
 commands.add_command("rb-count-objects", nil, function(e)
   local player = game.get_player(e.player_index)
+  if not player.admin then
+    player.print{"cant-run-command-not-admin", "rb-dump-data"}
+    return
+  end
   for name, tbl in pairs(recipe_book) do
     if type(tbl) == "table" then
       local output = name..": "..table_size(tbl)
@@ -69,7 +78,7 @@ end)
 commands.add_command("rb-dump-data", nil, function(e)
   local player = game.get_player(e.player_index)
   if not player.admin then
-    player.print("You must be an admin to use this command.")
+    player.print{"cant-run-command-not-admin", "rb-dump-data"}
     return
   end
   if __DebugAdapter and e.parameter and #e.parameter == 0 then
@@ -331,6 +340,16 @@ event.on_tick(function(e)
         local func = msg.raw and serpent.dump or serpent.block
         game.write_file("rb-dump.txt", func(recipe_book), false, msg.player_index)
         game.print("[color=green]Dumped RB data to script-output/rb-dump.txt[/color]")
+      elseif msg.action == "refresh_all" then
+        dictionary.init()
+        recipe_book.build()
+        recipe_book.check_forces()
+        for player_index, player in pairs(game.players) do
+          local player_table = global.players[player_index]
+          player_data.refresh(player, player_table)
+          player_table.flags.show_message_after_translation = true
+        end
+        game.print("[color=green]Data refresh complete, retranslating dictionaries...[/color]")
       end
     end
   end
