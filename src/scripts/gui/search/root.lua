@@ -1,5 +1,7 @@
 local gui = require("__flib__.gui")
 
+local constants = require("constants")
+
 local formatter = require("scripts.formatter")
 local gui_util = require("scripts.gui.util")
 local shared = require("scripts.shared")
@@ -8,10 +10,11 @@ local util = require("scripts.util")
 local root = {}
 
 function root.build(player, player_table)
+  local width = (constants.gui_sizes[player_table.language] or constants.gui_sizes.en).search_width
   local refs = gui.build(player.gui.screen, {
     {type = "frame", direction = "vertical", visible = false, ref = {"window"},
       {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
-        {type = "label", style = "frame_title", caption = {"mod-name.RecipeBook"}, ignored_by_interaction = true},
+        {type = "label", style = "frame_title", caption = {"gui.rb-search-title"}, ignored_by_interaction = true},
         {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
         util.frame_action_button(
           "rb_settings",
@@ -26,7 +29,12 @@ function root.build(player, player_table)
           {gui = "search", action = "close"}
         )
       },
-      {type = "frame", style = "inside_deep_frame_for_tabs", style_mods = {width = 276}, direction = "vertical",
+      {
+        type = "frame",
+        style = "inside_deep_frame_for_tabs",
+        style_mods = {width = width},
+        direction = "vertical",
+        ref = {"tab_frame"},
         {
           type = "tabbed-pane",
           style = "tabbed_pane_with_no_side_padding",
@@ -164,6 +172,14 @@ function root.update_history(player, player_table)
     {always_show = true}
   )
   refs.delete_history_button.enabled = table_size(player_table.global_history) > 0 and true or false
+end
+
+function root.update_width(player, player_table)
+  local gui_data = player_table.guis.search
+  if not gui_data then return end
+  local width = (constants.gui_sizes[player_table.language] or constants.gui_sizes.en).search_width
+
+  gui_data.refs.tab_frame.style.width = width
 end
 
 return root

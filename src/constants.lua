@@ -246,6 +246,15 @@ constants.general_settings = {
 
 constants.global_history_size = 30
 
+constants.gui_sizes = {
+  en = {
+    search_width = 276,
+  },
+  ru = {
+    search_width = 279,
+  },
+}
+
 constants.gui_strings = {
   alt_click = {"gui.rb-alt-click"},
   burned_in = {"gui.rb-burned-in"},

@@ -50,7 +50,7 @@ function root.build(player, player_table)
         ),
       },
       {type = "frame", style = "inside_deep_frame_for_tabs", direction = "vertical",
-        {type = "tabbed-pane", style = "flib_tabbed_pane_with_no_padding", style_mods = {width = 500},
+        {type = "tabbed-pane", style = "flib_tabbed_pane_with_no_padding",
           {
             tab = {type = "tab", caption = {"gui.rb-general"}},
             content = {
@@ -87,7 +87,7 @@ function root.build(player, player_table)
                   {
                     type = "frame",
                     style = "bordered_frame",
-                    style_mods = {horizontally_stretchable = true, vertically_stretchable = true},
+                    style_mods = {minimal_width = 300, horizontally_stretchable = true, vertically_stretchable = true},
                     direction = "vertical",
                     ref = {"categories", "frame"},
                   },

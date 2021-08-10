@@ -451,6 +451,7 @@ function shared.refresh_contents(player, player_table, skip_memoizer_purge)
     search_gui.handle_action({action = "update_search_results"}, {player_index = player.index})
     search_gui.handle_action({action = "update_favorites"}, {player_index = player.index})
     search_gui.handle_action({action = "update_history"}, {player_index = player.index})
+    search_gui.root.update_width(player, player_table)
   end
 end
 
