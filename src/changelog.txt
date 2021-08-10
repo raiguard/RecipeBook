@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.2
-Date: ????
+Date: 2021-08-10
   Changes:
     - Removed `/RecipeBook` command, replaced with `/rb-refresh-all`
     - Updated to flib 0.8.2
