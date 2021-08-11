@@ -101,6 +101,13 @@ function root.build(player, player_table, context, sticky)
           {"titlebar", "search_button"},
           {gui = "info", id = id, action = "toggle_search"}
         ),
+        sticky and util.frame_action_button(
+          -- TODO: A proper sprite for this
+          "utility/close",
+          {"gui.rb-detach-instruction"},
+          nil,
+          {gui = "info", id = id, action = "detach_window"}
+        ) or {},
         util.frame_action_button(
           "utility/close",
           {"gui.close"},

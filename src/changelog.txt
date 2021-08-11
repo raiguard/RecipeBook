@@ -3,6 +3,7 @@ Version: 3.1.0
 Date: ????
   Features:
     - When clicking a search result in the search GUI with the left mouse button, the search GUI will be "stickied" to the search GUI
+      - A "detach" button will appear in the titlebar of the sticky window, allowing you to detach it
       - Middle-clicking something will open it in a standalone info GUI
       - This brings back a 2.0-esque experience for those who like it
       - This can be disabled in the mod settings

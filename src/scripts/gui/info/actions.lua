@@ -239,4 +239,16 @@ function actions.change_tech_level(data)
   end
 end
 
+function actions.detach_window(data)
+  local state = data.state
+  -- Just in case
+  if not state.sticky then return end
+
+  local context = state.history[state.history._index]
+
+  -- Close this GUI and create a detached one
+  actions.close(data)
+  shared.open_page(data.player, data.player_table, context)
+end
+
 return actions
