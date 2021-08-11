@@ -32,11 +32,42 @@ function actions.get_action_data(msg, e)
 end
 
 function actions.close(data)
-  root.close(data.player, data.player_table)
+  -- TODO: Handle technology GUI opening
+  if not data.state.ignore_closed then
+    root.close(data.player, data.player_table)
+  end
+end
+
+function actions.toggle_pinned(data)
+  local player = data.player
+  local refs = data.refs
+  local state = data.state
+
+  local pin_button = refs.titlebar.pin_button
+
+  state.pinned = not state.pinned
+  if state.pinned then
+    pin_button.style = "flib_selected_frame_action_button"
+    pin_button.sprite = "rb_pin_black"
+    if player.opened == data.refs.window then
+      state.ignore_closed = true
+      player.opened = nil
+      state.ignore_closed = false
+    end
+  else
+    pin_button.style = "frame_action_button"
+    pin_button.sprite = "rb_pin_white"
+    player.opened = refs.window
+  end
 end
 
 function actions.toggle_settings(data)
-  settings_root.toggle(data.player, data.player_table)
+  local state = data.state
+  local player = data.player
+
+  state.ignore_closed = true
+  settings_root.toggle(player, data.player_table)
+  state.ignore_closed = false
   local settings_button = data.refs.titlebar.settings_button
   if data.player_table.guis.settings then
     settings_button.style = "flib_selected_frame_action_button"
@@ -44,6 +75,9 @@ function actions.toggle_settings(data)
   else
     settings_button.style = "frame_action_button"
     settings_button.sprite = "rb_settings_white"
+    if not state.pinned then
+      player.opened = data.refs.window
+    end
   end
 end
 
@@ -51,6 +85,9 @@ function actions.deselect_settings_button(data)
   local settings_button = data.refs.titlebar.settings_button
   settings_button.style = "frame_action_button"
   settings_button.sprite = "rb_settings_white"
+  if not data.state.pinned then
+    data.player.opened = data.refs.window
+  end
 end
 
 function actions.update_search_query(data)

@@ -14,6 +14,7 @@ function root.build(player, player_table)
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
+      name = "rb_settings_window",
       direction = "vertical",
       ref = {"window"},
       actions = {

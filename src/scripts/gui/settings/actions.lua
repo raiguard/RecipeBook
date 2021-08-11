@@ -10,8 +10,8 @@ local search_actions = require("scripts.gui.search.actions")
 local actions = {}
 
 function actions.close(data)
-  search_actions.deselect_settings_button(search_actions.get_action_data(data.msg, data.e))
   root.destroy(data.player_table)
+  search_actions.deselect_settings_button(search_actions.get_action_data(data.msg, data.e))
 end
 
 function actions.toggle_search(data)

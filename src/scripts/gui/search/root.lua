@@ -14,15 +14,25 @@ function root.build(player, player_table)
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
+      name = "rb_search_window",
       style = "invisible_frame",
       style_mods = {height = 596},
       visible = false,
       ref = {"window"},
+      actions ={
+        on_closed = {gui = "search", action = "close"},
+      },
       -- Search frame
       {type = "frame", direction = "vertical",
         {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
           {type = "label", style = "frame_title", caption = {"gui.rb-search-title"}, ignored_by_interaction = true},
           {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
+          util.frame_action_button(
+            "rb_pin",
+            {"gui.rb-pin-instruction"},
+            {"titlebar", "pin_button"},
+            {gui = "search", action = "toggle_pinned"}
+          ),
           util.frame_action_button(
             "rb_settings",
             {"gui.rb-settings-instruction"},
@@ -118,9 +128,11 @@ function root.build(player, player_table)
 
   player_table.guis.search = {
     state = {
-      search_query = ""
+      ignore_closed = false,
+      search_query = "",
+      pinned =false,
     },
-    refs = refs
+    refs = refs,
   }
 
   root.update_favorites(player, player_table)
@@ -142,6 +154,7 @@ function root.open(player, player_table)
   refs.search_textfield.select_all()
   refs.search_textfield.focus()
 
+  player.opened = refs.window
   player.set_shortcut_toggled("rb-search", true)
 end
 
