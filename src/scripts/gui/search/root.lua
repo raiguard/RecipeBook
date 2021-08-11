@@ -111,6 +111,11 @@ function root.build(player, player_table)
 
   refs.titlebar.flow.drag_target = refs.window
 
+  refs.window.location = {
+    x = 10,
+    y = 68
+  }
+
   player_table.guis.search = {
     state = {
       search_query = ""
