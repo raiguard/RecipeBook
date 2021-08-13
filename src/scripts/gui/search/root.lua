@@ -161,7 +161,14 @@ function root.open(player, player_table)
   refs.search_textfield.select_all()
   refs.search_textfield.focus()
 
-  player.opened = refs.window
+  if not gui_data.state.pinned then
+    player.opened = refs.window
+  end
+  -- Workaround to prevent the search GUI from centering itself if the player doesn't manually recenter
+  if player_table.settings.general.interface.search_gui_location ~= "center" then
+    refs.window.auto_center = false
+  end
+
   player.set_shortcut_toggled("rb-search", true)
 end
 
