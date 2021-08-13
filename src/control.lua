@@ -198,6 +198,20 @@ event.on_gui_click(function(e)
   end
 end)
 
+event.on_gui_closed(function(e)
+  if not read_gui_action(e) then
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    local gui_data = player_table.guis.search
+    if player_table.flags.technology_gui_open then
+      player_table.flags.technology_gui_open = false
+      if not gui_data.state.pinned then
+        player.opened = gui_data.refs.window
+      end
+    end
+  end
+end)
+
 event.register("rb-linked-focus-search", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]

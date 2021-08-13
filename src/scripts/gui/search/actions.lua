@@ -42,8 +42,7 @@ function actions.reset_location(data)
 end
 
 function actions.close(data)
-  -- TODO: Handle technology GUI opening
-  if not data.state.ignore_closed then
+  if not data.state.ignore_closed and not data.player_table.flags.technology_gui_open then
     root.close(data.player, data.player_table)
   end
 end

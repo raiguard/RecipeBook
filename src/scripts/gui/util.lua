@@ -28,6 +28,7 @@ function gui_util.navigate_to(e)
       local action = interaction.action
       local context_data = recipe_book[context.class][context.name]
       local player = game.get_player(e.player_index)
+      local player_table = global.players[e.player_index]
 
       if action == "view_details" then
         return context
@@ -66,6 +67,8 @@ function gui_util.navigate_to(e)
           end
         end
       elseif action == "open_in_technology_window" then
+        local player_table = global.players[e.player_index]
+        player_table.flags.technology_gui_open = true
         player.open_technology_gui(context.name)
       elseif action == "view_source" then
         local source = context_data[interaction.source]

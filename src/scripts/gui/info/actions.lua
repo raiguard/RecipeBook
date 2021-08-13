@@ -160,6 +160,7 @@ function actions.navigate_to_plain(data)
 end
 
 function actions.open_in_tech_window(data)
+  data.player_table.flags.technology_gui_open = true
   data.player.open_technology_gui(data.context.name)
 end
 
