@@ -1,4 +1,5 @@
 local gui = require("__flib__.gui")
+local table = require("__flib__.table")
 
 local constants = require("constants")
 
@@ -128,7 +129,10 @@ function root.build(player, player_table)
   refs.titlebar.flow.drag_target = refs.window
 
   if player_table.settings.general.interface.search_gui_location == "top_left" then
-    refs.window.location = constants.search_gui_top_left_location
+    refs.window.location = table.map(
+      constants.search_gui_top_left_location,
+      function(pos) return pos * player.display_scale end
+    )
   else
     refs.window.force_auto_center()
   end

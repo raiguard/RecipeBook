@@ -35,7 +35,11 @@ function actions.reset_location(data)
   if data.e.button ~= defines.mouse_button_type.middle then return end
 
   if data.player_table.settings.general.interface.search_gui_location == "top_left" then
-    data.refs.window.location = constants.search_gui_top_left_location
+    local scale = data.player.display_scale
+    data.refs.window.location = table.map(
+      constants.search_gui_top_left_location,
+      function(pos) return pos * scale end
+    )
     data.refs.window.auto_center = false
   else
     data.refs.window.force_auto_center()
