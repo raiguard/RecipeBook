@@ -24,7 +24,13 @@ function root.build(player, player_table)
       },
       -- Search frame
       {type = "frame", direction = "vertical",
-        {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
+        {
+          type = "flow",
+          style = "flib_titlebar_flow",
+          ref = {"titlebar", "flow"},
+          actions = {
+            on_click = {gui = "search", action = "reset_location"},
+          },
           {type = "label", style = "frame_title", caption = {"gui.rb-search-title"}, ignored_by_interaction = true},
           {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
           util.frame_action_button(
@@ -121,10 +127,11 @@ function root.build(player, player_table)
 
   refs.titlebar.flow.drag_target = refs.window
 
-  refs.window.location = {
-    x = 10,
-    y = 68
-  }
+  if player_table.settings.general.interface.search_gui_location == "top_left" then
+    refs.window.location = constants.search_gui_top_left_location
+  else
+    refs.window.force_auto_center()
+  end
 
   player_table.guis.search = {
     state = {
@@ -159,8 +166,13 @@ function root.open(player, player_table)
 end
 
 function root.close(player, player_table)
-  player_table.guis.search.refs.window.visible = false
+  local window = player_table.guis.search.refs.window
+  window.visible = false
   player.set_shortcut_toggled("rb-search", false)
+
+  if player.opened == window then
+    player.opened = nil
+  end
 end
 
 function root.toggle(player, player_table)

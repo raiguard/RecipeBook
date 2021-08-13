@@ -74,7 +74,7 @@ function root.build(player, player_table)
               {
                 type = "list-box",
                 style = "list_box_in_shallow_frame",
-                style_mods = {height = 504, width = 150},
+                style_mods = {height = 28 * 22, width = 150},
                 items = table.map(constants.category_classes, function(class)
                   return gui_translations[class] or class
                 end),
@@ -83,7 +83,7 @@ function root.build(player, player_table)
                   on_selection_state_changed = {gui = "settings", action = "change_category"},
                 },
               },
-              {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 504},
+              {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 28 * 22},
                 {type = "scroll-pane", style = "flib_naked_scroll_pane", style_mods = {padding = 4},
                   {
                     type = "frame",

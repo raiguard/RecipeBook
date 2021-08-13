@@ -253,6 +253,15 @@ constants.general_settings = {
         {category = "interface", name = "attach_search_results", value = false},
       },
     },
+    search_gui_location = {
+      type = "enum",
+      options = {
+        "top_left",
+        "center",
+      },
+      has_tooltip = true,
+      default_value = "top_left",
+    },
   },
 }
 
@@ -752,6 +761,10 @@ constants.prototypes.straight_conversions = {
   "technology",
 }
 
+constants.search_gui_top_left_location = {
+  x = 10,
+  y = 68,
+}
 constants.search_results_limit = 500
 constants.search_results_visible_items = 15
 constants.search_timeout = 30

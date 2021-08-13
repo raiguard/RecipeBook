@@ -31,6 +31,16 @@ function actions.get_action_data(msg, e)
   }
 end
 
+function actions.reset_location(data)
+  if data.e.button ~= defines.mouse_button_type.middle then return end
+
+  if data.player_table.settings.general.interface.search_gui_location == "top_left" then
+    data.refs.window.location = constants.search_gui_top_left_location
+  else
+    data.refs.window.force_auto_center()
+  end
+end
+
 function actions.close(data)
   -- TODO: Handle technology GUI opening
   if not data.state.ignore_closed then
@@ -85,7 +95,7 @@ function actions.deselect_settings_button(data)
   local settings_button = data.refs.titlebar.settings_button
   settings_button.style = "frame_action_button"
   settings_button.sprite = "rb_settings_white"
-  if not data.state.pinned then
+  if not data.state.pinned and data.refs.window.visible then
     data.player.opened = data.refs.window
   end
 end
