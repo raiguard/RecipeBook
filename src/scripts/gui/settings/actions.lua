@@ -86,7 +86,8 @@ function actions.change_general_setting(data)
   local msg = data.msg
   local type = msg.type
   local category = msg.category
-  local name = msg.name  local setting_ident = constants.general_settings[category][name]
+  local name = msg.name
+  local setting_ident = constants.general_settings[category][name]
   local settings = data.player_table.settings.general[category]
 
   local new_value
@@ -106,6 +107,8 @@ function actions.change_general_setting(data)
   if new_value ~= nil then
     settings[name] = new_value
     shared.refresh_contents(data.player, data.player_table)
+    -- Update enabled statuses
+    root.update_contents(data.player, data.player_table, "general")
   end
 end
 

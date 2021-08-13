@@ -130,7 +130,7 @@ function root.toggle(player, player_table)
   end
 end
 
-function root.update_contents(player, player_table)
+function root.update_contents(player, player_table, tab)
   local gui_data = player_table.guis.settings
   local refs = gui_data.refs
   local state = gui_data.state
@@ -146,112 +146,127 @@ function root.update_contents(player, player_table)
 
   -- GENERAL
 
-  local general_pane = refs.general.pane
-  general_pane.clear()
-  for category, settings in pairs(constants.general_settings) do
-    local actual_category_settings = actual_settings.general[category]
-    local children = {}
-    for setting_name, setting_ident in pairs(settings) do
-      local caption = gui_translations[setting_name] or setting_name
-      if string.find(string.lower(caption), query) then
-        local converted_setting_name = string.gsub(setting_name, "_", "-")
-        local tooltip = ""
-        if setting_ident.has_tooltip then
-          tooltip = {"gui.rb-"..converted_setting_name.."-description"}
-          caption = caption.." [img=info]"
-        end
-        if setting_ident.type == "bool" then
+  if not tab or tab == "general" then
+    local general_pane = refs.general.pane
+    general_pane.clear()
+    for category, settings in pairs(constants.general_settings) do
+      local actual_category_settings = actual_settings.general[category]
+      local children = {}
+      for setting_name, setting_ident in pairs(settings) do
+        local caption = gui_translations[setting_name] or setting_name
+        if string.find(string.lower(caption), query) then
+          local converted_setting_name = string.gsub(setting_name, "_", "-")
+          local tooltip = ""
+          if setting_ident.has_tooltip then
+            tooltip = {"gui.rb-"..converted_setting_name.."-description"}
+            caption = caption.." [img=info]"
+          end
+          local enabled = true
+          if setting_ident.dependencies then
+            for _, dependency in pairs(setting_ident.dependencies) do
+              if actual_settings.general[dependency.category][dependency.name] ~= dependency.value then
+                enabled = false
+                break
+              end
+            end
+          end
+          if setting_ident.type == "bool" then
+              children[#children + 1] = {
+                type = "checkbox",
+                caption = caption,
+                tooltip = tooltip,
+                state = actual_category_settings[setting_name],
+                enabled = enabled,
+                actions = enabled and {
+                  on_click = {
+                    gui = "settings",
+                    action = "change_general_setting",
+                    type = setting_ident.type,
+                    category = category,
+                    name = setting_name,
+                  }
+                } or nil,
+              }
+          elseif setting_ident.type == "enum" then
             children[#children + 1] = {
-              type = "checkbox",
-              caption = caption,
-              tooltip = tooltip,
-              state = actual_category_settings[setting_name],
-              actions = {
-                on_click = {
-                  gui = "settings",
-                  action = "change_general_setting",
-                  type = setting_ident.type,
-                  category = category,
-                  name = setting_name,
-                }
+              type = "flow",
+              style_mods = {vertical_align = "center"},
+              {type = "label", caption = caption, tooltip = tooltip},
+              {type = "empty-widget", style = "flib_horizontal_pusher"},
+              {
+                type = "drop-down",
+                items = table.map(
+                  setting_ident.options,
+                  function(option_name)
+                    return {"gui.rb-"..converted_setting_name.."-"..string.gsub(option_name, "_", "-")}
+                  end
+                ),
+                selected_index = table.find(setting_ident.options, actual_category_settings[setting_name]),
+                enabled = enabled,
+                actions = enabled and {
+                  on_selection_state_changed = {
+                    gui = "settings",
+                    action = "change_general_setting",
+                    type = setting_ident.type,
+                    category = category,
+                    name = setting_name,
+                  }
+                } or nil,
               },
             }
-        elseif setting_ident.type == "enum" then
-          children[#children + 1] = {
-            type = "flow",
-            style_mods = {vertical_align = "center"},
-            {type = "label", caption = caption, tooltip = tooltip},
-            {type = "empty-widget", style = "flib_horizontal_pusher"},
-            {
-              type = "drop-down",
-              items = table.map(
-                setting_ident.options,
-                function(option_name)
-                  return {"gui.rb-"..converted_setting_name.."-"..string.gsub(option_name, "_", "-")}
-                end
-              ),
-              selected_index = table.find(setting_ident.options, actual_category_settings[setting_name]),
-              actions = {
-                on_selection_state_changed = {
-                  gui = "settings",
-                  action = "change_general_setting",
-                  type = setting_ident.type,
-                  category = category,
-                  name = setting_name,
-                }
-              },
-            },
-          }
+          end
         end
       end
-    end
 
-    if #children > 0 then
-      gui.build(general_pane, {
-        {
-          type = "frame",
-          style = "bordered_frame",
-          direction = "vertical",
-          caption = gui_translations[category] or category,
-          children = children,
-        }
-      })
+      if #children > 0 then
+        gui.build(general_pane, {
+          {
+            type = "frame",
+            style = "bordered_frame",
+            direction = "vertical",
+            caption = gui_translations[category] or category,
+            children = children,
+          }
+        })
+      end
     end
   end
 
   -- CATEGORIES
 
-  local categories_frame = refs.categories.frame
-  categories_frame.clear()
-  local selected_class = constants.category_classes[state.selected_category]
-  local class_settings = actual_settings.categories[selected_class]
-  local class_translations = translations[selected_class]
-  local children = {}
-  for category_name in pairs(recipe_book[selected_class]) do
-    local category_translation = class_translations[category_name] or category_name
-    if string.find(string.lower(category_translation), query) then
-      local img_type = constants.class_to_type[selected_class]
-      if img_type then
-        category_translation = "[img="..img_type.."/"..category_name.."]  "..category_translation
-      end
-      children[#children + 1] = {
-        type = "checkbox",
-        caption = category_translation,
-        state = class_settings[category_name],
-        actions = {
-          on_checked_state_changed = {
-            gui = "settings",
-            action = "change_category_setting",
-            class = selected_class,
-            name = category_name,
+  if not tab or tab == "categories" then
+    local categories_frame = refs.categories.frame
+    categories_frame.clear()
+    local selected_class = constants.category_classes[state.selected_category]
+    local class_settings = actual_settings.categories[selected_class]
+    local class_translations = translations[selected_class]
+    local children = {}
+    for category_name in pairs(recipe_book[selected_class]) do
+      local category_translation = class_translations[category_name] or category_name
+      if string.find(string.lower(category_translation), query) then
+        local img_type = constants.class_to_type[selected_class]
+        if img_type then
+          category_translation = "[img="..img_type.."/"..category_name.."]  "..category_translation
+        end
+        children[#children + 1] = {
+          type = "checkbox",
+          caption = category_translation,
+          state = class_settings[category_name],
+          actions = {
+            on_checked_state_changed = {
+              gui = "settings",
+              action = "change_category_setting",
+              class = selected_class,
+              name = category_name,
+            },
           },
-        },
-      }
+        }
+      end
     end
-  end
 
-  if #children > 0 then
-    gui.build(categories_frame, children)
+    if #children > 0 then
+      gui.build(categories_frame, children)
+    end
   end
 end
 

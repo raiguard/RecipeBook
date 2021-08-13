@@ -218,11 +218,6 @@ constants.general_settings = {
       has_tooltip = true,
       default_value = false,
     },
-    close_search_gui_after_selection = {
-      type = "bool",
-      has_tooltip = false,
-      default_value = false,
-    },
     show_fluid_temperatures = {
       type = "enum",
       options = {
@@ -242,6 +237,21 @@ constants.general_settings = {
       },
       has_tooltip = true,
       default_value = "localised",
+    },
+  },
+  interface = {
+    attach_search_results = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = true,
+    },
+    close_search_gui_after_selection = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = false,
+      dependencies = {
+        {category = "interface", name = "attach_search_results", value = false},
+      },
     },
   },
 }
@@ -306,6 +316,7 @@ constants.gui_strings = {
   ingredient_limit = {"gui.rb-ingredient-limit"},
   ingredients = {"gui.rb-ingredients"},
   inputs = {"gui.rb-inputs"},
+  interface = {"gui.rb-interface"},
   item = {"gui.rb-item"},
   items = {"gui.rb-items"},
   lab = {"gui.rb-lab"},
@@ -371,6 +382,7 @@ constants.gui_strings = {
   size = {"gui.rb-size"},
   speed_bonus = {"description.speed-bonus"},
   stack_size = {"gui.rb-stack-size"},
+  attach_search_results = {"gui.rb-attach-search-results"},
   tech_level_desc = {"gui.rb-tech-level-desc"},
   tech_level = {"gui.rb-tech-level"},
   technology = {"gui.rb-technology"},

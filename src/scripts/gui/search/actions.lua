@@ -242,8 +242,10 @@ end
 function actions.open_object(data)
   local context = gui_util.navigate_to(data.e)
   if context then
-    shared.open_page(data.player, data.player_table, context, data.e.button ~= defines.mouse_button_type.middle)
-    if data.player_table.settings.general.search.close_search_gui_after_selection then
+    local attach = data.player_table.settings.general.interface.attach_search_results
+    local sticky = attach and data.e.button == defines.mouse_button_type.left
+    shared.open_page(data.player, data.player_table, context, sticky)
+    if not sticky and data.player_table.settings.general.search.close_search_gui_after_selection then
       actions.close(data)
     end
   end
