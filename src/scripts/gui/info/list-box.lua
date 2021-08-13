@@ -29,9 +29,15 @@ function list_box.build(parent, index, component, variables)
           style = "mini_button_aligned_to_text_vertically_when_centered",
           tooltip = {"gui.rb-open-list-in-new-window"},
           sprite = "rb_export_black",
-          ref = {"open_list_button"}
+          ref = {"open_list_button"},
           -- NOTE: Actions are set in the update function
-        }
+        },
+        {
+          type = "sprite-button",
+          style = "mini_button_aligned_to_text_vertically_when_centered",
+          ref = {"expand_collapse_button"},
+          -- NOTE: Sprite, tooltip, and action are set in the update function
+        },
       },
       {type = "frame", style = "deep_frame_in_shallow_frame", ref = {"frame"},
         {
@@ -43,6 +49,10 @@ function list_box.build(parent, index, component, variables)
       }
     }
   })
+end
+
+function list_box.default_state(component)
+  return {collapsed = component.default_state == "collapsed"}
 end
 
 function list_box.update(component, refs, object_data, player_data, variables)
@@ -60,7 +70,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
   local search_type = player_data.settings.general.search.search_type
 
   -- Add items
-  local i = 0
+  local i = 0 -- The "added" index
   local iterator = component.use_pairs and pairs or ipairs
   local objects = object_data[component.source]
   for _, obj in iterator(objects or {}) do
@@ -106,6 +116,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
             tooltip = info.tooltip,
             enabled = info.enabled,
             mouse_button_filter = {"left", "middle"},
+            -- TODO: Use gui.add() here
             tags = {
               [script.mod_name] = {
                 blueprint_recipe = blueprint_recipe,
@@ -147,6 +158,23 @@ function list_box.update(component, refs, object_data, player_data, variables)
       })
     else
       refs.open_list_button.visible = false
+    end
+    -- Update expand/collapse button and height
+    gui.set_action(refs.expand_collapse_button, "on_click", {
+      gui = "info",
+      id = variables.gui_id,
+      action = "toggle_collapsed",
+      context = variables.context,
+      component_index = variables.component_index,
+    })
+    if variables.component_state.collapsed then
+      -- TODO: Update sprite
+      scroll.style.maximal_height = 1
+      refs.expand_collapse_button.tooltip = {"gui.rb-expand"}
+    else
+      -- TODO: Update sprite
+      scroll.style.maximal_height = (component.max_rows or constants.default_max_rows) * 28
+      refs.expand_collapse_button.tooltip = {"gui.rb-collapse"}
     end
   else
     refs.root.visible = false

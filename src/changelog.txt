@@ -7,6 +7,18 @@ Date: ????
       - Middle-clicking something will open it in a standalone info GUI
       - This brings back a 2.0-esque experience for those who like it
       - This can be disabled in the mod settings
+    - Added the ability to collapse listboxes
+      - Some listboxes (categories, compatible modules) default to collapsed to save space
+      - Default state can be overridden in the settings
+    - Added search GUI location setting, choose between top-left and center
+    - Added page content settings
+      - Each "section" of a page can be enabled or disabled, and have the following settings based on type:
+        - Table (with absolute rows):
+          - Row visibility
+        - List box:
+          - Collapsed by default
+          - Max rows
+          - Show all objects
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.3
 Date: ????

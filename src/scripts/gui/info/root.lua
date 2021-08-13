@@ -220,6 +220,7 @@ function root.build(player, player_table, context, sticky)
   player_table.guis.info[id] = {
     refs = refs,
     state = {
+      components = {},
       history = {_index = 0},
       id = id,
       search_opened = false,
@@ -510,23 +511,31 @@ function root.update_contents(player, player_table, id, options)
     selected_tech_level = state.selected_tech_level
   }
   -- Add or update relevant components
-  for _, component_data in pairs(constants.pages[context.class]) do
+  for _, component_ident in pairs(constants.pages[context.class]) do
     i = i + 1
-    local component = components[component_data.type]
+
+    local component = components[component_ident.type]
     local component_refs = page_refs[i]
-    if not component_refs or component_refs.type ~= component_data.type then
+    if not component_refs or component_refs.type ~= component_ident.type then
       -- Destroy old elements
       if component_refs then
         component_refs.root.destroy()
       end
       -- Create new elements
-      component_refs = component.build(pane, i, component_data, component_variables)
-      component_refs.type = component_data.type
+      component_refs = component.build(pane, i, component_ident, component_variables)
+      component_refs.type = component_ident.type
       page_refs[i] = component_refs
     end
 
+    if not refresh then
+      state.components[i] = component.default_state(component_ident)
+    end
+
+    component_variables.component_index = i
+    component_variables.component_state = state.components[i]
+
     local comp_visible = component.update(
-      component_data,
+      component_ident,
       component_refs,
       obj_data,
       player_data,

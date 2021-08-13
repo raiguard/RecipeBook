@@ -686,7 +686,7 @@ constants.pages = {
     {type = "list_box", source = "products", always_show = true},
     {type = "list_box", source = "made_in"},
     {type = "list_box", source = "unlocked_by"},
-    {type = "list_box", source = "compatible_modules"},
+    {type = "list_box", source = "compatible_modules", default_state = "collapsed"},
   },
   resource = {
     {type = "table", rows = {

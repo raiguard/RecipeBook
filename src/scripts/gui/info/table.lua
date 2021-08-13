@@ -35,6 +35,8 @@ function table_comp.build(parent, index, component, variables)
   })
 end
 
+function table_comp.default_state(_) end
+
 function table_comp.update(component, refs, object_data, player_data, variables)
   local tbl = refs.table
   local children = tbl.children

@@ -225,6 +225,21 @@ function actions.open_list(data)
   end
 end
 
+function actions.toggle_collapsed(data)
+  local msg = data.msg
+  local id = msg.gui_id
+  local context = msg.context
+  local component_index = msg.component_index
+  local component_ident = constants.pages[context.class][component_index]
+  if component_ident and component_ident.type == "list_box" then
+    local state = data.state.components[component_index]
+    if state then
+      state.collapsed = not state.collapsed
+      root.update_contents(data.player, data.player_table, msg.id, {refresh = true})
+    end
+  end
+end
+
 function actions.change_tech_level(data)
   local context = data.context
   local msg = data.msg
