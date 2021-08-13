@@ -8,6 +8,46 @@ local util = require("scripts.util")
 
 local root = {}
 
+local function subpage_set(name, action, include_tooltip, include_bordered_frame, initial_items)
+  return {
+    tab = {
+      type = "tab",
+      style_mods = {padding = {7, 10, 8, 10}},
+      caption = {"", {"gui.rb-"..name}, include_tooltip and " [img=info]" or nil},
+      tooltip = include_tooltip and {"gui.rb-"..name.."-description"} or nil,
+    },
+    content = {
+      type = "flow",
+      style_mods = {horizontal_spacing = 12, padding = {8, 12, 12, 12}},
+      {
+        type = "list-box",
+        style = "list_box_in_shallow_frame",
+        style_mods = {height = 28 * 22, width = 150},
+        items = initial_items,
+        selected_index = 1,
+        actions = {
+          on_selection_state_changed = {gui = "settings", action = action},
+        },
+      },
+      {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 28 * 22},
+        {
+          type = "scroll-pane",
+          style = "flib_naked_scroll_pane",
+          style_mods = {padding = 4},
+          ref = {name, "pane"},
+          include_bordered_frame and {
+            type = "frame",
+            style = "bordered_frame",
+            style_mods = {minimal_width = 300, horizontally_stretchable = true, vertically_stretchable = true},
+            direction = "vertical",
+            ref = {name, "frame"},
+          } or nil,
+        },
+      },
+    },
+  }
+end
+
 function root.build(player, player_table)
   local gui_translations = player_table.translations.gui
 
@@ -61,41 +101,25 @@ function root.build(player, player_table)
               ref = {"general", "pane"},
             },
           },
-          {
-            tab = {
-              type = "tab",
-              style_mods = {padding = {7, 10, 8, 10}},
-              caption = {"", {"gui.rb-categories"}, " [img=info]"},
-              tooltip = {"gui.rb-categories-description"},
-            },
-            content = {
-              type = "flow",
-              style_mods = {horizontal_spacing = 12, padding = {8, 12, 12, 12}},
-              {
-                type = "list-box",
-                style = "list_box_in_shallow_frame",
-                style_mods = {height = 28 * 22, width = 150},
-                items = table.map(constants.category_classes, function(class)
-                  return gui_translations[class] or class
-                end),
-                selected_index = 1,
-                actions = {
-                  on_selection_state_changed = {gui = "settings", action = "change_category"},
-                },
-              },
-              {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 28 * 22},
-                {type = "scroll-pane", style = "flib_naked_scroll_pane", style_mods = {padding = 4},
-                  {
-                    type = "frame",
-                    style = "bordered_frame",
-                    style_mods = {minimal_width = 300, horizontally_stretchable = true, vertically_stretchable = true},
-                    direction = "vertical",
-                    ref = {"categories", "frame"},
-                  },
-                },
-              },
-            },
-          },
+          subpage_set(
+            "categories",
+            "change_category",
+            true,
+            true,
+            table.map(constants.category_classes, function(class)
+              return gui_translations[class] or class
+            end)
+          ),
+          subpage_set(
+            "pages",
+            "change_page",
+            false,
+            false,
+            -- TODO: If we add a class that does not have a page, this will break
+            table.map(constants.classes, function(class)
+              return gui_translations[class] or class
+            end)
+          ),
         },
       },
     },
@@ -111,6 +135,7 @@ function root.build(player, player_table)
       search_opened = false,
       search_query = "",
       selected_category = 1,
+      selected_page = 1,
     },
   }
 
@@ -257,8 +282,8 @@ function root.update_contents(player, player_table, tab)
               gui = "settings",
               action = "change_category_setting",
               class = selected_class,
-              name = category_name,
             },
+              name = category_name,
           },
         }
       end
@@ -267,6 +292,44 @@ function root.update_contents(player, player_table, tab)
     if #children > 0 then
       gui.build(categories_frame, children)
     end
+  end
+
+  -- PAGES
+
+  if not tab or tab == "pages" then
+    local pages_pane = refs.pages.pane
+    pages_pane.clear()
+    local selected_page = constants.classes[state.selected_page]
+    local page_settings = actual_settings.categories[selected_page]
+    local children = {}
+    for _, component in pairs(constants.pages[selected_page]) do
+      local component_children = {}
+
+      if component.type == "table" then
+        component_children[1] = {
+          type = "checkbox",
+          caption = "Show",
+          state = true,
+        }
+      elseif component.type == "list_box" then
+        component_children[1] = {
+          type = "checkbox",
+          caption = "Show",
+          state = true,
+        }
+      end
+
+      local label = component.label or component.source
+      children[#children + 1] = {
+        type = "frame",
+        style = "bordered_frame",
+        style_mods = {minimal_width = 300, horizontally_stretchable = true},
+        caption = gui_translations[label] or label,
+        children = component_children,
+      }
+    end
+
+    gui.build(pages_pane, children)
   end
 end
 

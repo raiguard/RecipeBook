@@ -114,7 +114,7 @@ end
 
 function actions.change_category(data)
   data.state.selected_category = data.e.element.selected_index
-  root.update_contents(data.player, data.player_table)
+  root.update_contents(data.player, data.player_table, "categories")
 end
 
 function actions.change_category_setting(data)
@@ -125,6 +125,11 @@ function actions.change_category_setting(data)
   local category_settings = data.player_table.settings.categories[class]
   category_settings[name] = data.e.element.state
   shared.refresh_contents(data.player, data.player_table)
+end
+
+function actions.change_page(data)
+  data.state.selected_page = data.e.element.selected_index
+  root.update_contents(data.player, data.player_table, "pages")
 end
 
 return actions
