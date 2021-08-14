@@ -149,7 +149,7 @@ function item_proc.process_burned_in(recipe_book)
           end
         else
           -- Remove this category from the machine
-          table.remove(machine_data.fuel_categories. i)
+          table.remove(machine_data.fuel_categories, i)
         end
       end
     end
