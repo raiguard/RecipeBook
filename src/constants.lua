@@ -1,3 +1,5 @@
+local table = require("__flib__.table")
+
 local constants = {}
 
 constants.category_classes = {
@@ -517,6 +519,7 @@ constants.machine_classes = {
   "mining_drill",
   -- "offshore_pump",
 }
+constants.machine_classes_lookup = table.invert(constants.machine_classes)
 
 constants.nav_event_properties = {
   ["rb-jump-to-front"] = {delta = 1, shift = true},

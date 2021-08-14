@@ -61,7 +61,7 @@ return function(recipe_book, dictionaries, metadata)
 
             -- Machines
             local place_result = metadata.place_results[product_name]
-            if place_result then
+            if place_result and constants.machine_classes_lookup[place_result.class] then
               local machine_data = recipe_book[place_result.class][place_result.name]
               if machine_data then
                 machine_data.researched_forces = {}

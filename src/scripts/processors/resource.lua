@@ -24,7 +24,7 @@ return function(recipe_book, dictionaries)
       -- TODO: Validate that it's hand-mineable by checking character mineable categories
       -- NOTE: It doesn't appear to be possible to do ths in the current version of the game (1.1.37)
       -- Enable resource items that are hand-minable
-      for _, product in ipairs(mineable_properties.products) do
+      for _, product in ipairs(mineable_properties.products or {}) do
         if product.type == "item" then
           local product_data = recipe_book[product.type][product.name]
           product_data.enabled_at_start = true
@@ -33,7 +33,7 @@ return function(recipe_book, dictionaries)
     end
 
     local products = {}
-    for i, product in pairs(mineable_properties.products) do
+    for i, product in pairs(mineable_properties.products or {}) do
       products[i] = {
         class = product.type,
         name = product.name,

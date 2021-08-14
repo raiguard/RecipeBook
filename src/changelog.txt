@@ -4,6 +4,9 @@ Date: ????
   Changes:
     - Updated Russian locale by Astorin
     - The search GUI now supports locale-specific widths
+  Bugfixes:
+    - Fixed a crash when an item has a resource as its place result
+    - Fixed a crash when a resource has no products when mined
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.2
 Date: 2021-08-10
