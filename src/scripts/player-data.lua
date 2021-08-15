@@ -29,7 +29,7 @@ function player_data.init(player_index)
       general = {},
       categories = {},
     },
-    translations =  nil, -- assigned its initial value in player_data.refresh
+    translations =  nil, -- Assigned its initial value in player_data.refresh
   }
   global.players[player_index] = data
 end
@@ -39,6 +39,7 @@ function player_data.update_settings(player, player_table)
   local settings = {
     general = {},
     categories = {},
+    pages = {},
   }
 
   -- General settings
@@ -68,6 +69,36 @@ function player_data.update_settings(player, player_table)
     for category_name in pairs(recipe_book[category_class_name]) do
       local disabled_by_default = constants.disabled_categories[category_class_name][category_name]
       category_settings[category_name] = former_category_settings[category_name] or not disabled_by_default
+    end
+  end
+
+  -- Pages
+  -- Default state (normal / collapsed / hidden)
+  -- Max rows
+  for class, page_ident in pairs(constants.pages) do
+    local former_page_settings = (former_settings.pages or {})[class] or {}
+    local page_settings = {}
+    settings.pages[class] = page_settings
+    for i, component_ident in pairs(page_ident) do
+      local component_name = component_ident.label or component_ident.source or i
+      local former_component_settings = former_page_settings[component_name] or {}
+      local component_settings = {
+        default_state = former_component_settings.default_state or component_ident.default_state or "normal",
+        max_rows = former_component_settings.max_rows or component_ident.max_rows or constants.default_max_rows,
+      }
+      page_settings[component_name] = component_settings
+      -- Default state
+      -- Row settings for fixed tables
+      if component_ident.rows then
+        local former_row_settings = component_settings.rows or {}
+        local row_settings = {}
+        component_settings.rows = row_settings
+
+        for _, row_ident in pairs(component_ident.rows) do
+          row_settings[row_ident.source] = former_row_settings[row_ident.source] or row_ident.default_state or true
+        end
+      end
+
     end
   end
 
@@ -106,7 +137,7 @@ function player_data.validate_global_history(global_history)
 end
 
 function player_data.refresh(player, player_table)
-  -- destroy GUIs
+  -- Destroy GUIs
   info_gui.root.destroy_all(player_table)
   quick_ref_gui.root.destroy_all(player, player_table)
   if player_table.guis.search then
@@ -116,20 +147,20 @@ function player_data.refresh(player, player_table)
     settings_gui.root.destroy(player_table)
   end
 
-  -- set flag
+  -- Set flag
   player_table.flags.can_open_gui = false
 
-  -- set shortcut state
+  -- Set shortcut state
   player.set_shortcut_toggled("rb-search", false)
   player.set_shortcut_available("rb-search", false)
 
-  -- validate favorites
+  -- Validate favorites
   player_data.validate_favorites(player_table.favorites)
 
-  -- validate global history
+  -- Validate global history
   player_data.validate_global_history(player_table.global_history)
 
-  -- update settings
+  -- Update settings
   player_data.update_settings(player, player_table)
 
   -- Run translations
