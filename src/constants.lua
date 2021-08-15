@@ -278,6 +278,7 @@ constants.gui_sizes = {
 
 constants.gui_strings = {
   alt_click = {"gui.rb-alt-click"},
+  attach_search_results = {"gui.rb-attach-search-results"},
   burned_in = {"gui.rb-burned-in"},
   captions = {"gui.rb-captions"},
   category = {"gui.rb-category"},
@@ -313,6 +314,7 @@ constants.gui_strings = {
   fuel_pollution = {"description.fuel-pollution"},
   fuel_value = {"description.fuel-value"},
   fuzzy_search = {"gui.rb-fuzzy-search"},
+  general = {"gui.rb-general"},
   get_blueprint = {"gui.rb-get-blueprint"},
   go_backward = {"gui.rb-go-backward"},
   go_forward = {"gui.rb-go-forward"},
@@ -391,7 +393,6 @@ constants.gui_strings = {
   size = {"gui.rb-size"},
   speed_bonus = {"description.speed-bonus"},
   stack_size = {"gui.rb-stack-size"},
-  attach_search_results = {"gui.rb-attach-search-results"},
   tech_level_desc = {"gui.rb-tech-level-desc"},
   tech_level = {"gui.rb-tech-level"},
   technology = {"gui.rb-technology"},
@@ -553,7 +554,7 @@ constants.nav_event_properties = {
 
 constants.pages = {
   crafter = {
-    {type = "table", rows = {
+    {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "crafting_speed", formatter = "number"},
       {type = "goto", source = "fixed_recipe", options = {always_show = true, hide_glyph = true}},
       {type = "plain", source = "rocket_parts_required", formatter = "number"},
@@ -568,7 +569,7 @@ constants.pages = {
     {type = "list_box", source = "placed_by"}
   },
   fluid = {
-    {type = "table", rows = {
+    {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "default_temperature", formatter = "temperature"},
       {type = "plain", source = "fuel_value", formatter = "fuel_value"},
       {type = "goto", source = "fuel_category", options = {hide_glyph = true}},
@@ -592,7 +593,7 @@ constants.pages = {
     {type = "list_box", source = "recipes"}
   },
   item = {
-    {type = "table", rows = {
+    {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "stack_size", formatter = "number"},
       {type = "plain", source = "fuel_value", formatter = "fuel_value"},
       {
@@ -628,7 +629,7 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
   },
   lab = {
-    {type = "table", rows = {
+    {type = "table", label = "general", hide_count = true, rows = {
       {
         type = "plain",
         source = "researching_speed",
@@ -645,7 +646,7 @@ constants.pages = {
     {type = "list_box", source = "placed_by"}
   },
   mining_drill = {
-    {type = "table", rows = {
+    {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "mining_speed", formatter = "per_second"},
       {type = "plain", source = "mining_area", formatter = "area"},
       {type = "plain", source = "size", formatter = "area"},
@@ -658,7 +659,7 @@ constants.pages = {
     {type = "list_box", source = "placed_by"}
   },
   offshore_pump = {
-    {type = "table", rows = {
+    {type = "table", label = "general", hide_count = true, rows = {
       {type ="plain", source = "pumping_speed", formatter = "per_second"},
       {type = "goto", source = "fluid", options = {always_show = true, hide_glyph = true}},
       {type = "plain", source = "size", formatter = "area"},
@@ -672,7 +673,7 @@ constants.pages = {
     {type = "list_box", source = "recipes"},
   },
   recipe = {
-    {type = "table", rows = {
+    {type = "table", label = "general", hide_count = true, rows = {
       {type = "goto", source = "recipe_category", options = {hide_glyph = true}},
       {type = "goto", source = "group", options = {hide_glyph = true}},
       {
@@ -690,7 +691,7 @@ constants.pages = {
     {type = "list_box", source = "compatible_modules", default_state = "collapsed"},
   },
   resource = {
-    {type = "table", rows = {
+    {type = "table", label = "general", hide_count = true, rows = {
       {type = "goto", source = "resource_category", options = {always_show = true, hide_glyph = true}},
       {type = "goto", source = "required_fluid", options = {always_show = true, hide_glyph = true}},
       {type = "plain", source = "mining_time", formatter = "seconds_from_ticks"}
@@ -703,7 +704,7 @@ constants.pages = {
     {type = "list_box", source = "mining_drills"}
   },
   technology = {
-    {type = "table", rows = {
+    {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "research_unit_count", label = "required_units", formatter = "number"},
       {
         type = "tech_level_selector",

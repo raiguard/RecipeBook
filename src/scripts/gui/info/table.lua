@@ -190,11 +190,15 @@ function table_comp.update(component, refs, object_data, player_data, variables)
 
     local label_source = component.source or component.label
     if label_source then
-      refs.label.caption = formatter.expand_string(
-        gui_translations.list_box_label,
-        gui_translations[label_source] or label_source,
-        i / 2 - 1
-      )
+      if component.hide_count then
+        refs.label.caption = gui_translations[label_source] or label_source
+      else
+        refs.label.caption = formatter.expand_string(
+          gui_translations.list_box_label,
+          gui_translations[label_source] or label_source,
+          i / 2 - 1
+        )
+      end
     end
 
     -- Update expand/collapse button and height
