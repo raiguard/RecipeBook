@@ -331,7 +331,7 @@ function root.update_contents(player, player_table, tab)
       }
 
       if component_settings.max_rows then
-        component_children[2] = {
+        component_children[#component_children + 1] = {
           type = "flow",
           style_mods = {vertical_align = "center"},
           {type = "label", caption = gui_translations.max_rows},
@@ -353,6 +353,25 @@ function root.update_contents(player, player_table, tab)
             }
           }
         }
+      end
+
+      if component_settings.rows then
+        for row_name, row_state in pairs(component_settings.rows) do
+          component_children[#component_children + 1] = {
+            type = "checkbox",
+            caption = gui_translations[row_name],
+            state = row_state,
+            actions = {
+              on_checked_state_changed = {
+                gui = "settings",
+                action = "change_row_visible",
+                class = selected_page,
+                component = component_name,
+                row = row_name,
+              }
+            }
+          }
+        end
       end
 
       children[#children + 1] = {

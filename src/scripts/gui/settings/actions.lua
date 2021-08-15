@@ -157,4 +157,17 @@ function actions.change_max_rows(data)
   shared.refresh_contents(data.player, data.player_table)
 end
 
+function actions.change_row_visible(data)
+  local msg = data.msg
+  local class = msg.class
+  local component = msg.component
+  local row = msg.row
+
+  local component_settings = data.player_table.settings.pages[class][component]
+  if component_settings then
+    component_settings.rows[row] = data.e.element.state
+  end
+  shared.refresh_contents(data.player, data.player_table)
+end
+
 return actions

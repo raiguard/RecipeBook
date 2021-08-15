@@ -94,15 +94,16 @@ function player_data.update_settings(player, player_table)
       -- Default state
       -- Row settings for fixed tables
       if component_ident.rows then
+
         local former_row_settings = component_settings.rows or {}
         local row_settings = {}
         component_settings.rows = row_settings
 
         for _, row_ident in pairs(component_ident.rows) do
-          row_settings[row_ident.source] = former_row_settings[row_ident.source] or row_ident.default_state or true
+          local row_name = row_ident.label or row_ident.source
+          row_settings[row_name] = former_row_settings[row_name] or row_ident.default_state or true
         end
       end
-
     end
   end
 

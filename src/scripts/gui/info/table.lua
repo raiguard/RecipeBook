@@ -65,11 +65,13 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
 
   local i = 2
   local is_shown = settings.default_state ~= "hidden"
+  local row_settings = settings.rows
   local source_tbl = is_shown and (component.source and object_data[component.source] or component.rows) or {}
   for _, row in ipairs(source_tbl) do
+    local row_name = row.label or row.source
     local value = row.value or object_data[row.source]
-    if value then
-      local caption = gui_translations[row.label or row.source]
+    if value and row_settings[row_name] then
+      local caption = gui_translations[row_name]
       if string.find(string.lower(caption), search_query) then
         -- Label
         i = i + 1
