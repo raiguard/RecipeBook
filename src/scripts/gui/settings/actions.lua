@@ -132,4 +132,16 @@ function actions.change_page(data)
   root.update_contents(data.player, data.player_table, "pages")
 end
 
+function actions.change_default_state(data)
+  local msg = data.msg
+  local class = msg.class
+  local component = msg.component
+
+  local component_settings = data.player_table.settings.pages[class][component]
+  if component_settings then
+    component_settings.default_state = constants.component_states[data.e.element.selected_index]
+  end
+  shared.refresh_contents(data.player, data.player_table)
+end
+
 return actions

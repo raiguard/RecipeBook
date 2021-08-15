@@ -64,6 +64,12 @@ constants.class_to_type = {
   technology = "technology"
 }
 
+constants.component_states = {
+  "normal",
+  "collapsed",
+  "hidden",
+}
+
 constants.colors = {
   error = {
     str = "255, 90, 90",
@@ -297,6 +303,7 @@ constants.gui_strings = {
   crafting_speed = {"description.crafting-speed"},
   crafting_time_desc = {"gui.rb-crafting-time-desc"},
   crafting_time = {"gui.rb-crafting-time"},
+  default_state = {"gui.rb-default-state"},
   default_temperature = {"gui.rb-default-temperature"},
   disabled_abbrev = {"gui.rb-disabled-abbrev"},
   disabled = {"entity-status.disabled"},

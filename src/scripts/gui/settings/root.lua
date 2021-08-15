@@ -300,31 +300,41 @@ function root.update_contents(player, player_table, tab)
     local pages_pane = refs.pages.pane
     pages_pane.clear()
     local selected_page = constants.classes[state.selected_page]
-    local page_settings = actual_settings.categories[selected_page]
+    local page_settings = actual_settings.pages[selected_page]
     local children = {}
-    for _, component in pairs(constants.pages[selected_page]) do
+    for component_name, component_settings in pairs(page_settings) do
       local component_children = {}
 
-      if component.type == "table" then
-        component_children[1] = {
-          type = "checkbox",
-          caption = "Show",
-          state = true,
+      component_children[1] = {
+        type = "flow",
+        style_mods = {vertical_align = "center"},
+        {type = "label", caption = gui_translations.default_state},
+        {type = "empty-widget", style = "flib_horizontal_pusher"},
+        {
+          type = "drop-down",
+          items = table.map(
+            constants.component_states,
+            function(option_name)
+              return {"gui.rb-"..string.gsub(option_name, "_", "-")}
+            end
+          ),
+          selected_index = table.find(constants.component_states, component_settings.default_state),
+          actions = {
+            on_selection_state_changed = {
+              gui = "settings",
+              action = "change_default_state",
+              class = selected_page,
+              component = component_name,
+            }
+          },
         }
-      elseif component.type == "list_box" then
-        component_children[1] = {
-          type = "checkbox",
-          caption = "Show",
-          state = true,
-        }
-      end
+      }
 
-      local label = component.label or component.source
       children[#children + 1] = {
         type = "frame",
         style = "bordered_frame",
         style_mods = {minimal_width = 300, horizontally_stretchable = true},
-        caption = gui_translations[label] or label,
+        caption = gui_translations[component_name] or component_name,
         children = component_children,
       }
     end
