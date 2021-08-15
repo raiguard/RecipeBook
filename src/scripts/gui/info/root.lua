@@ -502,6 +502,8 @@ function root.update_contents(player, player_table, id, options)
   local pane = refs.page_scroll_pane
   local page_refs = refs.page_components
 
+  local page_settings = player_table.settings.pages[context.class]
+
   local i = 0
   local visible = false
   local component_variables = {
@@ -527,18 +529,22 @@ function root.update_contents(player, player_table, id, options)
       page_refs[i] = component_refs
     end
 
+    local component_settings = page_settings[component_ident.label or component_ident.source]
+
     if not refresh then
-      state.components[i] = component.default_state(component_ident)
+      state.components[i] = component.default_state(component_settings)
     end
 
     component_variables.component_index = i
     component_variables.component_state = state.components[i]
+
 
     local comp_visible = component.update(
       component_ident,
       component_refs,
       obj_data,
       player_data,
+      component_settings,
       component_variables
     )
 

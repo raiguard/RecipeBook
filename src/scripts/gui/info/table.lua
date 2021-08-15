@@ -51,11 +51,11 @@ function table_comp.build(parent, index, component, variables)
   })
 end
 
-function table_comp.default_state(component)
-  return {collapsed = component.default_state == "collapsed"}
+function table_comp.default_state(settings)
+  return {collapsed = settings.default_state == "collapsed"}
 end
 
-function table_comp.update(component, refs, object_data, player_data, variables)
+function table_comp.update(component, refs, object_data, player_data, settings, variables)
   local tbl = refs.table
   local children = tbl.children
 
@@ -64,7 +64,8 @@ function table_comp.update(component, refs, object_data, player_data, variables)
   local search_query = variables.search_query
 
   local i = 2
-  local source_tbl = component.source and object_data[component.source] or component.rows
+  local is_shown = settings.default_state ~= "hidden"
+  local source_tbl = is_shown and (component.source and object_data[component.source] or component.rows) or {}
   for _, row in ipairs(source_tbl) do
     local value = row.value or object_data[row.source]
     if value then

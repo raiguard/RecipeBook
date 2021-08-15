@@ -43,7 +43,6 @@ function list_box.build(parent, index, component, variables)
         {
           type = "scroll-pane",
           style = "rb_list_box_scroll_pane",
-          style_mods = {maximal_height = ((component.max_rows or constants.default_max_rows) * 28)},
           ref = {"scroll_pane"}
         }
       }
@@ -51,11 +50,11 @@ function list_box.build(parent, index, component, variables)
   })
 end
 
-function list_box.default_state(component)
-  return {collapsed = component.default_state == "collapsed"}
+function list_box.default_state(settings)
+  return {collapsed = settings.default_state == "collapsed"}
 end
 
-function list_box.update(component, refs, object_data, player_data, variables)
+function list_box.update(component, refs, object_data, player_data, settings, variables)
   -- Scroll pane
   local scroll = refs.scroll_pane
   local add = scroll.add
@@ -72,8 +71,8 @@ function list_box.update(component, refs, object_data, player_data, variables)
   -- Add items
   local i = 0 -- The "added" index
   local iterator = component.use_pairs and pairs or ipairs
-  local objects = object_data[component.source]
-  for _, obj in iterator(objects or {}) do
+  local objects = settings.default_state ~= "hidden" and object_data[component.source] or {}
+  for _, obj in iterator(objects) do
     local translation = player_data.translations[obj.class][obj.name]
     -- Match against search string
     local matched
@@ -140,12 +139,14 @@ function list_box.update(component, refs, object_data, player_data, variables)
   if i > 0 then
     refs.root.visible = true
     local translations = player_data.translations.gui
+
     -- Update label caption
     refs.label.caption = formatter.expand_string(
       translations.list_box_label,
       translations[component.source] or component.source,
       i
     )
+
     -- Update open list button
     if i > 1 then
       refs.open_list_button.visible = true
@@ -159,6 +160,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
     else
       refs.open_list_button.visible = false
     end
+
     -- Update expand/collapse button and height
     gui.set_action(refs.expand_collapse_button, "on_click", {
       gui = "info",
@@ -173,7 +175,7 @@ function list_box.update(component, refs, object_data, player_data, variables)
       refs.expand_collapse_button.tooltip = {"gui.rb-expand"}
     else
       -- TODO: Update sprite
-      scroll.style.maximal_height = (component.max_rows or constants.default_max_rows) * 28
+      scroll.style.maximal_height = (settings.max_rows or constants.default_max_rows) * 28
       refs.expand_collapse_button.tooltip = {"gui.rb-collapse"}
     end
   else
