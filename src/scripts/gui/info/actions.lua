@@ -227,11 +227,10 @@ end
 
 function actions.toggle_collapsed(data)
   local msg = data.msg
-  local id = msg.gui_id
   local context = msg.context
   local component_index = msg.component_index
   local component_ident = constants.pages[context.class][component_index]
-  if component_ident and component_ident.type == "list_box" then
+  if component_ident then
     local state = data.state.components[component_index]
     if state then
       state.collapsed = not state.collapsed

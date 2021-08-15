@@ -11,20 +11,36 @@ function table_comp.build(parent, index, component, variables)
     return gui.build(parent, {
     {
       type = "flow",
-      style_mods = (not has_label or index == 1) and {top_margin = 4} or nil,
+      style_mods = (not has_label) and {top_margin = 4} or nil,
       direction = "vertical",
       index = index,
       ref = {"root"},
       action = {
         on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
       },
-      {type = "label", style = "rb_list_box_label", ref = {"label"}, visible = has_label},
+      {
+        type = "flow",
+        style_mods = {vertical_align = "center"},
+        action = {
+          on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
+        },
+        visible = has_label,
+        {type = "label", style = "rb_list_box_label", ref = {"label"}},
+        {type = "empty-widget", style = "flib_horizontal_pusher"},
+        {
+          type = "sprite-button",
+          style = "mini_button_aligned_to_text_vertically_when_centered",
+          ref = {"expand_collapse_button"},
+          -- NOTE: Sprite, tooltip, and action are set in the update function
+        },
+      },
       {
         type = "frame",
         style = "deep_frame_in_shallow_frame",
         action = {
           on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
         },
+        ref = {"deep_frame"},
         {type = "table", style = "rb_info_table", column_count = 2, ref = {"table"},
           -- Dummy elements so the first row doesn't get used
           {type = "empty-widget"},
@@ -35,7 +51,9 @@ function table_comp.build(parent, index, component, variables)
   })
 end
 
-function table_comp.default_state(_) end
+function table_comp.default_state(component)
+  return {collapsed = component.default_state == "collapsed"}
+end
 
 function table_comp.update(component, refs, object_data, player_data, variables)
   local tbl = refs.table
@@ -177,6 +195,24 @@ function table_comp.update(component, refs, object_data, player_data, variables)
         gui_translations[label_source] or label_source,
         i / 2 - 1
       )
+    end
+
+    -- Update expand/collapse button and height
+    gui.set_action(refs.expand_collapse_button, "on_click", {
+      gui = "info",
+      id = variables.gui_id,
+      action = "toggle_collapsed",
+      context = variables.context,
+      component_index = variables.component_index,
+    })
+    if variables.component_state.collapsed then
+      -- TODO: Update sprite
+      refs.deep_frame.style.maximal_height = 1
+      refs.expand_collapse_button.tooltip = {"gui.rb-expand"}
+    else
+      -- TODO: Update sprite
+      refs.deep_frame.style.maximal_height = 0
+      refs.expand_collapse_button.tooltip = {"gui.rb-collapse"}
     end
   else
     refs.root.visible = false

@@ -39,7 +39,7 @@ function list_box.build(parent, index, component, variables)
           -- NOTE: Sprite, tooltip, and action are set in the update function
         },
       },
-      {type = "frame", style = "deep_frame_in_shallow_frame", ref = {"frame"},
+      {type = "frame", style = "deep_frame_in_shallow_frame",
         {
           type = "scroll-pane",
           style = "rb_list_box_scroll_pane",
