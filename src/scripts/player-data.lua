@@ -84,9 +84,13 @@ function player_data.update_settings(player, player_table)
       local former_component_settings = former_page_settings[component_name] or {}
       local component_settings = {
         default_state = former_component_settings.default_state or component_ident.default_state or "normal",
-        max_rows = former_component_settings.max_rows or component_ident.max_rows or constants.default_max_rows,
       }
       page_settings[component_name] = component_settings
+      if component_ident.type == "list_box" then
+        component_settings.max_rows = former_component_settings.max_rows
+          or component_ident.max_rows
+          or constants.default_max_rows
+      end
       -- Default state
       -- Row settings for fixed tables
       if component_ident.rows then
@@ -110,8 +114,8 @@ function player_data.update_settings(player, player_table)
 end
 
 function player_data.validate_favorites(favorites)
-  local i = 1
   while true do
+  local i = 1
     local obj = favorites[i]
     if obj then
       if recipe_book[obj.class] and recipe_book[obj.class][obj.name] then

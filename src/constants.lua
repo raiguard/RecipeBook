@@ -340,6 +340,7 @@ constants.gui_strings = {
   lab = {"gui.rb-lab"},
   list_box_label = {"gui.rb-list-box-label"},
   made_in = {"gui.rb-made-in"},
+  max_rows = {"gui.rb-max-rows"},
   middle_click = {"gui.rb-middle-click"},
   mined_from = {"gui.rb-mined-from"},
   mining_area = {"gui.rb-mining-area"},

@@ -144,4 +144,17 @@ function actions.change_default_state(data)
   shared.refresh_contents(data.player, data.player_table)
 end
 
+function actions.change_max_rows(data)
+  local msg = data.msg
+  local class = msg.class
+  local component = msg.component
+
+  local component_settings = data.player_table.settings.pages[class][component]
+  if component_settings then
+    -- TODO: Sanitize?
+    component_settings.max_rows = tonumber(data.e.element.text)
+  end
+  shared.refresh_contents(data.player, data.player_table)
+end
+
 return actions

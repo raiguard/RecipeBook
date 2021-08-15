@@ -282,8 +282,8 @@ function root.update_contents(player, player_table, tab)
               gui = "settings",
               action = "change_category_setting",
               class = selected_class,
-            },
               name = category_name,
+            },
           },
         }
       end
@@ -330,10 +330,36 @@ function root.update_contents(player, player_table, tab)
         }
       }
 
+      if component_settings.max_rows then
+        component_children[2] = {
+          type = "flow",
+          style_mods = {vertical_align = "center"},
+          {type = "label", caption = gui_translations.max_rows},
+          {type = "empty-widget", style = "flib_horizontal_pusher"},
+          {
+            type = "textfield",
+            style_mods = {width = 50, horizontal_align = "center"},
+            numeric = true,
+            lose_focus_on_confirm = true,
+            clear_and_focus_on_right_click = true,
+            text = tostring(component_settings.max_rows),
+            actions = {
+              on_confirmed = {
+                gui = "settings",
+                action = "change_max_rows",
+                class = selected_page,
+                component = component_name,
+              },
+            }
+          }
+        }
+      end
+
       children[#children + 1] = {
         type = "frame",
         style = "bordered_frame",
         style_mods = {minimal_width = 300, horizontally_stretchable = true},
+        direction = "vertical",
         caption = gui_translations[component_name] or component_name,
         children = component_children,
       }
