@@ -81,7 +81,7 @@ commands.add_command("rb-dump-data", nil, function(e)
     player.print{"cant-run-command-not-admin", "rb-dump-data"}
     return
   end
-  if __DebugAdapter and e.parameter and #e.parameter == 0 then
+  if __DebugAdapter and (not e.parameter or #e.parameter == 0) then
     __DebugAdapter.print(recipe_book)
     game.print("Recipe Book data has been dumped to the debug console.")
   else
