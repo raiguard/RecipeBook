@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.1.0
-Date: ????
+Date: 2021-08-16
   Features:
     - Added "compatible modules" to the crafter page (hidden by default, must be enabled in the page settings)
     - Added "burner machine" page
