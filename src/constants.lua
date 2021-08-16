@@ -17,6 +17,7 @@ constants.category_class_plurals = {
 }
 
 constants.classes = {
+  "burner_machine",
   "crafter",
   "fluid",
   "fuel_category",
@@ -33,6 +34,7 @@ constants.classes = {
 }
 
 constants.class_to_font_glyph = {
+  burner_machine = "E",
   crafter = "E",
   fluid = "B",
   fuel_category = "G",
@@ -49,6 +51,7 @@ constants.class_to_font_glyph = {
 }
 
 constants.class_to_type = {
+  burner_machine = "entity",
   crafter = "entity",
   fluid = "fluid",
   fuel_category = false,
@@ -105,19 +108,29 @@ constants.default_max_rows = 8
 
 constants.derived_type_to_class = {
   ["assembling-machine"] = "crafter",
+  ["boiler"] = "burner_machine",
+  ["burner-generator"] = "burner_machine",
+  ["car"] = "burner_machine",
   ["fluid"] = "fluid",
   ["fuel-category"] = "fuel_category",
   ["furnace"] = "crafter",
+  ["generator"] = "burner_machine",
+  ["inserter"] = "burner_machine",
   ["item-group"] = "group",
   ["item"] = "item",
   ["lab"] = "lab",
+  ["locomotive"] = "burner_machine",
   ["mining-drill"] = "mining_drill",
   ["offshore-pump"] = "offshore_pump",
+  ["pump"] = "burner_machine",
+  ["radar"] = "burner_machine",
+  ["reactor"] = "burner_machine",
   ["recipe-catgory"] = "recipe_category",
   ["recipe"] = "recipe",
   ["resource-catgory"] = "resource_category",
   ["resource"] = "resource",
   ["rocket-silo"] = "crafter",
+  ["spider-vehicle"] = "burner_machine",
   ["technology"] = "technology",
 }
 
@@ -286,6 +299,7 @@ constants.gui_strings = {
   alt_click = {"gui.rb-alt-click"},
   attach_search_results = {"gui.rb-attach-search-results"},
   burned_in = {"gui.rb-burned-in"},
+  burner_machine = {"gui.rb-burner-machine"},
   captions = {"gui.rb-captions"},
   category = {"gui.rb-category"},
   click = {"gui.rb-click"},
@@ -441,6 +455,10 @@ constants.ignored_info_ids = table.invert{"_next_id", "_active_id", "_sticky_id"
 
 -- NOTE: Modifiers must be in the order of "control", "shift", "alt" for those that are present
 constants.interactions = {
+  burner_machine = {
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
+  },
   crafter = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
@@ -549,9 +567,18 @@ constants.machine_classes = {
   "crafter",
   "lab",
   "mining_drill",
-  -- "offshore_pump",
+  "offshore_pump",
+  -- This is intentionally last so it will show up last in lists
+  "burner_machine",
 }
 constants.machine_classes_lookup = table.invert(constants.machine_classes)
+
+constants.burner_machine_type_filters = {}
+for derived_type, class in pairs(constants.derived_type_to_class) do
+  if class == "burner_machine" then
+    table.insert(constants.burner_machine_type_filters, {filter = "type", type = derived_type})
+  end
+end
 
 constants.nav_event_properties = {
   ["rb-jump-to-front"] = {delta = 1, shift = true},
@@ -561,6 +588,11 @@ constants.nav_event_properties = {
 }
 
 constants.pages = {
+  burner_machine = {
+    {type = "list_box", source = "compatible_fuels"},
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "placed_by"},
+  },
   crafter = {
     {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "crafting_speed", formatter = "number"},
@@ -748,6 +780,7 @@ constants.pages = {
 constants.prototypes = {}
 
 constants.prototypes.filtered_entities = {
+  burner_machine = constants.burner_machine_type_filters,
   character = {{filter = "type", type = "character"}},
   crafter = {
     {filter = "type", type = "assembling-machine"},
@@ -783,6 +816,7 @@ constants.search_timeout = 30
 constants.session_history_size = 20
 
 constants.tooltips = {
+  burner_machine = {},
   crafter = {
     {type = "plain", source = "crafting_speed", formatter = "number"},
     {type = "plain", source = "fixed_recipe", formatter = "object", options = {hide_glyph = true}},

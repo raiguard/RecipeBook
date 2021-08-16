@@ -3,6 +3,7 @@ dictionary.set_use_local_storage(true)
 
 local constants = require("constants")
 
+local burner_machine_proc = require("scripts.processors.burner-machine")
 local crafter_proc = require("scripts.processors.crafter")
 local fluid_proc = require("scripts.processors.fluid")
 local fuel_category_proc = require("scripts.processors.fuel-category")
@@ -42,6 +43,7 @@ function recipe_book.build()
   recipe_category_proc(recipe_book, dictionaries)
   resource_category_proc(recipe_book, dictionaries)
 
+  burner_machine_proc(recipe_book, dictionaries)
   crafter_proc(recipe_book, dictionaries, metadata)
   fluid_proc(recipe_book, dictionaries, metadata)
   item_proc(recipe_book, dictionaries, metadata)

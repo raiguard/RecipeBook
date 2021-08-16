@@ -3,6 +3,9 @@ Version: 3.1.0
 Date: ????
   Features:
     - Added compatible modules to the crafter page (hidden by default, must be enabled in the page settings)
+    - Added "burner machine" page
+      - Burner machines are machines that consume fuel and aren't a crafter, lab, mining drill, or offshore pump
+      - Some of these machines might get their own pages someday if enough relevant information is available for display
     - When clicking a search result in the search GUI with the left mouse button, the search GUI will be "stickied" to the search GUI
       - A "detach" button will appear in the titlebar of the sticky window, allowing you to detach it
       - Middle-clicking something will open it in a standalone info GUI
