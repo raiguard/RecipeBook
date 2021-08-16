@@ -122,7 +122,7 @@ function root.build(player, player_table)
             "change_page",
             false,
             false,
-            -- TODO: If we add a class that does not have a page, this will break
+            -- NOTE: If we add a class that does not have a page, this will break
             table.map(constants.classes, function(class)
               return gui_translations[class] or class
             end)
