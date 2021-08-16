@@ -125,6 +125,7 @@ function actions.update_search_query(data)
       for _, class in pairs(constants.classes) do
         if class_filter == string.lower(gui_translations[class]) then
           matched = true
+          class_filter = class
           break
         end
       end
