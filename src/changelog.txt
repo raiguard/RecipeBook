@@ -5,10 +5,10 @@ Date: ????
     - When clicking a search result in the search GUI with the left mouse button, the search GUI will be "stickied" to the search GUI
       - A "detach" button will appear in the titlebar of the sticky window, allowing you to detach it
       - Middle-clicking something will open it in a standalone info GUI
-      - This brings back a 2.0-esque experience for those who like it
+      - This brings back a 2.0-esque experience for those who preferred it
       - This can be disabled in the mod settings
-    - Added the ability to collapse listboxes
-      - Some listboxes (categories, compatible modules) default to collapsed to save space
+    - Added the ability to collapse components of an info page
+      - Some components (categories, compatible modules) default to collapsed to save space
       - Default state can be overridden in the settings
     - Added search GUI location setting, choose between top-left and center
     - Added page content settings
@@ -16,9 +16,10 @@ Date: ????
         - Table (with absolute rows):
           - Row visibility
         - List box:
-          - Collapsed by default
+          - Default state (normal, collapsed, hidden)
           - Max rows
-          - Show all objects
+  Changes:
+    - Search GUI now opens below the mod_gui button frame, instead of all the way in the corner
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.4
 Date: ????
