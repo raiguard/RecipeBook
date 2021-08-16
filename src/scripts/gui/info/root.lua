@@ -587,7 +587,7 @@ end
 
 function root.bring_all_to_front(player_table)
   for id, gui_data in pairs(player_table.guis.info) do
-    if not constants.ignored_info_ids[id] then
+    if not constants.ignored_info_ids[id] and not gui_data.state.sticky then
       gui_data.refs.window.bring_to_front()
     end
   end

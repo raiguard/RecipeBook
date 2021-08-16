@@ -3,6 +3,7 @@ Version: 3.1.2
 Date: ????
   Bugfixes:
     - Fixed a crash when a mod unlocks a research during config changed before Recipe Book does its own configuration changes
+    - Fixed a crash when clicking the Factory Planner dimmer frame while an info GUI is stuck to search
 ---------------------------------------------------------------------------------------------------
 Version: 3.1.1
 Date: 2021-08-16
