@@ -23,6 +23,8 @@ Date: ????
           - Default state (normal, collapsed, hidden)
           - Max rows
   Changes:
+    - Machines that have exactly one item to place them will inherit the item's hidden & enabled statuses
+    - Machines that have no items to place them will be marked as disabled
     - Search GUI now opens below the mod_gui button frame, instead of all the way in the corner
   Bugfixes:
     - Fixed that fluidboxes were not being considered for compatible recipes on crafters

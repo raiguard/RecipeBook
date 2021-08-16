@@ -12,6 +12,7 @@ function mining_drill_proc.build(recipe_book, dictionaries)
     recipe_book.mining_drill[name] = {
       class = "mining_drill",
       compatible_fuels = {},
+      enabled = true,
       fuel_categories = util.process_energy_source(prototype),
       mining_area = math.ceil(prototype.mining_drill_radius * 2),
       mining_speed = prototype.mining_speed,

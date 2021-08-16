@@ -14,6 +14,7 @@ return function(recipe_book, dictionaries, metadata)
       compatible_modules = {}, -- Always empty
       compatible_recipes = {},
       crafting_speed = 1,
+      enabled = true,
       hidden = false,
       ingredient_limit = ingredient_limit,
       placed_by = util.process_placed_by(prototype),

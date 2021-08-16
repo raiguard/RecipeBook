@@ -151,6 +151,7 @@ end
 function item_proc.process_burned_in(recipe_book)
   for _, machine_class in pairs(constants.machine_classes) do
     for machine_name, machine_data in pairs(recipe_book[machine_class]) do
+      -- Burned in
       local compatible_fuels = machine_data.compatible_fuels
       for i, category_ident in pairs(machine_data.fuel_categories or {}) do
         local category_data = recipe_book.fuel_category[category_ident.name]
@@ -166,6 +167,18 @@ function item_proc.process_burned_in(recipe_book)
         else
           -- Remove this category from the machine
           table.remove(machine_data.fuel_categories, i)
+        end
+      end
+
+      -- Hidden / disabled for machines
+      local placed_by_len = #(machine_data.placed_by or {})
+      if placed_by_len == 0 then
+        machine_data.enabled = false
+      elseif placed_by_len == 1 then
+        local item_ident = machine_data.placed_by[1]
+        local item_data = recipe_book.item[item_ident.name]
+        if item_data.hidden then
+          machine_data.hidden = true
         end
       end
     end

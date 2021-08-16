@@ -14,6 +14,7 @@ function offshore_pump_proc.build(recipe_book, dictionaries)
 
     recipe_book.offshore_pump[name] = {
       class = "offshore_pump",
+      enabled = true,
       fluid = {class = "fluid", name = fluid.name},
       hidden = prototype.has_flag("hidden"),
       placed_by = util.process_placed_by(prototype),

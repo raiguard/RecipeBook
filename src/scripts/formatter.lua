@@ -427,6 +427,8 @@ local function get_obj_properties(obj_data, player_data, options)
     enabled = player_data.force_recipes[obj_data.prototype_name].enabled
   elseif obj_data.class == "technology" then
     enabled = player_data.force_technologies[obj_data.prototype_name].enabled
+  elseif obj_data.enabled ~= nil then
+    enabled = obj_data.enabled
   end
   local obj_properties = {hidden = obj_data.hidden or false, researched = researched, enabled = enabled}
 
