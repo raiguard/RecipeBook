@@ -70,7 +70,7 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
   for _, row in ipairs(source_tbl) do
     local row_name = row.label or row.source
     local value = row.value or object_data[row.source]
-    if value and row_settings[row_name] then
+    if value and (not row_settings or row_settings[row_name]) then
       local caption = gui_translations[row_name]
       if string.find(string.lower(caption), search_query) then
         -- Label
