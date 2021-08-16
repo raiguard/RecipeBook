@@ -570,9 +570,9 @@ constants.pages = {
       {type = "plain", source = "size", formatter = "area"},
     }},
     {type = "list_box", source = "compatible_recipes", max_rows = 10},
-    {type = "list_box", source = "recipe_categories"},
+    {type = "list_box", source = "recipe_categories", default_state = "collapsed"},
     {type = "list_box", source = "compatible_fuels"},
-    {type = "list_box", source = "fuel_categories"},
+    {type = "list_box", source = "fuel_categories", default_state = "collapsed"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placed_by"}
   },
@@ -649,7 +649,7 @@ constants.pages = {
     }},
     {type = "list_box", source = "inputs"},
     {type = "list_box", source = "compatible_fuels"},
-    {type = "list_box", source = "fuel_categories"},
+    {type = "list_box", source = "fuel_categories", default_state = "collapsed"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placed_by"}
   },
@@ -660,9 +660,9 @@ constants.pages = {
       {type = "plain", source = "size", formatter = "area"},
     }},
     {type = "list_box", source = "compatible_resources"},
-    {type = "list_box", source = "resource_categories"},
+    {type = "list_box", source = "resource_categories", default_state = "collapsed"},
     {type = "list_box", source = "compatible_fuels"},
-    {type = "list_box", source = "fuel_categories"},
+    {type = "list_box", source = "fuel_categories", default_state = "collapsed"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placed_by"}
   },
