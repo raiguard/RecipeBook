@@ -116,22 +116,23 @@ function actions.update_search_query(data)
     -- NOTE: The `_`s here are technically globals, but whatever
     _, _, class_filter, query = string.find(query, "^/(.-)/(.-)$")
     if class_filter then
-      class_filter = string.gsub(class_filter, " ", "_")
+      class_filter = string.lower(class_filter)
     end
-    if not class_filter or not query then
-      -- Check translations of each class filter
+    -- Check translations of each class filter
+    local matched = false
+    if class_filter then
       local gui_translations = player_table.translations.gui
-      local match = false
       for _, class in pairs(constants.classes) do
-        if class_filter == gui_translations[class] or class then
-          match = true
+        if class_filter == string.lower(gui_translations[class]) then
+          matched = true
           break
         end
       end
-      if not match then
-        class_filter = false
-        query = nil
-      end
+    end
+    -- Invalidate textfield
+    if not class_filter or not query or not matched then
+      class_filter = false
+      query = nil
     end
   end
   -- Remove results update action if there is one
