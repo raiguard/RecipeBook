@@ -22,7 +22,13 @@ end
 function root.build(player, player_table, recipe_name)
   local refs = gui.build(player.gui.screen, {
     {type = "frame", direction = "vertical", ref = {"window"},
-      {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
+      {
+        type = "flow",
+        style = "flib_titlebar_flow",
+        ref = {"titlebar", "flow"},
+        actions = {
+          on_click = {gui = "quick_ref", id = recipe_name, action = "reset_location"},
+        },
         {type = "label", style = "frame_title", caption = {"gui.rb-recipe"}, ignored_by_interaction = true},
         {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
         util.frame_action_button(

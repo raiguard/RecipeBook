@@ -54,7 +54,7 @@ function root.build(player, player_table, context, sticky)
         style = "flib_titlebar_flow",
         ref = {"titlebar", "flow"},
         actions = {
-          on_click = {gui = "info", id = id, action = "set_as_active"},
+          on_click = {gui = sticky and "search" or "info", id = id, action = "reset_location"},
         },
         util.frame_action_button(
           "rb_nav_backward",
@@ -210,6 +210,7 @@ function root.build(player, player_table, context, sticky)
 
   if sticky then
     refs.titlebar.flow.drag_target = root_elem
+    refs.root = root_elem
   else
     refs.titlebar.flow.drag_target = refs.window
     refs.window.force_auto_center()

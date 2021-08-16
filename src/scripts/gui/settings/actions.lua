@@ -14,6 +14,12 @@ function actions.close(data)
   search_actions.deselect_settings_button(search_actions.get_action_data(data.msg, data.e))
 end
 
+function actions.reset_location(data)
+  if data.e.button == defines.mouse_button_type.middle then
+    data.refs.window.force_auto_center()
+  end
+end
+
 function actions.toggle_search(data)
   local state = data.state
   local refs = data.refs

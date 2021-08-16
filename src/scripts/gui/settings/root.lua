@@ -61,7 +61,13 @@ function root.build(player, player_table)
       actions = {
         on_closed = {gui = "settings", action = "close"},
       },
-      {type = "flow", style = "flib_titlebar_flow", ref = {"titlebar", "flow"},
+      {
+        type = "flow",
+        style = "flib_titlebar_flow",
+        ref = {"titlebar", "flow"},
+        actions = {
+          on_click = {gui = "settings", action = "reset_location"},
+        },
         {type = "label", style = "frame_title", caption = {"gui.rb-settings"}, ignored_by_interaction = true},
         {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
         {

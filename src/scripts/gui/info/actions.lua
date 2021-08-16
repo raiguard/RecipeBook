@@ -44,6 +44,12 @@ function actions.set_as_active(data)
   data.player_table.guis.info._active_id = data.state.id
 end
 
+function actions.reset_location(data)
+  if data.e.button == defines.mouse_button_type.middle then
+    data.refs.window.force_auto_center()
+  end
+end
+
 function actions.close(data)
   root.destroy(data.player_table, data.msg.id)
 end
