@@ -384,7 +384,7 @@ event.on_string_translated(function(e)
         player_table.language = language_data.language
         player_table.translations = language_data.dictionaries
         shared.refresh_contents(player, player_table)
-      else
+      elseif not player_table.flags.can_open_gui then
         player_table.language = language_data.language
         player_table.translations = language_data.dictionaries
         -- Show message if needed
