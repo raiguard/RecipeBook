@@ -18,7 +18,7 @@ local function subpage_set(name, action, include_tooltip, include_bordered_frame
     },
     content = {
       type = "flow",
-      style_mods = {horizontal_spacing = 12, padding = {8, 12, 12, 12}},
+      style_mods = {horizontal_spacing = 12, padding = {8, 0, 12, 12}},
       {
         type = "list-box",
         style = "list_box_in_shallow_frame",
@@ -33,7 +33,8 @@ local function subpage_set(name, action, include_tooltip, include_bordered_frame
         {
           type = "scroll-pane",
           style = "flib_naked_scroll_pane",
-          style_mods = {padding = 4},
+          style_mods = {padding = 4, vertically_stretchable = true},
+          vertical_scroll_policy = "always",
           ref = {name, "pane"},
           include_bordered_frame and {
             type = "frame",
