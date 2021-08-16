@@ -11,6 +11,7 @@ return function(recipe_book, dictionaries, metadata)
       blueprintable = false,
       class = "crafter",
       compatible_fuels = {}, -- Always empty
+      compatible_modules = {}, -- Always empty
       compatible_recipes = {},
       crafting_speed = 1,
       hidden = false,
@@ -27,6 +28,7 @@ return function(recipe_book, dictionaries, metadata)
 
   -- Actual crafters
   metadata.fixed_recipes = {}
+  metadata.allowed_effects = {}
   local rocket_silo_categories = util.unique_obj_array()
   for name, prototype in pairs(global.prototypes.crafter) do
     -- Fixed recipe
@@ -35,6 +37,7 @@ return function(recipe_book, dictionaries, metadata)
       metadata.fixed_recipes[prototype.fixed_recipe] = true
       fixed_recipe = {class = "recipe", name = prototype.fixed_recipe}
     end
+
     -- Rocket silo categories
     if prototype.rocket_parts_required then
       for category in pairs(prototype.crafting_categories) do
@@ -47,11 +50,14 @@ return function(recipe_book, dictionaries, metadata)
       ingredient_limit = nil
     end
 
+    metadata.allowed_effects[name] = prototype.allowed_effects
+
     local is_hidden = prototype.has_flag("hidden")
     recipe_book.crafter[name] = {
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       class = "crafter",
       compatible_fuels = {},
+      compatible_modules = {},
       compatible_recipes = {},
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = fixed_recipe,

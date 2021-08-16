@@ -573,6 +573,7 @@ constants.pages = {
     {type = "list_box", source = "recipe_categories", default_state = "collapsed"},
     {type = "list_box", source = "compatible_fuels"},
     {type = "list_box", source = "fuel_categories", default_state = "collapsed"},
+    {type = "list_box", source = "compatible_modules", default_state = "hidden"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placed_by"}
   },
