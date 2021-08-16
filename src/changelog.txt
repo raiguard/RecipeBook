@@ -33,10 +33,6 @@ Date: ????
     - Fixed that class filters in search used the internal names instead of the localised names
     - Fixed that fluidboxes were not being considered for compatible recipes on crafters
 ---------------------------------------------------------------------------------------------------
-Version: 3.0.4
-Date: ????
-  Changes:
----------------------------------------------------------------------------------------------------
 Version: 3.0.3
 Date: 2021-08-14
   Changes:
