@@ -127,7 +127,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       product_of = {},
       prototype_name = name,
       recipe_categories = default_categories,
-      rocket_launch_payloads = {},
+      rocket_launch_product_of = {},
       rocket_launch_products = launch_products,
       researched_in = {},
       stack_size = prototype.stack_size,
@@ -140,7 +140,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
   -- Add rocket launch payloads to their material tables
   for product, payloads in pairs(rocket_launch_payloads) do
     local product_data = recipe_book.item[product]
-    product_data.rocket_launch_payloads = table.array_copy(payloads)
+    product_data.rocket_launch_product_of = table.array_copy(payloads)
     for i = 1, #payloads do
       local payload = payloads[i]
       local payload_data = recipe_book.item[payload.name]
