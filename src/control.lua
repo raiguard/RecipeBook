@@ -149,7 +149,10 @@ event.on_force_created(function(e)
 end)
 
 event.register({defines.events.on_research_finished, defines.events.on_research_reversed}, function(e)
+  -- This can be called by other mods before we get a chance to load
   if not global.players then return end
+  if not recipe_book[constants.classes[1]] then return end
+
   recipe_book.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
 
   -- Refresh all GUIs to reflect finished research
