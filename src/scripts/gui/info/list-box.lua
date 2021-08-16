@@ -170,11 +170,11 @@ function list_box.update(component, refs, object_data, player_data, settings, va
       component_index = variables.component_index,
     })
     if variables.component_state.collapsed then
-      -- TODO: Update sprite
+      refs.expand_collapse_button.sprite = "rb_collapsed"
       scroll.style.maximal_height = 1
       refs.expand_collapse_button.tooltip = {"gui.rb-expand"}
     else
-      -- TODO: Update sprite
+      refs.expand_collapse_button.sprite = "rb_expanded"
       scroll.style.maximal_height = (settings.max_rows or constants.default_max_rows) * 28
       refs.expand_collapse_button.tooltip = {"gui.rb-collapse"}
     end

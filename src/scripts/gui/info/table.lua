@@ -213,12 +213,12 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
       component_index = variables.component_index,
     })
     if variables.component_state.collapsed then
-      -- TODO: Update sprite
       refs.deep_frame.style.maximal_height = 1
+      refs.expand_collapse_button.sprite = "rb_collapsed"
       refs.expand_collapse_button.tooltip = {"gui.rb-expand"}
     else
-      -- TODO: Update sprite
       refs.deep_frame.style.maximal_height = 0
+      refs.expand_collapse_button.sprite = "rb_expanded"
       refs.expand_collapse_button.tooltip = {"gui.rb-collapse"}
     end
   else
