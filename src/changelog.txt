@@ -19,7 +19,7 @@ Date: 2021-08-16
       - Some of these machines might get their own pages someday if enough relevant information is available for display
     - Added "burnt result" and "burnt result of" to the item page
   Gui:
-    - When clicking a search result in the search GUI with the left mouse button, the search GUI will be "stickied" to the search GUI
+    - When clicking a search result in the search GUI with the left mouse button, the info GUI will be "stickied" to the search GUI
       - A "detach" button will appear in the titlebar of the sticky window, allowing you to detach it
       - Middle-clicking something will open it in a standalone info GUI
       - This brings back a 2.0-esque experience for those who preferred it
