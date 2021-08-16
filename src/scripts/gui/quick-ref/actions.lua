@@ -17,6 +17,10 @@ function actions.close(data)
   root.destroy(data.player, data.player_table, data.msg.id)
 end
 
+function actions.reset_location(data)
+  data.refs.window.location = {x = 0, y = 0}
+end
+
 function actions.handle_button_click(data)
   local e = data.e
 
