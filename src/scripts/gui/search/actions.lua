@@ -179,7 +179,6 @@ function actions.update_search_results(data)
   local i = 0
   local pane = refs.search_results_pane
   local children = pane.children
-  local add = pane.add
   local max = constants.search_results_limit
   local class_filter = state.class_filter
   local query = state.search_query
@@ -229,7 +228,7 @@ function actions.update_search_results(data)
                 item.enabled = info.enabled
                 gui.update_tags(item, {context = {class = class, name = internal}})
               else
-                add{
+                gui.add(pane, {
                   type = "button",
                   style = style,
                   caption = info.caption,
@@ -237,14 +236,12 @@ function actions.update_search_results(data)
                   enabled = info.enabled,
                   mouse_button_filter = {"left", "middle"},
                   tags = {
-                    [script.mod_name] = {
-                      context = {class = class, name = internal},
-                      flib = {
-                        on_click = {gui = "search", action = "open_object"}
-                      },
-                    }
-                  }
-                }
+                    context = {class = class, name = internal},
+                  },
+                  actions = {
+                    on_click = {gui = "search", action = "open_object"},
+                  },
+                })
                 if i >= max then
                   break
                 end

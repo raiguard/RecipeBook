@@ -57,7 +57,6 @@ end
 function list_box.update(component, refs, object_data, player_data, settings, variables)
   -- Scroll pane
   local scroll = refs.scroll_pane
-  local add = scroll.add
   local children = scroll.children
 
   -- Settings and variables
@@ -108,24 +107,21 @@ function list_box.update(component, refs, object_data, player_data, settings, va
           item.enabled = info.enabled
           gui.update_tags(item, {blueprint_recipe = blueprint_recipe, context = {class = obj.class, name = obj.name}})
         else
-          add{
+          gui.add(scroll, {
             type = "button",
             style = style,
             caption = info.caption,
             tooltip = info.tooltip,
             enabled = info.enabled,
             mouse_button_filter = {"left", "middle"},
-            -- TODO: Use gui.add() here
             tags = {
-              [script.mod_name] = {
-                blueprint_recipe = blueprint_recipe,
-                context = {class = obj.class, name = obj.name},
-                flib = {
-                  on_click = {gui = "info", id = variables.gui_id, action = "navigate_to"}
-                },
-              }
-            }
-          }
+              blueprint_recipe = blueprint_recipe,
+              context = {class = obj.class, name = obj.name},
+            },
+            actions = {
+              on_click = {gui = "info", id = variables.gui_id, action = "navigate_to"},
+            },
+          })
         end
       end
     end
