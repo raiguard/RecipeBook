@@ -300,6 +300,8 @@ constants.gui_strings = {
   attach_search_results = {"gui.rb-attach-search-results"},
   burned_in = {"gui.rb-burned-in"},
   burner_machine = {"gui.rb-burner-machine"},
+  burnt_result = {"gui.rb-burnt-result"},
+  burnt_result_of = {"gui.rb-burnt-result-of"},
   captions = {"gui.rb-captions"},
   category = {"gui.rb-category"},
   click = {"gui.rb-click"},
@@ -656,6 +658,7 @@ constants.pages = {
         formatter = "percent"
       },
       {type = "goto", source = "fuel_category", options = {hide_glyph = true}},
+      {type = "goto", source = "burnt_result", options = {hide_glyph = true}},
       {type = "goto", source = "group", options = {hide_glyph = true}},
       {type = "goto", source = "place_result"},
     }},
@@ -667,6 +670,7 @@ constants.pages = {
     {type = "list_box", source = "mined_from"},
     {type = "list_box", source = "researched_in"},
     {type = "list_box", source = "burned_in"},
+    {type = "list_box", source = "burnt_result_of"},
     {type = "list_box", source = "unlocked_by"},
   },
   lab = {

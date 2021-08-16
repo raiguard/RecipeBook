@@ -50,6 +50,11 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       end
     end
 
+    local burnt_result = prototype.burnt_result
+    if burnt_result then
+      burnt_result = {class = "item", name = burnt_result.name}
+    end
+
     local fuel_value = prototype.fuel_value
     local has_fuel_value = prototype.fuel_value > 0
     local fuel_acceleration_multiplier = prototype.fuel_acceleration_multiplier
@@ -95,6 +100,8 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 
     recipe_book.item[name] = {
       burned_in = {},
+      burnt_result = burnt_result,
+      burnt_result_of = {},
       class = "item",
       fuel_acceleration_multiplier = has_fuel_value
         and fuel_acceleration_multiplier ~= 1
@@ -149,6 +156,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 end
 
 function item_proc.process_burned_in(recipe_book)
+  -- Iterate machines
   for _, machine_class in pairs(constants.machine_classes) do
     for machine_name, machine_data in pairs(recipe_book[machine_class]) do
       -- Burned in
@@ -181,6 +189,15 @@ function item_proc.process_burned_in(recipe_book)
           machine_data.hidden = true
         end
       end
+    end
+  end
+
+  -- Iterate items
+  for item_name, item_data in pairs(recipe_book.item) do
+    local burnt_result = item_data.burnt_result
+    if burnt_result then
+      local result_data = recipe_book.item[burnt_result.name]
+      result_data.burnt_result_of[#result_data.burnt_result_of + 1] = {class = "item", name = item_name}
     end
   end
 end
