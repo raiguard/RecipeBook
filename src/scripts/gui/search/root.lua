@@ -231,4 +231,11 @@ function root.update_width(player, player_table)
   gui_data.refs.tab_frame.style.width = width
 end
 
+function root.bring_to_front(player_table)
+  local gui_data = player_table.guis.search
+  if not gui_data then return end
+
+  gui_data.refs.window.bring_to_front()
+end
+
 return root

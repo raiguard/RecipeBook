@@ -197,6 +197,7 @@ event.on_gui_click(function(e)
     if player_table.flags.can_open_gui then
       info_gui.root.bring_all_to_front(player_table)
       quick_ref_gui.actions.bring_all_to_front(player_table)
+      search_gui.root.bring_to_front(player_table)
     end
   end
 end)
