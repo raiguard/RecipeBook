@@ -355,7 +355,8 @@ local function get_interaction_helps(obj_data, player_data, options)
   local cache_key = build_cache_key(
     "interaction_helps",
     obj_data.class,
-    obj_data.name or obj_data.prototype_name
+    obj_data.name or obj_data.prototype_name,
+    options.blueprint_recipe
   )
   local cached = cache[cache_key]
   if cached then

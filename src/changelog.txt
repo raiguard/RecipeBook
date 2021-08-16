@@ -32,6 +32,7 @@ Date: ????
   Bugfixes:
     - Fixed that class filters in search used the internal names instead of the localised names
     - Fixed that fluidboxes were not being considered for compatible recipes on crafters
+    - Fixed that the "shift + click to get a blueprint" interaction help wouldn't be shown in certain conditions
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.3
 Date: 2021-08-14
