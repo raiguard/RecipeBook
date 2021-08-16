@@ -2,11 +2,11 @@
 Version: 3.1.0
 Date: ????
   Features:
-    - Added compatible modules to the crafter page (hidden by default, must be enabled in the page settings)
+    - Added "compatible modules" to the crafter page (hidden by default, must be enabled in the page settings)
     - Added "burner machine" page
       - Burner machines are machines that consume fuel and aren't a crafter, lab, mining drill, or offshore pump
       - Some of these machines might get their own pages someday if enough relevant information is available for display
-    - Added burnt result, and burnt result of, to the item page
+    - Added "burnt result" and "burnt result of" to the item page
   Gui:
     - When clicking a search result in the search GUI with the left mouse button, the search GUI will be "stickied" to the search GUI
       - A "detach" button will appear in the titlebar of the sticky window, allowing you to detach it
@@ -30,6 +30,7 @@ Date: ????
     - Renamed "rocket launch payloads" to "rocket launch product of"
     - Search GUI now opens below the mod_gui button frame, instead of all the way in the corner
   Bugfixes:
+    - Fixed that class filters in search used the internal names instead of the localised names
     - Fixed that fluidboxes were not being considered for compatible recipes on crafters
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.4

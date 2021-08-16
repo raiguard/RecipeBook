@@ -118,9 +118,20 @@ function actions.update_search_query(data)
     if class_filter then
       class_filter = string.gsub(class_filter, " ", "_")
     end
-    if not class_filter or not query or not constants.pages[class_filter] then
-      class_filter = false
-      query = nil
+    if not class_filter or not query then
+      -- Check translations of each class filter
+      local gui_translations = player_table.translations.gui
+      local match = false
+      for _, class in pairs(constants.classes) do
+        if class_filter == gui_translations[class] or class then
+          match = true
+          break
+        end
+      end
+      if not match then
+        class_filter = false
+        query = nil
+      end
     end
   end
   -- Remove results update action if there is one
