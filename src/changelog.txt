@@ -31,10 +31,11 @@ Date: 2021-08-16
     - Added search GUI location setting, choose between top-left and center
     - Added page content settings
       - Each "section" of a page can be enabled or disabled, and have the following settings based on type:
+        - All:
+          - Default state (normal, collapsed, hidden)
         - Table (with absolute rows):
           - Row visibility
         - List box:
-          - Default state (normal, collapsed, hidden)
           - Max rows
   Changes:
     - Machines that have exactly one item to place them will inherit the item's hidden & enabled statuses
