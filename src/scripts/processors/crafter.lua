@@ -27,8 +27,9 @@ return function(recipe_book, dictionaries, metadata)
   end
 
   -- Actual crafters
-  metadata.fixed_recipes = {}
   metadata.allowed_effects = {}
+  metadata.crafter_fluidbox_counts = {}
+  metadata.fixed_recipes = {}
   local rocket_silo_categories = util.unique_obj_array()
   for name, prototype in pairs(global.prototypes.crafter) do
     -- Fixed recipe
@@ -51,6 +52,21 @@ return function(recipe_book, dictionaries, metadata)
     end
 
     metadata.allowed_effects[name] = prototype.allowed_effects
+
+    local fluidboxes = prototype.fluidbox_prototypes
+    if fluidboxes then
+      local fluidbox_counts = {inputs = 0, outputs = 0}
+      for _, fluidbox in pairs(fluidboxes) do
+        local type = fluidbox.production_type
+        if string.find(type, "input") then
+          fluidbox_counts.inputs = fluidbox_counts.inputs + 1
+        end
+        if string.find(type, "output") then
+          fluidbox_counts.outputs = fluidbox_counts.outputs + 1
+        end
+      end
+      metadata.crafter_fluidbox_counts[name] = fluidbox_counts
+    end
 
     local is_hidden = prototype.has_flag("hidden")
     recipe_book.crafter[name] = {

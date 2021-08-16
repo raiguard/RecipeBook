@@ -36,6 +36,7 @@ return function(recipe_book, dictionaries, metadata)
     }
 
     -- Ingredients / products
+    local fluids = {ingredients = 0, products = 0}
     for lookup_type, io_type in pairs{ingredient_in = "ingredients", product_of = "products"} do
       local output = {}
       for i, material in ipairs(prototype[io_type]) do
@@ -64,8 +65,8 @@ return function(recipe_book, dictionaries, metadata)
           end
         end
 
-        -- Fluid temperatures
         if material.type == "fluid" then
+          -- Fluid temperatures
           local temperature_ident = util.build_temperature_ident(material)
           if temperature_ident then
             material_io_data.temperature_ident = temperature_ident
@@ -77,6 +78,8 @@ return function(recipe_book, dictionaries, metadata)
               temperature_ident
             )
           end
+          -- Add to aggregate
+          fluids[io_type] = fluids[io_type] + 1
         end
       end
 
@@ -86,8 +89,11 @@ return function(recipe_book, dictionaries, metadata)
     -- Made in
     local num_ingredients = #data.ingredients
     for crafter_name, crafter_data in pairs(recipe_book.crafter) do
+      local fluidbox_counts = metadata.crafter_fluidbox_counts[crafter_name] or {inputs = 0, outputs = 0}
       if (crafter_data.ingredient_limit or 255) >= num_ingredients
         and crafter_data.recipe_categories_lookup[category]
+        and fluidbox_counts.inputs >= fluids.ingredients
+        and fluidbox_counts.outputs >= fluids.products
       then
         local crafting_time = math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
         data.made_in[#data.made_in + 1] = {

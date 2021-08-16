@@ -21,6 +21,8 @@ Date: ????
           - Max rows
   Changes:
     - Search GUI now opens below the mod_gui button frame, instead of all the way in the corner
+  Bugfixes:
+    - Fixed that fluidboxes were not being considered for compatible recipes on crafters
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.4
 Date: ????
