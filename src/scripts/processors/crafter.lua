@@ -17,6 +17,7 @@ return function(recipe_book, dictionaries, metadata)
       enabled = true,
       hidden = false,
       ingredient_limit = ingredient_limit,
+      is_character = true,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       recipe_categories_lookup = prototype.crafting_categories,

@@ -179,14 +179,16 @@ function item_proc.process_burned_in(recipe_book)
       end
 
       -- Hidden / disabled for machines
-      local placed_by_len = #(machine_data.placed_by or {})
-      if placed_by_len == 0 then
-        machine_data.enabled = false
-      elseif placed_by_len == 1 then
-        local item_ident = machine_data.placed_by[1]
-        local item_data = recipe_book.item[item_ident.name]
-        if item_data.hidden then
-          machine_data.hidden = true
+      if not machine_data.is_character then
+        local placed_by_len = #(machine_data.placed_by or {})
+        if placed_by_len == 0 then
+          machine_data.enabled = false
+        elseif placed_by_len == 1 then
+          local item_ident = machine_data.placed_by[1]
+          local item_data = recipe_book.item[item_ident.name]
+          if item_data.hidden then
+            machine_data.hidden = true
+          end
         end
       end
     end
