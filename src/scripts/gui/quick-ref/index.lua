@@ -1,5 +1,3 @@
-local util = require("scripts.util")
-
 local actions = require("scripts.gui.quick-ref.actions")
 local root = require("scripts.gui.quick-ref.root")
 
