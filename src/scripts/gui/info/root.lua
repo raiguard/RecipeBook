@@ -262,11 +262,9 @@ function root.find_open_context(player_table, context)
   for id, gui_data in pairs(player_table.guis.info) do
     if not constants.ignored_info_ids[id] then
       local state = gui_data.state
-      if not state.sticky then
-        local opened_context = state.history[state.history._index]
-        if opened_context and opened_context.class == context.class and opened_context.name == context.name then
-          open[#open + 1] = id
-        end
+      local opened_context = state.history[state.history._index]
+      if opened_context and opened_context.class == context.class and opened_context.name == context.name then
+        open[#open + 1] = id
       end
     end
   end
