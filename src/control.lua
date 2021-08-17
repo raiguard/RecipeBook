@@ -309,7 +309,10 @@ end)
 event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front"}, function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
-  if player_table.flags.can_open_gui and not player.opened then
+  local opened = player.opened
+  if player_table.flags.can_open_gui
+    and (not opened or (opened.valid and player.opened.name == "rb_search_window"))
+  then
     local event_properties = constants.nav_event_properties[e.input_name]
     local info_guis = player_table.guis.info
     local active_id = info_guis._active_id
