@@ -42,7 +42,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     local place_result = prototype.place_result
     if place_result then
       local class = constants.derived_type_to_class[place_result.type]
-      if class then
+      if class and recipe_book[class][place_result.name] then
         place_result = {class = class, name = place_result.name}
         place_results[name] = place_result
       else
