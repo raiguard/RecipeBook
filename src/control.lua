@@ -311,6 +311,7 @@ event.register({"rb-navigate-backward", "rb-navigate-forward", "rb-return-to-hom
   local player_table = global.players[e.player_index]
   local opened = player.opened
   if player_table.flags.can_open_gui
+    and player.opened_gui_type == defines.gui_type.custom
     and (not opened or (opened.valid and player.opened.name == "rb_search_window"))
   then
     local event_properties = constants.nav_event_properties[e.input_name]
