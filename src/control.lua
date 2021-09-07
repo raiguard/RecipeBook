@@ -18,8 +18,8 @@ local quick_ref_gui = require("scripts.gui.quick-ref.index")
 local search_gui = require("scripts.gui.search.index")
 local settings_gui = require("scripts.gui.settings.index")
 
--- COMMANDS
 -- -----------------------------------------------------------------------------
+-- COMMANDS
 
 -- Debug commands
 
