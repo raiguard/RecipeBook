@@ -2,7 +2,7 @@
 Version: 3.1.5
 Date: ????
   Changes:
-    - Added Portuguese translation (by BM123499)
+    - Added Brazillian Portuguese translation (by BM123499)
   Bugfixes:
     - Fixed that settings wouldn't be preserved if they were falsey
 ---------------------------------------------------------------------------------------------------
