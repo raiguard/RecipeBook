@@ -19,7 +19,7 @@ local function quick_ref_panel(ref)
     }
 end
 
-function root.build(player, player_table, recipe_name)
+function root.build(player, player_table, recipe_name, window_location)
   local refs = gui.build(player.gui.screen, {
     {type = "frame", direction = "vertical", ref = {"window"},
       {
@@ -58,6 +58,10 @@ function root.build(player, player_table, recipe_name)
     }
   })
 
+  if window_location then
+    refs.window.location = window_location
+  end
+
   refs.titlebar.flow.drag_target = refs.window
 
   player_table.guis.quick_ref[recipe_name] = {refs = refs}
@@ -80,12 +84,12 @@ function root.destroy(player, player_table, recipe_name)
   end
 end
 
-function root.toggle(player, player_table, recipe_name)
+function root.toggle(player, player_table, recipe_name, window_location)
   if player_table.guis.quick_ref[recipe_name] then
     root.destroy(player, player_table, recipe_name)
     shared.update_header_button(player, player_table, {class = "recipe", name = recipe_name}, "quick_ref_button", false)
   else
-    root.build(player, player_table, recipe_name)
+    root.build(player, player_table, recipe_name, window_location)
     shared.update_header_button(player, player_table, {class = "recipe", name = recipe_name}, "quick_ref_button", true)
   end
 end

@@ -223,7 +223,7 @@ function root.update_history(player, player_table)
   refs.delete_history_button.enabled = table_size(player_table.global_history) > 0 and true or false
 end
 
-function root.update_width(player, player_table)
+function root.update_width(_, player_table)
   local gui_data = player_table.guis.search
   if not gui_data then return end
   local width = (constants.gui_sizes[player_table.language] or constants.gui_sizes.en).search_width

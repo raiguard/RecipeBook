@@ -31,6 +31,8 @@ end
 local root = {}
 
 function root.build(player, player_table, context, sticky)
+  local width = (constants.gui_sizes[player_table.language] or constants.gui_sizes.en).info_width
+
   local id = player_table.guis.info._next_id
   player_table.guis.info._next_id = id + 1
   local root_elem
@@ -42,7 +44,7 @@ function root.build(player, player_table, context, sticky)
   local refs = gui.build(root_elem, {
     {
       type = "frame",
-      style_mods = {width = 430},
+      style_mods = {width = width},
       direction = "vertical",
       ref = {"window"},
       actions = {
@@ -208,12 +210,13 @@ function root.build(player, player_table, context, sticky)
   })
 
   if sticky then
-    refs.titlebar.flow.drag_target = root_elem
     refs.root = root_elem
   else
-    refs.titlebar.flow.drag_target = refs.window
-    refs.window.force_auto_center()
+    refs.root = refs.window
+    refs.root.force_auto_center()
   end
+
+  refs.titlebar.flow.drag_target = refs.root
 
   refs.page_components = {}
 
