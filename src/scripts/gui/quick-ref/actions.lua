@@ -18,7 +18,9 @@ function actions.close(data)
 end
 
 function actions.reset_location(data)
-  data.refs.window.location = {x = 0, y = 0}
+  if data.e.button == defines.mouse_button_type.middle then
+    data.refs.window.location = {x = 0, y = 0}
+  end
 end
 
 function actions.handle_button_click(data)

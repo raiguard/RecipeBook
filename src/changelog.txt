@@ -4,6 +4,7 @@ Date: ????
   Changes:
     - Added Brazillian Portuguese translation (by BM123499)
   Bugfixes:
+    - Fixed that dragging a quick reference window would reset its position for a frame
     - Fixed that settings wouldn't be preserved if they were falsey
 ---------------------------------------------------------------------------------------------------
 Version: 3.1.4
