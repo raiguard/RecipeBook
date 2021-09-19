@@ -291,7 +291,10 @@ constants.gui_sizes = {
     search_width = 276,
     info_width = 430,
   },
-  -- TODO: Brazillian Portuguese
+  ["pt-BR"] = {
+    search_width = 276,
+    info_width = 430,
+  },
   ru = {
     search_width = 279,
     info_width = 430,
