@@ -49,10 +49,15 @@ function player_data.update_settings(player, player_table)
     settings.general[category_name] = category_settings
     for setting_name, setting_ident in pairs(settings_data) do
       if setting_ident.type == "bool" then
-        category_settings[setting_name] = former_category_settings[setting_name] or setting_ident.default_value
+        local former_setting = former_category_settings[setting_name]
+        if former_setting ~= nil then
+          category_settings[setting_name] = former_setting
+        else
+          category_settings[setting_name] =  setting_ident.default_value
+        end
       elseif setting_ident.type == "enum" then
         local former_setting = former_category_settings[setting_name]
-        if former_setting and table.find(setting_ident.options, former_setting) then
+        if former_setting ~= nil and table.find(setting_ident.options, former_setting) then
           category_settings[setting_name] = former_setting
         else
           category_settings[setting_name] = setting_ident.default_value
@@ -68,7 +73,12 @@ function player_data.update_settings(player, player_table)
     settings.categories[category_class_name] = category_settings
     for category_name in pairs(recipe_book[category_class_name]) do
       local disabled_by_default = constants.disabled_categories[category_class_name][category_name]
-      category_settings[category_name] = former_category_settings[category_name] or not disabled_by_default
+      local former_setting = former_category_settings[category_name]
+      if former_settings ~= nil then
+        category_settings[category_name] = former_setting
+      else
+        category_settings[category_name] = not disabled_by_default
+      end
     end
   end
 
