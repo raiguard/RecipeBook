@@ -74,7 +74,7 @@ function player_data.update_settings(player, player_table)
     for category_name in pairs(recipe_book[category_class_name]) do
       local disabled_by_default = constants.disabled_categories[category_class_name][category_name]
       local former_setting = former_category_settings[category_name]
-      if former_settings ~= nil then
+      if former_setting ~= nil then
         category_settings[category_name] = former_setting
       else
         category_settings[category_name] = not disabled_by_default
