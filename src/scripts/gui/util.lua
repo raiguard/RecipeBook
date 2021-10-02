@@ -31,7 +31,7 @@ function gui_util.navigate_to(e)
 
       if action == "view_details" then
         return context
-      elseif action == "view_product_details" then
+      elseif action == "view_product_details" and #context_data.products == 1 then
         return context_data.products[1]
       elseif action == "get_blueprint" then
         local blueprint_recipe = tags.blueprint_recipe
