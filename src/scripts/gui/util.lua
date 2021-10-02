@@ -28,10 +28,11 @@ function gui_util.navigate_to(e)
       local action = interaction.action
       local context_data = recipe_book[context.class][context.name]
       local player = game.get_player(e.player_index)
-      local player_table = global.players[e.player_index]
 
       if action == "view_details" then
         return context
+      elseif action == "view_product_details" then
+        return context_data.products[1]
       elseif action == "get_blueprint" then
         local blueprint_recipe = tags.blueprint_recipe
         if blueprint_recipe then

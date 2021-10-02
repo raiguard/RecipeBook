@@ -444,6 +444,7 @@ constants.gui_strings = {
   view_details_in_new_window = {"gui.rb-view-details-in-new-window"},
   view_fixed_recipe = {"gui.rb-view-fixed-recipe"},
   view_fluid = {"gui.rb-view-fluid"},
+  view_product_details = {"gui.rb-view-product-details"},
   view_required_fluid = {"gui.rb-view-required-fluid"},
   view_technology = {"gui.rb-view-technology"},
 }
@@ -532,6 +533,13 @@ constants.interactions = {
   recipe = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
+    {
+      modifiers = {"alt"},
+      action = "view_product_details",
+      test = function(obj_data, _)
+        return #obj_data.products == 1
+      end,
+    },
   },
   resource = {
     {modifiers = {}, action = "view_details"},
