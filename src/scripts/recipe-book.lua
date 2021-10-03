@@ -45,11 +45,14 @@ function recipe_book.build()
 
   burner_machine_proc(recipe_book, dictionaries)
   crafter_proc(recipe_book, dictionaries, metadata)
+  mining_drill_proc(recipe_book, dictionaries)
+
   fluid_proc(recipe_book, dictionaries, metadata)
   item_proc(recipe_book, dictionaries, metadata)
+
   lab_proc(recipe_book, dictionaries)
-  mining_drill_proc(recipe_book, dictionaries)
   offshore_pump_proc(recipe_book, dictionaries)
+
   recipe_proc(recipe_book, dictionaries, metadata)
   resource_proc(recipe_book, dictionaries)
   technology_proc(recipe_book, dictionaries, metadata)
