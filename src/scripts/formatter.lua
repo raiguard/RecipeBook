@@ -207,7 +207,7 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   if settings.general.captions.show_internal_names then
     after = name
   else
-    after = player_data.translations[class][name]
+    after = player_data.translations[class][name] or name
   end
 
   local output = {before = before, after = after}
