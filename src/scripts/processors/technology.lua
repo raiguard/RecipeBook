@@ -33,8 +33,8 @@ return function(recipe_book, dictionaries, metadata)
         local recipe_data = recipe_book.recipe[modifier.recipe]
 
         -- Check if the category should be ignored for recipe availability
-        local disabled = constants.disabled_categories.recipe_category[recipe_data.recipe_category.name]
-        if not disabled or disabled ~= 0 then
+        local disabled = (recipe_data == nil) or constants.disabled_categories.recipe_category[recipe_data.recipe_category.name]
+        if not disabled then
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
           recipe_data.researched_forces = {}
           unlocks_recipes[#unlocks_recipes + 1] = {class = "recipe", name = modifier.recipe}
