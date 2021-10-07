@@ -8,6 +8,10 @@ local fluid_proc = require("scripts.processors.fluid")
 
 return function(recipe_book, dictionaries, metadata)
   for name, prototype in pairs(global.prototypes.recipe) do
+    if not prototype.valid then
+      goto prototype_built
+    end
+
     local category = prototype.category
     local group = prototype.group
 
@@ -115,5 +119,7 @@ return function(recipe_book, dictionaries, metadata)
     recipe_book.recipe[name] = data
     dictionaries.recipe:add(name, prototype.localised_name)
     dictionaries.recipe_description:add(name, prototype.localised_description)
+
+    ::prototype_built::
   end
 end
