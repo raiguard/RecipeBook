@@ -12,6 +12,10 @@ function item_proc.build(recipe_book, dictionaries, metadata)
   local rocket_launch_payloads = {}
 
   for name, prototype in pairs(global.prototypes.item) do
+    if not prototype.valid then
+      goto prototype_built
+    end
+
     -- Group
     local group = prototype.group
     local group_data = recipe_book.group[group.name]
@@ -135,6 +139,8 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     }
     dictionaries.item:add(name, prototype.localised_name)
     dictionaries.item_description:add(name, prototype.localised_description)
+
+    ::prototype_built::
   end
 
   -- Add rocket launch payloads to their material tables
