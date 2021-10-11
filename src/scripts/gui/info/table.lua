@@ -101,7 +101,7 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
           end
           i = i + 1
           local value_label = children[i]
-          if not value_label or value_label.type ~= "label" then
+          if not value_label or not value_label.valid or value_label.type ~= "label" then
             if value_label then
               value_label.destroy()
             end

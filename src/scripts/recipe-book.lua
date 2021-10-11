@@ -6,6 +6,7 @@ local constants = require("constants")
 local burner_machine_proc = require("scripts.processors.burner-machine")
 local crafter_proc = require("scripts.processors.crafter")
 local equipment_category_proc = require("scripts.processors.equipment-category")
+local equipment_proc = require("scripts.processors.equipment")
 local fluid_proc = require("scripts.processors.fluid")
 local fuel_category_proc = require("scripts.processors.fuel-category")
 local group_proc = require("scripts.processors.group")
@@ -49,6 +50,7 @@ function recipe_book.build()
   crafter_proc(recipe_book, dictionaries, metadata)
   mining_drill_proc(recipe_book, dictionaries)
 
+  equipment_proc(recipe_book, dictionaries)
   fluid_proc(recipe_book, dictionaries, metadata)
   item_proc(recipe_book, dictionaries, metadata)
 
@@ -85,6 +87,7 @@ function recipe_book.handle_research_updated(technology, to_value)
   technology_data.researched_forces[force_index] = to_value
 
   for _, objects in pairs{
+    technology_data.unlocks_equipment,
     technology_data.unlocks_fluids,
     technology_data.unlocks_items,
     technology_data.unlocks_machines,

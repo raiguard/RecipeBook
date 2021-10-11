@@ -22,6 +22,7 @@ constants.classes = {
   "burner_machine",
   "crafter",
   "equipment_category",
+  "equipment",
   "fluid",
   "fuel_category",
   "group",
@@ -29,8 +30,8 @@ constants.classes = {
   "lab",
   "mining_drill",
   "offshore_pump",
-  "recipe",
   "recipe_category",
+  "recipe",
   "resource",
   "resource_category",
   "technology",
@@ -40,6 +41,7 @@ constants.class_to_font_glyph = {
   burner_machine = "E",
   crafter = "E",
   equipment_category = "G",
+  equipment = "Z",
   fluid = "B",
   fuel_category = "G",
   group = "G",
@@ -58,6 +60,7 @@ constants.class_to_type = {
   burner_machine = "entity",
   crafter = "entity",
   equipment_category = false,
+  equipment = "equipment",
   fluid = "fluid",
   fuel_category = false,
   group = "item-group",
@@ -117,6 +120,7 @@ constants.derived_type_to_class = {
   ["burner-generator"] = "burner_machine",
   ["car"] = "burner_machine",
   ["equipment-category"] = "equipment_category",
+  ["equipment"] = "equipment",
   ["fluid"] = "fluid",
   ["fuel-category"] = "fuel_category",
   ["furnace"] = "crafter",
@@ -343,6 +347,7 @@ constants.gui_strings = {
   disabled = {"entity-status.disabled"},
   equipment_categories = {"gui.rb-equipment-categories"},
   equipment_category = {"gui.rb-equipment-category"},
+  equipment = {"gui.rb-equipment"},
   fixed_recipe = {"gui.rb-fixed-recipe"},
   fluid = {"gui.rb-fluid"},
   fluids = {"gui.rb-fluids"},
@@ -390,6 +395,7 @@ constants.gui_strings = {
   open_info_relative_to_gui = {"gui.rb-open-info-relative-to-gui"},
   open_in_technology_window = {"gui.rb-open-in-technology-window"},
   per_second_suffix = {"gui.rb-per-second-suffix"},
+  place_as_equipment_result = {"gui.rb-place-as-equipment-result"},
   placed_by = {"gui.rb-placed-by"},
   place_result = {"gui.rb-place-result"},
   pollution_bonus = {"description.pollution-bonus"},
@@ -438,6 +444,7 @@ constants.gui_strings = {
   size = {"gui.rb-size"},
   speed_bonus = {"description.speed-bonus"},
   stack_size = {"gui.rb-stack-size"},
+  take_result = {"gui.rb-take-result"},
   tech_level_desc = {"gui.rb-tech-level-desc"},
   tech_level = {"gui.rb-tech-level"},
   technology = {"gui.rb-technology"},
@@ -447,6 +454,7 @@ constants.gui_strings = {
   toggle_completed = {"gui.rb-toggle-completed"},
   tooltips = {"gui.rb-tooltips"},
   unlocked_by = {"gui.rb-unlocked-by"},
+  unlocks_equipment = {"gui.rb-unlocks-equipment"},
   unlocks_fluids = {"gui.rb-unlocks-fluids"},
   unlocks_items = {"gui.rb-unlocks-items"},
   unlocks_machines = {"gui.rb-unlocks-machines"},
@@ -505,6 +513,10 @@ constants.interactions = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
+  equipment = {
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
+  },
   fluid = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
@@ -560,6 +572,10 @@ constants.interactions = {
       end,
     },
   },
+  resource_category = {
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
+  },
   resource = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
@@ -569,10 +585,6 @@ constants.interactions = {
       label = "view_required_fluid",
       source = "required_fluid"
     }
-  },
-  resource_category = {
-    {modifiers = {}, action = "view_details"},
-    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
   technology = {
     {modifiers = {}, action = "view_details"},
@@ -645,6 +657,14 @@ constants.pages = {
     {type = "list_box", source = "placed_by"}
   },
   equipment_category = {},
+  equipment = {
+    {type = "table", label = "general", hide_count = true, rows = {
+      {type = "goto", source = "take_result"},
+      {type = "plain", source = "size", formatter = "area"},
+    }},
+    {type = "list_box", source = "equipment_categories", default_state = "collapsed"},
+    {type = "list_box", source = "unlocked_by"},
+  },
   fluid = {
     {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "default_temperature", formatter = "temperature"},
@@ -695,6 +715,7 @@ constants.pages = {
       {type = "goto", source = "burnt_result", options = {hide_glyph = true}},
       {type = "goto", source = "group", options = {hide_glyph = true}},
       {type = "goto", source = "place_result"},
+      {type = "goto", source = "place_as_equipment_result"},
     }},
     {type = "table", source = "module_effects"},
     {type = "list_box", source = "ingredient_in"},
@@ -769,6 +790,10 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "compatible_modules", default_state = "collapsed"},
   },
+  resource_category = {
+    {type = "list_box", source = "resources"},
+    {type = "list_box", source = "mining_drills"}
+  },
   resource = {
     {type = "table", label = "general", hide_count = true, rows = {
       {type = "goto", source = "resource_category", options = {always_show = true, hide_glyph = true}},
@@ -777,10 +802,6 @@ constants.pages = {
     }},
     {type = "list_box", source = "products"},
     {type = "list_box", source = "compatible_mining_drills"}
-  },
-  resource_category = {
-    {type = "list_box", source = "resources"},
-    {type = "list_box", source = "mining_drills"}
   },
   technology = {
     {type = "table", label = "general", hide_count = true, rows = {
@@ -806,6 +827,7 @@ constants.pages = {
       }
     }},
     {type = "list_box", source = "research_ingredients_per_unit"},
+    {type = "list_box", source = "unlocks_equipment"},
     {type = "list_box", source = "unlocks_fluids"},
     {type = "list_box", source = "unlocks_items"},
     {type = "list_box", source = "unlocks_machines"},
@@ -832,6 +854,7 @@ constants.prototypes.filtered_entities = {
 }
 
 constants.prototypes.straight_conversions = {
+  "equipment",
   "equipment_category",
   "fluid",
   "fuel_category",
@@ -869,6 +892,7 @@ constants.tooltips = {
     }
   },
   equipment_category = {},
+  equipment = {},
   fluid = {
     {type = "plain", source = "default_temperature", formatter = "temperature"},
     {type = "plain", source = "fuel_value", formatter = "fuel_value"},

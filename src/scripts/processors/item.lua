@@ -8,6 +8,7 @@ local item_proc = {}
 
 function item_proc.build(recipe_book, dictionaries, metadata)
   local modules = {}
+  local place_as_equipment_results = {}
   local place_results = {}
   local rocket_launch_payloads = {}
 
@@ -38,6 +39,12 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     local default_categories = util.unique_string_array(
       #launch_products > 0 and table.shallow_copy(metadata.rocket_silo_categories) or {}
     )
+
+    local place_as_equipment_result = prototype.place_as_equipment_result
+    if place_as_equipment_result then
+      place_as_equipment_result = {class = "equipment", name = place_as_equipment_result.name}
+      place_as_equipment_results[name] = place_as_equipment_result
+    end
 
     local place_result = prototype.place_result
     if place_result then
@@ -123,6 +130,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       mined_from = {},
       module_category = util.convert_to_ident("module_category", prototype.category),
       module_effects = module_effects,
+      place_as_equipment_result = place_as_equipment_result,
       place_result = place_result,
       product_of = {},
       prototype_name = name,
@@ -152,6 +160,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
   end
 
   metadata.modules = modules
+  metadata.place_as_equipment_results = place_as_equipment_results
   metadata.place_results = place_results
 end
 

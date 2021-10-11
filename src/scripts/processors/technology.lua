@@ -6,6 +6,7 @@ local util = require("scripts.util")
 
 return function(recipe_book, dictionaries, metadata)
   for name, prototype in pairs(global.prototypes.technology) do
+    local unlocks_equipment = util.unique_obj_array()
     local unlocks_fluids = util.unique_obj_array()
     local unlocks_items = util.unique_obj_array()
     local unlocks_machines = util.unique_obj_array()
@@ -69,6 +70,17 @@ return function(recipe_book, dictionaries, metadata)
                 unlocks_machines[#unlocks_machines + 1] = place_result
               end
             end
+
+            -- Equipment
+            local place_as_equipment_result = metadata.place_as_equipment_results[product_name]
+            if place_as_equipment_result then
+              local equipment_data = recipe_book.equipment[place_as_equipment_result.name]
+              if equipment_data then
+                equipment_data.researched_forces = {}
+                equipment_data.unlocked_by[#equipment_data.unlocked_by + 1] = {class = "technology", name = name}
+                unlocks_equipment[#unlocks_equipment + 1] = place_as_equipment_result
+              end
+            end
           end
         end
       end
@@ -85,11 +97,12 @@ return function(recipe_book, dictionaries, metadata)
       prerequisite_of = {},
       prerequisites = {},
       prototype_name = name,
-      research_ingredients_per_unit = research_ingredients_per_unit,
-      research_unit_count = research_unit_count,
-      research_unit_count_formula = formula,
-      research_unit_energy = prototype.research_unit_energy / 60,
       researched_forces = {},
+      research_ingredients_per_unit = research_ingredients_per_unit,
+      research_unit_count_formula = formula,
+      research_unit_count = research_unit_count,
+      research_unit_energy = prototype.research_unit_energy / 60,
+      unlocks_equipment = unlocks_equipment,
       unlocks_fluids = unlocks_fluids,
       unlocks_items = unlocks_items,
       unlocks_machines = unlocks_machines,
