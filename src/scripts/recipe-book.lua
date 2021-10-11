@@ -4,6 +4,7 @@ dictionary.set_use_local_storage(true)
 local constants = require("constants")
 
 local burner_machine_proc = require("scripts.processors.burner-machine")
+local burning_proc = require("scripts.processors.burning")
 local crafter_proc = require("scripts.processors.crafter")
 local equipment_category_proc = require("scripts.processors.equipment-category")
 local equipment_proc = require("scripts.processors.equipment")
@@ -12,6 +13,7 @@ local fuel_category_proc = require("scripts.processors.fuel-category")
 local group_proc = require("scripts.processors.group")
 local item_proc = require("scripts.processors.item")
 local lab_proc = require("scripts.processors.lab")
+local machine_state_proc = require("scripts.processors.machine-state")
 local mining_drill_proc = require("scripts.processors.mining-drill")
 local offshore_pump_proc = require("scripts.processors.offshore-pump")
 local recipe_category_proc = require("scripts.processors.recipe-category")
@@ -65,9 +67,11 @@ function recipe_book.build()
   fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
   mining_drill_proc.add_resources(recipe_book)
   fuel_category_proc.check_fake_category(recipe_book, dictionaries)
-  equipment_proc.process_burned_in(recipe_book)
-  item_proc.process_burned_in(recipe_book)
+
+  burning_proc(recipe_book)
+  machine_state_proc(recipe_book)
 end
+
 
 local function update_launch_products(launch_products, force_index, to_value)
   for _, launch_product in ipairs(launch_products) do

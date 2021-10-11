@@ -2,6 +2,16 @@ local table = require("__flib__.table")
 
 local constants = {}
 
+constants.burner_classes = {
+  "crafter",
+  "lab",
+  "mining_drill",
+  "offshore_pump",
+  -- These are intentionally out of order so they show up last in lists
+  "burner_machine",
+  "equipment",
+}
+
 constants.category_classes = {
   "equipment_category",
   "fuel_category",

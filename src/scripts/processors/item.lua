@@ -164,55 +164,6 @@ function item_proc.build(recipe_book, dictionaries, metadata)
   metadata.place_results = place_results
 end
 
-function item_proc.process_burned_in(recipe_book)
-  -- Iterate machines
-  for _, machine_class in pairs(constants.machine_classes) do
-    for machine_name, machine_data in pairs(recipe_book[machine_class]) do
-      -- Burned in
-      local compatible_fuels = machine_data.compatible_fuels
-      for i, category_ident in pairs(machine_data.fuel_categories or {}) do
-        local category_data = recipe_book.fuel_category[category_ident.name]
-        if category_data then
-          -- Add fluids and items to the compatible fuels, and add the machine to the material's burned in table
-          for _, objects in pairs{category_data.fluids, category_data.items} do
-            for _, obj_ident in pairs(objects) do
-              local obj_data = recipe_book[obj_ident.class][obj_ident.name]
-              obj_data.burned_in[#obj_data.burned_in + 1] = {class = machine_class, name = machine_name}
-              compatible_fuels[#compatible_fuels + 1] = table.shallow_copy(obj_ident)
-            end
-          end
-        else
-          -- Remove this category from the machine
-          table.remove(machine_data.fuel_categories, i)
-        end
-      end
-
-      -- Hidden / disabled for machines
-      if not machine_data.is_character then
-        local placed_by_len = #(machine_data.placed_by or {})
-        if placed_by_len == 0 then
-          machine_data.enabled = false
-        elseif placed_by_len == 1 then
-          local item_ident = machine_data.placed_by[1]
-          local item_data = recipe_book.item[item_ident.name]
-          if item_data.hidden then
-            machine_data.hidden = true
-          end
-        end
-      end
-    end
-  end
-
-  -- Iterate items
-  for item_name, item_data in pairs(recipe_book.item) do
-    local burnt_result = item_data.burnt_result
-    if burnt_result then
-      local result_data = recipe_book.item[burnt_result.name]
-      result_data.burnt_result_of[#result_data.burnt_result_of + 1] = {class = "item", name = item_name}
-    end
-  end
-end
-
 -- When calling the module directly, call fluid_proc.build
 setmetatable(item_proc, { __call = function(_, ...) return item_proc.build(...) end })
 
