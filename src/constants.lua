@@ -663,6 +663,8 @@ constants.pages = {
       {type = "goto", source = "take_result"},
       {type = "plain", source = "size", formatter = "area"},
     }},
+    {type = "list_box", source = "compatible_fuels"},
+    {type = "list_box", source = "fuel_categories", default_state = "collapsed"},
     {type = "list_box", source = "equipment_categories", default_state = "collapsed"},
     {type = "list_box", source = "unlocked_by"},
   },
@@ -893,7 +895,9 @@ constants.tooltips = {
     }
   },
   equipment_category = {},
-  equipment = {},
+  equipment = {
+    {type = "plain", source = "size", formatter = "area"},
+  },
   fluid = {
     {type = "plain", source = "default_temperature", formatter = "temperature"},
     {type = "plain", source = "fuel_value", formatter = "fuel_value"},

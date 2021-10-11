@@ -65,6 +65,7 @@ function recipe_book.build()
   fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
   mining_drill_proc.add_resources(recipe_book)
   fuel_category_proc.check_fake_category(recipe_book, dictionaries)
+  equipment_proc.process_burned_in(recipe_book)
   item_proc.process_burned_in(recipe_book)
 end
 
