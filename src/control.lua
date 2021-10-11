@@ -267,6 +267,12 @@ event.on_lua_shortcut(function(e)
   end
 end)
 
+local entity_type_to_gui_type = {
+  ["infinity-container"] = defines.relative_gui_type.container_gui,
+  ["linked-container"] = defines.relative_gui_type.container_gui,
+  ["logistic-container"] = defines.relative_gui_type.container_gui,
+}
+
 local function get_opened_relative_gui_type(player)
   local gui_type = player.opened_gui_type
   local opened = player.opened
@@ -280,8 +286,20 @@ local function get_opened_relative_gui_type(player)
   -- Attempt 2: Specific logic
   if gui_type == defines.gui_type.entity and opened.valid then
     local gui = defines.relative_gui_type[string.gsub(opened.type or "", "%-", "_").."_gui"]
+      or entity_type_to_gui_type[opened.type]
     if gui then
       return {gui = gui, type = opened.type, name = opened.name}
+    end
+  end
+  if gui_type == defines.gui_type.item and opened and opened.valid then -- Sometimes items don't show up!?
+    if opened.object_name == "LuaEquipmentGrid" then
+      return {gui = defines.relative_gui_type.equipment_grid_gui}
+    else
+      local gui = defines.relative_gui_type[string.gsub(opened.type, "%-", "_").."_gui"]
+        or defines.relative_gui_type.item_with_inventory_gui
+      if gui then
+        return {gui = gui, type = opened.type, name = opened.name}
+      end
     end
   end
 end
