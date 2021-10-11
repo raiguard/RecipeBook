@@ -355,6 +355,7 @@ constants.gui_strings = {
   default_temperature = {"gui.rb-default-temperature"},
   disabled_abbrev = {"gui.rb-disabled-abbrev"},
   disabled = {"entity-status.disabled"},
+  energy_production = {"gui.rb-energy-production"},
   equipment_categories = {"gui.rb-equipment-categories"},
   equipment_category = {"gui.rb-equipment-category"},
   equipment = {"gui.rb-equipment"},
@@ -451,6 +452,7 @@ constants.gui_strings = {
   show_made_in_in_quick_ref = {"gui.rb-show-made-in-in-quick-ref"},
   show_unresearched = {"gui.rb-show-unresearched"},
   si_joule = {"si-unit-symbol-joule"},
+  si_watt = {"si-unit-symbol-watt"},
   size = {"gui.rb-size"},
   speed_bonus = {"description.speed-bonus"},
   stack_size = {"gui.rb-stack-size"},
@@ -672,6 +674,7 @@ constants.pages = {
     {type = "table", label = "general", hide_count = true, rows = {
       {type = "goto", source = "take_result"},
       {type = "plain", source = "size", formatter = "area"},
+      {type = "plain", source = "energy_production", formatter = "energy"},
     }},
     {type = "list_box", source = "compatible_fuels"},
     {type = "list_box", source = "fuel_categories", default_state = "collapsed"},
@@ -907,6 +910,7 @@ constants.tooltips = {
   equipment_category = {},
   equipment = {
     {type = "plain", source = "size", formatter = "area"},
+    {type = "plain", source = "energy_production", formatter = "energy"},
   },
   fluid = {
     {type = "plain", source = "default_temperature", formatter = "temperature"},
