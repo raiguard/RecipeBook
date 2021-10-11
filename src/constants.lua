@@ -534,7 +534,7 @@ constants.interactions = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
     {
-      modifiers = {"alt"},
+      modifiers = {"shift"},
       action = "view_product_details",
       test = function(obj_data, _)
         return #obj_data.products == 1
