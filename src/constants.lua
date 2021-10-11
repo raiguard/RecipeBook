@@ -355,6 +355,7 @@ constants.gui_strings = {
   default_temperature = {"gui.rb-default-temperature"},
   disabled_abbrev = {"gui.rb-disabled-abbrev"},
   disabled = {"entity-status.disabled"},
+  energy_consumption = {"gui.rb-energy-consumption"},
   energy_production = {"gui.rb-energy-production"},
   equipment_categories = {"gui.rb-equipment-categories"},
   equipment_category = {"gui.rb-equipment-category"},
@@ -674,6 +675,7 @@ constants.pages = {
     {type = "table", label = "general", hide_count = true, rows = {
       {type = "goto", source = "take_result"},
       {type = "plain", source = "size", formatter = "area"},
+      {type = "plain", source = "energy_consumption", formatter = "energy"},
       {type = "plain", source = "energy_production", formatter = "energy"},
     }},
     {type = "list_box", source = "compatible_fuels"},
@@ -910,6 +912,7 @@ constants.tooltips = {
   equipment_category = {},
   equipment = {
     {type = "plain", source = "size", formatter = "area"},
+    {type = "plain", source = "energy_consumption", formatter = "energy"},
     {type = "plain", source = "energy_production", formatter = "energy"},
   },
   fluid = {
