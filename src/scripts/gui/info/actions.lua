@@ -179,7 +179,7 @@ function actions.toggle_quick_ref(data)
   local state = data.state
   if not (state.docked and not state.search_info) then
     local sizes = constants.gui_sizes[data.player_table.language] or constants.gui_sizes.en
-    local offset = sizes.info_width + (state.sticky and (sizes.search_width + 24) or 0)
+    local offset = sizes.info_width + (state.search_info and (sizes.search_width + 24) or 0)
     offset = offset * data.player.display_scale
     local location = data.refs.root.location
     quick_ref_root.toggle(
