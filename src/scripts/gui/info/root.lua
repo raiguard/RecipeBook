@@ -39,6 +39,7 @@ function root.build(player, player_table, context, options)
   player_table.guis.info._next_id = id + 1
   local root_elem = options.parent or player.gui.screen
   local search_info = root_elem.name == "rb_search_window"
+  local relative = options.parent and not search_info
   local refs = gui.build(root_elem, {
     {
       type = "frame",
@@ -55,7 +56,9 @@ function root.build(player, player_table, context, options)
         style = "flib_titlebar_flow",
         ref = {"titlebar", "flow"},
         actions = {
-          on_click = {gui = search_info and "search" or "info", id = id, action = "reset_location"},
+          on_click = not relative
+            and {gui = search_info and "search" or "info", id = id, action = "reset_location"}
+            or nil,
         },
         util.frame_action_button(
           "rb_nav_backward",
@@ -78,9 +81,8 @@ function root.build(player, player_table, context, options)
         },
         {
           type = "empty-widget",
-          style = "flib_titlebar_drag_handle",
+          style = relative and "flib_horizontal_pusher" or "flib_titlebar_drag_handle",
           ignored_by_interaction = true,
-          ref = {"titlebar", "drag_handle"}
         },
         {
           type = "textfield",
