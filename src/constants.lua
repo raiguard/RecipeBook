@@ -3,6 +3,7 @@ local table = require("__flib__.table")
 local constants = {}
 
 constants.category_classes = {
+  "equipment_category",
   "fuel_category",
   "group",
   "recipe_category",
@@ -10,6 +11,7 @@ constants.category_classes = {
 }
 
 constants.category_class_plurals = {
+  equipment_category = "equipment_categories",
   fuel_category = "fuel_categories",
   group = "groups",
   recipe_category = "recipe_categories",
@@ -19,6 +21,7 @@ constants.category_class_plurals = {
 constants.classes = {
   "burner_machine",
   "crafter",
+  "equipment_category",
   "fluid",
   "fuel_category",
   "group",
@@ -36,6 +39,7 @@ constants.classes = {
 constants.class_to_font_glyph = {
   burner_machine = "E",
   crafter = "E",
+  equipment_category = "G",
   fluid = "B",
   fuel_category = "G",
   group = "G",
@@ -53,6 +57,7 @@ constants.class_to_font_glyph = {
 constants.class_to_type = {
   burner_machine = "entity",
   crafter = "entity",
+  equipment_category = false,
   fluid = "fluid",
   fuel_category = false,
   group = "item-group",
@@ -111,6 +116,7 @@ constants.derived_type_to_class = {
   ["boiler"] = "burner_machine",
   ["burner-generator"] = "burner_machine",
   ["car"] = "burner_machine",
+  ["equipment-category"] = "equipment_category",
   ["fluid"] = "fluid",
   ["fuel-category"] = "fuel_category",
   ["furnace"] = "crafter",
@@ -135,6 +141,7 @@ constants.derived_type_to_class = {
 }
 
 constants.disabled_categories = {
+  equipment_category = {},
   fuel_category = {},
   group = {
     -- Editor extensions
@@ -334,6 +341,8 @@ constants.gui_strings = {
   default_temperature = {"gui.rb-default-temperature"},
   disabled_abbrev = {"gui.rb-disabled-abbrev"},
   disabled = {"entity-status.disabled"},
+  equipment_categories = {"gui.rb-equipment-categories"},
+  equipment_category = {"gui.rb-equipment-category"},
   fixed_recipe = {"gui.rb-fixed-recipe"},
   fluid = {"gui.rb-fluid"},
   fluids = {"gui.rb-fluids"},
@@ -492,6 +501,10 @@ constants.interactions = {
       force_label = true
     }
   },
+  equipment_category = {
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
+  },
   fluid = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
@@ -631,6 +644,7 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placed_by"}
   },
+  equipment_category = {},
   fluid = {
     {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "default_temperature", formatter = "temperature"},
@@ -818,6 +832,7 @@ constants.prototypes.filtered_entities = {
 }
 
 constants.prototypes.straight_conversions = {
+  "equipment_category",
   "fluid",
   "fuel_category",
   "item",
@@ -853,6 +868,7 @@ constants.tooltips = {
       options = {hide_glyph = true}
     }
   },
+  equipment_category = {},
   fluid = {
     {type = "plain", source = "default_temperature", formatter = "temperature"},
     {type = "plain", source = "fuel_value", formatter = "fuel_value"},
