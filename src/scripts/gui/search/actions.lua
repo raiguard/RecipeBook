@@ -269,7 +269,16 @@ function actions.open_object(data)
   if context then
     local attach = data.player_table.settings.general.interface.attach_search_results
     local sticky = attach and data.e.button == defines.mouse_button_type.left
-    shared.open_page(data.player, data.player_table, context, sticky)
+    local id = sticky and data.state.id and data.player_table.guis.info[data.state.id] and data.state.id or nil
+    shared.open_page(
+      data.player,
+      data.player_table,
+      context,
+      {id = id, parent = data.refs.window}
+    )
+    if sticky then
+      data.state.id = data.player_table.guis.info._active_id
+    end
     if not sticky and data.player_table.settings.general.interface.close_search_gui_after_selection then
       actions.close(data)
     end

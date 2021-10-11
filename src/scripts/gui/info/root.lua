@@ -30,23 +30,22 @@ end
 
 local root = {}
 
-function root.build(player, player_table, context, sticky)
+function root.build(player, player_table, context, options)
+  options = options or {}
+
   local width = (constants.gui_sizes[player_table.language] or constants.gui_sizes.en).info_width
 
   local id = player_table.guis.info._next_id
   player_table.guis.info._next_id = id + 1
-  local root_elem
-  if sticky then
-    root_elem = player_table.guis.search.refs.window
-  else
-    root_elem = player.gui.screen
-  end
+  local root_elem = options.parent or player.gui.screen
+  local search_info = root_elem.name == "rb_search_window"
   local refs = gui.build(root_elem, {
     {
       type = "frame",
       style_mods = {width = width},
       direction = "vertical",
       ref = {"window"},
+      anchor = options.anchor,
       actions = {
         on_click = {gui = "info", id = id, action = "set_as_active"},
         on_closed = {gui = "info", id = id, action = "close"}
@@ -56,7 +55,7 @@ function root.build(player, player_table, context, sticky)
         style = "flib_titlebar_flow",
         ref = {"titlebar", "flow"},
         actions = {
-          on_click = {gui = sticky and "search" or "info", id = id, action = "reset_location"},
+          on_click = {gui = search_info and "search" or "info", id = id, action = "reset_location"},
         },
         util.frame_action_button(
           "rb_nav_backward",
@@ -103,7 +102,7 @@ function root.build(player, player_table, context, sticky)
           {"titlebar", "search_button"},
           {gui = "info", id = id, action = "toggle_search"}
         ),
-        sticky and util.frame_action_button(
+        options.parent and util.frame_action_button(
           "rb_detach",
           {"gui.rb-detach-instruction"},
           nil,
@@ -119,7 +118,7 @@ function root.build(player, player_table, context, sticky)
       {
         type = "frame",
         style = "inside_shallow_frame",
-        style_mods = {vertically_stretchable = sticky},
+        style_mods = {vertically_stretchable = search_info},
         direction = "vertical",
         ref = {"page_frame"},
         action = {
@@ -209,14 +208,16 @@ function root.build(player, player_table, context, sticky)
     }
   })
 
-  if sticky then
+  if options.parent then
     refs.root = root_elem
   else
     refs.root = refs.window
     refs.root.force_auto_center()
   end
 
-  refs.titlebar.flow.drag_target = refs.root
+  if not options.parent or search_info then
+    refs.titlebar.flow.drag_target = refs.root
+  end
 
   refs.page_components = {}
 
@@ -224,18 +225,20 @@ function root.build(player, player_table, context, sticky)
     refs = refs,
     state = {
       components = {},
+      docked = options.parent and true or false,
       history = {_index = 0},
       id = id,
+      search_info = search_info,
       search_opened = false,
       search_query = "",
       selected_tech_level = 0,
-      sticky = sticky,
       warning_shown = false
     }
   }
   player_table.guis.info._active_id = id
-  if sticky then
-    player_table.guis.info._sticky_id = id
+
+  if options.anchor then
+    player_table.guis.info._relative_id = id
   end
 
   root.update_contents(player, player_table, id, {new_context = context})
@@ -246,8 +249,8 @@ function root.destroy(player_table, id)
   if gui_data then
     gui_data.refs.window.destroy()
     player_table.guis.info[id] = nil
-    if gui_data.state.sticky then
-      player_table.guis.info._sticky_id = nil
+    if gui_data.state.docked and not gui_data.state.search_info then
+      player_table.guis.info._relative_id = nil
     end
   end
 end
@@ -562,7 +565,7 @@ function root.update_contents(player, player_table, id, options)
     state.warning_shown = true
     pane.visible = false
     refs.page_frame.style = "rb_inside_warning_frame"
-    refs.page_frame.style.vertically_stretchable = state.sticky
+    refs.page_frame.style.vertically_stretchable = state.docked and state.search_info
     refs.warning_flow.visible = true
     if state.search_query == "" then
       refs.warning_text.caption = {"gui.rb-no-content-warning"}
@@ -573,7 +576,7 @@ function root.update_contents(player, player_table, id, options)
     state.warning_shown = false
     pane.visible = true
     refs.page_frame.style = "inside_shallow_frame"
-    refs.page_frame.style.vertically_stretchable = state.sticky
+    refs.page_frame.style.vertically_stretchable = state.docked and state.search_info
     refs.warning_flow.visible = false
   end
 
@@ -589,8 +592,10 @@ end
 function root.bring_all_to_front(player_table)
   for id, gui_data in pairs(player_table.guis.info) do
     if not constants.ignored_info_ids[id] then
-      if gui_data.state.sticky then
-        gui_data.refs.root.bring_to_front()
+      if gui_data.state.docked then
+        if gui_data.state.search_info then
+          gui_data.refs.root.bring_to_front()
+        end
       else
         gui_data.refs.window.bring_to_front()
       end

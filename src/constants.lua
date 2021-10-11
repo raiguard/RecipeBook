@@ -259,6 +259,11 @@ constants.general_settings = {
     },
   },
   interface = {
+    open_info_relative_to_gui = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = true,
+    },
     attach_search_results = {
       type = "bool",
       has_tooltip = true,
@@ -373,6 +378,7 @@ constants.gui_strings = {
   module_effects = {"gui.rb-module-effects"},
   modules = {"gui.rb-modules"},
   offshore_pump = {"gui.rb-offshore-pump"},
+  open_info_relative_to_gui = {"gui.rb-open-info-relative-to-gui"},
   open_in_technology_window = {"gui.rb-open-in-technology-window"},
   per_second_suffix = {"gui.rb-per-second-suffix"},
   placed_by = {"gui.rb-placed-by"},
@@ -460,7 +466,7 @@ constants.header_button_tooltips = {
   },
 }
 
-constants.ignored_info_ids = table.invert{"_next_id", "_active_id", "_sticky_id"}
+constants.ignored_info_ids = table.invert{"_active_id", "_next_id", "_relative_id"}
 
 -- NOTE: Modifiers must be in the order of "control", "shift", "alt" for those that are present
 constants.interactions = {

@@ -3,6 +3,8 @@ Version: 3.2.0
 Date: ????
   Features:
     - Shift + click on a recipe with one product to view the product's page
+    - Using the inspect hotkey will attempt to open the info page relative to the currently open GUI
+      - Only works on vanilla GUIs (custom mod GUIs do not support relative anchoring)
   Bugfixes:
     - Fixed a crash if a prototype (somehow) doesn't have a stored translation (#80)
     - Fixed that mining drills were not being processed for technology unlocks

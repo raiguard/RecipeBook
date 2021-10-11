@@ -55,7 +55,7 @@ function actions.close(data)
 end
 
 function actions.bring_to_front(data)
-  if not data.state.sticky then
+  if not data.state.docked then
     data.refs.window.bring_to_front()
   end
 end
@@ -176,16 +176,19 @@ function actions.go_to_base_fluid(data)
 end
 
 function actions.toggle_quick_ref(data)
-  local sizes = constants.gui_sizes[data.player_table.language] or constants.gui_sizes.en
-  local offset = sizes.info_width + (data.state.sticky and (sizes.search_width + 24) or 0)
-  offset = offset * data.player.display_scale
-  local location = data.refs.root.location
-  quick_ref_root.toggle(
-    data.player,
-    data.player_table,
-    data.context.name,
-    {location.x + offset, y = location.y}
-  )
+  local state = data.state
+  if not (state.docked and not state.search_info) then
+    local sizes = constants.gui_sizes[data.player_table.language] or constants.gui_sizes.en
+    local offset = sizes.info_width + (state.sticky and (sizes.search_width + 24) or 0)
+    offset = offset * data.player.display_scale
+    local location = data.refs.root.location
+    quick_ref_root.toggle(
+      data.player,
+      data.player_table,
+      data.context.name,
+      {location.x + offset, y = location.y}
+    )
+  end
 end
 
 function actions.toggle_favorite(data)
@@ -272,7 +275,7 @@ end
 function actions.detach_window(data)
   local state = data.state
   -- Just in case
-  if not state.sticky then return end
+  if not state.docked then return end
 
   local context = state.history[state.history._index]
 

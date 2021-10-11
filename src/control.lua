@@ -3,6 +3,7 @@ local dictionary = require("__flib__.dictionary")
 local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
 local on_tick_n = require("__flib__.on-tick-n")
+local reverse_defines = require("__flib__.reverse-defines")
 
 local formatter = require("scripts.formatter")
 local constants = require("constants")
@@ -212,6 +213,11 @@ event.on_gui_closed(function(e)
       if not gui_data.state.pinned then
         player.opened = gui_data.refs.window
       end
+    elseif player_table.guis.info._relative_id then
+      info_gui.handle_action(
+        {id = player_table.guis.info._relative_id, action = "close"},
+        {player_index = e.player_index}
+      )
     end
   end
 end)
@@ -261,6 +267,25 @@ event.on_lua_shortcut(function(e)
   end
 end)
 
+local function get_opened_relative_gui_type(player)
+  local gui_type = player.opened_gui_type
+  local opened = player.opened
+
+  -- Attempt 1: Some GUIs can be converted straight from their gui_type
+  local straight_conversion = defines.relative_gui_type[reverse_defines.gui_type[gui_type].."_gui"]
+  if straight_conversion then
+    return {gui = straight_conversion}
+  end
+
+  -- Attempt 2: Specific logic
+  if gui_type == defines.gui_type.entity and opened.valid then
+    local gui = defines.relative_gui_type[string.gsub(opened.type or "", "%-", "_").."_gui"]
+    if gui then
+      return {gui = gui, type = opened.type, name = opened.name}
+    end
+  end
+end
+
 event.register({"rb-search", "rb-open-selected"}, function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
@@ -277,8 +302,22 @@ event.register({"rb-search", "rb-open-selected"}, function(e)
           local name = selected_prototype.name
           local obj_data = recipe_book[class][name]
           if obj_data then
+            local options
+            if player_table.settings.general.interface.open_info_relative_to_gui then
+              local id = player_table.guis.info._relative_id
+              if id then
+                options = {id = id}
+              else
+                -- Get the context of the current opened GUI
+                local anchor = get_opened_relative_gui_type(player)
+                if anchor then
+                  anchor.position = defines.relative_gui_position.right
+                  options = {parent = player.gui.relative, anchor = anchor}
+                end
+              end
+            end
             local context = {class = class, name = name}
-            shared.open_page(player, player_table, context)
+            shared.open_page(player, player_table, context, options)
             return
           end
         end
@@ -420,20 +459,20 @@ remote.add_interface("RecipeBook", remote_interface)
 -- -----------------------------------------------------------------------------
 -- SHARED FUNCTIONS
 
-function shared.open_page(player, player_table, context, sticky)
-  local existing_id = sticky
-    and player_table.guis.info._sticky_id
+function shared.open_page(player, player_table, context, options)
+  options = options or {}
+
+  local existing_id = options.id
     or info_gui.root.find_open_context(player_table, context)[1]
 
   if existing_id then
-    if sticky then
+    if options.id then
       info_gui.root.update_contents(player, player_table, existing_id, {new_context = context})
-      return
     else
       info_gui.handle_action({id = existing_id, action = "bring_to_front"}, {player_index = player.index})
     end
   else
-    info_gui.root.build(player, player_table, context, sticky)
+    info_gui.root.build(player, player_table, context, options)
   end
 end
 
