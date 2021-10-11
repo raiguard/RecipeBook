@@ -5,6 +5,7 @@ function equipment_category_proc.build(recipe_book, dictionaries)
     recipe_book.equipment_category[name] = {
       class = "equipment_category",
       enabled_at_start = true,
+      equipment = {},
       prototype_name = name,
     }
     dictionaries.equipment_category:add(name, prototype.localised_name)

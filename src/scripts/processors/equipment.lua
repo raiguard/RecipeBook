@@ -11,6 +11,12 @@ function equipment_proc.build(recipe_book, dictionaries)
     if burner then
       fuel_categories = util.convert_categories(burner.fuel_categories, "fuel_category")
     end
+
+    for _, category in pairs(prototype.equipment_categories) do
+      local category_data = recipe_book.equipment_category[category]
+      category_data.equipment[#category_data.equipment + 1] = {class = "equipment", name = name}
+    end
+
     recipe_book.equipment[name] = {
       class = "equipment",
       compatible_fuels = {},

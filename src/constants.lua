@@ -670,7 +670,9 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placed_by"}
   },
-  equipment_category = {},
+  equipment_category = {
+    {type = "list_box", source = "equipment"},
+  },
   equipment = {
     {type = "table", label = "general", hide_count = true, rows = {
       {type = "goto", source = "take_result"},
