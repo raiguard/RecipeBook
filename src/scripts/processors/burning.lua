@@ -3,6 +3,7 @@ local table = require("__flib__.table")
 local constants = require("constants")
 
 return function(recipe_book)
+  -- Compatible fuels / burned in
   for _, class in pairs(constants.burner_classes) do
     for name, data in pairs(recipe_book[class]) do
       -- Burned in
