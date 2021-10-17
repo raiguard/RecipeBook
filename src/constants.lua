@@ -8,7 +8,7 @@ constants.burner_classes = {
   "mining_drill",
   "offshore_pump",
   -- These are intentionally out of order so they show up last in lists
-  "burner_machine",
+  "machine",
   "equipment",
 }
 
@@ -29,26 +29,25 @@ constants.category_class_plurals = {
 }
 
 constants.classes = {
-  "burner_machine",
   "crafter",
-  "equipment_category",
   "equipment",
+  "equipment_category",
   "fluid",
   "fuel_category",
   "group",
   "item",
   "lab",
+  "machine",
   "mining_drill",
   "offshore_pump",
-  "recipe_category",
   "recipe",
+  "recipe_category",
   "resource",
   "resource_category",
   "technology",
 }
 
 constants.class_to_font_glyph = {
-  burner_machine = "E",
   crafter = "E",
   equipment_category = "G",
   equipment = "Z",
@@ -57,6 +56,7 @@ constants.class_to_font_glyph = {
   group = "G",
   item = "C",
   lab = "D",
+  machine = "E",
   mining_drill = "E",
   offshore_pump = "E",
   recipe_category = "G",
@@ -67,7 +67,6 @@ constants.class_to_font_glyph = {
 }
 
 constants.class_to_type = {
-  burner_machine = "entity",
   crafter = "entity",
   equipment_category = false,
   equipment = "equipment",
@@ -76,6 +75,7 @@ constants.class_to_type = {
   group = "item-group",
   item = "item",
   lab = "entity",
+  machine = "entity",
   mining_drill = "entity",
   offshore_pump = "entity",
   recipe_category = false,
@@ -126,31 +126,31 @@ constants.default_max_rows = 8
 
 constants.derived_type_to_class = {
   ["assembling-machine"] = "crafter",
-  ["boiler"] = "burner_machine",
-  ["burner-generator"] = "burner_machine",
-  ["car"] = "burner_machine",
+  ["boiler"] = "machine",
+  ["burner-generator"] = "machine",
+  ["car"] = "machine",
   ["equipment-category"] = "equipment_category",
   ["equipment"] = "equipment",
   ["fluid"] = "fluid",
   ["fuel-category"] = "fuel_category",
   ["furnace"] = "crafter",
-  ["generator"] = "burner_machine",
-  ["inserter"] = "burner_machine",
+  ["generator"] = "machine",
+  ["inserter"] = "machine",
   ["item-group"] = "group",
   ["item"] = "item",
   ["lab"] = "lab",
-  ["locomotive"] = "burner_machine",
+  ["locomotive"] = "machine",
   ["mining-drill"] = "mining_drill",
   ["offshore-pump"] = "offshore_pump",
-  ["pump"] = "burner_machine",
-  ["radar"] = "burner_machine",
-  ["reactor"] = "burner_machine",
+  ["pump"] = "machine",
+  ["radar"] = "machine",
+  ["reactor"] = "machine",
   ["recipe-catgory"] = "recipe_category",
   ["recipe"] = "recipe",
   ["resource-catgory"] = "resource_category",
   ["resource"] = "resource",
   ["rocket-silo"] = "crafter",
-  ["spider-vehicle"] = "burner_machine",
+  ["spider-vehicle"] = "machine",
   ["technology"] = "technology",
 }
 
@@ -331,7 +331,6 @@ constants.gui_strings = {
   alt_click = {"gui.rb-alt-click"},
   attach_search_results = {"gui.rb-attach-search-results"},
   burned_in = {"gui.rb-burned-in"},
-  burner_machine = {"gui.rb-burner-machine"},
   burnt_result = {"gui.rb-burnt-result"},
   burnt_result_of = {"gui.rb-burnt-result-of"},
   captions = {"gui.rb-captions"},
@@ -392,6 +391,7 @@ constants.gui_strings = {
   items = {"gui.rb-items"},
   lab = {"gui.rb-lab"},
   list_box_label = {"gui.rb-list-box-label"},
+  machine = {"gui.rb-machine"},
   made_in = {"gui.rb-made-in"},
   max_rows = {"gui.rb-max-rows"},
   middle_click = {"gui.rb-middle-click"},
@@ -500,10 +500,6 @@ constants.ignored_info_ids = table.invert{"_active_id", "_next_id", "_relative_i
 
 -- NOTE: Modifiers must be in the order of "control", "shift", "alt" for those that are present
 constants.interactions = {
-  burner_machine = {
-    {modifiers = {}, action = "view_details"},
-    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
-  },
   crafter = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
@@ -553,6 +549,10 @@ constants.interactions = {
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
   lab = {
+    {modifiers = {}, action = "view_details"},
+    {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
+  },
+  machine = {
     {modifiers = {}, action = "view_details"},
     {button = "middle", modifiers = {}, action = "view_details_in_new_window"},
   },
@@ -629,14 +629,14 @@ constants.machine_classes = {
   "mining_drill",
   "offshore_pump",
   -- This is intentionally last so it will show up last in lists
-  "burner_machine",
+  "machine",
 }
 constants.machine_classes_lookup = table.invert(constants.machine_classes)
 
-constants.burner_machine_type_filters = {}
+constants.machine_type_filters = {}
 for derived_type, class in pairs(constants.derived_type_to_class) do
-  if class == "burner_machine" then
-    table.insert(constants.burner_machine_type_filters, {filter = "type", type = derived_type})
+  if class == "machine" then
+    table.insert(constants.machine_type_filters, {filter = "type", type = derived_type})
   end
 end
 
@@ -648,12 +648,6 @@ constants.nav_event_properties = {
 }
 
 constants.pages = {
-  burner_machine = {
-    {type = "list_box", source = "compatible_fuels"},
-    {type = "list_box", source = "fuel_categories", default_state = "collapsed"},
-    {type = "list_box", source = "unlocked_by"},
-    {type = "list_box", source = "placed_by"},
-  },
   crafter = {
     {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "crafting_speed", formatter = "number"},
@@ -767,6 +761,12 @@ constants.pages = {
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placed_by"}
   },
+  machine = {
+    {type = "list_box", source = "compatible_fuels"},
+    {type = "list_box", source = "fuel_categories", default_state = "collapsed"},
+    {type = "list_box", source = "unlocked_by"},
+    {type = "list_box", source = "placed_by"},
+  },
   mining_drill = {
     {type = "table", label = "general", hide_count = true, rows = {
       {type = "plain", source = "mining_speed", formatter = "per_second"},
@@ -862,7 +862,7 @@ constants.pages = {
 constants.prototypes = {}
 
 constants.prototypes.filtered_entities = {
-  burner_machine = constants.burner_machine_type_filters,
+  machine = constants.machine_type_filters,
   character = {{filter = "type", type = "character"}},
   crafter = {
     {filter = "type", type = "assembling-machine"},
@@ -901,7 +901,6 @@ constants.search_timeout = 30
 constants.session_history_size = 20
 
 constants.tooltips = {
-  burner_machine = {},
   crafter = {
     {type = "plain", source = "crafting_speed", formatter = "number"},
     {type = "plain", source = "fixed_recipe", formatter = "object", options = {hide_glyph = true}},
@@ -941,6 +940,7 @@ constants.tooltips = {
     {type = "plain", source = "research_speed", formatter = "number"},
     {type = "list", source = "inputs", formatter = "object", options = {hide_glyph = true}}
   },
+  machine = {},
   mining_drill = {
     {type = "plain", source = "mining_speed", formatter = "per_second"},
     {type = "plain", source = "mining_area", formatter = "area"},
