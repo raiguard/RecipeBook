@@ -457,7 +457,7 @@ local function get_obj_properties(obj_data, player_data, options)
         if player_settings.categories[category][obj_category.name] then
           matched_categories = matched_categories + 1
         end
-      elseif obj_categories then
+      elseif obj_categories and #obj_categories > 0 then
         good_categories = good_categories + 1
         local category_settings = player_settings.categories[category]
         for _, category_ident in pairs(obj_categories) do
