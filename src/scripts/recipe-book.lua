@@ -48,11 +48,12 @@ function recipe_book.build()
   recipe_category_proc(recipe_book, dictionaries)
   resource_category_proc(recipe_book, dictionaries)
 
+  equipment_proc(recipe_book, dictionaries)
+
   crafter_proc(recipe_book, dictionaries, metadata)
   machine_proc(recipe_book, dictionaries)
   mining_drill_proc(recipe_book, dictionaries)
 
-  equipment_proc(recipe_book, dictionaries)
   fluid_proc(recipe_book, dictionaries, metadata)
   item_proc(recipe_book, dictionaries, metadata)
 

@@ -764,6 +764,8 @@ constants.pages = {
   machine = {
     {type = "list_box", source = "compatible_fuels"},
     {type = "list_box", source = "fuel_categories", default_state = "collapsed"},
+    {type = "list_box", source = "equipment", default_state = "collapsed"},
+    {type = "list_box", source = "equipment_categories", default_state = "hidden"},
     {type = "list_box", source = "unlocked_by"},
     {type = "list_box", source = "placed_by"},
   },
