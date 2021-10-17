@@ -62,6 +62,21 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       burnt_result = {class = "item", name = burnt_result.name}
     end
 
+    local equipment_categories = util.unique_obj_array()
+    local equipment = util.unique_obj_array()
+    local equipment_grid = prototype.equipment_grid
+    if equipment_grid then
+      for _, equipment_category in pairs(equipment_grid.equipment_categories) do
+        table.insert(equipment_categories, {class = "equipment_category", name = equipment_category})
+        local category_data = recipe_book.equipment_category[equipment_category]
+        if category_data then
+          for _, equipment_name in pairs(category_data.equipment) do
+            table.insert(equipment, equipment_name)
+          end
+        end
+      end
+    end
+
     local fuel_value = prototype.fuel_value
     local has_fuel_value = prototype.fuel_value > 0
     local fuel_acceleration_multiplier = prototype.fuel_acceleration_multiplier
@@ -110,6 +125,8 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       burnt_result = burnt_result,
       burnt_result_of = {},
       class = "item",
+      equipment = equipment,
+      equipment_categories = equipment_categories,
       fuel_acceleration_multiplier = has_fuel_value
         and fuel_acceleration_multiplier ~= 1
         and fuel_acceleration_multiplier

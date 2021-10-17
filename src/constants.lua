@@ -746,6 +746,8 @@ constants.pages = {
     {type = "list_box", source = "researched_in"},
     {type = "list_box", source = "burned_in"},
     {type = "list_box", source = "burnt_result_of"},
+    {type = "list_box", source = "equipment", default_state = "collapsed"},
+    {type = "list_box", source = "equipment_categories", default_state = "hidden"},
     {type = "list_box", source = "unlocked_by"},
   },
   lab = {
@@ -876,6 +878,7 @@ constants.prototypes.filtered_entities = {
 constants.prototypes.straight_conversions = {
   "equipment",
   "equipment_category",
+  "equipment_grid",
   "fluid",
   "fuel_category",
   "item",
