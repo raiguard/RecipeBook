@@ -125,7 +125,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       burnt_result = burnt_result,
       burnt_result_of = {},
       class = "item",
-      equipment = equipment,
+      compatible_equipment = equipment,
       equipment_categories = equipment_categories,
       fuel_acceleration_multiplier = has_fuel_value
         and fuel_acceleration_multiplier ~= 1
