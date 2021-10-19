@@ -270,11 +270,12 @@ function actions.open_object(data)
     local attach = data.player_table.settings.general.interface.attach_search_results
     local sticky = attach and data.e.button == defines.mouse_button_type.left
     local id = sticky and data.state.id and data.player_table.guis.info[data.state.id] and data.state.id or nil
+    local parent = sticky and data.refs.window or nil
     shared.open_page(
       data.player,
       data.player_table,
       context,
-      {id = id, parent = data.refs.window}
+      {id = id, parent = parent}
     )
     if sticky then
       data.state.id = data.player_table.guis.info._active_id
