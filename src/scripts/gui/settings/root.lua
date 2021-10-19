@@ -22,14 +22,17 @@ local function subpage_set(name, action, include_tooltip, include_bordered_frame
       {
         type = "list-box",
         style = "list_box_in_shallow_frame",
-        style_mods = {height = 28 * 22, width = 150},
+        style_mods = {height = 28 * constants.settings_gui_rows, width = 150},
         items = initial_items,
         selected_index = 1,
         actions = {
           on_selection_state_changed = {gui = "settings", action = action},
         },
       },
-      {type = "frame", style = "flib_shallow_frame_in_shallow_frame", style_mods = {height = 28 * 22},
+      {
+        type = "frame",
+        style = "flib_shallow_frame_in_shallow_frame",
+        style_mods = {height = 28 * constants.settings_gui_rows},
         {
           type = "scroll-pane",
           style = "flib_naked_scroll_pane",
