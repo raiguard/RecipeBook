@@ -168,6 +168,7 @@ function root.build(player, player_table, context, options)
           {type = "flow", style_mods = {vertical_align = "center"},
             {type = "label", style = "rb_toolbar_label", ref = {"header", "label"}},
             {type = "empty-widget", style = "flib_horizontal_pusher"},
+            __DebugAdapter and tool_button(nil, nil, nil, {gui = "info", id = id, action = "print_object"}) or {},
             tool_button(
               "rb_technology_gui_black",
               {"gui.rb-open-in-technology-window"},

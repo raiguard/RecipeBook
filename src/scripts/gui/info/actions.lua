@@ -284,4 +284,19 @@ function actions.detach_window(data)
   shared.open_page(data.player, data.player_table, context)
 end
 
+function actions.print_object(data)
+  local context = data.context
+  local obj_data = recipe_book[context.class][context.name]
+
+  if obj_data then
+    if __DebugAdapter then
+      __DebugAdapter.print(obj_data)
+      data.player.print("Object data has been printed to the debug console.")
+    else
+      log(serpent.block(obj_data))
+      data.player.print("Object data has been printed to the log file.")
+    end
+  end
+end
+
 return actions
