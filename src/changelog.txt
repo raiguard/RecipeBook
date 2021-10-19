@@ -14,6 +14,7 @@ Date: ????
     - Renamed 'burner machine' to 'machine'
   Bugfixes:
     - Fixed a crash if a prototype (somehow) doesn't have a stored translation (#80)
+    - Fixed a crash when another mod adds a force before RB has a chance to load
     - Fixed that mining drills were not being processed for technology unlocks
 ---------------------------------------------------------------------------------------------------
 Version: 3.1.5

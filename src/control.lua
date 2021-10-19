@@ -145,6 +145,7 @@ end)
 -- FORCE
 
 event.on_force_created(function(e)
+  if not global.forces then return end
   global_data.add_force(e.force)
   recipe_book.check_force(e.force)
 end)
