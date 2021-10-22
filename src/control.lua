@@ -235,7 +235,7 @@ event.register("rb-linked-focus-search", function(e)
     if active_id and info_guis[active_id] then
       info_gui.handle_action({id = active_id, action = "toggle_search"}, {player_index = e.player_index})
     end
-  elseif opened and opened.name == "rb_settings_window" then
+  elseif opened_is_ok and opened.name == "rb_settings_window" then
     settings_gui.handle_action({action = "toggle_search"}, {player_index = e.player_index})
   end
 end)
