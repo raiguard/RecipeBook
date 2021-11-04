@@ -2,13 +2,13 @@ data:extend{
   {
     type = "custom-input",
     name = "rb-open-selected",
-    key_sequence = "CONTROL + B",
+    key_sequence = "ALT + mouse-button-1",
     include_selected_prototype = true,
   },
   {
     type = "custom-input",
     name = "rb-search",
-    key_sequence = "CONTROL + SHIFT + B",
+    key_sequence = "CONTROL + B",
     include_selected_prototype = true,
   },
   {

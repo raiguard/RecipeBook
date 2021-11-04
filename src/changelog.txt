@@ -11,6 +11,8 @@ Date: ????
     - Using the inspect hotkey will attempt to open the info page relative to the currently open GUI
       - Only works on vanilla GUIs (custom mod GUIs do not support relative anchoring)
   Changes:
+    - Changed default inspect hotkey to alt+click
+    - Changed default search hotkey to Control + B
     - Renamed 'burner machine' to 'machine'
   Bugfixes:
     - Fixed a crash if a prototype (somehow) doesn't have a stored translation (#80)
