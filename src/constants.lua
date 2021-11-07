@@ -409,6 +409,7 @@ constants.gui_strings = {
   mining_time = { "gui.rb-mining-time" },
   module_effects = { "gui.rb-module-effects" },
   modules = { "gui.rb-modules" },
+  movement_bonus = { "description.movement-speed-bonus" },
   offshore_pump = { "gui.rb-offshore-pump" },
   open_info_relative_to_gui = { "gui.rb-open-info-relative-to-gui" },
   open_in_technology_window = { "gui.rb-open-in-technology-window" },

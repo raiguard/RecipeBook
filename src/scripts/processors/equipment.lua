@@ -4,8 +4,18 @@ local util = require("scripts.util")
 
 local equipment_proc = {}
 
+-- WORKAROUND: Many equipment propertis will error if you call them on the wrong kind of equipment
+local function pget(prototype, name)
+  local success, property = pcall(function()
+    return prototype[name]
+  end)
+  if success then
+    return property
+  end
+end
+
 local function get_equipment_property(properties, prototype, name, formatter, label)
-  local value = prototype[name]
+  local value = pget(prototype, name)
   if value and value > 0 then
     table.insert(properties, {
       type = "plain",
@@ -36,11 +46,9 @@ function equipment_proc.build(recipe_book, dictionaries)
     get_equipment_property(properties, prototype, "energy_production", "energy")
     get_equipment_property(properties, prototype, "shield", "number", "shield_points")
     get_equipment_property(properties, prototype, "energy_per_shield", "energy_storage", "energy_per_shield_point")
+    get_equipment_property(properties, prototype, "movement_bonus", "percent")
 
-    -- WORKAROUND: Calling logistic_parameters on a non-roboport equipment throws an error
-    local _, logistic_parameters = pcall(function()
-      return prototype.logistic_parameters
-    end)
+    local logistic_parameters = pget(prototype, "logistic_parameters")
     if logistic_parameters then
       get_equipment_property(properties, logistic_parameters, "logistic_radius", "number")
       get_equipment_property(properties, logistic_parameters, "construction_radius", "number")
