@@ -10,6 +10,7 @@ Date: ????
     - Shift + click on a recipe with one product to view the product's page
     - Using the inspect hotkey will attempt to open the info page relative to the currently open GUI
       - Only works on vanilla GUIs (custom mod GUIs do not support relative anchoring)
+      - This can be disabled in the mod settings
   Changes:
     - Changed default inspect hotkey to alt+click
     - Changed default search hotkey to Control + B
@@ -18,6 +19,7 @@ Date: ????
     - Fixed a crash if a prototype (somehow) doesn't have a stored translation (#80)
     - Fixed a crash when another mod adds a force before RB has a chance to load
     - Fixed a crash when using the search hotkey in the equipment grid GUI (#82)
+    - Fixed some edge-cases with the focus search hotkey logic
     - Fixed that mining drills were not being processed for technology unlocks
 ---------------------------------------------------------------------------------------------------
 Version: 3.1.5

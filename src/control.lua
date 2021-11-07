@@ -233,8 +233,9 @@ event.register("rb-linked-focus-search", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
   local opened = player.opened
-  local opened_is_ok = not opened
-    or (player.opened_gui_type == defines.gui_type.custom and opened.name == "rb_search_window")
+  local opened_gui_type = player.opened_gui_type
+  local opened_is_ok = opened_gui_type == 0
+    or (opened_gui_type == defines.gui_type.custom and opened.name == "rb_search_window")
   if player_table.flags.can_open_gui and opened_is_ok then
     local info_guis = player_table.guis.info
     local active_id = info_guis._active_id
