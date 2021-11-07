@@ -335,6 +335,7 @@ constants.gui_strings = {
   burnt_result_of = { "gui.rb-burnt-result-of" },
   captions = { "gui.rb-captions" },
   category = { "gui.rb-category" },
+  charging_energy = { "gui.rb-charging-energy" },
   click = { "gui.rb-click" },
   close_search_gui_after_selection = { "gui.rb-close-search-gui-after-selection" },
   close_search_when_moving_info_pages = { "gui.rb-close-search-when-moving-info-pages" },
@@ -344,6 +345,7 @@ constants.gui_strings = {
   compatible_modules = { "gui.rb-compatible-modules" },
   compatible_recipes = { "gui.rb-compatible-recipes" },
   compatible_resources = { "gui.rb-compatible-resources" },
+  construction_radius = { "gui.rb-construction-radius" },
   consumption_bonus = { "description.consumption-bonus" },
   content = { "gui.rb-content" },
   control_click = { "gui.rb-control-click" },
@@ -356,10 +358,12 @@ constants.gui_strings = {
   disabled_abbrev = { "gui.rb-disabled-abbrev" },
   disabled = { "entity-status.disabled" },
   energy_consumption = { "gui.rb-energy-consumption" },
+  energy_per_shield_point = { "gui.rb-energy-per-shield-point" },
   energy_production = { "gui.rb-energy-production" },
   equipment_categories = { "gui.rb-equipment-categories" },
   equipment_category = { "gui.rb-equipment-category" },
   equipment = { "gui.rb-equipment" },
+  equipment_properties = { "gui.rb-equipment-properties" },
   fixed_recipe = { "gui.rb-fixed-recipe" },
   fluid = { "gui.rb-fluid" },
   fluids = { "gui.rb-fluids" },
@@ -392,6 +396,7 @@ constants.gui_strings = {
   items = { "gui.rb-items" },
   lab = { "gui.rb-lab" },
   list_box_label = { "gui.rb-list-box-label" },
+  logistic_radius = { "gui.rb-logistic-radius" },
   machine = { "gui.rb-machine" },
   made_in = { "gui.rb-made-in" },
   max_rows = { "gui.rb-max-rows" },
@@ -434,6 +439,7 @@ constants.gui_strings = {
   resource_category = { "gui.rb-resource-category" },
   resource = { "gui.rb-resource" },
   resources = { "gui.rb-resources" },
+  robot_limit = { "gui.rb-robot-limit" },
   rocket_launch_product_of = { "gui.rb-rocket-launch-product-of" },
   rocket_launch_products = { "gui.rb-rocket-launch-products" },
   rocket_parts_required = { "gui.rb-rocket-parts-required" },
@@ -441,6 +447,7 @@ constants.gui_strings = {
   search = { "gui.rb-search" },
   search_type = { "gui.rb-search-type" },
   session_history = { "gui.rb-session-history" },
+  shield_points = { "gui.rb-shield-points" },
   shift_click = { "gui.rb-shift-click" },
   show_alternate_name = { "gui.rb-show-alternate-name" },
   show_descriptions = { "gui.rb-show-descriptions" },
@@ -499,7 +506,7 @@ constants.header_button_tooltips = {
 
 constants.ignored_info_ids = table.invert({ "_active_id", "_next_id", "_relative_id" })
 
--- NOTE: Modifiers must be in the order of "control", "shift", "alt" for those that are present
+-- NOTE: Modifiers must be in the order of "control", "shift" for those that are present
 constants.interactions = {
   crafter = {
     { modifiers = {}, action = "view_details" },
@@ -681,10 +688,9 @@ constants.pages = {
       rows = {
         { type = "goto", source = "take_result" },
         { type = "plain", source = "size", formatter = "area" },
-        { type = "plain", source = "energy_consumption", formatter = "energy" },
-        { type = "plain", source = "energy_production", formatter = "energy" },
       },
     },
+    { type = "table", source = "equipment_properties" },
     { type = "list_box", source = "compatible_fuels" },
     { type = "list_box", source = "fuel_categories", default_state = "collapsed" },
     { type = "list_box", source = "equipment_categories", default_state = "collapsed" },
@@ -1043,7 +1049,12 @@ constants.tooltips = {
   technology = {
     { type = "plain", source = "research_unit_count", label = "required_units", formatter = "number" },
     { type = "plain", source = "research_unit_energy", label = "time_per_unit", formatter = "seconds_from_ticks" },
-    { type = "list", source = "research_ingredients_per_unit", formatter = "object", options = { always_show = true } },
+    {
+      type = "list",
+      source = "research_ingredients_per_unit",
+      formatter = "object",
+      options = { always_show = true },
+    },
   },
 }
 

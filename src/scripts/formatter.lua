@@ -90,6 +90,10 @@ local function energy(value, gui_translations)
   return fixed_format(value * 60, 3, "2") .. gui_translations.si_watt
 end
 
+local function energy_storage(value, gui_translations)
+  return fixed_format(value, 3, "2") .. gui_translations.si_joule
+end
+
 local function fuel_value(value, gui_translations)
   return fixed_format(value, 3, "2") .. gui_translations.si_joule
 end
@@ -575,8 +579,9 @@ end
 formatter.area = area
 formatter.build_cache_key = build_cache_key
 formatter.control = control
-formatter.expand_string = expand_string
 formatter.energy = energy
+formatter.energy_storage = energy_storage
+formatter.expand_string = expand_string
 formatter.fuel_value = fuel_value
 formatter.number = number
 formatter.object = object

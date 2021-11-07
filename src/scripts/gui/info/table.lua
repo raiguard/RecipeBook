@@ -75,7 +75,7 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
     local row_name = row.label or row.source
     local value = row.value or object_data[row.source]
     if value and (not row_settings or row_settings[row_name]) then
-      local caption = gui_translations[row_name]
+      local caption = gui_translations[row_name] or row_name
       if string.find(string.lower(caption), search_query) then
         -- Label
         i = i + 1

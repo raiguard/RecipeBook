@@ -4,7 +4,7 @@ Date: ????
   Features:
     - Added new pages:
       - Equipment category: All equipment and items belonging to each category
-      - Equipment: Size, take result, energy production, energy consumption, compatible fuels, fuel categories, equipment categories, and unlocked by for each equipment
+      - Equipment: Size, take result, equipment properties, compatible fuels, fuel categories, equipment categories, and unlocked by for each equipment
     - Added compatible equipment and equipment categories to the item page
     - Added fuel categories to burner machine page
     - Shift + click on a recipe with one product to view the product's page
