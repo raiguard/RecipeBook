@@ -19,7 +19,7 @@ function global_data.build_prototypes()
     prototypes[key] = table.shallow_copy(game.get_filtered_entity_prototypes(filters))
   end
   for _, type in pairs(constants.prototypes.straight_conversions) do
-    prototypes[type] = table.shallow_copy(game[type.."_prototypes"])
+    prototypes[type] = table.shallow_copy(game[type .. "_prototypes"])
   end
 
   global.prototypes = prototypes
@@ -28,7 +28,9 @@ end
 function global_data.update_sync_data()
   global.sync_data = {
     active_mods = script.active_mods,
-    settings = table.map(settings.startup, function(v) return v end),
+    settings = table.map(settings.startup, function(v)
+      return v
+    end),
   }
 end
 
@@ -37,7 +39,7 @@ function global_data.add_force(force)
 end
 
 function global_data.check_should_load()
-  local sync_data = global.sync_data or {active_mods = {}, settings = {}}
+  local sync_data = global.sync_data or { active_mods = {}, settings = {} }
   return global.prototypes
     and table.deep_compare(sync_data.active_mods, script.active_mods)
     and table.deep_compare(sync_data.settings, settings.startup)

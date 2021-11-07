@@ -14,7 +14,10 @@ function equipment_category_proc.build(recipe_book, dictionaries)
 end
 
 -- When calling the module directly, call equipment_category_proc.build
-setmetatable(equipment_category_proc, { __call = function(_, ...) return equipment_category_proc.build(...) end })
+setmetatable(equipment_category_proc, {
+  __call = function(_, ...)
+    return equipment_category_proc.build(...)
+  end,
+})
 
 return equipment_category_proc
-

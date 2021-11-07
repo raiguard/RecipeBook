@@ -33,30 +33,40 @@ local caches = {}
 local formatter = {}
 
 local function build_cache_key(...)
-  return table.concat(table.map({...}, function(v) return tostring(v) end), ".")
+  return table.concat(
+    table.map({ ... }, function(v)
+      return tostring(v)
+    end),
+    "."
+  )
 end
 
 local function expand_string(source, ...)
-  local arg = {...}
+  local arg = { ... }
   for i = 1, #arg do
-    source = string.gsub(source, "__"..i.."__", arg[i])
+    source = string.gsub(source, "__" .. i .. "__", arg[i])
   end
   return source
 end
 
 local function rich_text(key, value, inner)
-  return "["..key.."="..(key == "color" and constants.colors[value].str or value).."]"..inner.."[/"..key.."]"
+  return "["
+    .. key
+    .. "="
+    .. (key == "color" and constants.colors[value].str or value)
+    .. "]"
+    .. inner
+    .. "[/"
+    .. key
+    .. "]"
 end
 
 local function sprite(class, name)
-  return "[img="..class.."/"..name.."]"
+  return "[img=" .. class .. "/" .. name .. "]"
 end
 
 local function control(content, action)
-  return "\n"
-    ..rich_text("color", "info", rich_text("font", "default-semibold", content..":"))
-    .." "
-    ..action
+  return "\n" .. rich_text("color", "info", rich_text("font", "default-semibold", content .. ":")) .. " " .. action
 end
 
 local function number(value)
@@ -77,11 +87,11 @@ local function area(value, gui_translations)
 end
 
 local function energy(value, gui_translations)
-  return fixed_format(value * 60, 3, "2")..gui_translations.si_watt
+  return fixed_format(value * 60, 3, "2") .. gui_translations.si_watt
 end
 
 local function fuel_value(value, gui_translations)
-  return fixed_format(value, 3, "2")..gui_translations.si_joule
+  return fixed_format(value, 3, "2") .. gui_translations.si_joule
 end
 
 local function percent(value, gui_translations)
@@ -97,7 +107,7 @@ local function seconds_from_ticks(value, gui_translations)
 end
 
 local function per_second(value, gui_translations)
-  return number(value).." "..gui_translations.per_second_suffix
+  return number(value) .. " " .. gui_translations.per_second_suffix
 end
 
 local function object(obj, _, player_data, options)
@@ -130,9 +140,8 @@ local function get_amount_string(amount_ident, player_data, options)
   local amount = amount_ident.amount
   local output
   if options.amount_only then
-    output = amount_ident.amount
-      and tostring(math.round_to(amount, 1))
-      or "~"..math.round_to((amount_ident.amount_min + amount_ident.amount_max) / 2, 1)
+    output = amount_ident.amount and tostring(math.round_to(amount, 1))
+      or "~" .. math.round_to((amount_ident.amount_min + amount_ident.amount_max) / 2, 1)
   else
     local gui_translations = player_data.translations.gui
     -- Amount
@@ -140,22 +149,19 @@ local function get_amount_string(amount_ident, player_data, options)
     if amount then
       output = expand_string(format_string, number(amount))
     else
-      output = expand_string(
-        format_string,
-        number(amount_ident.amount_min).." - "..number(amount_ident.amount_max)
-      )
+      output = expand_string(format_string, number(amount_ident.amount_min) .. " - " .. number(amount_ident.amount_max))
     end
 
     -- Probability
     local probability = amount_ident.probability
     if probability and probability < 1 then
-      output = (probability * 100).."% "..output
+      output = (probability * 100) .. "% " .. output
     end
 
     -- Rocket parts required
     -- Hardcoded to always use the `amount` formatter
     if options.rocket_parts_required then
-      output = expand_string(gui_translations.format_amount, options.rocket_parts_required).."  "..output
+      output = expand_string(gui_translations.format_amount, options.rocket_parts_required) .. "  " .. output
     end
   end
 
@@ -192,19 +198,19 @@ local function get_caption(obj_data, obj_properties, player_data, options)
       "font",
       "RecipeBook",
       constants.class_to_font_glyph[class] or constants.class_to_font_glyph[class]
-    ).."  "
+    ) .. "  "
   end
 
   if obj_properties.hidden then
-    before = before..rich_text("font", "default-semibold", gui_translations.hidden_abbrev).."  "
+    before = before .. rich_text("font", "default-semibold", gui_translations.hidden_abbrev) .. "  "
   end
   if not obj_properties.enabled then
-    before = before..rich_text("font", "default-semibold", gui_translations.disabled_abbrev).."  "
+    before = before .. rich_text("font", "default-semibold", gui_translations.disabled_abbrev) .. "  "
   end
 
   local type = constants.class_to_type[class]
   if type then
-    before = before..sprite(type, prototype_name).."  "
+    before = before .. sprite(type, prototype_name) .. "  "
   end
 
   local after
@@ -214,7 +220,7 @@ local function get_caption(obj_data, obj_properties, player_data, options)
     after = player_data.translations[class][name] or name
   end
 
-  local output = {before = before, after = after}
+  local output = { before = before, after = after }
   cache[cache_key] = output
   return output
 end
@@ -246,7 +252,7 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
 
   local before
   if type then
-    before = sprite(type, prototype_name).."  "
+    before = sprite(type, prototype_name) .. "  "
   else
     before = ""
   end
@@ -258,7 +264,7 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
     name_str = player_data.translations[class][name]
   end
 
-  local after = rich_text("font", "default-semibold", rich_text("color", "heading", name_str)).."\n"
+  local after = rich_text("font", "default-semibold", rich_text("color", "heading", name_str)) .. "\n"
 
   if settings.general.tooltips.show_alternate_name then
     local alternate_name
@@ -267,31 +273,31 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
     else
       alternate_name = name
     end
-    after = after..rich_text("color", "green", alternate_name).."\n"
+    after = after .. rich_text("color", "green", alternate_name) .. "\n"
   end
 
   if settings.general.tooltips.show_descriptions then
-    local description = player_data.translations[class.."_description"][name]
+    local description = player_data.translations[class .. "_description"][name]
     if description then
-      after = after..description.."\n"
+      after = after .. description .. "\n"
     end
   end
 
-  after = after..rich_text("color", "info", gui_translations[class])
+  after = after .. rich_text("color", "info", gui_translations[class])
 
   if not obj_properties.researched then
-    after = after.."  |  "..rich_text("color", "unresearched", gui_translations.unresearched)
+    after = after .. "  |  " .. rich_text("color", "unresearched", gui_translations.unresearched)
   end
 
   if not obj_properties.enabled then
-    after = after.."  |  "..gui_translations.disabled
+    after = after .. "  |  " .. gui_translations.disabled
   end
 
   if obj_properties.hidden then
-    after = after.."  |  "..gui_translations.hidden
+    after = after .. "  |  " .. gui_translations.hidden
   end
 
-  local output = {before = before, after = after}
+  local output = { before = before, after = after }
   cache[cache_key] = output
   return output
 end
@@ -300,11 +306,7 @@ local function get_tooltip_deets(obj_data, player_data)
   local gui_translations = player_data.translations.gui
 
   local cache = caches[player_data.player_index]
-  local cache_key = build_cache_key(
-    "tooltip_deets",
-    obj_data.class,
-    obj_data.name or obj_data.prototype_name
-  )
+  local cache_key = build_cache_key("tooltip_deets", obj_data.class, obj_data.name or obj_data.prototype_name)
   local cached = cache[cache_key]
   if cached then
     return cached
@@ -318,7 +320,7 @@ local function get_tooltip_deets(obj_data, player_data)
     local values
     local type = deet.type
     if type == "plain" then
-      values = {obj_data[deet.source]}
+      values = { obj_data[deet.source] }
     elseif type == "list" then
       values = table.array_copy(obj_data[deet.source])
     end
@@ -331,18 +333,18 @@ local function get_tooltip_deets(obj_data, player_data)
       end
       if value then
         if type == "plain" then
-          values_output = values_output.."  "..value
+          values_output = values_output .. "  " .. value
         elseif type == "list" then
-          values_output = values_output.."\n    "..value
+          values_output = values_output .. "\n    " .. value
         end
       end
     end
 
     if #values_output > 0 then
       output = output
-        .."\n"
-        ..rich_text("font", "default-semibold", gui_translations[deet.label or deet.source]..":")
-        ..values_output
+        .. "\n"
+        .. rich_text("font", "default-semibold", gui_translations[deet.label or deet.source] .. ":")
+        .. values_output
     end
   end
 
@@ -381,29 +383,27 @@ local function get_interaction_helps(obj_data, player_data, options)
         num_interactions = num_interactions + 1
         if show_interaction_helps then
           local action = gui_translations[interaction.label or interaction.action]
-          local input_name = table.reduce(
-            interaction.modifiers,
-            function(acc, modifier) return acc..modifier.."_" end,
-            ""
-          ).."click"
+          local input_name = table.reduce(interaction.modifiers, function(acc, modifier)
+            return acc .. modifier .. "_"
+          end, "") .. "click"
           local button = interaction.button
           if button then
-            button = button.."_"
+            button = button .. "_"
           else
             button = ""
           end
           local label = rich_text(
             "font",
             "default-semibold",
-            rich_text("color", "info", gui_translations[button..input_name]..": ")
+            rich_text("color", "info", gui_translations[button .. input_name] .. ": ")
           )
-          helps_output = helps_output.."\n"..label..action
+          helps_output = helps_output .. "\n" .. label .. action
         end
       end
     end
   end
 
-  local output = {output = helps_output, num_interactions = num_interactions}
+  local output = { output = helps_output, num_interactions = num_interactions }
   cache[cache_key] = output
   return output
 end
@@ -435,13 +435,14 @@ local function get_obj_properties(obj_data, player_data, options)
   elseif obj_data.enabled ~= nil then
     enabled = obj_data.enabled
   end
-  local obj_properties = {hidden = obj_data.hidden or false, researched = researched, enabled = enabled}
+  local obj_properties = { hidden = obj_data.hidden or false, researched = researched, enabled = enabled }
 
   -- Determine if we should show this object
   local should_show = false
   if options.always_show then
     should_show = true
-  elseif (show_hidden or not obj_properties.hidden)
+  elseif
+    (show_hidden or not obj_properties.hidden)
     and (show_unresearched or obj_properties.researched)
     and (show_disabled or obj_properties.enabled)
   then
@@ -486,7 +487,7 @@ local available_options = {
 }
 
 function formatter.format(obj_data, player_data, options)
-  options = table.deep_merge{available_options, options or {}}
+  options = table.deep_merge({ available_options, options or {} })
 
   if options.is_label then
     options.hide_glyph = true
@@ -494,7 +495,9 @@ function formatter.format(obj_data, player_data, options)
   end
 
   local obj_properties = get_obj_properties(obj_data, player_data, options)
-  if not obj_properties then return false end
+  if not obj_properties then
+    return false
+  end
 
   local amount_ident = options.amount_ident
 
@@ -506,15 +509,11 @@ function formatter.format(obj_data, player_data, options)
     local caption = get_caption(obj_data, obj_properties, player_data, options)
     if amount_ident then
       caption_output = caption.before
-      ..rich_text(
-        "font",
-        "default-semibold",
-        get_amount_string(amount_ident, player_data, options)
-      )
-      .."  "
-      ..caption.after
+        .. rich_text("font", "default-semibold", get_amount_string(amount_ident, player_data, options))
+        .. "  "
+        .. caption.after
     else
-      caption_output = caption.before..caption.after
+      caption_output = caption.before .. caption.after
     end
   end
 
@@ -523,31 +522,31 @@ function formatter.format(obj_data, player_data, options)
   local tooltip_output
   if amount_ident and options.amount_only then
     tooltip_output = base_tooltip.before
-      ..rich_text(
+      .. rich_text(
         "font",
         "default-bold",
         rich_text("color", "heading", get_amount_string(amount_ident, player_data, {}))
       )
-      .."  "
-      ..base_tooltip.after
+      .. "  "
+      .. base_tooltip.after
   else
-    tooltip_output = base_tooltip.before..base_tooltip.after
+    tooltip_output = base_tooltip.before .. base_tooltip.after
   end
   local settings = player_data.settings
   if settings.general.tooltips.show_detailed_tooltips and not options.base_tooltip_only then
-    tooltip_output = tooltip_output..get_tooltip_deets(obj_data, player_data)
+    tooltip_output = tooltip_output .. get_tooltip_deets(obj_data, player_data)
   end
   local num_interactions = 0
   if not options.base_tooltip_only then
     local helps_output = get_interaction_helps(obj_data, player_data, options)
-    tooltip_output = tooltip_output..helps_output.output
+    tooltip_output = tooltip_output .. helps_output.output
     num_interactions = helps_output.num_interactions
   end
 
   return {
     caption = caption_output,
     enabled = num_interactions > 0,
-    researched  = obj_properties.researched,
+    researched = obj_properties.researched,
     tooltip = tooltip_output,
   }
 end
@@ -569,7 +568,7 @@ function formatter.build_player_data(player, player_table)
     force_technologies = player.force.technologies,
     player_index = player.index,
     settings = player_table.settings,
-    translations = player_table.translations
+    translations = player_table.translations,
   }
 end
 
@@ -589,6 +588,10 @@ formatter.seconds = seconds
 formatter.sprite = sprite
 formatter.temperature = temperature
 
-setmetatable(formatter, {__call = function(_, ...) return formatter.format(...) end})
+setmetatable(formatter, {
+  __call = function(_, ...)
+    return formatter.format(...)
+  end,
+})
 
 return formatter

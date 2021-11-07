@@ -22,7 +22,7 @@ return function(recipe_book, dictionaries, metadata)
       prototype_name = name,
       recipe_categories_lookup = prototype.crafting_categories,
       recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
-      unlocked_by = {}
+      unlocked_by = {},
     }
     dictionaries.crafter:add(name, prototype.localised_name)
     dictionaries.crafter_description:add(name, prototype.localised_description)
@@ -38,13 +38,13 @@ return function(recipe_book, dictionaries, metadata)
     local fixed_recipe
     if prototype.fixed_recipe then
       metadata.fixed_recipes[prototype.fixed_recipe] = true
-      fixed_recipe = {class = "recipe", name = prototype.fixed_recipe}
+      fixed_recipe = { class = "recipe", name = prototype.fixed_recipe }
     end
 
     -- Rocket silo categories
     if prototype.rocket_parts_required then
       for category in pairs(prototype.crafting_categories) do
-        table.insert(rocket_silo_categories, {class = "recipe_category", name = category})
+        table.insert(rocket_silo_categories, { class = "recipe_category", name = category })
       end
     end
 
@@ -57,7 +57,7 @@ return function(recipe_book, dictionaries, metadata)
 
     local fluidboxes = prototype.fluidbox_prototypes
     if fluidboxes then
-      local fluidbox_counts = {inputs = 0, outputs = 0}
+      local fluidbox_counts = { inputs = 0, outputs = 0 }
       for _, fluidbox in pairs(fluidboxes) do
         local type = fluidbox.production_type
         if string.find(type, "input") then
@@ -88,7 +88,7 @@ return function(recipe_book, dictionaries, metadata)
       recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       rocket_parts_required = prototype.rocket_parts_required,
       size = util.get_size(prototype),
-      unlocked_by = {}
+      unlocked_by = {},
     }
     dictionaries.crafter:add(name, prototype.localised_name)
     dictionaries.crafter_description:add(name, prototype.localised_description)

@@ -19,7 +19,9 @@ function actions.get_action_data(msg, e)
   local player_table = global.players[e.player_index]
 
   local gui_data = player_table.guis.search
-  if not gui_data then return end
+  if not gui_data then
+    return
+  end
 
   return {
     e = e,
@@ -33,14 +35,15 @@ function actions.get_action_data(msg, e)
 end
 
 function actions.reset_location(data)
-  if data.e.button ~= defines.mouse_button_type.middle then return end
+  if data.e.button ~= defines.mouse_button_type.middle then
+    return
+  end
 
   if data.player_table.settings.general.interface.search_gui_location == "top_left" then
     local scale = data.player.display_scale
-    data.refs.window.location = table.map(
-      constants.search_gui_top_left_location,
-      function(pos) return pos * scale end
-    )
+    data.refs.window.location = table.map(constants.search_gui_top_left_location, function(pos)
+      return pos * scale
+    end)
     data.refs.window.auto_center = false
   else
     data.refs.window.force_auto_center()
@@ -156,7 +159,7 @@ function actions.update_search_query(data)
     -- Update in a while
     state.update_results_ident = on_tick_n.add(
       game.tick + constants.search_timeout,
-      {gui = "search", action = "update_search_results", player_index = data.e.player_index}
+      { gui = "search", action = "update_search_results", player_index = data.e.player_index }
     )
     refs.search_textfield.style = "rb_search_textfield"
   else
@@ -227,7 +230,7 @@ function actions.update_search_results(data)
                 item.caption = info.caption
                 item.tooltip = info.tooltip
                 item.enabled = info.enabled
-                gui.update_tags(item, {context = {class = class, name = internal}})
+                gui.update_tags(item, { context = { class = class, name = internal } })
               else
                 gui.add(pane, {
                   type = "button",
@@ -235,12 +238,12 @@ function actions.update_search_results(data)
                   caption = info.caption,
                   tooltip = info.tooltip,
                   enabled = info.enabled,
-                  mouse_button_filter = {"left", "middle"},
+                  mouse_button_filter = { "left", "middle" },
                   tags = {
-                    context = {class = class, name = internal},
+                    context = { class = class, name = internal },
                   },
                   actions = {
-                    on_click = {gui = "search", action = "open_object"},
+                    on_click = { gui = "search", action = "open_object" },
                   },
                 })
                 if i >= max then
@@ -271,12 +274,7 @@ function actions.open_object(data)
     local sticky = attach and data.e.button == defines.mouse_button_type.left
     local id = sticky and data.state.id and data.player_table.guis.info[data.state.id] and data.state.id or nil
     local parent = sticky and data.refs.window or nil
-    shared.open_page(
-      data.player,
-      data.player_table,
-      context,
-      {id = id, parent = parent}
-    )
+    shared.open_page(data.player, data.player_table, context, { id = id, parent = parent })
     if sticky then
       data.state.id = data.player_table.guis.info._active_id
     end

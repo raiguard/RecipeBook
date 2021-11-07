@@ -18,4 +18,3 @@ return {
   handle_action = handle_action,
   root = root,
 }
-

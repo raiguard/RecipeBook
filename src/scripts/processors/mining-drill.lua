@@ -6,7 +6,7 @@ function mining_drill_proc.build(recipe_book, dictionaries)
   for name, prototype in pairs(global.prototypes.mining_drill) do
     for category in pairs(prototype.resource_categories) do
       local category_data = recipe_book.resource_category[category]
-      category_data.mining_drills[#category_data.mining_drills + 1] = {class = "mining_drill", name = name}
+      category_data.mining_drills[#category_data.mining_drills + 1] = { class = "mining_drill", name = name }
     end
 
     recipe_book.mining_drill[name] = {
@@ -22,7 +22,7 @@ function mining_drill_proc.build(recipe_book, dictionaries)
       resource_categories = util.convert_categories(prototype.resource_categories, "resource_category"),
       size = util.get_size(prototype),
       supports_fluid = #prototype.fluidbox_prototypes > 0,
-      unlocked_by = {}
+      unlocked_by = {},
     }
     dictionaries.mining_drill:add(name, prototype.localised_name)
     dictionaries.mining_drill_description:add(name, prototype.localised_description)
@@ -46,6 +46,10 @@ function mining_drill_proc.add_resources(recipe_book)
 end
 
 -- When calling the module directly, call fluid_proc.build
-setmetatable(mining_drill_proc, { __call = function(_, ...) return mining_drill_proc.build(...) end })
+setmetatable(mining_drill_proc, {
+  __call = function(_, ...)
+    return mining_drill_proc.build(...)
+  end,
+})
 
 return mining_drill_proc

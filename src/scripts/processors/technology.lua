@@ -18,7 +18,7 @@ return function(recipe_book, dictionaries, metadata)
       research_ingredients_per_unit[#research_ingredients_per_unit + 1] = {
         class = ingredient.type,
         name = ingredient.name,
-        amount_ident = util.build_amount_ident{amount = ingredient.amount}
+        amount_ident = util.build_amount_ident({ amount = ingredient.amount }),
       }
     end
 
@@ -36,13 +36,13 @@ return function(recipe_book, dictionaries, metadata)
         -- Check if the category should be ignored for recipe availability
         local disabled = constants.disabled_categories.recipe_category[recipe_data.recipe_category.name]
         if not disabled or disabled ~= 0 then
-          recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = {class = "technology", name = name}
+          recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = { class = "technology", name = name }
           recipe_data.researched_forces = {}
-          unlocks_recipes[#unlocks_recipes + 1] = {class = "recipe", name = modifier.recipe}
+          unlocks_recipes[#unlocks_recipes + 1] = { class = "recipe", name = modifier.recipe }
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
             local product_data = recipe_book[product.class][product_name]
-            local product_ident = {class = product_data.class, name = product_data.prototype_name}
+            local product_ident = { class = product_data.class, name = product_data.prototype_name }
 
             -- For "empty X barrel" recipes, do not unlock the fluid with the recipe
             -- This is to avoid fluids getting "unlocked" when they are in reality still 100 hours away
@@ -50,7 +50,7 @@ return function(recipe_book, dictionaries, metadata)
 
             if product_data.class ~= "fluid" or not is_empty_barrel_recipe then
               product_data.researched_forces = {}
-              product_data.unlocked_by[#product_data.unlocked_by + 1] = {class = "technology", name = name}
+              product_data.unlocked_by[#product_data.unlocked_by + 1] = { class = "technology", name = name }
             end
 
             -- Materials
@@ -66,7 +66,7 @@ return function(recipe_book, dictionaries, metadata)
               local machine_data = recipe_book[place_result.class][place_result.name]
               if machine_data then
                 machine_data.researched_forces = {}
-                machine_data.unlocked_by[#machine_data.unlocked_by + 1] = {class = "technology", name = name}
+                machine_data.unlocked_by[#machine_data.unlocked_by + 1] = { class = "technology", name = name }
                 unlocks_machines[#unlocks_machines + 1] = place_result
               end
             end
@@ -77,7 +77,7 @@ return function(recipe_book, dictionaries, metadata)
               local equipment_data = recipe_book.equipment[place_as_equipment_result.name]
               if equipment_data then
                 equipment_data.researched_forces = {}
-                equipment_data.unlocked_by[#equipment_data.unlocked_by + 1] = {class = "technology", name = name}
+                equipment_data.unlocked_by[#equipment_data.unlocked_by + 1] = { class = "technology", name = name }
                 unlocks_equipment[#unlocks_equipment + 1] = place_as_equipment_result
               end
             end
@@ -107,7 +107,7 @@ return function(recipe_book, dictionaries, metadata)
       unlocks_items = unlocks_items,
       unlocks_machines = unlocks_machines,
       unlocks_recipes = unlocks_recipes,
-      upgrade = prototype.upgrade
+      upgrade = prototype.upgrade,
     }
 
     -- Assemble name
@@ -116,7 +116,7 @@ return function(recipe_book, dictionaries, metadata)
       localised_name = {
         "",
         prototype.localised_name,
-        " ("..level.."-"..(max_level == math.max_uint and "∞" or max_level)..")"
+        " (" .. level .. "-" .. (max_level == math.max_uint and "∞" or max_level) .. ")",
       }
     else
       localised_name = prototype.localised_name
@@ -132,9 +132,12 @@ return function(recipe_book, dictionaries, metadata)
 
     if prototype.prerequisites then
       for prerequisite_name in pairs(prototype.prerequisites) do
-        technology.prerequisites[#technology.prerequisites + 1] = {class = "technology", name = prerequisite_name}
+        technology.prerequisites[#technology.prerequisites + 1] = { class = "technology", name = prerequisite_name }
         local prerequisite_data = recipe_book.technology[prerequisite_name]
-        prerequisite_data.prerequisite_of[#prerequisite_data.prerequisite_of + 1] = {class = "technology", name = name}
+        prerequisite_data.prerequisite_of[#prerequisite_data.prerequisite_of + 1] = {
+          class = "technology",
+          name = name,
+        }
       end
     end
   end

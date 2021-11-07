@@ -10,52 +10,68 @@ local util = require("scripts.util")
 local root = {}
 
 local function quick_ref_panel(ref)
-  return
-    {type = "flow", direction = "vertical", ref = {ref, "flow"},
-      {type = "label", style = "rb_list_box_label", ref = {ref, "label"}},
-      {type = "frame", style = "rb_slot_table_frame", ref = {ref, "frame"},
-        {type = "table", style = "slot_table", column_count = 5, ref = {ref, "table"}}
-      }
-    }
+  return {
+    type = "flow",
+    direction = "vertical",
+    ref = { ref, "flow" },
+    { type = "label", style = "rb_list_box_label", ref = { ref, "label" } },
+    {
+      type = "frame",
+      style = "rb_slot_table_frame",
+      ref = { ref, "frame" },
+      { type = "table", style = "slot_table", column_count = 5, ref = { ref, "table" } },
+    },
+  }
 end
 
 function root.build(player, player_table, recipe_name, window_location)
   local refs = gui.build(player.gui.screen, {
-    {type = "frame", direction = "vertical", ref = {"window"},
+    {
+      type = "frame",
+      direction = "vertical",
+      ref = { "window" },
       {
         type = "flow",
         style = "flib_titlebar_flow",
-        ref = {"titlebar", "flow"},
+        ref = { "titlebar", "flow" },
         actions = {
-          on_click = {gui = "quick_ref", id = recipe_name, action = "reset_location"},
+          on_click = { gui = "quick_ref", id = recipe_name, action = "reset_location" },
         },
-        {type = "label", style = "frame_title", caption = {"gui.rb-recipe"}, ignored_by_interaction = true},
-        {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
+        { type = "label", style = "frame_title", caption = { "gui.rb-recipe" }, ignored_by_interaction = true },
+        { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
         util.frame_action_button(
           "rb_expand",
-          {"gui.rb-view-details"},
+          { "gui.rb-view-details" },
           nil,
-          {gui = "quick_ref", id = recipe_name, action = "view_details"}
+          { gui = "quick_ref", id = recipe_name, action = "view_details" }
         ),
         util.frame_action_button(
           "utility/close",
-          {"gui.close"},
+          { "gui.close" },
           nil,
-          {gui = "quick_ref", id = recipe_name, action = "close"}
-        )
+          { gui = "quick_ref", id = recipe_name, action = "close" }
+        ),
       },
-      {type = "frame", style = "rb_quick_ref_content_frame", direction = "vertical",
-        {type = "frame", style = "subheader_frame",
-          {type = "label", style = "rb_toolbar_label", ref = {"label"}},
-          {type = "empty-widget", style = "flib_horizontal_pusher"}
+      {
+        type = "frame",
+        style = "rb_quick_ref_content_frame",
+        direction = "vertical",
+        {
+          type = "frame",
+          style = "subheader_frame",
+          { type = "label", style = "rb_toolbar_label", ref = { "label" } },
+          { type = "empty-widget", style = "flib_horizontal_pusher" },
         },
-        {type = "flow", style = "rb_quick_ref_content_flow", direction = "vertical",
+        {
+          type = "flow",
+          style = "rb_quick_ref_content_flow",
+          direction = "vertical",
           quick_ref_panel("ingredients"),
           quick_ref_panel("products"),
-          quick_ref_panel("made_in")
-        }
-      }
-    }
+          quick_ref_panel("made_in"),
+        },
+      },
+    },
   })
 
   if window_location then
@@ -64,7 +80,7 @@ function root.build(player, player_table, recipe_name, window_location)
 
   refs.titlebar.flow.drag_target = refs.window
 
-  player_table.guis.quick_ref[recipe_name] = {refs = refs}
+  player_table.guis.quick_ref[recipe_name] = { refs = refs }
 
   root.update_contents(player, player_table, recipe_name)
 end
@@ -77,7 +93,7 @@ function root.destroy(player, player_table, recipe_name)
     shared.update_header_button(
       player,
       player_table,
-      {class = "recipe", name = recipe_name},
+      { class = "recipe", name = recipe_name },
       "quick_ref_button",
       false
     )
@@ -87,10 +103,22 @@ end
 function root.toggle(player, player_table, recipe_name, window_location)
   if player_table.guis.quick_ref[recipe_name] then
     root.destroy(player, player_table, recipe_name)
-    shared.update_header_button(player, player_table, {class = "recipe", name = recipe_name}, "quick_ref_button", false)
+    shared.update_header_button(
+      player,
+      player_table,
+      { class = "recipe", name = recipe_name },
+      "quick_ref_button",
+      false
+    )
   else
     root.build(player, player_table, recipe_name, window_location)
-    shared.update_header_button(player, player_table, {class = "recipe", name = recipe_name}, "quick_ref_button", true)
+    shared.update_header_button(
+      player,
+      player_table,
+      { class = "recipe", name = recipe_name },
+      "quick_ref_button",
+      true
+    )
   end
 end
 
@@ -116,14 +144,14 @@ function root.update_contents(player, player_table, recipe_name)
   local player_data = formatter.build_player_data(player, player_table)
 
   -- Label
-  local recipe_info = formatter(recipe_data, player_data, {always_show = true, is_label = true})
+  local recipe_info = formatter(recipe_data, player_data, { always_show = true, is_label = true })
   local label = refs.label
   label.caption = recipe_info.caption
   label.tooltip = recipe_info.tooltip
   label.style = recipe_info.researched and "rb_toolbar_label" or "rb_unresearched_toolbar_label"
 
   -- Slot boxes
-  for _, source in ipairs{"ingredients", "products", "made_in"} do
+  for _, source in ipairs({ "ingredients", "products", "made_in" }) do
     local box = refs[source]
 
     if source == "made_in" and not show_made_in then
@@ -140,16 +168,12 @@ function root.update_contents(player, player_table, recipe_name)
     local i = 0
     for _, object in pairs(recipe_data[source]) do
       local object_data = recipe_book[object.class][object.name]
-      local object_info = formatter(
-        object_data,
-        player_data,
-        {
-          amount_ident = object.amount_ident,
-          amount_only = true,
-          always_show = source ~= "made_in",
-          blueprint_recipe = blueprint_recipe
-        }
-      )
+      local object_info = formatter(object_data, player_data, {
+        amount_ident = object.amount_ident,
+        amount_only = true,
+        always_show = source ~= "made_in",
+        blueprint_recipe = blueprint_recipe,
+      })
       if object_info then
         i = i + 1
 
@@ -159,12 +183,12 @@ function root.update_contents(player, player_table, recipe_name)
 
         if button and button.valid then
           button.style = button_style
-          button.sprite = constants.class_to_type[object.class].."/"..object_data.prototype_name
+          button.sprite = constants.class_to_type[object.class] .. "/" .. object_data.prototype_name
           button.tooltip = object_info.tooltip
           gui.update_tags(button, {
             blueprint_recipe = blueprint_recipe,
             context = object,
-            researched = object_data.researched
+            researched = object_data.researched,
           })
         else
           local probability = object.amount_ident.probability
@@ -175,29 +199,29 @@ function root.update_contents(player, player_table, recipe_name)
             {
               type = "sprite-button",
               style = button_style,
-              sprite = constants.class_to_type[object.class].."/"..object_data.prototype_name,
+              sprite = constants.class_to_type[object.class] .. "/" .. object_data.prototype_name,
               tooltip = object_info.tooltip,
               tags = {
                 blueprint_recipe = blueprint_recipe,
                 context = object,
-                researched = object_data.researched
+                researched = object_data.researched,
               },
               actions = {
-                on_click = {gui = "quick_ref", id = recipe_name, action = "handle_button_click", source = source}
+                on_click = { gui = "quick_ref", id = recipe_name, action = "handle_button_click", source = source },
               },
               {
                 type = "label",
                 style = "rb_slot_label",
                 caption = object_info.caption,
-                ignored_by_interaction = true
+                ignored_by_interaction = true,
               },
               {
                 type = "label",
                 style = "rb_slot_label_top",
                 caption = probability and "%" or "",
-                ignored_by_interaction = true
-              }
-            }
+                ignored_by_interaction = true,
+              },
+            },
           })
         end
       end
@@ -206,7 +230,7 @@ function root.update_contents(player, player_table, recipe_name)
       end
 
       -- Label
-      box.label.caption = {"gui.rb-list-box-label", {"gui.rb-"..string.gsub(source, "_", "-")}, i}
+      box.label.caption = { "gui.rb-list-box-label", { "gui.rb-" .. string.gsub(source, "_", "-") }, i }
     end
   end
 end

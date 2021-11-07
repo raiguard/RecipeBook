@@ -14,7 +14,7 @@ function equipment_proc.build(recipe_book, dictionaries)
 
     for _, category in pairs(prototype.equipment_categories) do
       local category_data = recipe_book.equipment_category[category]
-      category_data.equipment[#category_data.equipment + 1] = {class = "equipment", name = name}
+      category_data.equipment[#category_data.equipment + 1] = { class = "equipment", name = name }
     end
 
     recipe_book.equipment[name] = {
@@ -25,14 +25,14 @@ function equipment_proc.build(recipe_book, dictionaries)
       energy_consumption = prototype.energy_consumption > 0 and prototype.energy_consumption or nil,
       energy_production = prototype.energy_production > 0 and prototype.energy_production or nil,
       equipment_categories = table.map(prototype.equipment_categories, function(category)
-        return {class = "equipment_category", name = category}
+        return { class = "equipment_category", name = category }
       end),
       hidden = false,
       placed_by = {},
       prototype_name = name,
       size = prototype.shape.width and prototype.shape or nil, -- Equipments can have irregular shapes
-      take_result = prototype.take_result and {class = "item", name = prototype.take_result.name} or nil,
-      unlocked_by = {}
+      take_result = prototype.take_result and { class = "item", name = prototype.take_result.name } or nil,
+      unlocked_by = {},
     }
     dictionaries.equipment:add(name, prototype.localised_name)
     dictionaries.equipment_description:add(name, prototype.localised_description)
@@ -40,7 +40,10 @@ function equipment_proc.build(recipe_book, dictionaries)
 end
 
 -- When calling the module directly, call equipment_proc.build
-setmetatable(equipment_proc, { __call = function(_, ...) return equipment_proc.build(...) end })
+setmetatable(equipment_proc, {
+  __call = function(_, ...)
+    return equipment_proc.build(...)
+  end,
+})
 
 return equipment_proc
-

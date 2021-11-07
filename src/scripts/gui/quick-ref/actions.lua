@@ -19,7 +19,7 @@ end
 
 function actions.reset_location(data)
   if data.e.button == defines.mouse_button_type.middle then
-    data.refs.window.location = {x = 0, y = 0}
+    data.refs.window.location = { x = 0, y = 0 }
   end
 end
 
@@ -32,7 +32,7 @@ function actions.handle_button_click(data)
     if style == "flib_slot_button_green" then
       button.style = gui.get_tags(button).previous_style
     else
-      gui.update_tags(button, {previous_style = style})
+      gui.update_tags(button, { previous_style = style })
       button.style = "flib_slot_button_green"
     end
   else
@@ -44,7 +44,7 @@ function actions.handle_button_click(data)
 end
 
 function actions.view_details(data)
-  shared.open_page(data.player, data.player_table, {class = "recipe", name = data.msg.id})
+  shared.open_page(data.player, data.player_table, { class = "recipe", name = data.msg.id })
 end
 
 return actions

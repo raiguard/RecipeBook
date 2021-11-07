@@ -12,46 +12,48 @@ function list_box.build(parent, index, component, variables)
       type = "flow",
       direction = "vertical",
       index = index,
-      ref = {"root"},
+      ref = { "root" },
       action = {
-        on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
+        on_click = { gui = "info", id = variables.gui_id, action = "set_as_active" },
       },
       {
         type = "flow",
-        style_mods = {vertical_align = "center"},
+        style_mods = { vertical_align = "center" },
         action = {
-          on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
+          on_click = { gui = "info", id = variables.gui_id, action = "set_as_active" },
         },
-        {type = "label", style = "rb_list_box_label", ref = {"label"}},
-        {type = "empty-widget", style = "flib_horizontal_pusher"},
+        { type = "label", style = "rb_list_box_label", ref = { "label" } },
+        { type = "empty-widget", style = "flib_horizontal_pusher" },
         {
           type = "sprite-button",
           style = "mini_button_aligned_to_text_vertically_when_centered",
-          tooltip = {"gui.rb-open-list-in-new-window"},
+          tooltip = { "gui.rb-open-list-in-new-window" },
           sprite = "rb_export_black",
-          ref = {"open_list_button"},
+          ref = { "open_list_button" },
           -- NOTE: Actions are set in the update function
         },
         {
           type = "sprite-button",
           style = "mini_button_aligned_to_text_vertically_when_centered",
-          ref = {"expand_collapse_button"},
+          ref = { "expand_collapse_button" },
           -- NOTE: Sprite, tooltip, and action are set in the update function
         },
       },
-      {type = "frame", style = "deep_frame_in_shallow_frame",
+      {
+        type = "frame",
+        style = "deep_frame_in_shallow_frame",
         {
           type = "scroll-pane",
           style = "rb_list_box_scroll_pane",
-          ref = {"scroll_pane"}
-        }
-      }
-    }
+          ref = { "scroll_pane" },
+        },
+      },
+    },
   })
 end
 
 function list_box.default_state(settings)
-  return {collapsed = settings.default_state == "collapsed"}
+  return { collapsed = settings.default_state == "collapsed" }
 end
 
 function list_box.update(component, refs, object_data, player_data, settings, variables)
@@ -85,16 +87,12 @@ function list_box.update(component, refs, object_data, player_data, settings, va
 
     if matched then
       local obj_data = recipe_book[obj.class][obj.name]
-      local info = formatter(
-        obj_data,
-        player_data,
-        {
-          always_show = always_show,
-          amount_ident = obj.amount_ident,
-          blueprint_recipe = blueprint_recipe,
-          rocket_parts_required = obj_data.rocket_parts_required
-        }
-      )
+      local info = formatter(obj_data, player_data, {
+        always_show = always_show,
+        amount_ident = obj.amount_ident,
+        blueprint_recipe = blueprint_recipe,
+        rocket_parts_required = obj_data.rocket_parts_required,
+      })
 
       if info then
         i = i + 1
@@ -105,7 +103,10 @@ function list_box.update(component, refs, object_data, player_data, settings, va
           item.caption = info.caption
           item.tooltip = info.tooltip
           item.enabled = info.enabled
-          gui.update_tags(item, {blueprint_recipe = blueprint_recipe, context = {class = obj.class, name = obj.name}})
+          gui.update_tags(
+            item,
+            { blueprint_recipe = blueprint_recipe, context = { class = obj.class, name = obj.name } }
+          )
         else
           gui.add(scroll, {
             type = "button",
@@ -113,13 +114,13 @@ function list_box.update(component, refs, object_data, player_data, settings, va
             caption = info.caption,
             tooltip = info.tooltip,
             enabled = info.enabled,
-            mouse_button_filter = {"left", "middle"},
+            mouse_button_filter = { "left", "middle" },
             tags = {
               blueprint_recipe = blueprint_recipe,
-              context = {class = obj.class, name = obj.name},
+              context = { class = obj.class, name = obj.name },
             },
             actions = {
-              on_click = {gui = "info", id = variables.gui_id, action = "navigate_to"},
+              on_click = { gui = "info", id = variables.gui_id, action = "navigate_to" },
             },
           })
         end
@@ -151,7 +152,7 @@ function list_box.update(component, refs, object_data, player_data, settings, va
         id = variables.gui_id,
         action = "open_list",
         context = variables.context,
-        source = component.source
+        source = component.source,
       })
     else
       refs.open_list_button.visible = false
@@ -168,11 +169,11 @@ function list_box.update(component, refs, object_data, player_data, settings, va
     if variables.component_state.collapsed then
       refs.expand_collapse_button.sprite = "rb_collapsed"
       scroll.style.maximal_height = 1
-      refs.expand_collapse_button.tooltip = {"gui.rb-expand"}
+      refs.expand_collapse_button.tooltip = { "gui.rb-expand" }
     else
       refs.expand_collapse_button.sprite = "rb_expanded"
       scroll.style.maximal_height = (settings.max_rows or constants.default_max_rows) * 28
-      refs.expand_collapse_button.tooltip = {"gui.rb-collapse"}
+      refs.expand_collapse_button.tooltip = { "gui.rb-collapse" }
     end
   else
     refs.root.visible = false
@@ -182,4 +183,3 @@ function list_box.update(component, refs, object_data, player_data, settings, va
 end
 
 return list_box
-

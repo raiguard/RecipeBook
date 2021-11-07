@@ -1,4 +1,4 @@
-data:extend{
+data:extend({
   {
     type = "custom-input",
     name = "rb-open-selected",
@@ -37,4 +37,4 @@ data:extend{
     key_sequence = "",
     linked_game_control = "focus-search",
   },
-}
+})

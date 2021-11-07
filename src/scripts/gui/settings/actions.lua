@@ -79,7 +79,7 @@ function actions.update_search_query(data)
     -- Update in a while
     state.update_results_ident = on_tick_n.add(
       game.tick + constants.search_timeout,
-      {gui = "settings", action = "update_search_results", player_index = data.e.player_index}
+      { gui = "settings", action = "update_search_results", player_index = data.e.player_index }
     )
   end
 end
@@ -100,7 +100,9 @@ function actions.change_general_setting(data)
   local element = data.e.element
 
   -- NOTE: This shouldn't ever happen, but we will avoid a crash just in case!
-  if not element.valid then return end
+  if not element.valid then
+    return
+  end
 
   if type == "bool" then
     new_value = element.state

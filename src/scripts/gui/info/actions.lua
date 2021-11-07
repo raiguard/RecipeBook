@@ -19,7 +19,9 @@ function actions.get_action_data(msg, e)
   local player_table = global.players[e.player_index]
 
   local gui_data = player_table.guis.info[msg.id]
-  if not gui_data then return end
+  if not gui_data then
+    return
+  end
 
   local state = gui_data.state
   local context = state.history[state.history._index]
@@ -133,19 +135,19 @@ function actions.update_search_query(data)
 
   if query == "" then
     -- Update now
-    root.update_contents(player, player_table, id, {refresh = true})
+    root.update_contents(player, player_table, id, { refresh = true })
   else
     -- Update in a while
     state.update_results_ident = on_tick_n.add(
       game.tick + constants.search_timeout,
-      {gui = "info", id = id, action = "update_search_results", player_index = data.e.player_index}
+      { gui = "info", id = id, action = "update_search_results", player_index = data.e.player_index }
     )
   end
 end
 
 function actions.update_search_results(data)
   -- Update based on query
-  root.update_contents(data.player, data.player_table, data.msg.id, {refresh = true})
+  root.update_contents(data.player, data.player_table, data.msg.id, { refresh = true })
 end
 
 function actions.navigate_to(data)
@@ -155,14 +157,14 @@ function actions.navigate_to(data)
     if e.button == defines.mouse_button_type.middle then
       root.build(data.player, data.player_table, context)
     else
-      root.update_contents(data.player, data.player_table, data.msg.id, {new_context = context})
+      root.update_contents(data.player, data.player_table, data.msg.id, { new_context = context })
     end
   end
 end
 
 function actions.navigate_to_plain(data)
   local msg = data.msg
-  root.update_contents(data.player, data.player_table, msg.id, {new_context = msg.context})
+  root.update_contents(data.player, data.player_table, msg.id, { new_context = msg.context })
 end
 
 function actions.open_in_tech_window(data)
@@ -172,7 +174,7 @@ end
 
 function actions.go_to_base_fluid(data)
   local base_fluid = recipe_book.fluid[data.context.name].prototype_name
-  root.update_contents(data.player, data.player_table, data.msg.id, {class = "fluid", name = base_fluid})
+  root.update_contents(data.player, data.player_table, data.msg.id, { class = "fluid", name = base_fluid })
 end
 
 function actions.toggle_quick_ref(data)
@@ -182,12 +184,7 @@ function actions.toggle_quick_ref(data)
     local offset = sizes.info_width + (state.search_info and (sizes.search_width + 24) or 0)
     offset = offset * data.player.display_scale
     local location = data.refs.root.location
-    quick_ref_root.toggle(
-      data.player,
-      data.player_table,
-      data.context.name,
-      {location.x + offset, y = location.y}
-    )
+    quick_ref_root.toggle(data.player, data.player_table, data.context.name, { location.x + offset, y = location.y })
   end
 end
 
@@ -195,14 +192,14 @@ function actions.toggle_favorite(data)
   local player_table = data.player_table
   local favorites = player_table.favorites
   local context = data.context
-  local combined_name = context.class.."."..context.name
+  local combined_name = context.class .. "." .. context.name
   local to_state
   if favorites[combined_name] then
     to_state = false
     favorites[combined_name] = nil
   else
     -- Copy the table instead of passing a reference
-    favorites[combined_name] = {class = context.class, name = context.name}
+    favorites[combined_name] = { class = context.class, name = context.name }
     to_state = true
   end
   shared.update_header_button(data.player, player_table, context, "favorite_button", to_state)
@@ -227,19 +224,15 @@ function actions.open_list(data)
   local list = recipe_book[list_context.class][list_context.name][source]
   if list and #list > 0 then
     local first_obj = list[1]
-    shared.open_page(
-      data.player,
-      data.player_table,
-      {
-        class = first_obj.class,
-        name = first_obj.name,
-        list = {
-          context = list_context,
-          index = 1,
-          source = source,
-        }
-      }
-    )
+    shared.open_page(data.player, data.player_table, {
+      class = first_obj.class,
+      name = first_obj.name,
+      list = {
+        context = list_context,
+        index = 1,
+        source = source,
+      },
+    })
   end
 end
 
@@ -252,7 +245,7 @@ function actions.toggle_collapsed(data)
     local state = data.state.components[component_index]
     if state then
       state.collapsed = not state.collapsed
-      root.update_contents(data.player, data.player_table, msg.id, {refresh = true})
+      root.update_contents(data.player, data.player_table, msg.id, { refresh = true })
     end
   end
 end
@@ -268,14 +261,16 @@ function actions.change_tech_level(data)
   local new_level = math.clamp(state.selected_tech_level + msg.delta, min, max)
   if new_level ~= state.selected_tech_level then
     state.selected_tech_level = new_level
-    root.update_contents(data.player, data.player_table, msg.id, {refresh = true})
+    root.update_contents(data.player, data.player_table, msg.id, { refresh = true })
   end
 end
 
 function actions.detach_window(data)
   local state = data.state
   -- Just in case
-  if not state.docked then return end
+  if not state.docked then
+    return
+  end
 
   local context = state.history[state.history._index]
 

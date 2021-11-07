@@ -7,7 +7,7 @@ return function(recipe_book, dictionaries)
     local equipment_grid = prototype.grid_prototype
     if equipment_grid then
       for _, equipment_category in pairs(equipment_grid.equipment_categories) do
-        table.insert(equipment_categories, {class = "equipment_category", name = equipment_category})
+        table.insert(equipment_categories, { class = "equipment_category", name = equipment_category })
         local category_data = recipe_book.equipment_category[equipment_category]
         if category_data then
           for _, equipment_name in pairs(category_data.equipment) do

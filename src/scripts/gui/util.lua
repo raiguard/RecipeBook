@@ -17,7 +17,7 @@ function gui_util.navigate_to(e)
   local context = tags.context
 
   local modifiers = {}
-  for name, modifier in pairs{control = e.control, shift = e.shift, alt = e.alt} do
+  for name, modifier in pairs({ control = e.control, shift = e.shift, alt = e.alt }) do
     if modifier then
       modifiers[#modifiers + 1] = name
     end
@@ -43,28 +43,32 @@ function gui_util.navigate_to(e)
               local CollisionBox = area.load(game.entity_prototypes[context.name].collision_box)
               local height = CollisionBox:height()
               local width = CollisionBox:width()
-              cursor_stack.set_stack{name = "blueprint", count = 1}
-              cursor_stack.set_blueprint_entities{
+              cursor_stack.set_stack({ name = "blueprint", count = 1 })
+              cursor_stack.set_blueprint_entities({
                 {
                   entity_number = 1,
                   name = context.name,
                   position = {
                     -- Entities with an even number of tiles to a side need to be set at -0.5 instead of 0
-                    math.ceil(width) % 2 == 0 and -0.5 or 0,
-                    math.ceil(height) % 2 == 0 and -0.5 or 0
+                    math.ceil(width)
+                            % 2
+                          == 0
+                        and -0.5
+                      or 0,
+                    math.ceil(height) % 2 == 0 and -0.5 or 0,
                   },
-                  recipe = blueprint_recipe
-                }
-              }
+                  recipe = blueprint_recipe,
+                },
+              })
               player.add_to_clipboard(cursor_stack)
               player.activate_paste()
             end
           else
-            player.create_local_flying_text{
-              text = {"message.rb-cannot-create-blueprint"},
-              create_at_cursor = true
-            }
-            player.play_sound{path = "utility/cannot_build"}
+            player.create_local_flying_text({
+              text = { "message.rb-cannot-create-blueprint" },
+              create_at_cursor = true,
+            })
+            player.play_sound({ path = "utility/cannot_build" })
           end
         end
       elseif action == "open_in_technology_window" then
@@ -97,24 +101,24 @@ function gui_util.update_list_box(pane, source_tbl, player_data, iterator, optio
         item.caption = info.caption
         item.tooltip = info.tooltip
         item.enabled = info.enabled
-        gui.update_tags(item, {context = {class = obj_ident.class, name = obj_ident.name}})
+        gui.update_tags(item, { context = { class = obj_ident.class, name = obj_ident.name } })
       else
-        add{
+        add({
           type = "button",
           style = style,
           caption = info.caption,
           tooltip = info.tooltip,
           enabled = info.enabled,
-          mouse_button_filter = {"left", "middle"},
+          mouse_button_filter = { "left", "middle" },
           tags = {
             [script.mod_name] = {
-              context = {class = obj_ident.class, name = obj_ident.name},
+              context = { class = obj_ident.class, name = obj_ident.name },
               flib = {
-                on_click = {gui = "search", action = "open_object"}
-              }
-            }
-          }
-        }
+                on_click = { gui = "search", action = "open_object" },
+              },
+            },
+          },
+        })
       end
     end
   end

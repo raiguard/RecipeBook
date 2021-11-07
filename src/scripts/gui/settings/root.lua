@@ -12,39 +12,39 @@ local function subpage_set(name, action, include_tooltip, include_bordered_frame
   return {
     tab = {
       type = "tab",
-      style_mods = {padding = {7, 10, 8, 10}},
-      caption = {"", {"gui.rb-"..name}, include_tooltip and " [img=info]" or nil},
-      tooltip = include_tooltip and {"gui.rb-"..name.."-description"} or nil,
+      style_mods = { padding = { 7, 10, 8, 10 } },
+      caption = { "", { "gui.rb-" .. name }, include_tooltip and " [img=info]" or nil },
+      tooltip = include_tooltip and { "gui.rb-" .. name .. "-description" } or nil,
     },
     content = {
       type = "flow",
-      style_mods = {horizontal_spacing = 12, padding = {8, 0, 12, 12}},
+      style_mods = { horizontal_spacing = 12, padding = { 8, 0, 12, 12 } },
       {
         type = "list-box",
         style = "list_box_in_shallow_frame",
-        style_mods = {height = 28 * constants.settings_gui_rows, width = 150},
+        style_mods = { height = 28 * constants.settings_gui_rows, width = 150 },
         items = initial_items,
         selected_index = 1,
         actions = {
-          on_selection_state_changed = {gui = "settings", action = action},
+          on_selection_state_changed = { gui = "settings", action = action },
         },
       },
       {
         type = "frame",
         style = "flib_shallow_frame_in_shallow_frame",
-        style_mods = {height = 28 * constants.settings_gui_rows},
+        style_mods = { height = 28 * constants.settings_gui_rows },
         {
           type = "scroll-pane",
           style = "flib_naked_scroll_pane",
-          style_mods = {padding = 4, vertically_stretchable = true},
+          style_mods = { padding = 4, vertically_stretchable = true },
           vertical_scroll_policy = "always",
-          ref = {name, "pane"},
+          ref = { name, "pane" },
           include_bordered_frame and {
             type = "frame",
             style = "bordered_frame",
-            style_mods = {minimal_width = 300, horizontally_stretchable = true, vertically_stretchable = true},
+            style_mods = { minimal_width = 300, horizontally_stretchable = true, vertically_stretchable = true },
             direction = "vertical",
-            ref = {name, "frame"},
+            ref = { name, "frame" },
           } or nil,
         },
       },
@@ -60,55 +60,60 @@ function root.build(player, player_table)
       type = "frame",
       name = "rb_settings_window",
       direction = "vertical",
-      ref = {"window"},
+      ref = { "window" },
       actions = {
-        on_closed = {gui = "settings", action = "close"},
+        on_closed = { gui = "settings", action = "close" },
       },
       {
         type = "flow",
         style = "flib_titlebar_flow",
-        ref = {"titlebar", "flow"},
+        ref = { "titlebar", "flow" },
         actions = {
-          on_click = {gui = "settings", action = "reset_location"},
+          on_click = { gui = "settings", action = "reset_location" },
         },
-        {type = "label", style = "frame_title", caption = {"gui.rb-settings"}, ignored_by_interaction = true},
-        {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
+        { type = "label", style = "frame_title", caption = { "gui.rb-settings" }, ignored_by_interaction = true },
+        { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
         {
           type = "textfield",
           style_mods = {
             top_margin = -3,
             right_padding = 3,
-            width = 120
+            width = 120,
           },
           clear_and_focus_on_right_click = true,
           visible = false,
-          ref = {"titlebar", "search_textfield"},
+          ref = { "titlebar", "search_textfield" },
           actions = {
-            on_text_changed = {gui = "settings", action = "update_search_query"}
-          }
+            on_text_changed = { gui = "settings", action = "update_search_query" },
+          },
         },
         util.frame_action_button(
           "utility/search",
-          {"gui.rb-search-instruction"},
-          {"titlebar", "search_button"},
-          {gui = "settings", action = "toggle_search"}
+          { "gui.rb-search-instruction" },
+          { "titlebar", "search_button" },
+          { gui = "settings", action = "toggle_search" }
         ),
         util.frame_action_button(
           "utility/close",
-          {"gui.close"},
-          {"titlebar", "close_button"},
-          {gui = "settings", action = "close"}
+          { "gui.close" },
+          { "titlebar", "close_button" },
+          { gui = "settings", action = "close" }
         ),
       },
-      {type = "frame", style = "inside_deep_frame_for_tabs", direction = "vertical",
-        {type = "tabbed-pane", style = "flib_tabbed_pane_with_no_padding",
+      {
+        type = "frame",
+        style = "inside_deep_frame_for_tabs",
+        direction = "vertical",
+        {
+          type = "tabbed-pane",
+          style = "flib_tabbed_pane_with_no_padding",
           {
-            tab = {type = "tab", caption = {"gui.rb-general"}},
+            tab = { type = "tab", caption = { "gui.rb-general" } },
             content = {
               type = "flow",
-              style_mods = {padding = 4},
+              style_mods = { padding = 4 },
               direction = "vertical",
-              ref = {"general", "pane"},
+              ref = { "general", "pane" },
             },
           },
           subpage_set(
@@ -193,8 +198,8 @@ function root.update_contents(player, player_table, tab)
           local converted_setting_name = string.gsub(setting_name, "_", "-")
           local tooltip = ""
           if setting_ident.has_tooltip then
-            tooltip = {"gui.rb-"..converted_setting_name.."-description"}
-            caption = caption.." [img=info]"
+            tooltip = { "gui.rb-" .. converted_setting_name .. "-description" }
+            caption = caption .. " [img=info]"
           end
           local enabled = true
           if setting_ident.dependencies then
@@ -206,36 +211,33 @@ function root.update_contents(player, player_table, tab)
             end
           end
           if setting_ident.type == "bool" then
-              children[#children + 1] = {
-                type = "checkbox",
-                caption = caption,
-                tooltip = tooltip,
-                state = actual_category_settings[setting_name],
-                enabled = enabled,
-                actions = enabled and {
-                  on_click = {
-                    gui = "settings",
-                    action = "change_general_setting",
-                    type = setting_ident.type,
-                    category = category,
-                    name = setting_name,
-                  }
-                } or nil,
-              }
+            children[#children + 1] = {
+              type = "checkbox",
+              caption = caption,
+              tooltip = tooltip,
+              state = actual_category_settings[setting_name],
+              enabled = enabled,
+              actions = enabled and {
+                on_click = {
+                  gui = "settings",
+                  action = "change_general_setting",
+                  type = setting_ident.type,
+                  category = category,
+                  name = setting_name,
+                },
+              } or nil,
+            }
           elseif setting_ident.type == "enum" then
             children[#children + 1] = {
               type = "flow",
-              style_mods = {vertical_align = "center"},
-              {type = "label", caption = caption, tooltip = tooltip},
-              {type = "empty-widget", style = "flib_horizontal_pusher"},
+              style_mods = { vertical_align = "center" },
+              { type = "label", caption = caption, tooltip = tooltip },
+              { type = "empty-widget", style = "flib_horizontal_pusher" },
               {
                 type = "drop-down",
-                items = table.map(
-                  setting_ident.options,
-                  function(option_name)
-                    return {"gui.rb-"..converted_setting_name.."-"..string.gsub(option_name, "_", "-")}
-                  end
-                ),
+                items = table.map(setting_ident.options, function(option_name)
+                  return { "gui.rb-" .. converted_setting_name .. "-" .. string.gsub(option_name, "_", "-") }
+                end),
                 selected_index = table.find(setting_ident.options, actual_category_settings[setting_name]),
                 enabled = enabled,
                 actions = enabled and {
@@ -245,7 +247,7 @@ function root.update_contents(player, player_table, tab)
                     type = setting_ident.type,
                     category = category,
                     name = setting_name,
-                  }
+                  },
                 } or nil,
               },
             }
@@ -261,7 +263,7 @@ function root.update_contents(player, player_table, tab)
             direction = "vertical",
             caption = gui_translations[category] or category,
             children = children,
-          }
+          },
         })
       end
     end
@@ -281,7 +283,7 @@ function root.update_contents(player, player_table, tab)
       if string.find(string.lower(category_translation), query) then
         local img_type = constants.class_to_type[selected_class]
         if img_type then
-          category_translation = "[img="..img_type.."/"..category_name.."]  "..category_translation
+          category_translation = "[img=" .. img_type .. "/" .. category_name .. "]  " .. category_translation
         end
         children[#children + 1] = {
           type = "checkbox",
@@ -317,17 +319,14 @@ function root.update_contents(player, player_table, tab)
 
       component_children[1] = {
         type = "flow",
-        style_mods = {vertical_align = "center"},
-        {type = "label", caption = gui_translations.default_state},
-        {type = "empty-widget", style = "flib_horizontal_pusher"},
+        style_mods = { vertical_align = "center" },
+        { type = "label", caption = gui_translations.default_state },
+        { type = "empty-widget", style = "flib_horizontal_pusher" },
         {
           type = "drop-down",
-          items = table.map(
-            constants.component_states,
-            function(option_name)
-              return {"gui.rb-"..string.gsub(option_name, "_", "-")}
-            end
-          ),
+          items = table.map(constants.component_states, function(option_name)
+            return { "gui.rb-" .. string.gsub(option_name, "_", "-") }
+          end),
           selected_index = table.find(constants.component_states, component_settings.default_state),
           actions = {
             on_selection_state_changed = {
@@ -335,20 +334,20 @@ function root.update_contents(player, player_table, tab)
               action = "change_default_state",
               class = selected_page,
               component = component_name,
-            }
+            },
           },
-        }
+        },
       }
 
       if component_settings.max_rows then
         component_children[#component_children + 1] = {
           type = "flow",
-          style_mods = {vertical_align = "center"},
-          {type = "label", caption = gui_translations.max_rows},
-          {type = "empty-widget", style = "flib_horizontal_pusher"},
+          style_mods = { vertical_align = "center" },
+          { type = "label", caption = gui_translations.max_rows },
+          { type = "empty-widget", style = "flib_horizontal_pusher" },
           {
             type = "textfield",
-            style_mods = {width = 50, horizontal_align = "center"},
+            style_mods = { width = 50, horizontal_align = "center" },
             numeric = true,
             lose_focus_on_confirm = true,
             clear_and_focus_on_right_click = true,
@@ -360,8 +359,8 @@ function root.update_contents(player, player_table, tab)
                 class = selected_page,
                 component = component_name,
               },
-            }
-          }
+            },
+          },
         }
       end
 
@@ -378,8 +377,8 @@ function root.update_contents(player, player_table, tab)
                 class = selected_page,
                 component = component_name,
                 row = row_name,
-              }
-            }
+              },
+            },
           }
         end
       end
@@ -387,7 +386,7 @@ function root.update_contents(player, player_table, tab)
       children[#children + 1] = {
         type = "frame",
         style = "bordered_frame",
-        style_mods = {minimal_width = 300, horizontally_stretchable = true},
+        style_mods = { minimal_width = 300, horizontally_stretchable = true },
         direction = "vertical",
         caption = gui_translations[component_name] or component_name,
         children = component_children,

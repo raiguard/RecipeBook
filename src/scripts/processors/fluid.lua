@@ -12,13 +12,13 @@ function fluid_proc.build(recipe_book, dictionaries, metadata)
     -- Group
     local group = prototype.group
     local group_data = recipe_book.group[group.name]
-    group_data.fluids[#group_data.fluids + 1] = {class = "fluid", name = name}
+    group_data.fluids[#group_data.fluids + 1] = { class = "fluid", name = name }
     -- Fake fuel category
     local fuel_category
     if prototype.fuel_value > 0 then
-      fuel_category = {class = "fuel_category", name = constants.fake_fluid_fuel_category}
+      fuel_category = { class = "fuel_category", name = constants.fake_fluid_fuel_category }
       local fluids = recipe_book.fuel_category[constants.fake_fluid_fuel_category].fluids
-      fluids[#fluids + 1] = {class = "fluid", name = name}
+      fluids[#fluids + 1] = { class = "fluid", name = name }
     end
     -- Save to recipe book
     recipe_book.fluid[name] = {
@@ -27,7 +27,7 @@ function fluid_proc.build(recipe_book, dictionaries, metadata)
       default_temperature = prototype.default_temperature,
       fuel_category = fuel_category,
       fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
-      group = {class = "group", name = group.name},
+      group = { class = "group", name = group.name },
       hidden = prototype.hidden,
       ingredient_in = {},
       mined_from = {},
@@ -36,7 +36,7 @@ function fluid_proc.build(recipe_book, dictionaries, metadata)
       pumped_by = {},
       recipe_categories = util.unique_obj_array(),
       temperatures = {},
-      unlocked_by = util.unique_obj_array()
+      unlocked_by = util.unique_obj_array(),
     }
     -- Add strings
     dictionaries.fluid:add(name, prototype.localised_name)
@@ -52,10 +52,10 @@ function fluid_proc.add_temperature(recipe_book, dictionaries, metadata, fluid_d
 
   local temperatures = fluid_data.temperatures
   if not temperatures[temperature_string] then
-    local combined_name = fluid_data.prototype_name.."."..temperature_string
+    local combined_name = fluid_data.prototype_name .. "." .. temperature_string
 
     local temperature_data = {
-      base_fluid = {class = "fluid", name = fluid_data.prototype_name},
+      base_fluid = { class = "fluid", name = fluid_data.prototype_name },
       class = "fluid",
       default_temperature = fluid_data.default_temperature,
       fuel_value = fluid_data.fuel_value,
@@ -66,20 +66,17 @@ function fluid_proc.add_temperature(recipe_book, dictionaries, metadata, fluid_d
       prototype_name = fluid_data.prototype_name,
       recipe_categories = util.unique_obj_array(),
       temperature_ident = temperature_ident,
-      unlocked_by = util.unique_obj_array()
+      unlocked_by = util.unique_obj_array(),
     }
     temperatures[temperature_string] = temperature_data
     recipe_book.fluid[combined_name] = temperature_data
-    dictionaries.fluid:add(
-      combined_name,
-      {
-        "",
-        metadata.localised_fluids[fluid_data.prototype_name],
-        " (",
-        {"format-degrees-c-compact", temperature_string},
-        ")"
-      }
-    )
+    dictionaries.fluid:add(combined_name, {
+      "",
+      metadata.localised_fluids[fluid_data.prototype_name],
+      " (",
+      { "format-degrees-c-compact", temperature_string },
+      ")",
+    })
   end
 end
 
@@ -98,15 +95,9 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
     if temperatures and table_size(temperatures) > 0 then
       -- Step 1: Add a variant for the default temperature if one does not exist
       local default_temperature = fluid_data.default_temperature
-      local default_temperature_ident = util.build_temperature_ident{temperature = default_temperature}
+      local default_temperature_ident = util.build_temperature_ident({ temperature = default_temperature })
       if not temperatures[default_temperature_ident.string] then
-        fluid_proc.add_temperature(
-          recipe_book,
-          dictionaries,
-          metadata,
-          fluid_data,
-          default_temperature_ident
-        )
+        fluid_proc.add_temperature(recipe_book, dictionaries, metadata, fluid_data, default_temperature_ident)
       end
 
       -- Step 2: Add researched properties to temperature variants
@@ -118,7 +109,7 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
       end
 
       -- Step 3: Add properties from base fluid to temperature variants
-      for recipe_tbl_name, fluid_tbl_name in pairs{ingredients = "ingredient_in", products = "product_of"} do
+      for recipe_tbl_name, fluid_tbl_name in pairs({ ingredients = "ingredient_in", products = "product_of" }) do
         for _, recipe_ident in pairs(fluid_data[fluid_tbl_name]) do
           local recipe_data = recipe_book.recipe[recipe_ident.name]
 
@@ -136,11 +127,11 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
           local temperature_ident = fluid_ident.temperature_ident
           if temperature_ident then
             -- Change the name of the material and remove the identifier
-            fluid_ident.name = fluid_ident.name.."."..temperature_ident.string
+            fluid_ident.name = fluid_ident.name .. "." .. temperature_ident.string
             fluid_ident.temperature_ident = nil
           elseif recipe_tbl_name == "products" then
             -- Change the name of the material to the default temperature
-            fluid_ident.name = fluid_ident.name.."."..default_temperature_ident.string
+            fluid_ident.name = fluid_ident.name .. "." .. default_temperature_ident.string
             fluid_ident.temperature_ident = nil
             -- Use the default temperature for matching
             temperature_ident = default_temperature_ident
@@ -148,7 +139,8 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
 
           -- Iterate over all temperature variants and compare their constraints
           for _, temperature_data in pairs(temperatures) do
-            if not temperature_ident
+            if
+              not temperature_ident
               or fluid_proc.is_within_range(
                 temperature_data.temperature_ident,
                 temperature_ident,
@@ -172,7 +164,7 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
                   -- Don't use fluid_ident becuase it has an amount
                   technology_data.unlocks_fluids[#technology_data.unlocks_fluids + 1] = {
                     class = "fluid",
-                    name = temperature_data.name
+                    name = temperature_data.name,
                   }
                 end
               end
@@ -190,7 +182,7 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
             -- Don't use fluid_ident becuase it has an amount
             technology_data.unlocks_fluids[#technology_data.unlocks_fluids + 1] = {
               class = "fluid",
-              name = temperature_data.name
+              name = temperature_data.name,
             }
           end
         end
@@ -200,6 +192,10 @@ function fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
 end
 
 -- When calling the module directly, call fluid_proc.build
-setmetatable(fluid_proc, { __call = function(_, ...) return fluid_proc.build(...) end })
+setmetatable(fluid_proc, {
+  __call = function(_, ...)
+    return fluid_proc.build(...)
+  end,
+})
 
 return fluid_proc

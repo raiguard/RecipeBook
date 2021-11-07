@@ -12,10 +12,10 @@ return function(recipe_book)
         local category_data = recipe_book.fuel_category[category_ident.name]
         if category_data then
           -- Add fluids and items to the compatible fuels, and add the object to the material's burned in table
-          for _, objects in pairs{category_data.fluids, category_data.items} do
+          for _, objects in pairs({ category_data.fluids, category_data.items }) do
             for _, obj_ident in pairs(objects) do
               local obj_data = recipe_book[obj_ident.class][obj_ident.name]
-              obj_data.burned_in[#obj_data.burned_in + 1] = {class = class, name = name}
+              obj_data.burned_in[#obj_data.burned_in + 1] = { class = class, name = name }
               compatible_fuels[#compatible_fuels + 1] = table.shallow_copy(obj_ident)
             end
           end
@@ -32,7 +32,7 @@ return function(recipe_book)
     local burnt_result = item_data.burnt_result
     if burnt_result then
       local result_data = recipe_book.item[burnt_result.name]
-      result_data.burnt_result_of[#result_data.burnt_result_of + 1] = {class = "item", name = item_name}
+      result_data.burnt_result_of[#result_data.burnt_result_of + 1] = { class = "item", name = item_name }
     end
   end
 end

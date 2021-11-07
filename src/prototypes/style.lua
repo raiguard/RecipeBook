@@ -10,21 +10,21 @@ styles.rb_list_box_item = {
   horizontally_squashable = "on",
   horizontally_stretchable = "on",
   disabled_graphical_set = styles.list_box_item.default_graphical_set,
-  disabled_font_color = styles.list_box_item.default_font_color
+  disabled_font_color = styles.list_box_item.default_font_color,
 }
 
 styles.rb_last_selected_list_box_item = {
   type = "button_style",
   parent = "rb_list_box_item",
   default_font_color = constants.colors.yellow.tbl,
-  disabled_font_color = constants.colors.yellow.tbl
+  disabled_font_color = constants.colors.yellow.tbl,
 }
 
 styles.rb_unresearched_list_box_item = {
   type = "button_style",
   parent = "rb_list_box_item",
   default_font_color = constants.colors.unresearched.tbl,
-  disabled_font_color = constants.colors.unresearched.tbl
+  disabled_font_color = constants.colors.unresearched.tbl,
 }
 
 styles.rb_table_button = {
@@ -42,12 +42,12 @@ styles.rb_table_button = {
 
 styles.rb_main_frame_flow = {
   type = "horizontal_flow_style",
-  horizontal_spacing = 12
+  horizontal_spacing = 12,
 }
 
 styles.rb_main_info_pane_flow = {
   type = "vertical_flow_style",
-  vertical_spacing = 8
+  vertical_spacing = 8,
 }
 
 styles.rb_quick_ref_content_flow = {
@@ -55,14 +55,14 @@ styles.rb_quick_ref_content_flow = {
   bottom_padding = 12,
   left_padding = 12,
   right_padding = 0,
-  top_padding = 6
+  top_padding = 6,
 }
 
 styles.rb_search_content_flow = {
   type = "vertical_flow_style",
   padding = 12,
   top_padding = 8,
-  vertical_spacing = 10
+  vertical_spacing = 10,
 }
 
 styles.rb_warning_flow = {
@@ -80,7 +80,7 @@ styles.rb_warning_flow = {
 styles.rb_main_info_frame = {
   type = "frame_style",
   parent = "inside_shallow_frame",
-  width = 450
+  width = 450,
 }
 
 styles.rb_search_results_frame = {
@@ -88,7 +88,7 @@ styles.rb_search_results_frame = {
   parent = "deep_frame_in_shallow_frame",
   height = 28 * 18,
   width = 250,
-  horizontally_stretchable = "on"
+  horizontally_stretchable = "on",
 }
 
 styles.rb_search_results_subheader_frame = {
@@ -98,21 +98,21 @@ styles.rb_search_results_subheader_frame = {
   horizontally_stretchable = "on",
   horizontal_flow_style = {
     type = "horizontal_flow_style",
-    horizontal_align = "center"
-  }
+    horizontal_align = "center",
+  },
 }
 
 styles.rb_subheader_frame = {
   type = "frame_style",
   parent = "subheader_frame",
   height = 0, -- Negate the height requirement
-  minimal_height = 36
+  minimal_height = 36,
 }
 
 styles.rb_quick_ref_content_frame = {
   type = "frame_style",
   parent = "inside_shallow_frame",
-  width = 224
+  width = 224,
 }
 
 styles.rb_slot_table_frame = {
@@ -120,14 +120,14 @@ styles.rb_slot_table_frame = {
   parent = "slot_button_deep_frame",
   maximal_height = 200,
   natural_height = 40,
-  width = 40 * 5
+  width = 40 * 5,
 }
 
 styles.rb_settings_category_frame = {
   type = "frame_style",
   parent = "bordered_frame",
   horizontally_stretchable = "on",
-  right_padding = 8
+  right_padding = 8,
 }
 
 styles.rb_inside_warning_frame = {
@@ -135,12 +135,13 @@ styles.rb_inside_warning_frame = {
   parent = "inside_shallow_frame",
   graphical_set = {
     base = {
-      position = {17, 0}, corner_size = 8,
-      center = {position = {411, 25}, size = {1, 1}},
-      draw_type = "outer"
+      position = { 17, 0 },
+      corner_size = 8,
+      center = { position = { 411, 25 }, size = { 1, 1 } },
+      draw_type = "outer",
     },
-    shadow = default_inner_shadow
-  }
+    shadow = default_inner_shadow,
+  },
 }
 
 styles.rb_inside_deep_frame_under_tabs = {
@@ -148,17 +149,17 @@ styles.rb_inside_deep_frame_under_tabs = {
   parent = "invisible_frame",
   graphical_set = {
     base = {
-      center = {position = {42, 8}, size = {1, 1}},
-      top = {position = {93, 0}, size = {1, 8}},
-      draw_type = "outer"
+      center = { position = { 42, 8 }, size = { 1, 1 } },
+      top = { position = { 93, 0 }, size = { 1, 8 } },
+      draw_type = "outer",
     },
     shadow = {
-      top = {position = {191, 128}, size = {1, 8}},
+      top = { position = { 191, 128 }, size = { 1, 8 } },
       tint = hard_shadow_color,
       scale = 0.5,
-      draw_type = "inner"
-    }
-  }
+      draw_type = "inner",
+    },
+  },
 }
 
 -- LABEL STYLES
@@ -166,21 +167,21 @@ styles.rb_inside_deep_frame_under_tabs = {
 styles.rb_hyperlink_label = {
   type = "label_style",
   -- parent = "hyperlink_label",
-  font_color = {110, 179, 255},
-  hovered_font_color = {154, 250, 255},
+  font_color = { 110, 179, 255 },
+  hovered_font_color = { 154, 250, 255 },
 }
 
 styles.rb_table_label = {
   type = "label_style",
   font = "default-semibold",
-  horizontally_stretchable = "on"
+  horizontally_stretchable = "on",
 }
 
 styles.rb_toolbar_label = {
   type = "label_style",
   parent = "subheader_caption_label",
   -- left_padding = 4,
-  horizontally_squashable = "on"
+  horizontally_squashable = "on",
 }
 
 styles.rb_unresearched_toolbar_label = {
@@ -196,20 +197,20 @@ styles.rb_slot_label = {
   width = 35,
   vertical_align = "bottom",
   horizontal_align = "right",
-  right_padding = 3
+  right_padding = 3,
 }
 
 styles.rb_slot_label_top = {
   type = "label_style",
   parent = "rb_slot_label",
   vertical_align = "top",
-  top_padding = 3
+  top_padding = 3,
 }
 
 styles.rb_list_box_label = {
   type = "label_style",
   parent = "bold_label",
-  bottom_padding = 2
+  bottom_padding = 2,
 }
 
 -- LINE STYLES
@@ -223,8 +224,8 @@ styles.rb_dark_line = {
   bottom_margin = -2,
   border = {
     border_width = 8,
-    horizontal_line = {filename = "__RecipeBook__/graphics/dark-line.png", size = {1, 8}}
-  }
+    horizontal_line = { filename = "__RecipeBook__/graphics/dark-line.png", size = { 1, 8 } },
+  },
 }
 
 -- SCROLL PANE STYLES
@@ -233,13 +234,13 @@ styles.rb_list_box_scroll_pane = {
   type = "scroll_pane_style",
   parent = "list_box_scroll_pane",
   graphical_set = {
-    shadow = default_inner_shadow
+    shadow = default_inner_shadow,
   },
   vertical_flow_style = {
     type = "vertical_flow_style",
     vertical_spacing = 0,
-    horizontally_stretchable = "on"
-  }
+    horizontally_stretchable = "on",
+  },
 }
 
 styles.rb_page_scroll_pane = {
@@ -249,14 +250,14 @@ styles.rb_page_scroll_pane = {
     type = "vertical_flow_style",
     padding = 12,
     top_padding = 8,
-    vertical_spacing = 8
-  }
+    vertical_spacing = 8,
+  },
 }
 
 styles.rb_search_results_scroll_pane = {
   type = "scroll_pane_style",
   parent = "rb_list_box_scroll_pane",
-  vertically_stretchable = "on"
+  vertically_stretchable = "on",
   -- height = 28 * constants.search_results_visible_items
 }
 
@@ -279,9 +280,9 @@ styles.rb_info_table = {
   top_cell_padding = 1,
   bottom_cell_padding = 3,
   column_alignments = {
-    {column = 1, alignment = "middle-left"},
-    {column = 2, alignment = "middle-right"},
-  }
+    { column = 1, alignment = "middle-left" },
+    { column = 2, alignment = "middle-right" },
+  },
 }
 
 -- TEXTFIELD STYLES
@@ -297,4 +298,3 @@ styles.rb_search_invalid_textfield = {
   parent = "flib_widthless_invalid_textfield",
   horizontally_stretchable = "on",
 }
-

@@ -7,30 +7,30 @@ local recipe_book = require("scripts.recipe-book")
 local table_comp = {}
 
 function table_comp.build(parent, index, component, variables)
-    local has_label = (component.label or component.source) and true or false
-    return gui.build(parent, {
+  local has_label = (component.label or component.source) and true or false
+  return gui.build(parent, {
     {
       type = "flow",
-      style_mods = (not has_label) and {top_margin = 4} or nil,
+      style_mods = not has_label and { top_margin = 4 } or nil,
       direction = "vertical",
       index = index,
-      ref = {"root"},
+      ref = { "root" },
       action = {
-        on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
+        on_click = { gui = "info", id = variables.gui_id, action = "set_as_active" },
       },
       {
         type = "flow",
-        style_mods = {vertical_align = "center"},
+        style_mods = { vertical_align = "center" },
         action = {
-          on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
+          on_click = { gui = "info", id = variables.gui_id, action = "set_as_active" },
         },
         visible = has_label,
-        {type = "label", style = "rb_list_box_label", ref = {"label"}},
-        {type = "empty-widget", style = "flib_horizontal_pusher"},
+        { type = "label", style = "rb_list_box_label", ref = { "label" } },
+        { type = "empty-widget", style = "flib_horizontal_pusher" },
         {
           type = "sprite-button",
           style = "mini_button_aligned_to_text_vertically_when_centered",
-          ref = {"expand_collapse_button"},
+          ref = { "expand_collapse_button" },
           -- NOTE: Sprite, tooltip, and action are set in the update function
         },
       },
@@ -38,21 +38,25 @@ function table_comp.build(parent, index, component, variables)
         type = "frame",
         style = "deep_frame_in_shallow_frame",
         action = {
-          on_click = {gui = "info", id = variables.gui_id, action = "set_as_active"},
+          on_click = { gui = "info", id = variables.gui_id, action = "set_as_active" },
         },
-        ref = {"deep_frame"},
-        {type = "table", style = "rb_info_table", column_count = 2, ref = {"table"},
+        ref = { "deep_frame" },
+        {
+          type = "table",
+          style = "rb_info_table",
+          column_count = 2,
+          ref = { "table" },
           -- Dummy elements so the first row doesn't get used
-          {type = "empty-widget"},
-          {type = "empty-widget"}
-        }
+          { type = "empty-widget" },
+          { type = "empty-widget" },
+        },
       },
-    }
+    },
   })
 end
 
 function table_comp.default_state(settings)
-  return {collapsed = settings.default_state == "collapsed"}
+  return { collapsed = settings.default_state == "collapsed" }
 end
 
 function table_comp.update(component, refs, object_data, player_data, settings, variables)
@@ -77,15 +81,15 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
         i = i + 1
         local label_label = children[i]
         if not label_label or not label_label.valid then
-          label_label = tbl.add{
+          label_label = tbl.add({
             type = "label",
             style = "rb_table_label",
-            index = i
-          }
+            index = i,
+          })
         end
         local tooltip = row.label_tooltip
         if tooltip then
-          caption = caption.." [img=info]"
+          caption = caption .. " [img=info]"
           tooltip = gui_translations[row.label_tooltip]
         else
           tooltip = ""
@@ -105,7 +109,7 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
             if value_label then
               value_label.destroy()
             end
-            value_label = tbl.add{type = "label", index = i}
+            value_label = tbl.add({ type = "label", index = i })
           end
           value_label.caption = value
         elseif row.type == "goto" then
@@ -115,12 +119,12 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
             if button then
               button.destroy()
             end
-            button = tbl.add{
+            button = tbl.add({
               type = "button",
               style = "rb_table_button",
-              mouse_button_filter = {"left", "middle"},
-              index = i
-            }
+              mouse_button_filter = { "left", "middle" },
+              index = i,
+            })
           end
           local source_data = recipe_book[value.class][value.name]
           local options = table.shallow_copy(row.options or {})
@@ -130,8 +134,8 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
           if info then
             button.caption = info.caption
             button.tooltip = info.tooltip
-            gui.set_action(button, "on_click", {gui = "info", id = variables.gui_id, action = "navigate_to"})
-            gui.update_tags(button, {context = {class = value.class, name = value.name}})
+            gui.set_action(button, "on_click", { gui = "info", id = variables.gui_id, action = "navigate_to" })
+            gui.update_tags(button, { context = { class = value.class, name = value.name } })
           else
             -- Don't actually show this row
             -- This is an ugly way to do it, but whatever
@@ -143,29 +147,35 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
           i = i + 1
           local flow = children[i]
           if not flow or flow.type ~= "flow" then
-            if flow then flow.destroy() end
+            if flow then
+              flow.destroy()
+            end
             flow = gui.build(tbl, {
-              {type = "flow", style_mods = {vertical_align = "center"}, index = i, ref = {"flow"},
+              {
+                type = "flow",
+                style_mods = { vertical_align = "center" },
+                index = i,
+                ref = { "flow" },
                 {
                   type = "sprite-button",
                   style = "mini_button_aligned_to_text_vertically_when_centered",
                   sprite = "rb_minus_black",
-                  mouse_button_filter = {"left"},
+                  mouse_button_filter = { "left" },
                   actions = {
-                    on_click = {gui = "info", id = variables.gui_id, action = "change_tech_level", delta = -1}
-                  }
+                    on_click = { gui = "info", id = variables.gui_id, action = "change_tech_level", delta = -1 },
+                  },
                 },
-                {type = "label", name = "tech_level_label"},
+                { type = "label", name = "tech_level_label" },
                 {
                   type = "sprite-button",
                   style = "mini_button_aligned_to_text_vertically_when_centered",
                   sprite = "rb_plus_black",
-                  mouse_button_filter = {"left"},
+                  mouse_button_filter = { "left" },
                   actions = {
-                    on_click = {gui = "info", id = variables.gui_id, action = "change_tech_level", delta = 1}
-                  }
-                }
-              }
+                    on_click = { gui = "info", id = variables.gui_id, action = "change_tech_level", delta = 1 },
+                  },
+                },
+              },
             }).flow
           end
           flow.tech_level_label.caption = formatter.number(variables.selected_tech_level)
@@ -173,12 +183,14 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
           i = i + 1
           local value_label = children[i]
           if not value_label or value_label.type ~= "label" then
-            if value_label then value_label.destroy() end
-            value_label = tbl.add{type = "label", index = i}
+            if value_label then
+              value_label.destroy()
+            end
+            value_label = tbl.add({ type = "label", index = i })
           end
           local tech_level = variables.selected_tech_level
           value_label.caption = formatter[row.formatter](
-            game.evaluate_expression(value, {L = tech_level, l = tech_level})
+            game.evaluate_expression(value, { L = tech_level, l = tech_level })
           )
         end
       end
@@ -215,11 +227,11 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
     if variables.component_state.collapsed then
       refs.deep_frame.style.maximal_height = 1
       refs.expand_collapse_button.sprite = "rb_collapsed"
-      refs.expand_collapse_button.tooltip = {"gui.rb-expand"}
+      refs.expand_collapse_button.tooltip = { "gui.rb-expand" }
     else
       refs.deep_frame.style.maximal_height = 0
       refs.expand_collapse_button.sprite = "rb_expanded"
-      refs.expand_collapse_button.tooltip = {"gui.rb-collapse"}
+      refs.expand_collapse_button.tooltip = { "gui.rb-collapse" }
     end
   else
     refs.root.visible = false

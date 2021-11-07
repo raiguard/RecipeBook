@@ -40,5 +40,5 @@ return {
       player_table.flags.gui_open = nil
       player_table.flags.technology_gui_open = nil
     end
-  end
+  end,
 }

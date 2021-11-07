@@ -22,14 +22,14 @@ function player_data.init(player_index)
     },
     global_history = {},
     guis = {
-      info = {_next_id = 1},
-      quick_ref = {}
+      info = { _next_id = 1 },
+      quick_ref = {},
     },
     settings = {
       general = {},
       categories = {},
     },
-    translations =  nil, -- Assigned its initial value in player_data.refresh
+    translations = nil, -- Assigned its initial value in player_data.refresh
   }
   global.players[player_index] = data
 end
@@ -53,7 +53,7 @@ function player_data.update_settings(player, player_table)
         if former_setting ~= nil then
           category_settings[setting_name] = former_setting
         else
-          category_settings[setting_name] =  setting_ident.default_value
+          category_settings[setting_name] = setting_ident.default_value
         end
       elseif setting_ident.type == "enum" then
         local former_setting = former_category_settings[setting_name]
@@ -125,14 +125,14 @@ end
 
 function player_data.validate_favorites(favorites)
   while true do
-  local i = 1
+    local i = 1
     local obj = favorites[i]
     if obj then
       if recipe_book[obj.class] and recipe_book[obj.class][obj.name] then
         i = i + 1
       else
         table.remove(favorites, i)
-        favorites[obj.class.."."..obj.name] = nil
+        favorites[obj.class .. "." .. obj.name] = nil
       end
     else
       break
@@ -145,7 +145,7 @@ function player_data.validate_global_history(global_history)
     local entry = global_history[i]
     if not (recipe_book[entry.class] and recipe_book[entry.class][entry.name]) then
       table.remove(global_history, i)
-      global_history[entry.class.."."..entry.name] = nil
+      global_history[entry.class .. "." .. entry.name] = nil
     end
   end
 end
@@ -190,20 +190,16 @@ function player_data.remove(player_index)
 end
 
 function player_data.check_cursor_stack(player)
-    local cursor_stack = player.cursor_stack
-    if cursor_stack
-      and cursor_stack.valid
-      and cursor_stack.valid_for_read
-      and recipe_book.item[cursor_stack.name]
-    then
-      return cursor_stack.name
-    end
-    return false
+  local cursor_stack = player.cursor_stack
+  if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and recipe_book.item[cursor_stack.name] then
+    return cursor_stack.name
+  end
+  return false
 end
 
 function player_data.update_global_history(global_history, new_context)
   new_context = table.shallow_copy(new_context)
-  local ident = new_context.class.."."..new_context.name
+  local ident = new_context.class .. "." .. new_context.name
   if global_history[ident] then
     for i, context in ipairs(global_history) do
       if context.class == new_context.class and context.name == new_context.name then
@@ -226,7 +222,7 @@ function player_data.update_global_history(global_history, new_context)
 
   for i = constants.global_history_size + 1, #global_history do
     local context = global_history[i]
-    local ident = context.class.."."..context.name
+    local ident = context.class .. "." .. context.name
     global_history[ident] = nil
     global_history[i] = nil
   end

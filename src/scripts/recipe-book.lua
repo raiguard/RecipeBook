@@ -34,7 +34,7 @@ function recipe_book.build()
   local dictionaries = {}
   for _, class in pairs(constants.classes) do
     dictionaries[class] = dictionary.new(class, true)
-    local desc_name = class.."_description"
+    local desc_name = class .. "_description"
     dictionaries[desc_name] = dictionary.new(desc_name)
   end
   dictionary.new("gui", true, constants.gui_strings)
@@ -73,7 +73,6 @@ function recipe_book.build()
   machine_state_proc(recipe_book)
 end
 
-
 local function update_launch_products(launch_products, force_index, to_value)
   for _, launch_product in ipairs(launch_products) do
     local product_data = recipe_book.item[launch_product.name]
@@ -89,16 +88,18 @@ function recipe_book.handle_research_updated(technology, to_value)
   -- Technology
   local technology_data = recipe_book.technology[technology.name]
   -- Other mods can update technologies during on_configuration_changed before RB gets a chance to config change
-  if not technology_data then return end
+  if not technology_data then
+    return
+  end
   technology_data.researched_forces[force_index] = to_value
 
-  for _, objects in pairs{
+  for _, objects in pairs({
     technology_data.unlocks_equipment,
     technology_data.unlocks_fluids,
     technology_data.unlocks_items,
     technology_data.unlocks_machines,
-    technology_data.unlocks_recipes
-  } do
+    technology_data.unlocks_recipes,
+  }) do
     for _, obj_ident in ipairs(objects) do
       local class = obj_ident.class
       local obj_data = recipe_book[class][obj_ident.name]

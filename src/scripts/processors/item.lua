@@ -16,7 +16,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     -- Group
     local group = prototype.group
     local group_data = recipe_book.group[group.name]
-    group_data.items[#group_data.items + 1] = {class = "item", name = name}
+    group_data.items[#group_data.items + 1] = { class = "item", name = name }
     -- Rocket launch products
     local launch_products = {}
     for i, product in ipairs(prototype.rocket_launch_products or {}) do
@@ -25,15 +25,15 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       launch_products[i] = {
         class = product.type,
         name = product.name,
-        amount_ident = amount_ident
+        amount_ident = amount_ident,
       }
       -- Add to payloads table
       local product_payloads = rocket_launch_payloads[product.name]
-      local ident = {class = "item", name = name}
+      local ident = { class = "item", name = name }
       if product_payloads then
         product_payloads[#product_payloads + 1] = ident
       else
-        rocket_launch_payloads[product.name] = {ident}
+        rocket_launch_payloads[product.name] = { ident }
       end
     end
     local default_categories = util.unique_string_array(
@@ -42,7 +42,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 
     local place_as_equipment_result = prototype.place_as_equipment_result
     if place_as_equipment_result then
-      place_as_equipment_result = {class = "equipment", name = place_as_equipment_result.name}
+      place_as_equipment_result = { class = "equipment", name = place_as_equipment_result.name }
       place_as_equipment_results[name] = place_as_equipment_result
     end
 
@@ -50,7 +50,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     if place_result then
       local class = constants.derived_type_to_class[place_result.type]
       if class and recipe_book[class][place_result.name] then
-        place_result = {class = class, name = place_result.name}
+        place_result = { class = class, name = place_result.name }
         place_results[name] = place_result
       else
         place_result = nil
@@ -59,7 +59,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 
     local burnt_result = prototype.burnt_result
     if burnt_result then
-      burnt_result = {class = "item", name = burnt_result.name}
+      burnt_result = { class = "item", name = burnt_result.name }
     end
 
     local equipment_categories = util.unique_obj_array()
@@ -67,7 +67,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     local equipment_grid = prototype.equipment_grid
     if equipment_grid then
       for _, equipment_category in pairs(equipment_grid.equipment_categories) do
-        table.insert(equipment_categories, {class = "equipment_category", name = equipment_category})
+        table.insert(equipment_categories, { class = "equipment_category", name = equipment_category })
         local category_data = recipe_book.equipment_category[equipment_category]
         if category_data then
           for _, equipment_name in pairs(category_data.equipment) do
@@ -91,7 +91,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       for effect_name, effect in pairs(prototype.module_effects or {}) do
         module_effects[#module_effects + 1] = {
           type = "plain",
-          label = effect_name.."_bonus",
+          label = effect_name .. "_bonus",
           value = effect.bonus,
           formatter = "percent",
         }
@@ -109,7 +109,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
           end
         end
         if compatible then
-          crafter_data.compatible_modules[#crafter_data.compatible_modules + 1] = {class = "item", name = name}
+          crafter_data.compatible_modules[#crafter_data.compatible_modules + 1] = { class = "item", name = name }
         end
       end
     end
@@ -117,7 +117,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     local fuel_category = util.convert_to_ident("fuel_category", prototype.fuel_category)
     if fuel_category then
       local items = recipe_book.fuel_category[fuel_category.name].items
-      items[#items + 1] = {class = "item", name = name}
+      items[#items + 1] = { class = "item", name = name }
     end
 
     recipe_book.item[name] = {
@@ -128,20 +128,14 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       compatible_equipment = equipment,
       equipment_categories = equipment_categories,
       fuel_acceleration_multiplier = has_fuel_value
-        and fuel_acceleration_multiplier ~= 1
-        and fuel_acceleration_multiplier
+          and fuel_acceleration_multiplier ~= 1
+          and fuel_acceleration_multiplier
         or nil,
       fuel_category = fuel_category,
-      fuel_emissions_multiplier = has_fuel_value
-        and fuel_emissions_multiplier ~= 1
-        and fuel_emissions_multiplier
-        or nil,
-      fuel_top_speed_multiplier = has_fuel_value
-        and fuel_top_speed_multiplier ~= 1
-        and fuel_top_speed_multiplier
-        or nil,
+      fuel_emissions_multiplier = has_fuel_value and fuel_emissions_multiplier ~= 1 and fuel_emissions_multiplier or nil,
+      fuel_top_speed_multiplier = has_fuel_value and fuel_top_speed_multiplier ~= 1 and fuel_top_speed_multiplier or nil,
       fuel_value = has_fuel_value and fuel_value or nil,
-      group = {class = "group", name = group.name},
+      group = { class = "group", name = group.name },
       hidden = prototype.has_flag("hidden"),
       ingredient_in = {},
       mined_from = {},
@@ -156,7 +150,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       rocket_launch_products = launch_products,
       researched_in = {},
       stack_size = prototype.stack_size,
-      unlocked_by = util.unique_obj_array()
+      unlocked_by = util.unique_obj_array(),
     }
     dictionaries.item:add(name, prototype.localised_name)
     dictionaries.item_description:add(name, prototype.localised_description)
@@ -182,6 +176,10 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 end
 
 -- When calling the module directly, call fluid_proc.build
-setmetatable(item_proc, { __call = function(_, ...) return item_proc.build(...) end })
+setmetatable(item_proc, {
+  __call = function(_, ...)
+    return item_proc.build(...)
+  end,
+})
 
 return item_proc

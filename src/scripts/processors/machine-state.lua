@@ -19,4 +19,3 @@ return function(recipe_book)
     end
   end
 end
-

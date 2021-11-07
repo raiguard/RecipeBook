@@ -11,7 +11,7 @@ function util.build_amount_ident(input)
     amount_min = input.amount_min or false,
     amount_max = input.amount_max or false,
     probability = input.probability or false,
-    format = input.format or "format_amount"
+    format = input.format or "format_amount",
   }
 end
 
@@ -31,16 +31,16 @@ function util.build_temperature_ident(fluid)
     temperature_max = temperature
   elseif temperature_min and temperature_max then
     if temperature_min == math.min_double then
-      temperature_string = "≤"..format_number(temperature_max)
+      temperature_string = "≤" .. format_number(temperature_max)
     elseif temperature_max == math.max_double then
-      temperature_string = "≥"..format_number(temperature_min)
+      temperature_string = "≥" .. format_number(temperature_min)
     else
-      temperature_string = ""..format_number(temperature_min).."-"..format_number(temperature_max)
+      temperature_string = "" .. format_number(temperature_min) .. "-" .. format_number(temperature_max)
     end
   end
 
   if temperature_string then
-    return {string = temperature_string, min = temperature_min, max = temperature_max}
+    return { string = temperature_string, min = temperature_min, max = temperature_max }
   end
 end
 
@@ -69,7 +69,7 @@ function util.unique_string_array(initial_tbl)
         hash[value] = true
         rawset(tbl, key, value)
       end
-    end
+    end,
   })
 end
 
@@ -81,7 +81,7 @@ function util.unique_obj_array(initial_tbl)
         hash[value.name] = true
         rawset(tbl, key, value)
       end
-    end
+    end,
   })
 end
 
@@ -89,15 +89,15 @@ function util.frame_action_button(sprite, tooltip, ref, action)
   return {
     type = "sprite-button",
     style = "frame_action_button",
-    sprite = sprite.."_white",
-    hovered_sprite = sprite.."_black",
-    clicked_sprite = sprite.."_black",
+    sprite = sprite .. "_white",
+    hovered_sprite = sprite .. "_black",
+    clicked_sprite = sprite .. "_black",
     tooltip = tooltip,
-    mouse_button_filter = {"left"},
+    mouse_button_filter = { "left" },
     ref = ref,
     actions = {
-      on_click = action
-    }
+      on_click = action,
+    },
   }
 end
 
@@ -108,7 +108,7 @@ function util.process_placed_by(prototype)
       return {
         class = "item",
         name = item_stack.name,
-        amount_ident = util.build_amount_ident{amount = item_stack.count}
+        amount_ident = util.build_amount_ident({ amount = item_stack.count }),
       }
     end)
   end
@@ -117,21 +117,21 @@ end
 function util.convert_categories(source_tbl, class)
   local categories = {}
   for category in pairs(source_tbl) do
-    categories[#categories + 1] = {class = class, name = category}
+    categories[#categories + 1] = { class = class, name = category }
   end
   return categories
 end
 
 function util.convert_to_ident(class, source)
   if source then
-    return {class = class, name = source}
+    return { class = class, name = source }
   end
 end
 
 function util.get_size(prototype)
   if prototype.selection_box then
     local box = area.load(prototype.selection_box)
-    return {height = math.ceil(box:height()), width = math.ceil(box:width())}
+    return { height = math.ceil(box:height()), width = math.ceil(box:width()) }
   end
 end
 
@@ -141,9 +141,8 @@ function util.process_energy_source(prototype)
   if burner then
     return util.convert_categories(burner.fuel_categories, "fuel_category")
   elseif fluid_energy_source then
-    return {{class = "fuel_category", name = "burnable-fluid"}}
+    return { { class = "fuel_category", name = "burnable-fluid" } }
   end
 end
 
 return util
-
