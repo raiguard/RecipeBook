@@ -27,9 +27,7 @@ local function get_equipment_property(properties, prototype, name, formatter, la
 end
 
 function equipment_proc.build(recipe_book, dictionaries)
-  --- @type table<string, LuaEquipmentPrototype>
-  local prototypes = global.prototypes.equipment
-  for name, prototype in pairs(prototypes) do
+  for name, prototype in pairs(global.prototypes.equipment) do
     local fuel_categories
     local burner = prototype.burner_prototype
     if burner then
