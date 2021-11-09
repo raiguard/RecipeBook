@@ -41,4 +41,9 @@ return {
       player_table.flags.technology_gui_open = nil
     end
   end,
+  ["3.2.0"] = function()
+    for _, player_table in pairs(global.players) do
+      player_table.guis.info._sticky_id = nil
+    end
+  end,
 }
