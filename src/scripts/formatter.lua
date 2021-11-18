@@ -265,7 +265,7 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
   if show_internal_names then
     name_str = name
   else
-    name_str = player_data.translations[class][name] or name
+    name_str = player_data.translations[class][name]
   end
 
   local after = rich_text("font", "default-semibold", rich_text("color", "heading", name_str)) .. "\n"
@@ -273,7 +273,7 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
   if settings.general.tooltips.show_alternate_name then
     local alternate_name
     if show_internal_names then
-      alternate_name = player_data.translations[class][name] or name
+      alternate_name = player_data.translations[class][name]
     else
       alternate_name = name
     end
