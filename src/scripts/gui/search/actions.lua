@@ -7,59 +7,44 @@ local constants = require("constants")
 local formatter = require("scripts.formatter")
 local gui_util = require("scripts.gui.util")
 local recipe_book = require("scripts.recipe-book")
-local shared = require("scripts.shared")
 
-local root = require("scripts.gui.search.root")
+-- REFACTOR:
+local shared = require("scripts.shared")
 local settings_root = require("scripts.gui.settings.root")
 
 local actions = {}
 
-function actions.get_action_data(msg, e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-
-  local gui_data = player_table.guis.search
-  if not gui_data then
+--- @param Gui SearchGui
+--- @param msg table
+--- @param e on_gui_click
+function actions.reset_location(Gui, msg, e)
+  if e.button ~= defines.mouse_button_type.middle then
     return
   end
 
-  return {
-    e = e,
-    gui_data = gui_data,
-    msg = msg,
-    player = player,
-    player_table = player_table,
-    refs = gui_data.refs,
-    state = gui_data.state,
-  }
-end
-
-function actions.reset_location(data)
-  if data.e.button ~= defines.mouse_button_type.middle then
-    return
-  end
-
-  if data.player_table.settings.general.interface.search_gui_location == "top_left" then
-    local scale = data.player.display_scale
-    data.refs.window.location = table.map(constants.search_gui_top_left_location, function(pos)
+  if Gui.player_table.settings.general.interface.search_gui_location == "top_left" then
+    local scale = Gui.player.display_scale
+    Gui.refs.window.location = table.map(constants.search_gui_top_left_location, function(pos)
       return pos * scale
     end)
-    data.refs.window.auto_center = false
+    Gui.refs.window.auto_center = false
   else
-    data.refs.window.force_auto_center()
+    Gui.refs.window.force_auto_center()
   end
 end
 
-function actions.close(data)
-  if not data.state.ignore_closed and not data.player_table.flags.technology_gui_open then
-    root.close(data.player, data.player_table)
+--- @param Gui SearchGui
+function actions.close(Gui, _, _)
+  if not Gui.state.ignore_closed and not Gui.player_table.flags.technology_gui_open then
+    Gui:close()
   end
 end
 
-function actions.toggle_pinned(data)
-  local player = data.player
-  local refs = data.refs
-  local state = data.state
+--- @param Gui SearchGui
+function actions.toggle_pinned(Gui, _, _)
+  local player = Gui.player
+  local refs = Gui.refs
+  local state = Gui.state
 
   local pin_button = refs.titlebar.pin_button
 
@@ -67,7 +52,7 @@ function actions.toggle_pinned(data)
   if state.pinned then
     pin_button.style = "flib_selected_frame_action_button"
     pin_button.sprite = "rb_pin_black"
-    if player.opened == data.refs.window then
+    if player.opened == refs.window then
       state.ignore_closed = true
       player.opened = nil
       state.ignore_closed = false
@@ -79,42 +64,46 @@ function actions.toggle_pinned(data)
   end
 end
 
-function actions.toggle_settings(data)
-  local state = data.state
-  local player = data.player
+--- @param Gui SearchGui
+function actions.toggle_settings(Gui)
+  local state = Gui.state
+  local player = Gui.player
 
   state.ignore_closed = true
-  settings_root.toggle(player, data.player_table)
+  settings_root.toggle(player, Gui.player_table)
   state.ignore_closed = false
-  local settings_button = data.refs.titlebar.settings_button
-  if data.player_table.guis.settings then
+  local settings_button = Gui.refs.titlebar.settings_button
+  if Gui.player_table.guis.settings then
     settings_button.style = "flib_selected_frame_action_button"
     settings_button.sprite = "rb_settings_black"
   else
     settings_button.style = "frame_action_button"
     settings_button.sprite = "rb_settings_white"
     if not state.pinned then
-      player.opened = data.refs.window
+      player.opened = Gui.refs.window
     end
   end
 end
 
-function actions.deselect_settings_button(data)
-  local settings_button = data.refs.titlebar.settings_button
+--- @param Gui SearchGui
+function actions.deselect_settings_button(Gui, _, _)
+  local settings_button = Gui.refs.titlebar.settings_button
   settings_button.style = "frame_action_button"
   settings_button.sprite = "rb_settings_white"
-  if not data.state.pinned and data.refs.window.visible then
-    data.player.opened = data.refs.window
+  if not Gui.state.pinned and Gui.refs.window.visible then
+    Gui.player.opened = Gui.refs.window
   end
 end
 
-function actions.update_search_query(data)
-  local player_table = data.player_table
-  local state = data.state
-  local refs = data.refs
+--- @param Gui SearchGui
+--- @param e on_gui_text_changed
+function actions.update_search_query(Gui, _, e)
+  local player_table = Gui.player_table
+  local state = Gui.state
+  local refs = Gui.refs
 
   local class_filter
-  local query = string.lower(data.e.element.text)
+  local query = string.lower(e.text)
   if string.find(query, "/") then
     -- NOTE: The `_`s here are technically globals, but whatever
     _, _, class_filter, query = string.find(query, "^/(.-)/(.-)$")
@@ -159,7 +148,7 @@ function actions.update_search_query(data)
     -- Update in a while
     state.update_results_ident = on_tick_n.add(
       game.tick + constants.search_timeout,
-      { gui = "search", action = "update_search_results", player_index = data.e.player_index }
+      { gui = "search", action = "update_search_results", player_index = Gui.player.index }
     )
     refs.search_textfield.style = "rb_search_textfield"
   else
@@ -168,11 +157,12 @@ function actions.update_search_query(data)
   end
 end
 
-function actions.update_search_results(data)
-  local player = data.player
-  local player_table = data.player_table
-  local state = data.state
-  local refs = data.refs
+--- @param Gui SearchGui
+function actions.update_search_results(Gui, _, _)
+  local player = Gui.player
+  local player_table = Gui.player_table
+  local state = Gui.state
+  local refs = Gui.refs
 
   -- Data
   local player_data = formatter.build_player_data(player, player_table)
@@ -267,39 +257,45 @@ function actions.update_search_results(data)
   end
 end
 
-function actions.open_object(data)
-  local context = gui_util.navigate_to(data.e)
+--- @param Gui SearchGui
+--- @param e on_gui_click
+function actions.open_object(Gui, _, e)
+  local context = gui_util.navigate_to(e)
   if context then
-    local attach = data.player_table.settings.general.interface.attach_search_results
-    local sticky = attach and data.e.button == defines.mouse_button_type.left
-    local id = sticky and data.state.id and data.player_table.guis.info[data.state.id] and data.state.id or nil
-    local parent = sticky and data.refs.window or nil
-    shared.open_page(data.player, data.player_table, context, { id = id, parent = parent })
+    local attach = Gui.player_table.settings.general.interface.attach_search_results
+    local sticky = attach and e.button == defines.mouse_button_type.left
+    local id = sticky and Gui.state.id and Gui.player_table.guis.info[Gui.state.id] and Gui.state.id or nil
+    local parent = sticky and Gui.refs.window or nil
+    shared.open_page(Gui.player, Gui.player_table, context, { id = id, parent = parent })
     if sticky then
-      data.state.id = data.player_table.guis.info._active_id
+      Gui.state.id = Gui.player_table.guis.info._active_id
     end
-    if not sticky and data.player_table.settings.general.interface.close_search_gui_after_selection then
-      actions.close(data)
+    if not sticky and Gui.player_table.settings.general.interface.close_search_gui_after_selection then
+      actions.close(Gui)
     end
   end
 end
 
-function actions.update_favorites(data)
-  root.update_favorites(data.player, data.player_table)
+--- @param Gui SearchGui
+function actions.update_favorites(Gui, _, _)
+  Gui:update_favorites()
 end
 
-function actions.update_history(data)
-  root.update_history(data.player, data.player_table)
+--- @param Gui SearchGui
+function actions.update_history(Gui, _, _)
+  Gui:update_history()
 end
 
-function actions.delete_favorites(data)
-  data.player_table.favorites = {}
-  actions.update_favorites(data)
+--- @param Gui SearchGui
+function actions.delete_favorites(Gui, _, _)
+  Gui.player_table.favorites = {}
+  actions.update_favorites(Gui)
 end
 
-function actions.delete_history(data)
-  data.player_table.global_history = {}
-  actions.update_history(data)
+--- @param Gui SearchGui
+function actions.delete_history(Gui, _, _)
+  Gui.player_table.global_history = {}
+  actions.update_history(Gui)
 end
 
 return actions

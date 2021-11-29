@@ -13,6 +13,7 @@ local player_data = require("scripts.player-data")
 local recipe_book = require("scripts.recipe-book")
 local remote_interface = require("scripts.remote-interface")
 local shared = require("scripts.shared")
+local util = require("scripts.util")
 
 local info_gui = require("scripts.gui.info.index")
 local quick_ref_gui = require("scripts.gui.quick-ref.index")
@@ -124,6 +125,13 @@ event.on_load(function()
     recipe_book.build()
     recipe_book.check_forces()
   end
+
+  for _, player_table in pairs(global.players) do
+    local SearchGui = player_table.guis.search
+    if SearchGui then
+      search_gui.load(SearchGui)
+    end
+  end
 end)
 
 event.on_configuration_changed(function(e)
@@ -175,15 +183,17 @@ end)
 -- GUI
 
 local function handle_gui_action(msg, e)
-  if msg.gui == "info" then
-    info_gui.handle_action(msg, e)
-  elseif msg.gui == "quick_ref" then
-    quick_ref_gui.handle_action(msg, e)
-  elseif msg.gui == "search" then
-    search_gui.handle_action(msg, e)
-  elseif msg.gui == "settings" then
-    settings_gui.handle_action(msg, e)
+  local Gui = util.get_gui(e.player_index, msg.gui)
+  if Gui then
+    Gui:dispatch(msg, e)
   end
+  -- if msg.gui == "info" then
+  --   info_gui.handle_action(msg, e)
+  -- elseif msg.gui == "quick_ref" then
+  --   quick_ref_gui.handle_action(msg, e)
+  -- elseif msg.gui == "settings" then
+  --   settings_gui.handle_action(msg, e)
+  -- end
 end
 
 local function read_gui_action(e)
@@ -205,7 +215,10 @@ event.on_gui_click(function(e)
     if player_table.flags.can_open_gui then
       info_gui.root.bring_all_to_front(player_table)
       quick_ref_gui.actions.bring_all_to_front(player_table)
-      search_gui.root.bring_to_front(player_table)
+      local SearchGui = util.get_gui(player.index, "search")
+      if SearchGui then
+        SearchGui:bring_to_front()
+      end
     end
   end
 end)
@@ -271,7 +284,10 @@ event.on_lua_shortcut(function(e)
     end
 
     -- Open search GUI
-    search_gui.root.toggle(player, player_table)
+    local SearchGui = util.get_gui(player.index, "search")
+    if SearchGui then
+      SearchGui:toggle()
+    end
   end
 end)
 
@@ -363,7 +379,10 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
       })
       player.play_sound({ path = "utility/cannot_build" })
     else
-      search_gui.root.toggle(player, player_table)
+      local SearchGui = util.get_gui(player.index, "search")
+      if SearchGui then
+        SearchGui:toggle()
+      end
     end
   else
     player.print({ "message.rb-cannot-open-gui" })
@@ -461,17 +480,15 @@ event.on_string_translated(function(e)
       elseif not player_table.flags.can_open_gui then
         player_table.language = language_data.language
         player_table.translations = language_data.dictionaries
-        -- Show message if needed
+
         if player_table.flags.show_message_after_translation then
           player.print({ "message.rb-can-open-gui" })
           player_table.flags.show_message_after_translation = false
         end
 
-        -- Create GUI
-        search_gui.root.build(player, player_table)
-        -- Update flags
+        search_gui.build(player, player_table)
+
         player_table.flags.can_open_gui = true
-        -- Enable shortcut
         player.set_shortcut_available("rb-search", true)
       end
     end
@@ -510,7 +527,10 @@ function shared.update_header_button(player, player_table, context, button, to_s
     )
   end
   if button == "favorite_button" then
-    search_gui.handle_action({ action = "update_favorites" }, { player_index = player.index })
+    local SearchGui = util.get_gui(player.index, "search")
+    if SearchGui then
+      SearchGui:update_favorites()
+    end
   end
 end
 
@@ -531,8 +551,9 @@ end
 
 function shared.update_global_history(player, player_table, new_context)
   player_data.update_global_history(player_table.global_history, new_context)
-  if player_table.guis.search and player_table.guis.search.refs.window.visible then
-    search_gui.handle_action({ action = "update_history" }, { player_index = player.index })
+  local SearchGui = util.get_gui(player.index, "search")
+  if SearchGui and SearchGui.refs.window.visible then
+    SearchGui:update_history()
   end
 end
 
@@ -542,10 +563,12 @@ function shared.refresh_contents(player, player_table, skip_memoizer_purge)
   end
   info_gui.root.update_all(player, player_table)
   quick_ref_gui.root.update_all(player, player_table)
-  if player_table.guis.search and player_table.guis.search.refs.window.visible then
-    search_gui.handle_action({ action = "update_search_results" }, { player_index = player.index })
-    search_gui.handle_action({ action = "update_favorites" }, { player_index = player.index })
-    search_gui.handle_action({ action = "update_history" }, { player_index = player.index })
-    search_gui.root.update_width(player, player_table)
+
+  local SearchGui = util.get_gui(player.index, "search")
+  if SearchGui and SearchGui.refs.window.visible then
+    SearchGui:dispatch({ action = "update_search_results" }, { player_index = player.index })
+    SearchGui:update_favorites()
+    SearchGui:update_history()
+    SearchGui:update_width()
   end
 end

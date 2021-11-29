@@ -13,6 +13,7 @@ local settings_gui = require("scripts.gui.settings.index")
 local player_data = {}
 
 function player_data.init(player_index)
+  --- @class PlayerTable
   local data = {
     favorites = {},
     flags = {
@@ -20,6 +21,7 @@ function player_data.init(player_index)
       show_message_after_translation = false,
       technology_gui_open = false,
     },
+    language = nil, --- @type string|nil
     global_history = {},
     guis = {
       info = { _next_id = 1 },
@@ -29,7 +31,7 @@ function player_data.init(player_index)
       general = {},
       categories = {},
     },
-    translations = nil, -- Assigned its initial value in player_data.refresh
+    translations = nil, --- @type table|nil
   }
   global.players[player_index] = data
 end
