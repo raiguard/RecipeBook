@@ -993,7 +993,12 @@ constants.tooltips = {
     { type = "plain", source = "stack_size", formatter = "number" },
     { type = "plain", source = "fuel_value", formatter = "fuel_value" },
     { type = "plain", source = "fuel_emissions_multiplier", label = "fuel_pollution", formatter = "percent" },
-    { type = "plain", source = "fuel_acceleration_multiplier", label = "vehicle_acceleration", formatter = "percent" },
+    {
+      type = "plain",
+      source = "fuel_acceleration_multiplier",
+      label = "vehicle_acceleration",
+      formatter = "percent",
+    },
     { type = "plain", source = "fuel_top_speed_multiplier", label = "vehicle_top_speed", formatter = "percent" },
     { type = "plain", source = "fuel_category", formatter = "object", options = { hide_glyph = true } },
     { type = "plain", source = "group", formatter = "object", options = { hide_glyph = true } },

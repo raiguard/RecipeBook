@@ -132,8 +132,10 @@ function item_proc.build(recipe_book, dictionaries, metadata)
           and fuel_acceleration_multiplier
         or nil,
       fuel_category = fuel_category,
-      fuel_emissions_multiplier = has_fuel_value and fuel_emissions_multiplier ~= 1 and fuel_emissions_multiplier or nil,
-      fuel_top_speed_multiplier = has_fuel_value and fuel_top_speed_multiplier ~= 1 and fuel_top_speed_multiplier or nil,
+      fuel_emissions_multiplier = has_fuel_value and fuel_emissions_multiplier ~= 1 and fuel_emissions_multiplier
+        or nil,
+      fuel_top_speed_multiplier = has_fuel_value and fuel_top_speed_multiplier ~= 1 and fuel_top_speed_multiplier
+        or nil,
       fuel_value = has_fuel_value and fuel_value or nil,
       group = { class = "group", name = group.name },
       hidden = prototype.has_flag("hidden"),
