@@ -127,6 +127,10 @@ event.on_load(function()
   end
 
   for _, player_table in pairs(global.players) do
+    for _, QuickRefGui in pairs(player_table.guis.quick_ref) do
+      quick_ref_gui.load(QuickRefGui)
+    end
+
     local SearchGui = player_table.guis.search
     if SearchGui then
       search_gui.load(SearchGui)
@@ -183,17 +187,11 @@ end)
 -- GUI
 
 local function handle_gui_action(msg, e)
+  --- @type SearchGui|QuickRefGui
   local Gui = util.get_gui(e.player_index, msg.gui)
   if Gui then
     Gui:dispatch(msg, e)
   end
-  -- if msg.gui == "info" then
-  --   info_gui.handle_action(msg, e)
-  -- elseif msg.gui == "quick_ref" then
-  --   quick_ref_gui.handle_action(msg, e)
-  -- elseif msg.gui == "settings" then
-  --   settings_gui.handle_action(msg, e)
-  -- end
 end
 
 local function read_gui_action(e)
@@ -214,7 +212,8 @@ event.on_gui_click(function(e)
     local player_table = global.players[e.player_index]
     if player_table.flags.can_open_gui then
       info_gui.root.bring_all_to_front(player_table)
-      quick_ref_gui.actions.bring_all_to_front(player_table)
+      quick_ref_gui.bring_all_to_front(player_table)
+      --- @type SearchGui
       local SearchGui = util.get_gui(player.index, "search")
       if SearchGui then
         SearchGui:bring_to_front()
@@ -283,7 +282,7 @@ event.on_lua_shortcut(function(e)
       return
     end
 
-    -- Open search GUI
+    --- @type SearchGui
     local SearchGui = util.get_gui(player.index, "search")
     if SearchGui then
       SearchGui:toggle()
@@ -379,6 +378,7 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
       })
       player.play_sound({ path = "utility/cannot_build" })
     else
+      --- @type SearchGui
       local SearchGui = util.get_gui(player.index, "search")
       if SearchGui then
         SearchGui:toggle()
@@ -527,6 +527,7 @@ function shared.update_header_button(player, player_table, context, button, to_s
     )
   end
   if button == "favorite_button" then
+    --- @type SearchGui
     local SearchGui = util.get_gui(player.index, "search")
     if SearchGui then
       SearchGui:update_favorites()
@@ -551,6 +552,7 @@ end
 
 function shared.update_global_history(player, player_table, new_context)
   player_data.update_global_history(player_table.global_history, new_context)
+  --- @type SearchGui
   local SearchGui = util.get_gui(player.index, "search")
   if SearchGui and SearchGui.refs.window.visible then
     SearchGui:update_history()
@@ -562,8 +564,9 @@ function shared.refresh_contents(player, player_table, skip_memoizer_purge)
     formatter.create_cache(player.index)
   end
   info_gui.root.update_all(player, player_table)
-  quick_ref_gui.root.update_all(player, player_table)
+  quick_ref_gui.update_all(player, player_table)
 
+  --- @type SearchGui
   local SearchGui = util.get_gui(player.index, "search")
   if SearchGui and SearchGui.refs.window.visible then
     SearchGui:dispatch({ action = "update_search_results" }, { player_index = player.index })

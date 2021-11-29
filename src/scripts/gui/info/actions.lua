@@ -7,7 +7,7 @@ local gui_util = require("scripts.gui.util")
 local recipe_book = require("scripts.recipe-book")
 local shared = require("scripts.shared")
 
-local quick_ref_root = require("scripts.gui.quick-ref.root")
+local quick_ref_gui = require("scripts.gui.quick-ref.index")
 
 local actions = {}
 
@@ -184,7 +184,7 @@ function actions.toggle_quick_ref(data)
     local offset = sizes.info_width + (state.search_info and (sizes.search_width + 24) or 0)
     offset = offset * data.player.display_scale
     local location = data.refs.root.location
-    quick_ref_root.toggle(data.player, data.player_table, data.context.name, { location.x + offset, y = location.y })
+    quick_ref_gui.toggle(data.player, data.player_table, data.context.name, { location.x + offset, y = location.y })
   end
 end
 

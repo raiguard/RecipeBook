@@ -24,7 +24,9 @@ function player_data.init(player_index)
     language = nil, --- @type string|nil
     global_history = {},
     guis = {
+      --- @type table<number|string, QuickRefGui|number>
       info = { _next_id = 1 },
+      --- @type table<string, QuickRefGui>
       quick_ref = {},
     },
     settings = {
@@ -155,7 +157,7 @@ end
 function player_data.refresh(player, player_table)
   -- Destroy GUIs
   info_gui.root.destroy_all(player_table)
-  quick_ref_gui.root.destroy_all(player, player_table)
+  quick_ref_gui.destroy_all(player, player_table)
   if player_table.guis.search then
     search_gui.root.destroy(player, player_table)
   end

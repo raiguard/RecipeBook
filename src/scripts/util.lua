@@ -148,12 +148,19 @@ end
 --- Safely retrieve the GUI for the given player.
 --- @param player_index number
 --- @param gui_name string
---- @return SearchGui
-function util.get_gui(player_index, gui_name)
+--- @param gui_id string|number|nil
+function util.get_gui(player_index, gui_name, gui_id)
   local player_table = global.players[player_index]
   if player_table then
-    -- TODO: Handle quick ref and info GUIs
-    local Gui = player_table.guis[gui_name]
+    local Gui
+    if gui_id then
+      local guis = player_table.guis[gui_name]
+      if guis then
+        Gui = guis[gui_id]
+      end
+    else
+      Gui = player_table.guis[gui_name]
+    end
     if Gui and Gui.refs.window.valid then
       return Gui
     end
