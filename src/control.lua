@@ -356,12 +356,6 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
         player.play_sound({ path = "utility/cannot_build" })
         return
       end
-      -- If we're here, the player did not have an object selected
-      player.create_local_flying_text({
-        text = { "message.rb-did-not-select-object" },
-        create_at_cursor = true,
-      })
-      player.play_sound({ path = "utility/cannot_build" })
     else
       search_gui.root.toggle(player, player_table)
     end
