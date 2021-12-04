@@ -1,5 +1,6 @@
 local dictionary = require("__flib__.dictionary")
 local on_tick_n = require("__flib__.on-tick-n")
+local table = require("__flib__.table")
 
 local global_data = require("scripts.global-data")
 local player_data = require("scripts.player-data")
@@ -44,6 +45,27 @@ return {
   ["3.2.0"] = function()
     for _, player_table in pairs(global.players) do
       player_table.guis.info._sticky_id = nil
+    end
+  end,
+  ["3.2.2"] = function()
+    -- Migrate header names
+    local changes = {
+      compatible_equipment = "accepted_equipment",
+      compatible_fuels = "can_burn",
+      compatible_mining_drills = "mined_by",
+      compatible_modules = "accepted_modules",
+      compatible_recipes = "can_craft",
+      compatible_resources = "can_mine",
+    }
+    for _, player_table in pairs(global.players) do
+      local page_settings = player_table.settings.pages
+      for page_name, components in pairs(page_settings) do
+        local new_components = {}
+        for name, data in pairs(components) do
+          new_components[changes[name] or name] = data
+        end
+        page_settings[page_name] = new_components
+      end
     end
   end,
 }
