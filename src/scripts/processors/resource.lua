@@ -41,14 +41,14 @@ return function(recipe_book, dictionaries)
       }
     end
 
-    local compatible_mining_drills = {}
+    local mined_by = {}
     local resource_category = prototype.resource_category
     for drill_name, drill_data in pairs(recipe_book.mining_drill) do
       if
         drill_data.resource_categories_lookup[resource_category]
         and (not required_fluid or drill_data.supports_fluid)
       then
-        compatible_mining_drills[#compatible_mining_drills + 1] = { class = "mining_drill", name = drill_name }
+        mined_by[#mined_by + 1] = { class = "mining_drill", name = drill_name }
       end
     end
 
@@ -57,7 +57,7 @@ return function(recipe_book, dictionaries)
 
     recipe_book.resource[name] = {
       class = "resource",
-      compatible_mining_drills = compatible_mining_drills,
+      mined_by = mined_by,
       mining_time = mineable_properties.mining_time,
       products = products,
       prototype_name = name,

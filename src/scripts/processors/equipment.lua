@@ -56,7 +56,7 @@ function equipment_proc.build(recipe_book, dictionaries)
 
     recipe_book.equipment[name] = {
       class = "equipment",
-      compatible_fuels = {},
+      can_burn = {},
       fuel_categories = fuel_categories,
       enabled = true,
       equipment_categories = table.map(prototype.equipment_categories, function(category)

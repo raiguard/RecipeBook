@@ -109,7 +109,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
           end
         end
         if compatible then
-          crafter_data.compatible_modules[#crafter_data.compatible_modules + 1] = { class = "item", name = name }
+          crafter_data.accepted_modules[#crafter_data.accepted_modules + 1] = { class = "item", name = name }
         end
       end
     end
@@ -125,7 +125,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       burnt_result = burnt_result,
       burnt_result_of = {},
       class = "item",
-      compatible_equipment = equipment,
+      accepted_equipment = equipment,
       equipment_categories = equipment_categories,
       fuel_acceleration_multiplier = has_fuel_value
           and fuel_acceleration_multiplier ~= 1

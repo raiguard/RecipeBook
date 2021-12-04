@@ -9,10 +9,9 @@ return function(recipe_book, dictionaries, metadata)
     end
     recipe_book.crafter[name] = {
       blueprintable = false,
+      can_burn = {}, -- Always empty
+      can_craft = {},
       class = "crafter",
-      compatible_fuels = {}, -- Always empty
-      compatible_modules = {}, -- Always empty
-      compatible_recipes = {},
       crafting_speed = 1,
       enabled = true,
       hidden = false,
@@ -20,8 +19,9 @@ return function(recipe_book, dictionaries, metadata)
       is_character = true,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
-      recipe_categories_lookup = prototype.crafting_categories,
       recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
+      recipe_categories_lookup = prototype.crafting_categories,
+      accepted_modules = {}, -- Always empty
       unlocked_by = {},
     }
     dictionaries.crafter:add(name, prototype.localised_name)
@@ -73,10 +73,9 @@ return function(recipe_book, dictionaries, metadata)
     local is_hidden = prototype.has_flag("hidden")
     recipe_book.crafter[name] = {
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
+      can_burn = {},
+      can_craft = {},
       class = "crafter",
-      compatible_fuels = {},
-      compatible_modules = {},
-      compatible_recipes = {},
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = fixed_recipe,
       fuel_categories = util.process_energy_source(prototype),
@@ -84,10 +83,11 @@ return function(recipe_book, dictionaries, metadata)
       ingredient_limit = ingredient_limit,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
-      recipe_categories_lookup = prototype.crafting_categories,
       recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
+      recipe_categories_lookup = prototype.crafting_categories,
       rocket_parts_required = prototype.rocket_parts_required,
       size = util.get_size(prototype),
+      accepted_modules = {},
       unlocked_by = {},
     }
     dictionaries.crafter:add(name, prototype.localised_name)

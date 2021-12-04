@@ -11,7 +11,7 @@ function mining_drill_proc.build(recipe_book, dictionaries)
 
     recipe_book.mining_drill[name] = {
       class = "mining_drill",
-      compatible_fuels = {},
+      can_burn = {},
       enabled = true,
       fuel_categories = util.process_energy_source(prototype),
       mining_area = math.ceil(prototype.mining_drill_radius * 2),
@@ -31,17 +31,17 @@ end
 
 function mining_drill_proc.add_resources(recipe_book)
   for _, drill_data in pairs(recipe_book.mining_drill) do
-    local compatible_resources = util.unique_obj_array()
+    local can_mine = util.unique_obj_array()
     for category in pairs(drill_data.resource_categories_lookup) do
       local category_data = recipe_book.resource_category[category]
       for _, resource_ident in pairs(category_data.resources) do
         local resource_data = recipe_book.resource[resource_ident.name]
         if not resource_data.required_fluid or drill_data.supports_fluid then
-          compatible_resources[#compatible_resources + 1] = resource_ident
+          can_mine[#can_mine + 1] = resource_ident
         end
       end
     end
-    drill_data.compatible_resources = compatible_resources
+    drill_data.can_mine = can_mine
   end
 end
 

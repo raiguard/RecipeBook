@@ -14,7 +14,7 @@ return function(recipe_book, dictionaries)
 
     recipe_book.lab[name] = {
       class = "lab",
-      compatible_fuels = {},
+      can_burn = {},
       fuel_categories = util.process_energy_source(prototype),
       hidden = prototype.has_flag("hidden"),
       inputs = table.map(prototype.lab_inputs, function(v)

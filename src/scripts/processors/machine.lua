@@ -21,8 +21,8 @@ return function(recipe_book, dictionaries)
 
     recipe_book.machine[name] = {
       class = "machine",
-      compatible_equipment = equipment,
-      compatible_fuels = {},
+      accepted_equipment = equipment,
+      can_burn = {},
       equipment_categories = equipment_categories,
       fuel_categories = fuel_categories,
       placed_by = util.process_placed_by(prototype),

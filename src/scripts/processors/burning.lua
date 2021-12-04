@@ -7,7 +7,7 @@ return function(recipe_book)
   for _, class in pairs(constants.burner_classes) do
     for name, data in pairs(recipe_book[class]) do
       -- Burned in
-      local compatible_fuels = data.compatible_fuels
+      local can_burn = data.can_burn
       for i, category_ident in pairs(data.fuel_categories or {}) do
         local category_data = recipe_book.fuel_category[category_ident.name]
         if category_data then
@@ -16,7 +16,7 @@ return function(recipe_book)
             for _, obj_ident in pairs(objects) do
               local obj_data = recipe_book[obj_ident.class][obj_ident.name]
               obj_data.burned_in[#obj_data.burned_in + 1] = { class = class, name = name }
-              compatible_fuels[#compatible_fuels + 1] = table.shallow_copy(obj_ident)
+              can_burn[#can_burn + 1] = table.shallow_copy(obj_ident)
             end
           end
         else

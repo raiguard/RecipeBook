@@ -2,6 +2,7 @@
 Version: 3.2.2
 Date: ????
   Changes:
+    - Updated "Compatible ---" header names to be more in line with other headers
 ---------------------------------------------------------------------------------------------------
 Version: 3.2.1
 Date: 2021-11-09
