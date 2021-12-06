@@ -179,13 +179,18 @@ end
 
 function actions.toggle_quick_ref(data)
   local state = data.state
-  if not (state.docked and not state.search_info) then
+  local location
+  if state.docked and not state.search_info then
     local sizes = constants.gui_sizes[data.player_table.language] or constants.gui_sizes.en
     local offset = sizes.info_width + (state.search_info and (sizes.search_width + 24) or 0)
     offset = offset * data.player.display_scale
-    local location = data.refs.root.location
-    quick_ref_root.toggle(data.player, data.player_table, data.context.name, { location.x + offset, y = location.y })
+    local root_location = data.refs.root.location
+    if root_location then
+      root_location.x = root_location.x + offset
+      location = root_location
+    end
   end
+  quick_ref_root.toggle(data.player, data.player_table, data.context.name, location)
 end
 
 function actions.toggle_favorite(data)
