@@ -2,8 +2,8 @@
 Version: 3.2.2
 Date: ????
   Changes:
-    - Updated "Compatible ---" header names to be more in line with other headers
     - "--- categories" lists are hidden by default
+    - Improved some of the list header names
   Bugfixes:
     - Fixed that quick ref windows would not open when the info GUI is docked (#87)
 ---------------------------------------------------------------------------------------------------
