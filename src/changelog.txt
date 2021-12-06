@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.2.2
-Date: ????
+Date: 2021-12-06
   Changes:
     - "--- categories" lists are hidden by default
     - Improved some of the list header names
