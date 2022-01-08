@@ -2,6 +2,7 @@
 Version: 3.2.3
 Date: ????
   Bugfixes:
+    - Fixed a rare crash during migrations (#90)
     - Fixed a crash when a mod creates a force before the recipe book can be built (#94)
 ---------------------------------------------------------------------------------------------------
 Version: 3.2.2

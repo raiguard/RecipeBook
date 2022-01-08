@@ -59,12 +59,14 @@ return {
     }
     for _, player_table in pairs(global.players) do
       local page_settings = player_table.settings.pages
-      for page_name, components in pairs(page_settings) do
-        local new_components = {}
-        for name, data in pairs(components) do
-          new_components[changes[name] or name] = data
+      if page_settings then
+        for page_name, components in pairs(page_settings) do
+          local new_components = {}
+          for name, data in pairs(components) do
+            new_components[changes[name] or name] = data
+          end
+          page_settings[page_name] = new_components
         end
-        page_settings[page_name] = new_components
       end
     end
   end,
