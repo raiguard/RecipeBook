@@ -145,7 +145,7 @@ end)
 -- FORCE
 
 event.on_force_created(function(e)
-  if not global.forces then
+  if not global.forces or not recipe_book.generated then
     return
   end
   global_data.add_force(e.force)
@@ -154,7 +154,7 @@ end)
 
 event.register({ defines.events.on_research_finished, defines.events.on_research_reversed }, function(e)
   -- This can be called by other mods before we get a chance to load
-  if not global.players then
+  if not global.players or not recipe_book.generated then
     return
   end
   if not recipe_book[constants.classes[1]] then

@@ -71,6 +71,8 @@ function recipe_book.build()
 
   burning_proc(recipe_book)
   machine_state_proc(recipe_book)
+
+  recipe_book.generated = true
 end
 
 local function update_launch_products(launch_products, force_index, to_value)
