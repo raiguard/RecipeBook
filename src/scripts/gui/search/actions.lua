@@ -7,7 +7,6 @@ local constants = require("constants")
 local formatter = require("scripts.formatter")
 local gui_util = require("scripts.gui.util")
 local recipe_book = require("scripts.recipe-book")
-local shared = require("scripts.shared")
 
 local root = require("scripts.gui.search.root")
 local settings_root = require("scripts.gui.settings.root")
@@ -274,7 +273,7 @@ function actions.open_object(data)
     local sticky = attach and data.e.button == defines.mouse_button_type.left
     local id = sticky and data.state.id and data.player_table.guis.info[data.state.id] and data.state.id or nil
     local parent = sticky and data.refs.window or nil
-    shared.open_page(data.player, data.player_table, context, { id = id, parent = parent })
+    OPEN_PAGE(data.player, data.player_table, context, { id = id, parent = parent })
     if sticky then
       data.state.id = data.player_table.guis.info._active_id
     end

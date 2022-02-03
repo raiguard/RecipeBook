@@ -5,65 +5,39 @@ local constants = require("constants")
 
 local gui_util = require("scripts.gui.util")
 local recipe_book = require("scripts.recipe-book")
-local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 local actions = {}
 
-local root = require("scripts.gui.info.root")
-
-function actions.get_action_data(msg, e)
-  -- Get info
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-
-  local gui_data = player_table.guis.info[msg.id]
-  if not gui_data then
-    return
-  end
-
-  local state = gui_data.state
-  local context = state.history[state.history._index]
-
-  -- Mark this GUI as active
-  -- NOTE: This works because if we're getting action data, we're about to do an action
-  player_table.guis.info._active_id = msg.id
-
-  return {
-    context = context,
-    e = e,
-    gui_data = gui_data,
-    msg = msg,
-    player = player,
-    player_table = player_table,
-    refs = gui_data.refs,
-    state = gui_data.state,
-  }
+--- @param Gui InfoGui
+function actions.set_as_active(Gui, _, _)
+  Gui.player_table.guis.info._active_id = Gui.id
 end
 
-function actions.set_as_active(data)
-  data.player_table.guis.info._active_id = data.state.id
-end
-
-function actions.reset_location(data)
-  if data.e.button == defines.mouse_button_type.middle then
-    data.refs.window.force_auto_center()
+--- @param Gui InfoGui
+--- @param e on_gui_click
+function actions.reset_location(Gui, _, e)
+  if e.button == defines.mouse_button_type.middle then
+    Gui.refs.window.force_auto_center()
   end
 end
 
-function actions.close(data)
-  root.destroy(data.player_table, data.msg.id)
+--- @param Gui InfoGui
+function actions.close(Gui, _, _)
+  Gui:destroy()
 end
 
-function actions.bring_to_front(data)
-  if not data.state.docked then
-    data.refs.window.bring_to_front()
+--- @param Gui InfoGui
+function actions.bring_to_front(Gui, _, _)
+  if not Gui.state.docked then
+    Gui.refs.window.bring_to_front()
   end
 end
 
-function actions.toggle_search(data)
-  local state = data.state
-  local refs = data.refs
+--- @param Gui InfoGui
+function actions.toggle_search(Gui, _, _)
+  local state = Gui.state
+  local refs = Gui.refs
 
   local opened = state.search_opened
   state.search_opened = not opened
@@ -80,7 +54,7 @@ function actions.toggle_search(data)
       search_textfield.text = ""
       state.search_query = ""
       -- Refresh page
-      root.update_contents(data.player, data.player_table, data.msg.id)
+      Gui:update_contents()
     end
   else
     -- Show search textfield
@@ -91,11 +65,14 @@ function actions.toggle_search(data)
   end
 end
 
-function actions.navigate(data)
+--- @param Gui InfoGui
+--- @param msg table
+--- @param e on_gui_click
+function actions.navigate(Gui, msg, e)
   -- Update position in history
-  local delta = data.msg.delta
-  local history = data.state.history
-  if data.e.shift then
+  local delta = msg.delta
+  local history = Gui.state.history
+  if e.shift then
     if delta < 0 then
       history._index = 1
     else
@@ -104,19 +81,19 @@ function actions.navigate(data)
   else
     history._index = math.clamp(history._index + delta, 1, #history)
   end
-  -- Update contents
-  root.update_contents(data.player, data.player_table, data.msg.id)
+  Gui:update_contents()
 end
 
-function actions.update_search_query(data)
-  local player = data.player
-  local player_table = data.player_table
-  local state = data.state
-  local id = data.msg.id
+--- @param Gui InfoGui
+--- @param msg table
+--- @param e on_gui_text_changed
+function actions.update_search_query(Gui, msg, e)
+  local state = Gui.state
+  local id = msg.id
 
-  local query = string.lower(data.e.element.text)
+  local query = string.lower(e.element.text)
   -- Fuzzy search
-  if player_table.settings.general.search.fuzzy_search then
+  if Gui.player_table.settings.general.search.fuzzy_search then
     query = string.gsub(query, ".", "%1.*")
   end
   -- Input sanitization
@@ -134,74 +111,93 @@ function actions.update_search_query(data)
 
   if query == "" then
     -- Update now
-    root.update_contents(player, player_table, id, { refresh = true })
+    Gui:update_contents({ refresh = true })
   else
     -- Update in a while
     state.update_results_ident = on_tick_n.add(
       game.tick + constants.search_timeout,
-      { gui = "info", id = id, action = "update_search_results", player_index = data.e.player_index }
+      { gui = "info", id = id, action = "update_search_results", player_index = e.player_index }
     )
   end
 end
 
-function actions.update_search_results(data)
+--- @param Gui InfoGui
+function actions.update_search_results(Gui, _, _)
   -- Update based on query
-  root.update_contents(data.player, data.player_table, data.msg.id, { refresh = true })
+  Gui:update_contents({ refresh = true })
 end
 
-function actions.navigate_to(data)
-  local e = data.e
+--- @param Gui InfoGui
+--- @param e on_gui_click
+function actions.navigate_to(Gui, _, e)
   local context = gui_util.navigate_to(e)
   if context then
     if e.button == defines.mouse_button_type.middle then
-      root.build(data.player, data.player_table, context)
+      INFO_GUI.build(Gui.player, Gui.player_table, context)
     else
-      root.update_contents(data.player, data.player_table, data.msg.id, { new_context = context })
+      Gui:update_contents({ new_context = context })
     end
   end
 end
 
-function actions.navigate_to_plain(data)
-  local msg = data.msg
-  root.update_contents(data.player, data.player_table, msg.id, { new_context = msg.context })
+--- @param Gui InfoGui
+--- @param msg table
+function actions.navigate_to_plain(Gui, msg, _)
+  Gui:update_contents({ new_context = msg.context })
 end
 
-function actions.open_in_tech_window(data)
-  data.player_table.flags.technology_gui_open = true
-  data.player.open_technology_gui(data.context.name)
+--- @param Gui InfoGui
+function actions.open_in_tech_window(Gui, _, _)
+  Gui.player_table.flags.technology_gui_open = true
+  Gui.player.open_technology_gui(Gui:get_context())
 end
 
-function actions.go_to_base_fluid(data)
-  local base_fluid = recipe_book.fluid[data.context.name].prototype_name
-  root.update_contents(data.player, data.player_table, data.msg.id, { class = "fluid", name = base_fluid })
+--- @param Gui InfoGui
+function actions.go_to_base_fluid(Gui, _, _)
+  local base_fluid = recipe_book.fluid[Gui:get_context().name].prototype_name
+  Gui:update_contents({ new_context = { class = "fluid", name = base_fluid } })
 end
 
-function actions.toggle_quick_ref(data)
-  local state = data.state
+--- @param Gui InfoGui
+function actions.toggle_quick_ref(Gui, _, _)
+  local player = Gui.player
+  local state = Gui.state
   local location
   if not (state.docked and not state.search_info) then
-    local sizes = constants.gui_sizes[data.player_table.language] or constants.gui_sizes.en
+    local sizes = constants.gui_sizes[Gui.player_table.language] or constants.gui_sizes.en
     local offset = sizes.info_width + (state.search_info and (sizes.search_width + 24) or 0)
-    offset = offset * data.player.display_scale
-    local root_location = data.refs.root.location
+    offset = offset * player.display_scale
+    local root_location = Gui.refs.root.location
     if root_location then
       root_location.x = root_location.x + offset
       location = root_location
     end
   end
   -- Toggle quick ref GUI
-  local QuickRefGui = util.get_gui(data.player.index, "quick_ref", data.context.name)
+  local name = Gui:get_context().name
+  local QuickRefGui = util.get_gui(player.index, "quick_ref", name)
+  local to_state = false
   if QuickRefGui then
     QuickRefGui:destroy()
   else
-    QUICK_REF_GUI.build(data.player, data.player_table, data.context.name, location)
+    to_state = true
+    QUICK_REF_GUI.build(player, Gui.player_table, name, location)
+  end
+  -- Update all quick ref buttons
+  for _, InfoGui in pairs(INFO_GUI.find_open_context(Gui.player_table, Gui:get_context())) do
+    InfoGui:dispatch({
+      action = "update_header_button",
+      button = "quick_ref_button",
+      to_state = to_state,
+    })
   end
 end
 
-function actions.toggle_favorite(data)
-  local player_table = data.player_table
+--- @param Gui InfoGui
+function actions.toggle_favorite(Gui, _, _)
+  local player_table = Gui.player_table
   local favorites = player_table.favorites
-  local context = data.context
+  local context = Gui:get_context()
   local combined_name = context.class .. "." .. context.name
   local to_state
   if favorites[combined_name] then
@@ -212,12 +208,15 @@ function actions.toggle_favorite(data)
     favorites[combined_name] = { class = context.class, name = context.name }
     to_state = true
   end
-  shared.update_header_button(data.player, player_table, context, "favorite_button", to_state)
+  for _, InfoGui in pairs(INFO_GUI.find_open_context(Gui.player_table, context)) do
+    InfoGui:dispatch({ action = "update_header_button", button = "favorite_button", to_state = to_state })
+  end
 end
 
-function actions.update_header_button(data)
-  local msg = data.msg
-  local button = data.refs.header[msg.button]
+--- @param Gui InfoGui
+--- @param msg table
+function actions.update_header_button(Gui, msg, _)
+  local button = Gui.refs.header[msg.button]
   if msg.to_state then
     button.style = "flib_selected_tool_button"
     button.tooltip = constants.header_button_tooltips[msg.button].selected
@@ -227,14 +226,15 @@ function actions.update_header_button(data)
   end
 end
 
-function actions.open_list(data)
-  local msg = data.msg
+--- @param Gui InfoGui
+--- @param msg table
+function actions.open_list(Gui, msg, _)
   local list_context = msg.context
   local source = msg.source
   local list = recipe_book[list_context.class][list_context.name][source]
   if list and #list > 0 then
     local first_obj = list[1]
-    shared.open_page(data.player, data.player_table, {
+    OPEN_PAGE(Gui.player, Gui.player_table, {
       class = first_obj.class,
       name = first_obj.name,
       list = {
@@ -246,24 +246,26 @@ function actions.open_list(data)
   end
 end
 
-function actions.toggle_collapsed(data)
-  local msg = data.msg
+--- @param Gui InfoGui
+--- @param msg table
+function actions.toggle_collapsed(Gui, msg, _)
   local context = msg.context
   local component_index = msg.component_index
   local component_ident = constants.pages[context.class][component_index]
   if component_ident then
-    local state = data.state.components[component_index]
+    local state = Gui.state.components[component_index]
     if state then
       state.collapsed = not state.collapsed
-      root.update_contents(data.player, data.player_table, msg.id, { refresh = true })
+      Gui:update_contents({ refresh = true })
     end
   end
 end
 
-function actions.change_tech_level(data)
-  local context = data.context
-  local msg = data.msg
-  local state = data.state
+--- @param Gui InfoGui
+--- @param msg table
+function actions.change_tech_level(Gui, msg, _)
+  local context = Gui:get_context()
+  local state = Gui.state
 
   local context_data = recipe_book[context.class][context.name]
   local min = context_data.min_level
@@ -271,35 +273,37 @@ function actions.change_tech_level(data)
   local new_level = math.clamp(state.selected_tech_level + msg.delta, min, max)
   if new_level ~= state.selected_tech_level then
     state.selected_tech_level = new_level
-    root.update_contents(data.player, data.player_table, msg.id, { refresh = true })
+    Gui:update_contents({ refresh = true })
   end
 end
 
-function actions.detach_window(data)
-  local state = data.state
+--- @param Gui InfoGui
+function actions.detach_window(Gui, _, _)
+  local state = Gui.state
   -- Just in case
   if not state.docked then
     return
   end
 
-  local context = state.history[state.history._index]
+  local context = Gui:get_context()
 
   -- Close this GUI and create a detached one
-  actions.close(data)
-  shared.open_page(data.player, data.player_table, context)
+  Gui:destroy()
+  OPEN_PAGE(Gui.player, Gui.player_table, context)
 end
 
-function actions.print_object(data)
-  local context = data.context
+--- @param Gui InfoGui
+function actions.print_object(Gui, _, _)
+  local context = Gui:get_context()
   local obj_data = recipe_book[context.class][context.name]
 
   if obj_data then
     if __DebugAdapter then
       __DebugAdapter.print(obj_data)
-      data.player.print("Object data has been printed to the debug console.")
+      Gui.player.print("Object data has been printed to the debug console.")
     else
       log(serpent.block(obj_data))
-      data.player.print("Object data has been printed to the log file.")
+      Gui.player.print("Object data has been printed to the log file.")
     end
   end
 end

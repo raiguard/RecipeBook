@@ -1,7 +1,6 @@
 local constants = require("constants")
 
 local recipe_book = require("scripts.recipe-book")
-local shared = require("scripts.shared")
 
 local remote_interface = {}
 
@@ -25,7 +24,7 @@ function remote_interface.open_page(player_index, class, name)
   local player_table = global.players[player_index]
 
   if player_table.flags.can_open_gui then
-    shared.open_page(player, player_table, { class = class, name = name })
+    OPEN_PAGE(player, player_table, { class = class, name = name })
     return true
   else
     return false, "Recipe Book is not yet ready to be opened"

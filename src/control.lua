@@ -12,12 +12,11 @@ local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
 local recipe_book = require("scripts.recipe-book")
 local remote_interface = require("scripts.remote-interface")
-local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 -- GUI globals
+INFO_GUI = require("scripts.gui.info.index")
 QUICK_REF_GUI = require("scripts.gui.quick-ref.index")
-local info_gui = require("scripts.gui.info.index")
 local search_gui = require("scripts.gui.search.index")
 local settings_gui = require("scripts.gui.settings.index")
 
@@ -177,7 +176,7 @@ event.register({ defines.events.on_research_finished, defines.events.on_research
   for _, player in pairs(e.research.force.players) do
     local player_table = global.players[player.index]
     if player_table and player_table.flags.can_open_gui then
-      shared.refresh_contents(player, player_table, true)
+      REFRESH_CONTENTS(player, player_table, true)
     end
   end
 end)
@@ -185,9 +184,7 @@ end)
 -- GUI
 
 local function handle_gui_action(msg, e)
-  if msg.gui == "info" then
-    info_gui.handle_action(msg, e)
-  elseif msg.gui == "quick_ref" then
+  if msg.gui == "info" or msg.gui == "quick_ref" then
     local Gui = util.get_gui(e.player_index, msg.gui, msg.id)
     if Gui then
       Gui:dispatch(msg, e)
@@ -216,9 +213,8 @@ event.on_gui_click(function(e)
     -- Bring all GUIs to the front
     local player_table = global.players[e.player_index]
     if player_table.flags.can_open_gui then
-      info_gui.root.bring_all_to_front(player_table)
-      -- FIXME:
-      -- quick_ref_gui.actions.bring_all_to_front(player_table)
+      util.dispatch_all(e.player_index, "info", "bring_to_front")
+      util.dispatch_all(e.player_index, "quick_ref", "bring_to_front")
       search_gui.root.bring_to_front(player_table)
     end
   end
@@ -228,17 +224,18 @@ event.on_gui_closed(function(e)
   if not read_gui_action(e) then
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
-    local gui_data = player_table.guis.search
     if player_table.flags.technology_gui_open then
       player_table.flags.technology_gui_open = false
+      local gui_data = player_table.guis.search
       if not gui_data.state.pinned then
         player.opened = gui_data.refs.window
       end
     elseif player_table.guis.info._relative_id then
-      info_gui.handle_action(
-        { id = player_table.guis.info._relative_id, action = "close" },
-        { player_index = e.player_index }
-      )
+      --- @type InfoGui
+      local InfoGui = util.get_gui(e.player_index, "info", player_table.guis.info._relative_id)
+      if InfoGui then
+        InfoGui:dispatch("close")
+      end
     end
   end
 end)
@@ -251,10 +248,9 @@ event.register("rb-linked-focus-search", function(e)
   local opened_is_ok = opened_gui_type == 0
     or (opened_gui_type == defines.gui_type.custom and opened.name == "rb_search_window")
   if player_table.flags.can_open_gui and opened_is_ok then
-    local info_guis = player_table.guis.info
-    local active_id = info_guis._active_id
-    if active_id and info_guis[active_id] then
-      info_gui.handle_action({ id = active_id, action = "toggle_search" }, { player_index = e.player_index })
+    local InfoGui = util.get_gui(e.player_index, "info", player_table.guis._active_id)
+    if InfoGui then
+      InfoGui:dispatch("toggle_search")
     end
   elseif opened_is_ok and opened.name == "rb_settings_window" then
     settings_gui.handle_action({ action = "toggle_search" }, { player_index = e.player_index })
@@ -272,7 +268,7 @@ event.on_lua_shortcut(function(e)
     if cursor_stack and cursor_stack.valid_for_read then
       local data = recipe_book.item[cursor_stack.name]
       if data then
-        shared.open_page(player, player_table, { class = "item", name = cursor_stack.name })
+        OPEN_PAGE(player, player_table, { class = "item", name = cursor_stack.name })
       else
         -- If we're here, the selected object has no page in RB
         player.create_local_flying_text({
@@ -357,7 +353,7 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
               end
             end
             local context = { class = class, name = name }
-            shared.open_page(player, player_table, context, options)
+            OPEN_PAGE(player, player_table, context, options)
             return
           end
         end
@@ -389,11 +385,10 @@ event.register({ "rb-navigate-backward", "rb-navigate-forward", "rb-return-to-ho
     and (not opened or (opened.valid and player.opened.name == "rb_search_window"))
   then
     local event_properties = constants.nav_event_properties[e.input_name]
-    local info_guis = player_table.guis.info
-    local active_id = info_guis._active_id
-    if active_id and info_guis[active_id] then
-      info_gui.handle_action(
-        { id = active_id, action = "navigate", delta = event_properties.delta },
+    local InfoGui = util.get_gui(e.player_index, "info", player_table.guis.info._active_id)
+    if InfoGui then
+      InfoGui:dispatch(
+        { action = "navigate", delta = event_properties.delta },
         { player_index = e.player_index, shift = event_properties.shift }
       )
     end
@@ -465,7 +460,7 @@ event.on_string_translated(function(e)
       if player_table.translations and (player_table.language or "") ~= language_data.language then
         player_table.language = language_data.language
         player_table.translations = language_data.dictionaries
-        shared.refresh_contents(player, player_table)
+        REFRESH_CONTENTS(player, player_table)
       elseif not player_table.flags.can_open_gui then
         player_table.language = language_data.language
         player_table.translations = language_data.dictionaries
@@ -492,69 +487,51 @@ end)
 remote.add_interface("RecipeBook", remote_interface)
 
 -- -----------------------------------------------------------------------------
--- SHARED FUNCTIONS
+-- GLOBAL FUNCTIONS
 
-function shared.open_page(player, player_table, context, options)
+function OPEN_PAGE(player, player_table, context, options)
   options = options or {}
 
-  local existing_id = options.id or info_gui.root.find_open_context(player_table, context)[1]
-
-  if existing_id then
-    if options.id then
-      info_gui.root.update_contents(player, player_table, existing_id, { new_context = context })
-    else
-      info_gui.handle_action({ id = existing_id, action = "bring_to_front" }, { player_index = player.index })
-    end
+  --- @type InfoGui?
+  local Gui
+  if options.id then
+    --- @type InfoGui
+    Gui = util.get_gui(player.index, "info", options.id)
   else
-    info_gui.root.build(player, player_table, context, options)
+    Gui = next(INFO_GUI.find_open_context(player_table, context))
+  end
+
+  if Gui then
+    Gui:update_contents({ new_context = context })
+  else
+    INFO_GUI.build(player, player_table, context, options)
   end
 end
 
-function shared.update_header_button(player, player_table, context, button, to_state)
-  for _, id in pairs(info_gui.root.find_open_context(player_table, context)) do
-    info_gui.handle_action(
-      { id = id, action = "update_header_button", button = button, to_state = to_state },
-      { player_index = player.index }
-    )
-  end
-  if button == "favorite_button" then
-    search_gui.handle_action({ action = "update_favorites" }, { player_index = player.index })
-  end
-end
-
-function shared.update_all_favorite_buttons(player, player_table)
-  local favorites = player_table.favorites
-  for id, gui_data in pairs(player_table.guis.info) do
-    if not constants.ignored_info_ids[id] then
-      local state = gui_data.state
-      local opened_context = state.history[state.history._index]
-      local to_state = favorites[opened_context.class .. "." .. opened_context.name]
-      info_gui.handle_action(
-        { id = id, action = "update_header_button", button = "favorite_button", to_state = to_state },
-        { player_index = player.index }
-      )
-    end
-  end
-end
-
-function shared.update_global_history(player, player_table, new_context)
-  player_data.update_global_history(player_table.global_history, new_context)
-  if player_table.guis.search and player_table.guis.search.refs.window.visible then
-    search_gui.handle_action({ action = "update_history" }, { player_index = player.index })
-  end
-end
-
-function shared.refresh_contents(player, player_table, skip_memoizer_purge)
+function REFRESH_CONTENTS(player, player_table, skip_memoizer_purge)
   if not skip_memoizer_purge then
     formatter.create_cache(player.index)
   end
-  -- FIXME:
-  -- info_gui.root.update_all(player, player_table)
-  -- quick_ref_gui.root.update_all(player, player_table)
-  if player_table.guis.search and player_table.guis.search.refs.window.visible then
-    search_gui.handle_action({ action = "update_search_results" }, { player_index = player.index })
-    search_gui.handle_action({ action = "update_favorites" }, { player_index = player.index })
-    search_gui.handle_action({ action = "update_history" }, { player_index = player.index })
-    search_gui.root.update_width(player, player_table)
+  --- @type table<number|string, InfoGui>
+  local info_guis = player_table.guis.info
+  for id, InfoGui in pairs(info_guis) do
+    if not constants.ignored_info_ids[id] then
+      InfoGui:update_contents({ refresh = true })
+    end
   end
+  --- @type table<string, QuickRefGui>
+  local quick_ref_guis = player_table.guis.quick_ref
+  for _, QuickRefGui in pairs(quick_ref_guis) do
+    QuickRefGui:update_contents()
+  end
+
+  -- FIXME:
+  -- --- @type SearchGui?
+  -- local SearchGui = util.get_gui(player.index, "search")
+  -- if SearchGui then
+  --   SearchGui:dispatch("update_search_results", { player_index = player.index })
+  --   SearchGui:dispatch("update_favorites", { player_index = player.index })
+  --   SearchGui:dispatch("update_history", { player_index = player.index })
+  --   SearchGui:update_width(player, player_table)
+  -- end
 end

@@ -3,6 +3,8 @@ local math = require("__flib__.math")
 local misc = require("__flib__.misc")
 local table = require("__flib__.table")
 
+local constants = require("constants")
+
 local util = {}
 
 function util.build_amount_ident(input)
@@ -169,14 +171,17 @@ end
 --- Dispatch the given action on all GUIs of the given name.
 --- @param player_index number
 --- @param gui_name string
---- @param msg GuiActionMessage
+--- @param msg table
 function util.dispatch_all(player_index, gui_name, msg)
   local player_table = global.players[player_index]
   if not player_table then
     return
   end
-  for _, Gui in pairs(player_table.guis[gui_name]) do
-    Gui:dispatch(msg)
+  local ignored = gui_name == "info" and constants.ignored_info_ids or {}
+  for key, Gui in pairs(player_table.guis[gui_name]) do
+    if not ignored[key] then
+      Gui:dispatch(msg)
+    end
   end
 end
 

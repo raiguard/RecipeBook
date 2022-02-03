@@ -5,7 +5,6 @@ local constants = require("constants")
 
 local formatter = require("scripts.formatter")
 local gui_util = require("scripts.gui.util")
-local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 local root = {}
@@ -34,7 +33,12 @@ function root.build(player, player_table)
           actions = {
             on_click = { gui = "search", action = "reset_location" },
           },
-          { type = "label", style = "frame_title", caption = { "gui.rb-search-title" }, ignored_by_interaction = true },
+          {
+            type = "label",
+            style = "frame_title",
+            caption = { "gui.rb-search-title" },
+            ignored_by_interaction = true,
+          },
           { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
           util.frame_action_button(
             "rb_pin",
@@ -225,7 +229,7 @@ function root.update_favorites(player, player_table)
     { always_show = true }
   )
   refs.delete_favorites_button.enabled = table_size(player_table.favorites) > 0 and true or false
-  shared.update_all_favorite_buttons(player, player_table)
+  -- shared.update_all_favorite_buttons(player, player_table)
 end
 
 function root.update_history(player, player_table)

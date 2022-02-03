@@ -2,8 +2,6 @@ local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
 
-local shared = require("scripts.shared")
-
 local root = require("scripts.gui.settings.root")
 local search_actions = require("scripts.gui.search.actions")
 
@@ -114,7 +112,7 @@ function actions.change_general_setting(data)
   -- NOTE: This _also_ shouldn't ever happen, but you can't be too safe!
   if new_value ~= nil then
     settings[name] = new_value
-    shared.refresh_contents(data.player, data.player_table)
+    REFRESH_CONTENTS(data.player, data.player_table)
     -- Update enabled statuses
     root.update_contents(data.player, data.player_table, "general")
   end
@@ -132,7 +130,7 @@ function actions.change_category_setting(data)
 
   local category_settings = data.player_table.settings.categories[class]
   category_settings[name] = data.e.element.state
-  shared.refresh_contents(data.player, data.player_table)
+  REFRESH_CONTENTS(data.player, data.player_table)
 end
 
 function actions.change_page(data)
@@ -149,7 +147,7 @@ function actions.change_default_state(data)
   if component_settings then
     component_settings.default_state = constants.component_states[data.e.element.selected_index]
   end
-  shared.refresh_contents(data.player, data.player_table)
+  REFRESH_CONTENTS(data.player, data.player_table)
 end
 
 function actions.change_max_rows(data)
@@ -161,7 +159,7 @@ function actions.change_max_rows(data)
   if component_settings then
     component_settings.max_rows = tonumber(data.e.element.text)
   end
-  shared.refresh_contents(data.player, data.player_table)
+  REFRESH_CONTENTS(data.player, data.player_table)
 end
 
 function actions.change_row_visible(data)
@@ -174,7 +172,7 @@ function actions.change_row_visible(data)
   if component_settings then
     component_settings.rows[row] = data.e.element.state
   end
-  shared.refresh_contents(data.player, data.player_table)
+  REFRESH_CONTENTS(data.player, data.player_table)
 end
 
 return actions

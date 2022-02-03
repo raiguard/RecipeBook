@@ -4,7 +4,6 @@ local constants = require("constants")
 
 local formatter = require("scripts.formatter")
 local recipe_book = require("scripts.recipe-book")
-local shared = require("scripts.shared")
 local util = require("scripts.util")
 
 local function quick_ref_panel(ref)
@@ -43,14 +42,14 @@ end
 function Gui:destroy()
   self.refs.window.destroy()
   self.player_table.guis.quick_ref[self.recipe_name] = nil
-  -- FIXME: Remove this
-  shared.update_header_button(
-    self.player,
-    self.player_table,
-    { class = "recipe", name = self.recipe_name },
-    "quick_ref_button",
-    false
-  )
+  local context = { class = "recipe", name = self.recipe_name }
+  for _, InfoGui in pairs(INFO_GUI.find_open_context(self.player_table, context)) do
+    InfoGui:dispatch({
+      action = "update_header_button",
+      button = "quick_ref_button",
+      to_state = false,
+    })
+  end
 end
 
 function Gui:update_contents()
