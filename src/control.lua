@@ -14,11 +14,60 @@ local recipe_book = require("scripts.recipe-book")
 local remote_interface = require("scripts.remote-interface")
 local util = require("scripts.util")
 
--- GUI globals
+-- -----------------------------------------------------------------------------
+-- GLOBALS
+
 INFO_GUI = require("scripts.gui.info.index")
 QUICK_REF_GUI = require("scripts.gui.quick-ref.index")
 local search_gui = require("scripts.gui.search.index")
 local settings_gui = require("scripts.gui.settings.index")
+
+function OPEN_PAGE(player, player_table, context, options)
+  options = options or {}
+
+  --- @type InfoGui?
+  local Gui
+  if options.id then
+    --- @type InfoGui
+    Gui = util.get_gui(player.index, "info", options.id)
+  else
+    Gui = next(INFO_GUI.find_open_context(player_table, context))
+  end
+
+  if Gui then
+    Gui:update_contents({ new_context = context })
+  else
+    INFO_GUI.build(player, player_table, context, options)
+  end
+end
+
+function REFRESH_CONTENTS(player, player_table, skip_memoizer_purge)
+  if not skip_memoizer_purge then
+    formatter.create_cache(player.index)
+  end
+  --- @type table<number|string, InfoGui>
+  local info_guis = player_table.guis.info
+  for id, InfoGui in pairs(info_guis) do
+    if not constants.ignored_info_ids[id] then
+      InfoGui:update_contents({ refresh = true })
+    end
+  end
+  --- @type table<string, QuickRefGui>
+  local quick_ref_guis = player_table.guis.quick_ref
+  for _, QuickRefGui in pairs(quick_ref_guis) do
+    QuickRefGui:update_contents()
+  end
+
+  -- FIXME:
+  -- --- @type SearchGui?
+  -- local SearchGui = util.get_gui(player.index, "search")
+  -- if SearchGui then
+  --   SearchGui:dispatch("update_search_results", { player_index = player.index })
+  --   SearchGui:dispatch("update_favorites", { player_index = player.index })
+  --   SearchGui:dispatch("update_history", { player_index = player.index })
+  --   SearchGui:update_width(player, player_table)
+  -- end
+end
 
 -- -----------------------------------------------------------------------------
 -- COMMANDS
@@ -485,53 +534,3 @@ end)
 -- REMOTE INTERFACE
 
 remote.add_interface("RecipeBook", remote_interface)
-
--- -----------------------------------------------------------------------------
--- GLOBAL FUNCTIONS
-
-function OPEN_PAGE(player, player_table, context, options)
-  options = options or {}
-
-  --- @type InfoGui?
-  local Gui
-  if options.id then
-    --- @type InfoGui
-    Gui = util.get_gui(player.index, "info", options.id)
-  else
-    Gui = next(INFO_GUI.find_open_context(player_table, context))
-  end
-
-  if Gui then
-    Gui:update_contents({ new_context = context })
-  else
-    INFO_GUI.build(player, player_table, context, options)
-  end
-end
-
-function REFRESH_CONTENTS(player, player_table, skip_memoizer_purge)
-  if not skip_memoizer_purge then
-    formatter.create_cache(player.index)
-  end
-  --- @type table<number|string, InfoGui>
-  local info_guis = player_table.guis.info
-  for id, InfoGui in pairs(info_guis) do
-    if not constants.ignored_info_ids[id] then
-      InfoGui:update_contents({ refresh = true })
-    end
-  end
-  --- @type table<string, QuickRefGui>
-  local quick_ref_guis = player_table.guis.quick_ref
-  for _, QuickRefGui in pairs(quick_ref_guis) do
-    QuickRefGui:update_contents()
-  end
-
-  -- FIXME:
-  -- --- @type SearchGui?
-  -- local SearchGui = util.get_gui(player.index, "search")
-  -- if SearchGui then
-  --   SearchGui:dispatch("update_search_results", { player_index = player.index })
-  --   SearchGui:dispatch("update_favorites", { player_index = player.index })
-  --   SearchGui:dispatch("update_history", { player_index = player.index })
-  --   SearchGui:update_width(player, player_table)
-  -- end
-end
