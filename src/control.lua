@@ -177,8 +177,19 @@ event.on_load(function()
   -- Load GUIs
   for _, player_table in pairs(global.players) do
     local guis = player_table.guis
-    for _, quick_ref_gui in pairs(guis.quick_ref) do
-      QUICK_REF_GUI.load(quick_ref_gui)
+    for _, Gui in pairs(guis.quick_ref) do
+      QUICK_REF_GUI.load(Gui)
+    end
+    for id, Gui in pairs(guis.info) do
+      if not constants.ignored_info_ids[id] then
+        INFO_GUI.load(Gui)
+      end
+    end
+    if guis.search then
+      SEARCH_GUI.load(guis.search)
+    end
+    if guis.settings then
+      SETTINGS_GUI.load(guis.settings)
     end
   end
 end)
