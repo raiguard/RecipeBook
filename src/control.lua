@@ -19,7 +19,7 @@ local util = require("scripts.util")
 
 INFO_GUI = require("scripts.gui.info.index")
 QUICK_REF_GUI = require("scripts.gui.quick-ref.index")
-local search_gui = require("scripts.gui.search.index")
+SEARCH_GUI = require("scripts.gui.search.index")
 local settings_gui = require("scripts.gui.settings.index")
 
 function OPEN_PAGE(player, player_table, context, options)
@@ -233,14 +233,12 @@ end)
 -- GUI
 
 local function handle_gui_action(msg, e)
-  if msg.gui == "info" or msg.gui == "quick_ref" then
+  if msg.gui ~= "settings" then
     local Gui = util.get_gui(e.player_index, msg.gui, msg.id)
     if Gui then
       Gui:dispatch(msg, e)
     end
-  elseif msg.gui == "search" then
-    search_gui.handle_action(msg, e)
-  elseif msg.gui == "settings" then
+  else
     settings_gui.handle_action(msg, e)
   end
 end
@@ -264,7 +262,11 @@ event.on_gui_click(function(e)
     if player_table.flags.can_open_gui then
       util.dispatch_all(e.player_index, "info", "bring_to_front")
       util.dispatch_all(e.player_index, "quick_ref", "bring_to_front")
-      search_gui.root.bring_to_front(player_table)
+      --- @type SearchGui
+      local SearchGui = util.get_gui(e.player_index, "search")
+      if SearchGui and SearchGui.refs.window.visible then
+        SearchGui:bring_to_front()
+      end
     end
   end
 end)
@@ -330,7 +332,11 @@ event.on_lua_shortcut(function(e)
     end
 
     -- Open search GUI
-    search_gui.root.toggle(player, player_table)
+    --- @type SearchGui
+    local SearchGui = util.get_gui(e.player_index, "search")
+    if SearchGui then
+      SearchGui:toggle()
+    end
   end
 end)
 
@@ -416,7 +422,11 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
         return
       end
     else
-      search_gui.root.toggle(player, player_table)
+      --- @type SearchGui
+      local SearchGui = util.get_gui(e.player_index, "search")
+      if SearchGui then
+        SearchGui:toggle()
+      end
     end
   else
     player.print({ "message.rb-cannot-open-gui" })
@@ -520,7 +530,7 @@ event.on_string_translated(function(e)
         end
 
         -- Create GUI
-        search_gui.root.build(player, player_table)
+        SEARCH_GUI.build(player, player_table)
         -- Update flags
         player_table.flags.can_open_gui = true
         -- Enable shortcut

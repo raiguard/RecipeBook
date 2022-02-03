@@ -1,1 +1,3 @@
---- @class GuiActionMessage
+--- @class Context
+--- @field class string
+--- @field name string

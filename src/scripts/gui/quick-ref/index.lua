@@ -29,7 +29,7 @@ end
 --- @class QuickRefGui
 local Gui = {}
 
-local actions = require("actions")
+local actions = require("scripts.gui.quick-ref.actions")
 
 function Gui:dispatch(msg, e)
   if type(msg) == "string" then

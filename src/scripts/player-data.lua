@@ -12,6 +12,7 @@ local settings_gui = require("scripts.gui.settings.index")
 local player_data = {}
 
 function player_data.init(player_index)
+  --- @class PlayerTable
   local data = {
     favorites = {},
     flags = {
@@ -21,9 +22,13 @@ function player_data.init(player_index)
     },
     global_history = {},
     guis = {
+      --- @type table<number, InfoGui>
       info = { _next_id = 1 },
+      --- @type table<string, QuickRefGui>
       quick_ref = {},
     },
+    --- @type string?
+    language = nil,
     settings = {
       general = {},
       categories = {},

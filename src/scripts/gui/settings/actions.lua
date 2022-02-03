@@ -2,14 +2,18 @@ local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
 
+local util = require("scripts.util")
+
 local root = require("scripts.gui.settings.root")
-local search_actions = require("scripts.gui.search.actions")
 
 local actions = {}
 
 function actions.close(data)
   root.destroy(data.player_table)
-  search_actions.deselect_settings_button(search_actions.get_action_data(data.msg, data.e))
+  local SearchGui = util.get_gui(data.player.index, "search")
+  if SearchGui then
+    SearchGui:dispatch("deselect_settings_button")
+  end
 end
 
 function actions.reset_location(data)

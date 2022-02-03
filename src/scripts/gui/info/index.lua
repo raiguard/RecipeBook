@@ -31,7 +31,7 @@ end
 --- @class InfoGui
 local Gui = {}
 
-local actions = require("actions")
+local actions = require("scripts.gui.info.actions")
 
 function Gui:dispatch(msg, e)
   -- Mark this GUI as the active one whenever we do anything
@@ -93,8 +93,7 @@ function Gui:update_contents(options)
     player_data.update_global_history(self.player_table.global_history, context)
     local SearchGui = util.get_gui(self.player.index, "search")
     if SearchGui then
-      -- FIXME:
-      -- SearchGui:dispatch("update_global_history")
+      SearchGui:dispatch("update_history")
     end
   end
 
@@ -365,6 +364,10 @@ end
 
 local index = {}
 
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+--- @param context Context
+--- @param options table
 function index.build(player, player_table, context, options)
   options = options or {}
 
@@ -391,8 +394,11 @@ function index.build(player, player_table, context, options)
         style = "flib_titlebar_flow",
         ref = { "titlebar", "flow" },
         actions = {
-          on_click = not relative and { gui = search_info and "search" or "info", id = id, action = "reset_location" }
-            or nil,
+          on_click = not relative and {
+            gui = search_info and "search" or "info",
+            id = not search_info and id or nil,
+            action = "reset_location",
+          } or nil,
         },
         util.frame_action_button(
           "rb_nav_backward",
@@ -614,7 +620,7 @@ end
 
 --- Find all info GUIs that are viewing the given context.
 --- @param player_table PlayerTable
---- @param context InfoContext
+--- @param context Context
 --- @return table<number, InfoGui>
 function index.find_open_context(player_table, context)
   local open = {}

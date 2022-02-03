@@ -18,7 +18,7 @@ end
 --- @param e on_gui_click
 function actions.reset_location(Gui, _, e)
   if e.button == defines.mouse_button_type.middle then
-    Gui.refs.window.force_auto_center()
+    Gui.refs.root.force_auto_center()
   end
 end
 
@@ -30,7 +30,7 @@ end
 --- @param Gui InfoGui
 function actions.bring_to_front(Gui, _, _)
   if not Gui.state.docked then
-    Gui.refs.window.bring_to_front()
+    Gui.refs.root.bring_to_front()
   end
 end
 
@@ -149,7 +149,7 @@ end
 --- @param Gui InfoGui
 function actions.open_in_tech_window(Gui, _, _)
   Gui.player_table.flags.technology_gui_open = true
-  Gui.player.open_technology_gui(Gui:get_context())
+  Gui.player.open_technology_gui(Gui:get_context().name)
 end
 
 --- @param Gui InfoGui
@@ -175,6 +175,7 @@ function actions.toggle_quick_ref(Gui, _, _)
   end
   -- Toggle quick ref GUI
   local name = Gui:get_context().name
+  --- @type QuickRefGui
   local QuickRefGui = util.get_gui(player.index, "quick_ref", name)
   local to_state = false
   if QuickRefGui then
@@ -210,6 +211,10 @@ function actions.toggle_favorite(Gui, _, _)
   end
   for _, InfoGui in pairs(INFO_GUI.find_open_context(Gui.player_table, context)) do
     InfoGui:dispatch({ action = "update_header_button", button = "favorite_button", to_state = to_state })
+  end
+  local SearchGui = util.get_gui(Gui.player.index, "search")
+  if SearchGui and SearchGui.refs.window.visible then
+    SearchGui:dispatch("update_favorites")
   end
 end
 
