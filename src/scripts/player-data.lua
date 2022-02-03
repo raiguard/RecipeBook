@@ -6,9 +6,6 @@ local formatter = require("scripts.formatter")
 local recipe_book = require("scripts.recipe-book")
 local util = require("scripts.util")
 
-local search_gui = require("scripts.gui.search.index")
-local settings_gui = require("scripts.gui.settings.index")
-
 local player_data = {}
 
 function player_data.init(player_index)
@@ -156,15 +153,17 @@ end
 
 function player_data.refresh(player, player_table)
   -- Destroy GUIs
-  -- FIXME:
-  -- info_gui.root.destroy_all(player_table)
+  util.dispatch_all(player.index, "info", "close")
   util.dispatch_all(player.index, "quick_ref", "close")
-  -- quick_ref_gui.root.destroy_all(player, player_table)
-  if player_table.guis.search then
-    search_gui.root.destroy(player, player_table)
+  --- @type SearchGui
+  local SearchGui = util.get_gui(player.index, "search")
+  if SearchGui then
+    SearchGui:destroy()
   end
-  if player_table.guis.settings then
-    settings_gui.root.destroy(player_table)
+  --- @type SettingsGui
+  local SettingsGui = util.get_gui(player.index, "settings")
+  if SettingsGui then
+    SettingsGui:destroy()
   end
 
   -- Set flag

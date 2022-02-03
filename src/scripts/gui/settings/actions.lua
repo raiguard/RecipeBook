@@ -1,30 +1,31 @@
 local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
-
 local util = require("scripts.util")
-
-local root = require("scripts.gui.settings.root")
 
 local actions = {}
 
-function actions.close(data)
-  root.destroy(data.player_table)
-  local SearchGui = util.get_gui(data.player.index, "search")
+--- @param Gui SettingsGui
+function actions.close(Gui, _, _)
+  Gui:destroy()
+  local SearchGui = util.get_gui(Gui.player.index, "search")
   if SearchGui then
     SearchGui:dispatch("deselect_settings_button")
   end
 end
 
-function actions.reset_location(data)
-  if data.e.button == defines.mouse_button_type.middle then
-    data.refs.window.force_auto_center()
+--- @param Gui SettingsGui
+--- @param e on_gui_click
+function actions.reset_location(Gui, _, e)
+  if e.button == defines.mouse_button_type.middle then
+    Gui.refs.window.force_auto_center()
   end
 end
 
-function actions.toggle_search(data)
-  local state = data.state
-  local refs = data.refs
+--- @param Gui SettingsGui
+function actions.toggle_search(Gui, _, _)
+  local state = Gui.state
+  local refs = Gui.refs
 
   local opened = state.search_opened
   state.search_opened = not opened
@@ -41,7 +42,7 @@ function actions.toggle_search(data)
       search_textfield.text = ""
       state.search_query = ""
       -- Immediately refresh page
-      actions.update_search_results(data)
+      Gui:update_contents()
     end
   else
     -- Show search textfield
@@ -52,11 +53,13 @@ function actions.toggle_search(data)
   end
 end
 
-function actions.update_search_query(data)
-  local player_table = data.player_table
-  local state = data.state
+--- @param Gui SettingsGui
+--- @param e on_gui_text_changed
+function actions.update_search_query(Gui, _, e)
+  local player_table = Gui.player_table
+  local state = Gui.state
 
-  local query = string.lower(data.e.element.text)
+  local query = string.lower(e.element.text)
   -- Fuzzy search
   if player_table.settings.general.search.fuzzy_search then
     query = string.gsub(query, ".", "%1.*")
@@ -76,30 +79,33 @@ function actions.update_search_query(data)
 
   if query == "" then
     -- Update now
-    actions.update_search_results(data)
+    actions.update_search_results(Gui)
   else
     -- Update in a while
     state.update_results_ident = on_tick_n.add(
       game.tick + constants.search_timeout,
-      { gui = "settings", action = "update_search_results", player_index = data.e.player_index }
+      { gui = "settings", action = "update_search_results", player_index = e.player_index }
     )
   end
 end
 
-function actions.update_search_results(data)
-  root.update_contents(data.player, data.player_table)
+--- @param Gui SettingsGui
+function actions.update_search_results(Gui, _, _)
+  Gui:update_contents()
 end
 
-function actions.change_general_setting(data)
-  local msg = data.msg
+--- @param Gui SettingsGui
+--- @param msg table
+--- @param e on_gui_checked_state_changed|on_gui_selection_state_changed
+function actions.change_general_setting(Gui, msg, e)
   local type = msg.type
   local category = msg.category
   local name = msg.name
   local setting_ident = constants.general_settings[category][name]
-  local settings = data.player_table.settings.general[category]
+  local settings = Gui.player_table.settings.general[category]
 
   local new_value
-  local element = data.e.element
+  local element = e.element
 
   -- NOTE: This shouldn't ever happen, but we will avoid a crash just in case!
   if not element.valid then
@@ -116,67 +122,79 @@ function actions.change_general_setting(data)
   -- NOTE: This _also_ shouldn't ever happen, but you can't be too safe!
   if new_value ~= nil then
     settings[name] = new_value
-    REFRESH_CONTENTS(data.player, data.player_table)
+    REFRESH_CONTENTS(Gui.player, Gui.player_table)
     -- Update enabled statuses
-    root.update_contents(data.player, data.player_table, "general")
+    Gui:update_contents("general")
   end
 end
 
-function actions.change_category(data)
-  data.state.selected_category = data.e.element.selected_index
-  root.update_contents(data.player, data.player_table, "categories")
+--- @param Gui SettingsGui
+--- @param e on_gui_selection_state_changed
+function actions.change_category(Gui, _, e)
+  Gui.state.selected_category = e.element.selected_index
+  Gui:update_contents("categories")
 end
 
-function actions.change_category_setting(data)
-  local msg = data.msg
+--- @param Gui SettingsGui
+--- @param msg table
+--- @param e on_gui_checked_state_changed
+function actions.change_category_setting(Gui, msg, e)
   local class = msg.class
   local name = msg.name
 
-  local category_settings = data.player_table.settings.categories[class]
-  category_settings[name] = data.e.element.state
-  REFRESH_CONTENTS(data.player, data.player_table)
+  local category_settings = Gui.player_table.settings.categories[class]
+  category_settings[name] = e.element.state
+  REFRESH_CONTENTS(Gui.player, Gui.player_table)
 end
 
-function actions.change_page(data)
-  data.state.selected_page = data.e.element.selected_index
-  root.update_contents(data.player, data.player_table, "pages")
+--- @param Gui SettingsGui
+--- @param e on_gui_selected_tab_changed
+function actions.change_page(Gui, _, e)
+  Gui.state.selected_page = e.element.selected_index
+  Gui:update_contents("pages")
 end
 
-function actions.change_default_state(data)
-  local msg = data.msg
+--- @param Gui SettingsGui
+--- @param msg table
+--- @param e on_gui_selection_state_changed
+function actions.change_default_state(Gui, msg, e)
   local class = msg.class
   local component = msg.component
 
-  local component_settings = data.player_table.settings.pages[class][component]
+  local component_settings = Gui.player_table.settings.pages[class][component]
   if component_settings then
-    component_settings.default_state = constants.component_states[data.e.element.selected_index]
+    component_settings.default_state = constants.component_states[e.element.selected_index]
   end
-  REFRESH_CONTENTS(data.player, data.player_table)
+  REFRESH_CONTENTS(Gui.player, Gui.player_table)
 end
 
-function actions.change_max_rows(data)
-  local msg = data.msg
+--- @param Gui SettingsGui
+--- @param msg table
+--- @param e on_gui_text_changed
+function actions.change_max_rows(Gui, msg, e)
   local class = msg.class
   local component = msg.component
 
-  local component_settings = data.player_table.settings.pages[class][component]
+  local component_settings = Gui.player_table.settings.pages[class][component]
   if component_settings then
-    component_settings.max_rows = tonumber(data.e.element.text)
+    component_settings.max_rows = tonumber(e.element.text)
   end
-  REFRESH_CONTENTS(data.player, data.player_table)
+  REFRESH_CONTENTS(Gui.player, Gui.player_table)
 end
 
-function actions.change_row_visible(data)
-  local msg = data.msg
+--- @param Gui SettingsGui
+--- @param msg table
+--- @param e on_gui_checked_state_changed
+function actions.change_row_visible(Gui, msg, e)
   local class = msg.class
   local component = msg.component
   local row = msg.row
 
-  local component_settings = data.player_table.settings.pages[class][component]
+  local component_settings = Gui.player_table.settings.pages[class][component]
   if component_settings then
-    component_settings.rows[row] = data.e.element.state
+    component_settings.rows[row] = e.element.state
   end
-  REFRESH_CONTENTS(data.player, data.player_table)
+  REFRESH_CONTENTS(Gui.player, Gui.player_table)
 end
 
 return actions

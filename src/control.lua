@@ -20,7 +20,7 @@ local util = require("scripts.util")
 INFO_GUI = require("scripts.gui.info.index")
 QUICK_REF_GUI = require("scripts.gui.quick-ref.index")
 SEARCH_GUI = require("scripts.gui.search.index")
-local settings_gui = require("scripts.gui.settings.index")
+SETTINGS_GUI = require("scripts.gui.settings.index")
 
 function OPEN_PAGE(player, player_table, context, options)
   options = options or {}
@@ -58,15 +58,14 @@ function REFRESH_CONTENTS(player, player_table, skip_memoizer_purge)
     QuickRefGui:update_contents()
   end
 
-  -- FIXME:
-  -- --- @type SearchGui?
-  -- local SearchGui = util.get_gui(player.index, "search")
-  -- if SearchGui then
-  --   SearchGui:dispatch("update_search_results", { player_index = player.index })
-  --   SearchGui:dispatch("update_favorites", { player_index = player.index })
-  --   SearchGui:dispatch("update_history", { player_index = player.index })
-  --   SearchGui:update_width(player, player_table)
-  -- end
+  --- @type SearchGui?
+  local SearchGui = util.get_gui(player.index, "search")
+  if SearchGui then
+    SearchGui:dispatch("update_search_results")
+    SearchGui:dispatch("update_favorites")
+    SearchGui:dispatch("update_history")
+    SearchGui:update_width()
+  end
 end
 
 -- -----------------------------------------------------------------------------
@@ -233,13 +232,9 @@ end)
 -- GUI
 
 local function handle_gui_action(msg, e)
-  if msg.gui ~= "settings" then
-    local Gui = util.get_gui(e.player_index, msg.gui, msg.id)
-    if Gui then
-      Gui:dispatch(msg, e)
-    end
-  else
-    settings_gui.handle_action(msg, e)
+  local Gui = util.get_gui(e.player_index, msg.gui, msg.id)
+  if Gui then
+    Gui:dispatch(msg, e)
   end
 end
 
@@ -297,14 +292,21 @@ event.register("rb-linked-focus-search", function(e)
   local opened = player.opened
   local opened_gui_type = player.opened_gui_type
   local opened_is_ok = opened_gui_type == 0
-    or (opened_gui_type == defines.gui_type.custom and opened.name == "rb_search_window")
-  if player_table.flags.can_open_gui and opened_is_ok then
+    or (
+      opened_gui_type == defines.gui_type.custom
+      and (opened.name == "rb_search_window" or opened.name == "rb_settings_window")
+    )
+  if player_table.flags.can_open_gui and opened_is_ok and opened.name == "rb_search_window" then
     local InfoGui = util.get_gui(e.player_index, "info", player_table.guis._active_id)
     if InfoGui then
       InfoGui:dispatch("toggle_search")
     end
   elseif opened_is_ok and opened.name == "rb_settings_window" then
-    settings_gui.handle_action({ action = "toggle_search" }, { player_index = e.player_index })
+    --- @type SettingsGui
+    local SettingsGui = util.get_gui(e.player_index, "settings")
+    if SettingsGui then
+      SettingsGui:dispatch("toggle_search")
+    end
   end
 end)
 

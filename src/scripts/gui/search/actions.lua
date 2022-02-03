@@ -7,8 +7,7 @@ local constants = require("constants")
 local formatter = require("scripts.formatter")
 local gui_util = require("scripts.gui.util")
 local recipe_book = require("scripts.recipe-book")
-
-local settings_root = require("scripts.gui.settings.root")
+local util = require("scripts.util")
 
 local actions = {}
 
@@ -67,7 +66,12 @@ function actions.toggle_settings(Gui, _, _)
   local player = Gui.player
 
   state.ignore_closed = true
-  settings_root.toggle(player, Gui.player_table)
+  local SettingsGui = util.get_gui(Gui.player.index, "settings")
+  if SettingsGui then
+    SettingsGui:destroy()
+  else
+    SETTINGS_GUI.build(player, Gui.player_table)
+  end
   state.ignore_closed = false
   local settings_button = Gui.refs.titlebar.settings_button
   if Gui.player_table.guis.settings then
