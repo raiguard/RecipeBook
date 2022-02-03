@@ -6,8 +6,7 @@ local constants = require("constants")
 local gui_util = require("scripts.gui.util")
 local recipe_book = require("scripts.recipe-book")
 local shared = require("scripts.shared")
-
-local quick_ref_root = require("scripts.gui.quick-ref.root")
+local util = require("scripts.util")
 
 local actions = {}
 
@@ -190,7 +189,13 @@ function actions.toggle_quick_ref(data)
       location = root_location
     end
   end
-  quick_ref_root.toggle(data.player, data.player_table, data.context.name, location)
+  -- Toggle quick ref GUI
+  local QuickRefGui = util.get_gui(data.player.index, "quick_ref", data.context.name)
+  if QuickRefGui then
+    QuickRefGui:destroy()
+  else
+    QUICK_REF_GUI.build(data.player, data.player_table, data.context.name, location)
+  end
 end
 
 function actions.toggle_favorite(data)

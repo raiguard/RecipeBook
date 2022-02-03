@@ -13,9 +13,11 @@ local player_data = require("scripts.player-data")
 local recipe_book = require("scripts.recipe-book")
 local remote_interface = require("scripts.remote-interface")
 local shared = require("scripts.shared")
+local util = require("scripts.util")
 
+-- GUI globals
+QUICK_REF_GUI = require("scripts.gui.quick-ref.index")
 local info_gui = require("scripts.gui.info.index")
-local quick_ref_gui = require("scripts.gui.quick-ref.index")
 local search_gui = require("scripts.gui.search.index")
 local settings_gui = require("scripts.gui.settings.index")
 
@@ -124,6 +126,14 @@ event.on_load(function()
     recipe_book.build()
     recipe_book.check_forces()
   end
+
+  -- Load GUIs
+  for _, player_table in pairs(global.players) do
+    local guis = player_table.guis
+    for _, quick_ref_gui in pairs(guis.quick_ref) do
+      QUICK_REF_GUI.load(quick_ref_gui)
+    end
+  end
 end)
 
 event.on_configuration_changed(function(e)
@@ -178,7 +188,10 @@ local function handle_gui_action(msg, e)
   if msg.gui == "info" then
     info_gui.handle_action(msg, e)
   elseif msg.gui == "quick_ref" then
-    quick_ref_gui.handle_action(msg, e)
+    local Gui = util.get_gui(e.player_index, msg.gui, msg.id)
+    if Gui then
+      Gui:dispatch(msg, e)
+    end
   elseif msg.gui == "search" then
     search_gui.handle_action(msg, e)
   elseif msg.gui == "settings" then
@@ -204,7 +217,8 @@ event.on_gui_click(function(e)
     local player_table = global.players[e.player_index]
     if player_table.flags.can_open_gui then
       info_gui.root.bring_all_to_front(player_table)
-      quick_ref_gui.actions.bring_all_to_front(player_table)
+      -- FIXME:
+      -- quick_ref_gui.actions.bring_all_to_front(player_table)
       search_gui.root.bring_to_front(player_table)
     end
   end
@@ -534,8 +548,9 @@ function shared.refresh_contents(player, player_table, skip_memoizer_purge)
   if not skip_memoizer_purge then
     formatter.create_cache(player.index)
   end
-  info_gui.root.update_all(player, player_table)
-  quick_ref_gui.root.update_all(player, player_table)
+  -- FIXME:
+  -- info_gui.root.update_all(player, player_table)
+  -- quick_ref_gui.root.update_all(player, player_table)
   if player_table.guis.search and player_table.guis.search.refs.window.visible then
     search_gui.handle_action({ action = "update_search_results" }, { player_index = player.index })
     search_gui.handle_action({ action = "update_favorites" }, { player_index = player.index })

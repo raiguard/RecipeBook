@@ -4,9 +4,8 @@ local table = require("__flib__.table")
 local constants = require("constants")
 local formatter = require("scripts.formatter")
 local recipe_book = require("scripts.recipe-book")
+local util = require("scripts.util")
 
-local info_gui = require("scripts.gui.info.index")
-local quick_ref_gui = require("scripts.gui.quick-ref.index")
 local search_gui = require("scripts.gui.search.index")
 local settings_gui = require("scripts.gui.settings.index")
 
@@ -152,8 +151,10 @@ end
 
 function player_data.refresh(player, player_table)
   -- Destroy GUIs
-  info_gui.root.destroy_all(player_table)
-  quick_ref_gui.root.destroy_all(player, player_table)
+  -- FIXME:
+  -- info_gui.root.destroy_all(player_table)
+  util.dispatch_all(player.index, "quick_ref", "close")
+  -- quick_ref_gui.root.destroy_all(player, player_table)
   if player_table.guis.search then
     search_gui.root.destroy(player, player_table)
   end

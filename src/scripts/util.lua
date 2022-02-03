@@ -145,4 +145,39 @@ function util.process_energy_source(prototype)
   end
 end
 
+--- Safely retrive the given GUI, checking for validity.
+--- @param player_index number
+--- @param gui_name string
+--- @param gui_key number|string
+function util.get_gui(player_index, gui_name, gui_key)
+  local player_table = global.players[player_index]
+  if not player_table then
+    return
+  end
+  local tbl = player_table.guis[gui_name]
+  if not tbl then
+    return
+  end
+  if gui_key then
+    tbl = tbl[gui_key]
+  end
+  if tbl and tbl.refs.window and tbl.refs.window.valid then
+    return tbl
+  end
+end
+
+--- Dispatch the given action on all GUIs of the given name.
+--- @param player_index number
+--- @param gui_name string
+--- @param msg GuiActionMessage
+function util.dispatch_all(player_index, gui_name, msg)
+  local player_table = global.players[player_index]
+  if not player_table then
+    return
+  end
+  for _, Gui in pairs(player_table.guis[gui_name]) do
+    Gui:dispatch(msg)
+  end
+end
+
 return util
