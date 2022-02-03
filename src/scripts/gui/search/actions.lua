@@ -296,7 +296,7 @@ end
 
 --- @param Gui SearchGui
 function actions.delete_history(Gui, _, _)
-  Gui.player_table.history = {}
+  Gui.player_table.global_history = {}
   Gui:update_history()
 end
 
