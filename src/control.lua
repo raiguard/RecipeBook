@@ -17,11 +17,17 @@ local util = require("scripts.util")
 -- -----------------------------------------------------------------------------
 -- GLOBALS
 
+DOCK_GUI = require("scripts.gui.dock.index")
 INFO_GUI = require("scripts.gui.info.index")
 QUICK_REF_GUI = require("scripts.gui.quick-ref.index")
 SEARCH_GUI = require("scripts.gui.search.index")
 SETTINGS_GUI = require("scripts.gui.settings.index")
 
+--- Open the given page.
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+--- @param context Context
+--- @param options table
 function OPEN_PAGE(player, player_table, context, options)
   options = options or {}
 
@@ -475,6 +481,9 @@ event.on_player_created(function(e)
   local player_table = global.players[e.player_index]
   player_data.refresh(player, player_table)
   formatter.create_cache(e.player_index)
+
+  -- TEMPORARY:
+  DOCK_GUI.build(player, player_table)
 end)
 
 event.on_player_removed(function(e)

@@ -33,4 +33,6 @@ data:extend({
   -- Small tool icons
   data_util.build_sprite("rb_plus_black", { 0, 0 }, small_tool_icons, 16, 2),
   data_util.build_sprite("rb_minus_black", { 0, 16 }, small_tool_icons, 16, 2),
+  -- Slot button icons
+  data_util.build_sprite("rb_favorite_slot", { 0, 0 }, "__RecipeBook__/graphics/favorite-slot-button-icon.png", 32, 1),
 })
