@@ -56,11 +56,6 @@ function util.convert_and_sort(tbl)
   return tbl
 end
 
-function util.add_string(strings, tbl)
-  strings.__index = strings.__index + 1
-  strings[strings.__index] = tbl
-end
-
 function util.unique_string_array(initial_tbl)
   initial_tbl = initial_tbl or {}
   local hash = {}
