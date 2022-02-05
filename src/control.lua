@@ -308,27 +308,27 @@ event.on_gui_closed(function(e)
 end)
 
 event.register("rb-linked-focus-search", function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local opened = player.opened
-  local opened_gui_type = player.opened_gui_type
-  local opened_is_ok = opened_gui_type == 0
-    or (
-      opened_gui_type == defines.gui_type.custom
-      and (opened.name == "rb_search_window" or opened.name == "rb_settings_window")
-    )
-  if player_table.flags.can_open_gui and opened_is_ok and opened.name == "rb_search_window" then
-    local InfoGui = util.get_gui(e.player_index, "info", player_table.guis._active_id)
-    if InfoGui then
-      InfoGui:dispatch("toggle_search")
-    end
-  elseif opened_is_ok and opened.name == "rb_settings_window" then
-    --- @type SettingsGui
-    local SettingsGui = util.get_gui(e.player_index, "settings")
-    if SettingsGui then
-      SettingsGui:dispatch("toggle_search")
-    end
-  end
+  -- local player = game.get_player(e.player_index)
+  -- local player_table = global.players[e.player_index]
+  -- local opened = player.opened
+  -- local opened_gui_type = player.opened_gui_type
+  -- local opened_is_ok = opened_gui_type == 0
+  --   or (
+  --     opened_gui_type == defines.gui_type.custom
+  --     and (opened.name == "rb_search_window" or opened.name == "rb_settings_window")
+  --   )
+  -- if player_table.flags.can_open_gui and opened_is_ok and opened.name == "rb_search_window" then
+  --   local InfoGui = util.get_gui(e.player_index, "info", player_table.guis._active_id)
+  --   if InfoGui then
+  --     InfoGui:dispatch("toggle_search")
+  --   end
+  -- elseif opened_is_ok and opened.name == "rb_settings_window" then
+  --   --- @type SettingsGui
+  --   local SettingsGui = util.get_gui(e.player_index, "settings")
+  --   if SettingsGui then
+  --     SettingsGui:dispatch("toggle_search")
+  --   end
+  -- end
 end)
 
 -- INTERACTION
