@@ -8,7 +8,7 @@ local util = require("scripts.util")
 --- @field window LuaGuiElement
 --- @field titlebar_flow LuaGuiElement
 --- @field group_table LuaGuiElement
---- @field items_frame LuaGuiElement
+--- @field objects_frame LuaGuiElement
 
 --- @class VisualSearchGui
 local Gui = {}
@@ -106,6 +106,46 @@ function index.build(player, player_table)
     })
   end
 
+  -- Fluids
+  table.insert(group_buttons, {
+    type = "sprite-button",
+    name = "fluids",
+    style = "rb_filter_group_button_tab",
+    sprite = "item-group/fluids",
+    tooltip = { "item-group-name.fluids" },
+    actions = {
+      on_click = { gui = "visual_search", action = "change_group", group = "fluids" },
+    },
+  })
+
+  local fluids_table = { type = "table", style = "slot_table", column_count = 10 }
+  for _, fluid in pairs(recipe_book.fluid) do
+    local fluid_data = formatter(fluid, player_data, { is_visual_search_result = true })
+    if fluid_data then
+      table.insert(fluids_table, {
+        type = "sprite-button",
+        style = "flib_slot_button_" .. (fluid_data.researched and "default" or "red"),
+        sprite = "fluid/" .. fluid.prototype_name,
+        tooltip = fluid_data.tooltip,
+        -- TODO: Distinguish fluid temperatures
+        tags = {
+          context = { class = "fluid", name = fluid.prototype_name },
+        },
+        actions = {
+          on_click = { gui = "visual_search", action = "open_object" },
+        },
+      })
+    end
+  end
+  table.insert(groups_scroll_panes, {
+    type = "scroll-pane",
+    name = "fluids",
+    style = "rb_filter_scroll_pane",
+    visible = false,
+    vertical_scroll_policy = "always",
+    fluids_table,
+  })
+
   --- @type VisualSearchGuiRefs
   local refs = gui.build(player.gui.screen, {
     {
@@ -152,7 +192,7 @@ function index.build(player, player_table)
             type = "frame",
             style = "deep_frame_in_shallow_frame",
             style_mods = { height = 40 * 15, natural_width = 40 * 10 },
-            ref = { "items_frame" },
+            ref = { "objects_frame" },
             children = groups_scroll_panes,
           },
         },

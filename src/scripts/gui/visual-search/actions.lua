@@ -15,11 +15,11 @@ function actions.change_group(Gui, msg)
   if not msg.ignore_last_button then
     Gui.refs.group_table[last_group].enabled = true
   end
-  Gui.refs.items_frame[last_group].visible = false
+  Gui.refs.objects_frame[last_group].visible = false
 
   local new_group = msg.group
   Gui.refs.group_table[new_group].enabled = false
-  Gui.refs.items_frame[new_group].visible = true
+  Gui.refs.objects_frame[new_group].visible = true
 
   Gui.state.active_group = msg.group
 end
@@ -100,7 +100,7 @@ function actions.update_search_results(Gui, _, _)
   local query = state.search_query
   local group_table = Gui.refs.group_table
 
-  for _, group_scroll in pairs(Gui.refs.items_frame.children) do
+  for _, group_scroll in pairs(Gui.refs.objects_frame.children) do
     local group_has_results = false
     for _, subgroup_table in pairs(group_scroll.children) do
       local visible_count = 0
@@ -168,7 +168,7 @@ function actions.update_search_results(Gui, _, _)
           end
         end
         if not matched then
-          game.print("Show 'no results' text")
+          game.print("NO RESULTS")
         end
       end
     end
