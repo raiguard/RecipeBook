@@ -170,25 +170,24 @@ function index.build(player, player_table)
         ref = { "titlebar_flow" },
         { type = "label", style = "frame_title", caption = { "gui.rb-search-title" }, ignored_by_interaction = true },
         { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
+        {
+          type = "textfield",
+          style_mods = {
+            top_margin = -3,
+            right_padding = 3,
+            width = 120,
+          },
+          clear_and_focus_on_right_click = true,
+          actions = {
+            on_text_changed = { gui = "visual_search", action = "update_search_query" },
+          },
+        },
         util.frame_action_button("utility/close", { "gui.close-instruction" }, { "close_button" }),
       },
       {
         type = "frame",
         style = "inside_deep_frame",
         direction = "vertical",
-        {
-          type = "frame",
-          style = "subheader_frame",
-          {
-            type = "textfield",
-            clear_and_focus_on_right_click = true,
-            actions = {
-              on_text_changed = { gui = "visual_search", action = "update_search_query" },
-            },
-          },
-          { type = "empty-widget", style = "flib_horizontal_pusher" },
-          { type = "sprite-button", style = "tool_button" },
-        },
         {
           type = "table",
           style = "filter_group_table",
