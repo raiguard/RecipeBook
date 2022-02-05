@@ -304,7 +304,6 @@ styles.rb_filter_scroll_pane = {
     overall_tiling_horizontal_padding = 4,
   },
   vertically_stretchable = "on",
-  horizontally_squashable = "off",
   vertical_flow_style = {
     type = "vertical_flow_style",
     vertical_spacing = 0,

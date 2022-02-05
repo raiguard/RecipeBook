@@ -9,6 +9,7 @@ local util = require("scripts.util")
 --- @field titlebar_flow LuaGuiElement
 --- @field group_table LuaGuiElement
 --- @field objects_frame LuaGuiElement
+--- @field warning_frame LuaGuiElement
 
 --- @class VisualSearchGui
 local Gui = {}
@@ -144,6 +145,18 @@ function index.build(player, player_table)
     visible = false,
     vertical_scroll_policy = "always",
     fluids_table,
+  })
+
+  -- Warning frame
+  table.insert(groups_scroll_panes, {
+    type = "frame",
+    style = "negative_subheader_frame",
+    style_mods = { width = 40 * 10 },
+    visible = false,
+    ref = { "warning_frame" },
+    { type = "empty-widget", style = "flib_horizontal_pusher" },
+    { type = "label", style = "bold_label", caption = { "gui.rb-no-results" } },
+    { type = "empty-widget", style = "flib_horizontal_pusher" },
   })
 
   --- @type VisualSearchGuiRefs
