@@ -7,7 +7,9 @@ local constants = require("constants")
 
 local util = {}
 
+--- @return AmountIdent
 function util.build_amount_ident(input)
+  --- @class AmountIdent
   return {
     amount = input.amount or false,
     amount_min = input.amount_min or false,

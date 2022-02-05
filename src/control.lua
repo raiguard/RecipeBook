@@ -22,6 +22,7 @@ INFO_GUI = require("scripts.gui.info.index")
 QUICK_REF_GUI = require("scripts.gui.quick-ref.index")
 SEARCH_GUI = require("scripts.gui.search.index")
 SETTINGS_GUI = require("scripts.gui.settings.index")
+VISUAL_SEARCH_GUI = require("scripts.gui.visual-search.index")
 
 --- Open the given page.
 --- @param player LuaPlayer
@@ -196,6 +197,9 @@ event.on_load(function()
     end
     if guis.settings then
       SETTINGS_GUI.load(guis.settings)
+    end
+    if guis.visual_search then
+      VISUAL_SEARCH_GUI.load(guis.visual_search)
     end
   end
 end)
@@ -481,9 +485,6 @@ event.on_player_created(function(e)
   local player_table = global.players[e.player_index]
   player_data.refresh(player, player_table)
   formatter.create_cache(e.player_index)
-
-  -- TEMPORARY:
-  DOCK_GUI.build(player, player_table)
 end)
 
 event.on_player_removed(function(e)
@@ -557,6 +558,8 @@ event.on_string_translated(function(e)
         player_table.flags.can_open_gui = true
         -- Enable shortcut
         player.set_shortcut_available("rb-search", true)
+        -- TEMPORARY:
+        VISUAL_SEARCH_GUI.build(player, player_table)
       end
     end
   end

@@ -306,7 +306,7 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
   return output
 end
 
-local function get_tooltip_deets(obj_data, player_data)
+local function get_tooltip_deets(obj_data, player_data, options)
   local gui_translations = player_data.translations.gui
 
   local cache = caches[player_data.player_index]
@@ -321,34 +321,36 @@ local function get_tooltip_deets(obj_data, player_data)
   local output = ""
 
   for _, deet in pairs(deets_structure) do
-    local values
-    local type = deet.type
-    if type == "plain" then
-      values = { obj_data[deet.source] }
-    elseif type == "list" then
-      values = table.array_copy(obj_data[deet.source])
-    end
-
-    local values_output = ""
-    for _, value in pairs(values) do
-      local fmtr = deet.formatter
-      if fmtr then
-        value = formatter[fmtr](value, gui_translations, player_data, deet.options)
+    if deet.source ~= "group" or not options.is_visual_search_result then
+      local values
+      local type = deet.type
+      if type == "plain" then
+        values = { obj_data[deet.source] }
+      elseif type == "list" then
+        values = table.array_copy(obj_data[deet.source])
       end
-      if value then
-        if type == "plain" then
-          values_output = values_output .. "  " .. value
-        elseif type == "list" then
-          values_output = values_output .. "\n    " .. value
+
+      local values_output = ""
+      for _, value in pairs(values) do
+        local fmtr = deet.formatter
+        if fmtr then
+          value = formatter[fmtr](value, gui_translations, player_data, deet.options)
+        end
+        if value then
+          if type == "plain" then
+            values_output = values_output .. "  " .. value
+          elseif type == "list" then
+            values_output = values_output .. "\n    " .. value
+          end
         end
       end
-    end
 
-    if #values_output > 0 then
-      output = output
-        .. "\n"
-        .. rich_text("font", "default-semibold", gui_translations[deet.label or deet.source] .. ":")
-        .. values_output
+      if #values_output > 0 then
+        output = output
+          .. "\n"
+          .. rich_text("font", "default-semibold", gui_translations[deet.label or deet.source] .. ":")
+          .. values_output
+      end
     end
   end
 
@@ -376,6 +378,10 @@ local function get_interaction_helps(obj_data, player_data, options)
   local helps_output = ""
 
   local interactions = constants.interactions[obj_data.class]
+
+  if options.is_visual_search_result then
+    interactions = constants.interactions.visual_search_result
+  end
 
   local num_interactions = 0
 
@@ -480,16 +486,21 @@ local function get_obj_properties(obj_data, player_data, options)
   return should_show and obj_properties or false
 end
 
+--- @class FormatOptions
 local available_options = {
   hide_glyphs = false,
   base_tooltip_only = false,
   label_only = true,
   is_label = false,
+  --- @type AmountIdent?
   amount_ident = false,
+  --- @type number?
   rocket_parts_required = false,
   amount_only = false,
+  is_visual_search_result = false,
 }
 
+--- @param options FormatOptions
 function formatter.format(obj_data, player_data, options)
   options = table.deep_merge({ available_options, options or {} })
 
@@ -509,7 +520,7 @@ function formatter.format(obj_data, player_data, options)
   local caption_output
   if amount_ident and options.amount_only then
     caption_output = get_amount_string(amount_ident, player_data, options)
-  else
+  elseif not options.is_visual_search_result then
     local caption = get_caption(obj_data, obj_properties, player_data, options)
     if amount_ident then
       caption_output = caption.before
@@ -538,7 +549,7 @@ function formatter.format(obj_data, player_data, options)
   end
   local settings = player_data.settings
   if settings.general.tooltips.show_detailed_tooltips and not options.base_tooltip_only then
-    tooltip_output = tooltip_output .. get_tooltip_deets(obj_data, player_data)
+    tooltip_output = tooltip_output .. get_tooltip_deets(obj_data, player_data, options)
   end
   local num_interactions = 0
   if not options.base_tooltip_only then

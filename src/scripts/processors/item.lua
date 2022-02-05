@@ -120,6 +120,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       items[#items + 1] = { class = "item", name = name }
     end
 
+    --- @class ItemData
     recipe_book.item[name] = {
       burned_in = {},
       burnt_result = burnt_result,
@@ -148,10 +149,11 @@ function item_proc.build(recipe_book, dictionaries, metadata)
       product_of = {},
       prototype_name = name,
       recipe_categories = default_categories,
+      researched_in = {},
       rocket_launch_product_of = {},
       rocket_launch_products = launch_products,
-      researched_in = {},
       stack_size = prototype.stack_size,
+      subgroup = prototype.subgroup,
       unlocked_by = util.unique_obj_array(),
     }
     dictionaries.item:add(name, prototype.localised_name)

@@ -38,6 +38,19 @@ styles.rb_table_button = {
   left_margin = -8,
 }
 
+styles.rb_filter_group_button_tab = {
+  type = "button_style",
+  parent = "filter_group_button_tab",
+  width = 0,
+  horizontally_stretchable = "on",
+}
+
+styles.rb_selected_filter_group_button_tab = {
+  type = "button_style",
+  parent = "rb_filter_group_button_tab",
+  disabled_graphical_set = styles.button.selected_graphical_set,
+}
+
 -- FLOW STYLES
 
 styles.rb_main_frame_flow = {
@@ -162,6 +175,16 @@ styles.rb_inside_deep_frame_under_tabs = {
   },
 }
 
+styles.rb_filter_frame = {
+  type = "frame_style",
+  parent = "filter_frame",
+  horizontally_stretchable = "on",
+  bottom_padding = 8,
+  top_padding = 8,
+  left_padding = 13,
+  width = 426,
+}
+
 -- LABEL STYLES
 
 styles.rb_hyperlink_label = {
@@ -259,6 +282,30 @@ styles.rb_search_results_scroll_pane = {
   parent = "rb_list_box_scroll_pane",
   vertically_stretchable = "on",
   -- height = 28 * constants.search_results_visible_items
+}
+
+styles.rb_filter_scroll_pane = {
+  type = "scroll_pane_style",
+  parent = "flib_naked_scroll_pane_no_padding",
+  background_graphical_set = {
+    position = { 282, 17 },
+    corner_size = 8,
+    overall_tiling_vertical_size = 32,
+    overall_tiling_vertical_spacing = 8,
+    overall_tiling_vertical_padding = 4,
+    overall_tiling_horizontal_size = 32,
+    overall_tiling_horizontal_spacing = 8,
+    overall_tiling_horizontal_padding = 4,
+  },
+  extra_padding_when_activated = 0,
+  vertically_stretchable = "on",
+  -- horizontally_stretchable = "on",
+  minimal_width = 40 * 10,
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    vertical_spacing = 0,
+    -- width = 40 * 10,
+  },
 }
 
 -- styles.rb_settings_content_scroll_pane = {
