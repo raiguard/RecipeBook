@@ -1065,15 +1065,6 @@ constants.tooltips = {
       formatter = "object",
       options = { always_show = true, hide_glyph = true },
     },
-    gui_type = {
-      type = "enum",
-      options = {
-        "textual",
-        "visual",
-      },
-      has_tooltip = true,
-      default_value = "textual",
-    },
     { type = "plain", source = "mining_time", formatter = "seconds_from_ticks" },
     { type = "list", source = "products", formatter = "object" },
   },
