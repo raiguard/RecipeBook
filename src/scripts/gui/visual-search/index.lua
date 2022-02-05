@@ -50,7 +50,7 @@ function index.build(player, player_table)
           table.insert(group_buttons, {
             type = "sprite-button",
             name = current_group,
-            style = is_selected and "rb_selected_filter_group_button_tab" or "rb_filter_group_button_tab",
+            style = "rb_filter_group_button_tab",
             sprite = "item-group/" .. current_group,
             tooltip = { "item-group-name." .. current_group },
             enabled = not is_selected,
@@ -67,7 +67,7 @@ function index.build(player, player_table)
           name = current_group,
           style = "rb_filter_scroll_pane",
           visible = #groups_scroll_panes == 0,
-          vertical_scroll_policy = "always",
+          -- vertical_scroll_policy = "always",
         }
         table.insert(groups_scroll_panes, current_group_table)
       end
@@ -82,8 +82,11 @@ function index.build(player, player_table)
         style = "flib_slot_button_" .. (data.researched and "default" or "red"),
         sprite = "item/" .. name,
         tooltip = data.tooltip,
+        tags = {
+          context = { class = "item", name = name },
+        },
         actions = {
-          on_click = { gui = "visual_search", action = "open_object", context = { class = "item", name = name } },
+          on_click = { gui = "visual_search", action = "open_object" },
         },
       })
     end
@@ -93,7 +96,7 @@ function index.build(player, player_table)
     table.insert(group_buttons, {
       type = "sprite-button",
       name = current_group,
-      style = is_selected and "rb_selected_filter_group_button_tab" or "rb_filter_group_button_tab",
+      style = "rb_filter_group_button_tab",
       sprite = "item-group/" .. current_group,
       tooltip = { "item-group-name." .. current_group },
       enabled = not is_selected,
@@ -124,7 +127,12 @@ function index.build(player, player_table)
         {
           type = "frame",
           style = "subheader_frame",
-          { type = "textfield" },
+          {
+            type = "textfield",
+            actions = {
+              on_text_changed = { gui = "visual_search", action = "update_search_query" },
+            },
+          },
           { type = "empty-widget", style = "flib_horizontal_pusher" },
           { type = "sprite-button", style = "tool_button" },
         },
@@ -161,6 +169,7 @@ function index.build(player, player_table)
     refs = refs,
     state = {
       active_group = first_group,
+      search_query = "",
     },
   }
   index.load(self)
