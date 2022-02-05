@@ -92,6 +92,7 @@ function actions.update_search_results(Gui, _, _)
   local state = Gui.state
   local refs = Gui.refs
 
+  refs.objects_frame.visible = true
   refs.warning_frame.visible = false
 
   -- Data
@@ -104,82 +105,81 @@ function actions.update_search_results(Gui, _, _)
   local group_table = refs.group_table
 
   for _, group_scroll in pairs(refs.objects_frame.children) do
-    if group_scroll.type == "scroll-pane" then
-      local group_has_results = false
-      for _, subgroup_table in pairs(group_scroll.children) do
-        local visible_count = 0
-        for _, obj_button in pairs(subgroup_table.children) do
-          local context = gui.get_tags(obj_button).context
-          local translation = player_data.translations[context.class][context.name]
-          -- Match against search string
-          local matched
-          if search_type == "both" then
-            matched = string.find(string.lower(context.name), query) or string.find(string.lower(translation), query)
-          elseif search_type == "internal" then
-            matched = string.find(string.lower(context.name), query)
-          elseif search_type == "localised" then
-            matched = string.find(string.lower(translation), query)
-          end
+    local group_has_results = false
+    for _, subgroup_table in pairs(group_scroll.children) do
+      local visible_count = 0
+      for _, obj_button in pairs(subgroup_table.children) do
+        local context = gui.get_tags(obj_button).context
+        local translation = player_data.translations[context.class][context.name]
+        -- Match against search string
+        local matched
+        if search_type == "both" then
+          matched = string.find(string.lower(context.name), query) or string.find(string.lower(translation), query)
+        elseif search_type == "internal" then
+          matched = string.find(string.lower(context.name), query)
+        elseif search_type == "localised" then
+          matched = string.find(string.lower(translation), query)
+        end
 
-          -- Match fluid temperature
-          if matched and context.class == "fluid" then
-            local temperature_ident = database[context.class][context.name].temperature_ident
-            if temperature_ident then
-              local is_range = temperature_ident.min ~= temperature_ident.max
-              if is_range then
-                if show_fluid_temperatures ~= "all" then
-                  matched = false
-                end
-              else
-                if show_fluid_temperatures == "off" then
-                  matched = false
-                end
+        -- Match fluid temperature
+        if matched and context.class == "fluid" then
+          local temperature_ident = database[context.class][context.name].temperature_ident
+          if temperature_ident then
+            local is_range = temperature_ident.min ~= temperature_ident.max
+            if is_range then
+              if show_fluid_temperatures ~= "all" then
+                matched = false
+              end
+            else
+              if show_fluid_temperatures == "off" then
+                matched = false
               end
             end
           end
-
-          if matched then
-            obj_button.visible = true
-            visible_count = visible_count + 1
-          else
-            obj_button.visible = false
-          end
         end
 
-        if visible_count > 0 then
-          group_has_results = true
-          subgroup_table.visible = true
+        if matched then
+          obj_button.visible = true
+          visible_count = visible_count + 1
         else
-          subgroup_table.visible = false
+          obj_button.visible = false
         end
       end
 
-      local group_name = group_scroll.name
-      local group_button = group_table[group_name]
-      if group_has_results then
-        group_button.style = "rb_filter_group_button_tab"
-        group_button.enabled = state.active_group ~= group_scroll.name
-        if state.active_group == group_name then
-          group_scroll.visible = true
-        else
-          group_scroll.visible = false
-        end
+      if visible_count > 0 then
+        group_has_results = true
+        subgroup_table.visible = true
+      else
+        subgroup_table.visible = false
+      end
+    end
+
+    local group_name = group_scroll.name
+    local group_button = group_table[group_name]
+    if group_has_results then
+      group_button.style = "rb_filter_group_button_tab"
+      group_button.enabled = state.active_group ~= group_scroll.name
+      if state.active_group == group_name then
+        group_scroll.visible = true
       else
         group_scroll.visible = false
-        group_button.style = "rb_disabled_filter_group_button_tab"
-        group_button.enabled = false
-        if state.active_group == group_name then
-          local matched = false
-          for _, group_button in pairs(group_table.children) do
-            if group_button.enabled then
-              matched = true
-              actions.change_group(Gui, { group = group_button.name, ignore_last_button = true })
-              break
-            end
+      end
+    else
+      group_scroll.visible = false
+      group_button.style = "rb_disabled_filter_group_button_tab"
+      group_button.enabled = false
+      if state.active_group == group_name then
+        local matched = false
+        for _, group_button in pairs(group_table.children) do
+          if group_button.enabled then
+            matched = true
+            actions.change_group(Gui, { group = group_button.name, ignore_last_button = true })
+            break
           end
-          if not matched then
-            refs.warning_frame.visible = true
-          end
+        end
+        if not matched then
+          refs.objects_frame.visible = false
+          refs.warning_frame.visible = true
         end
       end
     end

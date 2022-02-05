@@ -27,15 +27,11 @@ function Gui:destroy()
   self.refs.window.destroy()
 end
 
-local index = {}
-
---- @param player LuaPlayer
---- @param player_table PlayerTable
-function index.build(player, player_table)
-  local player_data = formatter.build_player_data(player, player_table)
+function Gui:update_contents()
+  local player_data = formatter.build_player_data(self.player, self.player_table)
   -- The items will actually be iterated in prototype order!
   local group_buttons = {}
-  local groups_scroll_panes = {}
+  local object_frame_children = {}
   local current_group, current_subgroup
   local current_group_table, current_subgroup_table
   local first_group
@@ -67,10 +63,10 @@ function index.build(player, player_table)
           type = "scroll-pane",
           name = current_group,
           style = "rb_filter_scroll_pane",
-          visible = #groups_scroll_panes == 0,
+          visible = #object_frame_children == 0,
           vertical_scroll_policy = "always",
         }
-        table.insert(groups_scroll_panes, current_group_table)
+        table.insert(object_frame_children, current_group_table)
       end
       if item.subgroup ~= current_subgroup then
         current_subgroup = item.subgroup
@@ -138,7 +134,7 @@ function index.build(player, player_table)
       })
     end
   end
-  table.insert(groups_scroll_panes, {
+  table.insert(object_frame_children, {
     type = "scroll-pane",
     name = "fluids",
     style = "rb_filter_scroll_pane",
@@ -147,18 +143,21 @@ function index.build(player, player_table)
     fluids_table,
   })
 
-  -- Warning frame
-  table.insert(groups_scroll_panes, {
-    type = "frame",
-    style = "negative_subheader_frame",
-    style_mods = { width = 40 * 10 },
-    visible = false,
-    ref = { "warning_frame" },
-    { type = "empty-widget", style = "flib_horizontal_pusher" },
-    { type = "label", style = "bold_label", caption = { "gui.rb-no-results" } },
-    { type = "empty-widget", style = "flib_horizontal_pusher" },
-  })
+  self.state.active_group = first_group
 
+  local refs = self.refs
+  refs.group_table.clear()
+  gui.build(refs.group_table, group_buttons)
+
+  refs.objects_frame.clear()
+  gui.build(refs.objects_frame, object_frame_children)
+end
+
+local index = {}
+
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+function index.build(player, player_table)
   --- @type VisualSearchGuiRefs
   local refs = gui.build(player.gui.screen, {
     {
@@ -196,7 +195,6 @@ function index.build(player, player_table)
           style_mods = { width = 426 },
           column_count = 6,
           ref = { "group_table" },
-          children = group_buttons,
         },
         {
           type = "frame",
@@ -206,7 +204,19 @@ function index.build(player, player_table)
             style = "deep_frame_in_shallow_frame",
             style_mods = { height = 40 * 15, natural_width = 40 * 10 },
             ref = { "objects_frame" },
-            children = groups_scroll_panes,
+          },
+          {
+            type = "frame",
+            style = "rb_warning_frame_in_shallow_frame",
+            style_mods = { height = 40 * 15, width = 40 * 10 },
+            ref = { "warning_frame" },
+            visible = false,
+            {
+              type = "flow",
+              style = "rb_warning_flow",
+              direction = "vertical",
+              { type = "label", style = "bold_label", caption = { "gui.rb-no-results" } },
+            },
           },
         },
       },
@@ -222,12 +232,14 @@ function index.build(player, player_table)
     player_table = player_table,
     refs = refs,
     state = {
-      active_group = first_group,
+      active_group = "",
       search_query = "",
     },
   }
   index.load(self)
   player_table.guis.visual_search = self
+
+  self:update_contents()
 end
 
 function index.load(self)

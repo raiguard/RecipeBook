@@ -163,6 +163,20 @@ styles.rb_inside_warning_frame = {
   },
 }
 
+styles.rb_warning_frame_in_shallow_frame = {
+  type = "frame_style",
+  parent = "deep_frame_in_shallow_frame",
+  graphical_set = {
+    base = {
+      position = { 85, 0 },
+      corner_size = 8,
+      center = { position = { 411, 25 }, size = { 1, 1 } },
+      draw_type = "outer",
+    },
+    shadow = default_inner_shadow,
+  },
+}
+
 styles.rb_inside_deep_frame_under_tabs = {
   type = "frame_style",
   parent = "invisible_frame",

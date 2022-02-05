@@ -73,6 +73,13 @@ function REFRESH_CONTENTS(player, player_table, skip_memoizer_purge)
     SearchGui:dispatch("update_history")
     SearchGui:update_width()
   end
+
+  --- @type VisualSearchGui?
+  local VisualSearchGui = util.get_gui(player.index, "visual_search")
+  if VisualSearchGui then
+    VisualSearchGui:update_contents()
+    VisualSearchGui:dispatch("update_search_results")
+  end
 end
 
 -- -----------------------------------------------------------------------------
