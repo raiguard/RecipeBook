@@ -253,6 +253,15 @@ constants.general_settings = {
     },
   },
   search = {
+    gui_type = {
+      type = "enum",
+      options = {
+        "textual",
+        "visual",
+      },
+      has_tooltip = true,
+      default_value = "textual",
+    },
     fuzzy_search = {
       type = "bool",
       has_tooltip = true,
@@ -384,6 +393,7 @@ constants.gui_strings = {
   go_to_the_back = { "gui.rb-go-to-the-back" },
   go_to_the_front = { "gui.rb-go-to-the-front" },
   group = { "gui.rb-group" },
+  gui_type = { "gui.rb-gui-type" },
   hidden_abbrev = { "gui.rb-hidden-abbrev" },
   hidden = { "gui.rb-hidden" },
   ingredient_in = { "gui.rb-ingredient-in" },
@@ -1054,6 +1064,15 @@ constants.tooltips = {
       source = "required_fluid",
       formatter = "object",
       options = { always_show = true, hide_glyph = true },
+    },
+    gui_type = {
+      type = "enum",
+      options = {
+        "textual",
+        "visual",
+      },
+      has_tooltip = true,
+      default_value = "textual",
     },
     { type = "plain", source = "mining_time", formatter = "seconds_from_ticks" },
     { type = "list", source = "products", formatter = "object" },
