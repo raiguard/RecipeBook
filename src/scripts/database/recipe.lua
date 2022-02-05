@@ -4,7 +4,7 @@ local constants = require("constants")
 
 local util = require("scripts.util")
 
-local fluid_proc = require("scripts.processors.fluid")
+local fluid_proc = require("scripts.database.fluid")
 
 return function(database, dictionaries, metadata)
   for name, prototype in pairs(global.prototypes.recipe) do

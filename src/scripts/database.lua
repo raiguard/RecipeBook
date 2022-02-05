@@ -3,24 +3,24 @@ dictionary.set_use_local_storage(true)
 
 local constants = require("constants")
 
-local burning_proc = require("scripts.processors.burning")
-local crafter_proc = require("scripts.processors.crafter")
-local equipment_category_proc = require("scripts.processors.equipment-category")
-local equipment_proc = require("scripts.processors.equipment")
-local fluid_proc = require("scripts.processors.fluid")
-local fuel_category_proc = require("scripts.processors.fuel-category")
-local group_proc = require("scripts.processors.group")
-local item_proc = require("scripts.processors.item")
-local lab_proc = require("scripts.processors.lab")
-local machine_proc = require("scripts.processors.machine")
-local machine_state_proc = require("scripts.processors.machine-state")
-local mining_drill_proc = require("scripts.processors.mining-drill")
-local offshore_pump_proc = require("scripts.processors.offshore-pump")
-local recipe_category_proc = require("scripts.processors.recipe-category")
-local recipe_proc = require("scripts.processors.recipe")
-local resource_category_proc = require("scripts.processors.resource-category")
-local resource_proc = require("scripts.processors.resource")
-local technology_proc = require("scripts.processors.technology")
+local burning = require("scripts.database.burning")
+local crafter = require("scripts.database.crafter")
+local equipment_category = require("scripts.database.equipment-category")
+local equipment = require("scripts.database.equipment")
+local fluid = require("scripts.database.fluid")
+local fuel_category = require("scripts.database.fuel-category")
+local group = require("scripts.database.group")
+local item = require("scripts.database.item")
+local lab = require("scripts.database.lab")
+local machine = require("scripts.database.machine")
+local machine_state = require("scripts.database.machine-state")
+local mining_drill = require("scripts.database.mining-drill")
+local offshore_pump = require("scripts.database.offshore-pump")
+local recipe_category = require("scripts.database.recipe-category")
+local recipe = require("scripts.database.recipe")
+local resource_category = require("scripts.database.resource-category")
+local resource = require("scripts.database.resource")
+local technology = require("scripts.database.technology")
 
 local database = {}
 
@@ -42,35 +42,35 @@ function database.build()
   -- Data that is needed for generation but will not be saved
   local metadata = {}
 
-  equipment_category_proc(database, dictionaries)
-  fuel_category_proc(database, dictionaries)
-  group_proc(database, dictionaries)
-  recipe_category_proc(database, dictionaries)
-  resource_category_proc(database, dictionaries)
+  equipment_category(database, dictionaries)
+  fuel_category(database, dictionaries)
+  group(database, dictionaries)
+  recipe_category(database, dictionaries)
+  resource_category(database, dictionaries)
 
-  equipment_proc(database, dictionaries)
+  equipment(database, dictionaries)
 
-  crafter_proc(database, dictionaries, metadata)
-  machine_proc(database, dictionaries)
-  mining_drill_proc(database, dictionaries)
+  crafter(database, dictionaries, metadata)
+  machine(database, dictionaries)
+  mining_drill(database, dictionaries)
 
-  fluid_proc(database, dictionaries, metadata)
-  item_proc(database, dictionaries, metadata)
+  fluid(database, dictionaries, metadata)
+  item(database, dictionaries, metadata)
 
-  lab_proc(database, dictionaries)
-  offshore_pump_proc(database, dictionaries)
+  lab(database, dictionaries)
+  offshore_pump(database, dictionaries)
 
-  recipe_proc(database, dictionaries, metadata)
-  resource_proc(database, dictionaries)
-  technology_proc(database, dictionaries, metadata)
+  recipe(database, dictionaries, metadata)
+  resource(database, dictionaries)
+  technology(database, dictionaries, metadata)
 
-  offshore_pump_proc.check_enabled_at_start(database)
-  fluid_proc.process_temperatures(database, dictionaries, metadata)
-  mining_drill_proc.add_resources(database)
-  fuel_category_proc.check_fake_category(database, dictionaries)
+  offshore_pump.check_enabled_at_start(database)
+  fluid.process_temperatures(database, dictionaries, metadata)
+  mining_drill.add_resources(database)
+  fuel_category.check_fake_category(database, dictionaries)
 
-  burning_proc(database)
-  machine_state_proc(database)
+  burning(database)
+  machine_state(database)
 
   database.generated = true
 end
@@ -95,13 +95,15 @@ function database.handle_research_updated(technology, to_value)
   end
   technology_data.researched_forces[force_index] = to_value
 
-  for _, objects in pairs({
-    technology_data.unlocks_equipment,
-    technology_data.unlocks_fluids,
-    technology_data.unlocks_items,
-    technology_data.unlocks_machines,
-    technology_data.unlocks_recipes,
-  }) do
+  for _, objects in
+    pairs({
+      technology_data.unlocks_equipment,
+      technology_data.unlocks_fluids,
+      technology_data.unlocks_items,
+      technology_data.unlocks_machines,
+      technology_data.unlocks_recipes,
+    })
+  do
     for _, obj_ident in ipairs(objects) do
       local class = obj_ident.class
       local obj_data = database[class][obj_ident.name]
