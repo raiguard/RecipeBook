@@ -303,14 +303,12 @@ styles.rb_filter_scroll_pane = {
     overall_tiling_horizontal_spacing = 8,
     overall_tiling_horizontal_padding = 4,
   },
-  extra_padding_when_activated = 0,
   vertically_stretchable = "on",
-  -- horizontally_stretchable = "on",
-  minimal_width = 40 * 10,
+  horizontally_squashable = "off",
   vertical_flow_style = {
     type = "vertical_flow_style",
     vertical_spacing = 0,
-    -- width = 40 * 10,
+    width = 40 * 10,
   },
 }
 

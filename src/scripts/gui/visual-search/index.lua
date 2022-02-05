@@ -67,7 +67,7 @@ function index.build(player, player_table)
           name = current_group,
           style = "rb_filter_scroll_pane",
           visible = #groups_scroll_panes == 0,
-          -- vertical_scroll_policy = "always",
+          vertical_scroll_policy = "always",
         }
         table.insert(groups_scroll_panes, current_group_table)
       end
@@ -129,6 +129,7 @@ function index.build(player, player_table)
           style = "subheader_frame",
           {
             type = "textfield",
+            clear_and_focus_on_right_click = true,
             actions = {
               on_text_changed = { gui = "visual_search", action = "update_search_query" },
             },
