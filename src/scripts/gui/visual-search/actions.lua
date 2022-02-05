@@ -97,7 +97,6 @@ function actions.update_search_results(Gui, _, _)
 
   -- Data
   local player_data = formatter.build_player_data(player, player_table)
-  local show_fluid_temperatures = player_table.settings.general.search.show_fluid_temperatures
   local search_type = player_table.settings.general.search.search_type
 
   --- @type LuaGuiElement
@@ -119,23 +118,6 @@ function actions.update_search_results(Gui, _, _)
           matched = string.find(string.lower(context.name), query)
         elseif search_type == "localised" then
           matched = string.find(string.lower(translation), query)
-        end
-
-        -- Match fluid temperature
-        if matched and context.class == "fluid" then
-          local temperature_ident = database[context.class][context.name].temperature_ident
-          if temperature_ident then
-            local is_range = temperature_ident.min ~= temperature_ident.max
-            if is_range then
-              if show_fluid_temperatures ~= "all" then
-                matched = false
-              end
-            else
-              if show_fluid_temperatures == "off" then
-                matched = false
-              end
-            end
-          end
         end
 
         if matched then

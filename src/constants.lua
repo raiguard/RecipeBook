@@ -262,6 +262,16 @@ constants.general_settings = {
       has_tooltip = true,
       default_value = "textual",
     },
+    result_interaction_type = {
+      type = "enum",
+      options = {
+        "standard",
+        "crafting_usage",
+      },
+      has_tooltip = true,
+      default_value = "standard",
+      dependencies = { { category = "search", name = "gui_type", value = "visual" } },
+    },
     fuzzy_search = {
       type = "bool",
       has_tooltip = true,
@@ -450,6 +460,7 @@ constants.gui_strings = {
   resource_category = { "gui.rb-resource-category" },
   resource = { "gui.rb-resource" },
   resources = { "gui.rb-resources" },
+  result_interaction_type = { "gui.rb-result-interaction-type" },
   right_click = { "gui.rb-right-click" },
   robot_limit = { "gui.rb-robot-limit" },
   rocket_launch_product_of = { "gui.rb-rocket-launch-product-of" },

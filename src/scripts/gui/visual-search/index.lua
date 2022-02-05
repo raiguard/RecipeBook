@@ -29,7 +29,9 @@ end
 
 function Gui:update_contents()
   local player_data = formatter.build_player_data(self.player, self.player_table)
-  -- The items will actually be iterated in prototype order!
+
+  -- ITEMS
+
   local group_buttons = {}
   local object_frame_children = {}
   local current_group, current_subgroup
@@ -103,7 +105,8 @@ function Gui:update_contents()
     })
   end
 
-  -- Fluids
+  -- FLUIDS
+
   table.insert(group_buttons, {
     type = "sprite-button",
     name = "fluids",
@@ -115,23 +118,53 @@ function Gui:update_contents()
     },
   })
 
+  local show_fluid_temperatures = player_data.settings.general.search.show_fluid_temperatures
   local fluids_table = { type = "table", style = "slot_table", column_count = 10 }
+
   for _, fluid in pairs(database.fluid) do
     local fluid_data = formatter(fluid, player_data, { is_visual_search_result = true })
     if fluid_data then
-      table.insert(fluids_table, {
-        type = "sprite-button",
-        style = "flib_slot_button_" .. (fluid_data.researched and "default" or "red"),
-        sprite = "fluid/" .. fluid.prototype_name,
-        tooltip = fluid_data.tooltip,
-        -- TODO: Distinguish fluid temperatures
-        tags = {
-          context = { class = "fluid", name = fluid.prototype_name },
-        },
-        actions = {
-          on_click = { gui = "visual_search", action = "open_object" },
-        },
-      })
+      -- Match fluid temperature
+      local matched = true
+      local temperature_ident = fluid.temperature_ident
+      if temperature_ident then
+        local is_range = temperature_ident.min ~= temperature_ident.max
+        if is_range then
+          if show_fluid_temperatures ~= "all" then
+            matched = false
+          end
+        else
+          if show_fluid_temperatures == "off" then
+            matched = false
+          end
+        end
+      end
+
+      if matched then
+        local style = "default"
+        if not fluid_data.researched then
+          style = "red"
+        end
+
+        table.insert(fluids_table, {
+          type = "sprite-button",
+          style = "flib_slot_button_" .. style,
+          sprite = "fluid/" .. fluid.prototype_name,
+          tooltip = fluid_data.tooltip,
+          tags = {
+            context = { class = "fluid", name = fluid.prototype_name },
+          },
+          actions = {
+            on_click = { gui = "visual_search", action = "open_object" },
+          },
+          temperature_ident and {
+            type = "label",
+            style = "rb_slot_label",
+            caption = temperature_ident.string,
+            ignored_by_interaction = true,
+          } or nil,
+        })
+      end
     end
   end
   table.insert(object_frame_children, {
