@@ -1,13 +1,13 @@
 local util = require("scripts.util")
 
-return function(recipe_book, dictionaries, metadata)
+return function(database, dictionaries, metadata)
   -- Characters as crafters
   for name, prototype in pairs(global.prototypes.character) do
     local ingredient_limit = prototype.ingredient_count
     if ingredient_limit == 255 then
       ingredient_limit = nil
     end
-    recipe_book.crafter[name] = {
+    database.crafter[name] = {
       blueprintable = false,
       can_burn = {}, -- Always empty
       can_craft = {},
@@ -71,7 +71,7 @@ return function(recipe_book, dictionaries, metadata)
     end
 
     local is_hidden = prototype.has_flag("hidden")
-    recipe_book.crafter[name] = {
+    database.crafter[name] = {
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       can_burn = {},
       can_craft = {},

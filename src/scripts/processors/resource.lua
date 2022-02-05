@@ -1,11 +1,11 @@
 local util = require("scripts.util")
 
-return function(recipe_book, dictionaries)
+return function(database, dictionaries)
   for name, prototype in pairs(global.prototypes.resource) do
     local products = prototype.mineable_properties.products
     if products then
       for _, product in ipairs(products) do
-        local product_data = recipe_book[product.type][product.name]
+        local product_data = database[product.type][product.name]
         if product_data then
           product_data.mined_from[#product_data.mined_from + 1] = { class = "resource", name = name }
         end
@@ -26,7 +26,7 @@ return function(recipe_book, dictionaries)
       -- Enable resource items that are hand-minable
       for _, product in ipairs(mineable_properties.products or {}) do
         if product.type == "item" then
-          local product_data = recipe_book[product.type][product.name]
+          local product_data = database[product.type][product.name]
           product_data.enabled_at_start = true
         end
       end
@@ -43,7 +43,7 @@ return function(recipe_book, dictionaries)
 
     local mined_by = {}
     local resource_category = prototype.resource_category
-    for drill_name, drill_data in pairs(recipe_book.mining_drill) do
+    for drill_name, drill_data in pairs(database.mining_drill) do
       if
         drill_data.resource_categories_lookup[resource_category]
         and (not required_fluid or drill_data.supports_fluid)
@@ -52,10 +52,10 @@ return function(recipe_book, dictionaries)
       end
     end
 
-    local resource_category_data = recipe_book.resource_category[resource_category]
+    local resource_category_data = database.resource_category[resource_category]
     resource_category_data.resources[#resource_category_data.resources + 1] = { class = "resource", name = name }
 
-    recipe_book.resource[name] = {
+    database.resource[name] = {
       class = "resource",
       mined_by = mined_by,
       mining_time = mineable_properties.mining_time,

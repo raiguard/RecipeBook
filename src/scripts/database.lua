@@ -22,12 +22,12 @@ local resource_category_proc = require("scripts.processors.resource-category")
 local resource_proc = require("scripts.processors.resource")
 local technology_proc = require("scripts.processors.technology")
 
-local recipe_book = {}
+local database = {}
 
-function recipe_book.build()
+function database.build()
   -- Create class tables
   for _, class in pairs(constants.classes) do
-    recipe_book[class] = {}
+    database[class] = {}
   end
 
   -- Dictionaries for translation
@@ -42,53 +42,53 @@ function recipe_book.build()
   -- Data that is needed for generation but will not be saved
   local metadata = {}
 
-  equipment_category_proc(recipe_book, dictionaries)
-  fuel_category_proc(recipe_book, dictionaries)
-  group_proc(recipe_book, dictionaries)
-  recipe_category_proc(recipe_book, dictionaries)
-  resource_category_proc(recipe_book, dictionaries)
+  equipment_category_proc(database, dictionaries)
+  fuel_category_proc(database, dictionaries)
+  group_proc(database, dictionaries)
+  recipe_category_proc(database, dictionaries)
+  resource_category_proc(database, dictionaries)
 
-  equipment_proc(recipe_book, dictionaries)
+  equipment_proc(database, dictionaries)
 
-  crafter_proc(recipe_book, dictionaries, metadata)
-  machine_proc(recipe_book, dictionaries)
-  mining_drill_proc(recipe_book, dictionaries)
+  crafter_proc(database, dictionaries, metadata)
+  machine_proc(database, dictionaries)
+  mining_drill_proc(database, dictionaries)
 
-  fluid_proc(recipe_book, dictionaries, metadata)
-  item_proc(recipe_book, dictionaries, metadata)
+  fluid_proc(database, dictionaries, metadata)
+  item_proc(database, dictionaries, metadata)
 
-  lab_proc(recipe_book, dictionaries)
-  offshore_pump_proc(recipe_book, dictionaries)
+  lab_proc(database, dictionaries)
+  offshore_pump_proc(database, dictionaries)
 
-  recipe_proc(recipe_book, dictionaries, metadata)
-  resource_proc(recipe_book, dictionaries)
-  technology_proc(recipe_book, dictionaries, metadata)
+  recipe_proc(database, dictionaries, metadata)
+  resource_proc(database, dictionaries)
+  technology_proc(database, dictionaries, metadata)
 
-  offshore_pump_proc.check_enabled_at_start(recipe_book)
-  fluid_proc.process_temperatures(recipe_book, dictionaries, metadata)
-  mining_drill_proc.add_resources(recipe_book)
-  fuel_category_proc.check_fake_category(recipe_book, dictionaries)
+  offshore_pump_proc.check_enabled_at_start(database)
+  fluid_proc.process_temperatures(database, dictionaries, metadata)
+  mining_drill_proc.add_resources(database)
+  fuel_category_proc.check_fake_category(database, dictionaries)
 
-  burning_proc(recipe_book)
-  machine_state_proc(recipe_book)
+  burning_proc(database)
+  machine_state_proc(database)
 
-  recipe_book.generated = true
+  database.generated = true
 end
 
 local function update_launch_products(launch_products, force_index, to_value)
   for _, launch_product in ipairs(launch_products) do
-    local product_data = recipe_book.item[launch_product.name]
+    local product_data = database.item[launch_product.name]
     if product_data.researched_forces then
       product_data.researched_forces[force_index] = to_value
     end
-    update_launch_products(recipe_book, product_data.rocket_launch_products, force_index)
+    update_launch_products(database, product_data.rocket_launch_products, force_index)
   end
 end
 
-function recipe_book.handle_research_updated(technology, to_value)
+function database.handle_research_updated(technology, to_value)
   local force_index = technology.force.index
   -- Technology
-  local technology_data = recipe_book.technology[technology.name]
+  local technology_data = database.technology[technology.name]
   -- Other mods can update technologies during on_configuration_changed before RB gets a chance to config change
   if not technology_data then
     return
@@ -104,7 +104,7 @@ function recipe_book.handle_research_updated(technology, to_value)
   }) do
     for _, obj_ident in ipairs(objects) do
       local class = obj_ident.class
-      local obj_data = recipe_book[class][obj_ident.name]
+      local obj_data = database[class][obj_ident.name]
 
       -- Unlock this object
       if obj_data.researched_forces then
@@ -113,7 +113,7 @@ function recipe_book.handle_research_updated(technology, to_value)
 
       if class == "fluid" and obj_data.temperature_ident then
         -- Unlock base fluid
-        local base_fluid_data = recipe_book.fluid[obj_data.prototype_name]
+        local base_fluid_data = database.fluid[obj_data.prototype_name]
         if base_fluid_data.researched_forces then
           base_fluid_data.researched_forces[force_index] = to_value
         end
@@ -123,7 +123,7 @@ function recipe_book.handle_research_updated(technology, to_value)
       elseif class == "offshore_pump" then
         -- Unlock pumped fluid
         local fluid = obj_data.fluid
-        local fluid_data = recipe_book.fluid[fluid.name]
+        local fluid_data = database.fluid[fluid.name]
         if fluid_data.researched_forces then
           fluid_data.researched_forces[force_index] = to_value
         end
@@ -132,18 +132,18 @@ function recipe_book.handle_research_updated(technology, to_value)
   end
 end
 
-function recipe_book.check_force(force)
+function database.check_force(force)
   for _, technology in pairs(force.technologies) do
     if technology.enabled and technology.researched then
-      recipe_book.handle_research_updated(technology, true)
+      database.handle_research_updated(technology, true)
     end
   end
 end
 
-function recipe_book.check_forces()
+function database.check_forces()
   for _, force in pairs(global.forces) do
-    recipe_book.check_force(force)
+    database.check_force(force)
   end
 end
 
-return recipe_book
+return database

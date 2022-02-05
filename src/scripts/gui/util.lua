@@ -5,8 +5,8 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
-local recipe_book = require("scripts.recipe-book")
 
 local gui_util = {}
 
@@ -26,7 +26,7 @@ function gui_util.navigate_to(e)
   for _, interaction in pairs(constants.interactions[context.class]) do
     if table.deep_compare(interaction.modifiers, modifiers) then
       local action = interaction.action
-      local context_data = recipe_book[context.class][context.name]
+      local context_data = database[context.class][context.name]
       local player = game.get_player(e.player_index)
 
       if action == "view_details" then
@@ -90,7 +90,7 @@ function gui_util.update_list_box(pane, source_tbl, player_data, iterator, optio
   local children = pane.children
   local add = pane.add
   for _, obj_ident in iterator(source_tbl) do
-    local obj_data = recipe_book[obj_ident.class][obj_ident.name]
+    local obj_data = database[obj_ident.class][obj_ident.name]
     local info = formatter(obj_data, player_data, options)
     if info then
       i = i + 1

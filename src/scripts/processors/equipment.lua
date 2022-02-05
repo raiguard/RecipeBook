@@ -26,7 +26,7 @@ local function get_equipment_property(properties, prototype, name, formatter, la
   end
 end
 
-function equipment_proc.build(recipe_book, dictionaries)
+function equipment_proc.build(database, dictionaries)
   for name, prototype in pairs(global.prototypes.equipment) do
     local fuel_categories
     local burner = prototype.burner_prototype
@@ -35,7 +35,7 @@ function equipment_proc.build(recipe_book, dictionaries)
     end
 
     for _, category in pairs(prototype.equipment_categories) do
-      local category_data = recipe_book.equipment_category[category]
+      local category_data = database.equipment_category[category]
       category_data.equipment[#category_data.equipment + 1] = { class = "equipment", name = name }
     end
 
@@ -54,7 +54,7 @@ function equipment_proc.build(recipe_book, dictionaries)
       get_equipment_property(properties, logistic_parameters, "charging_energy", "energy")
     end
 
-    recipe_book.equipment[name] = {
+    database.equipment[name] = {
       class = "equipment",
       can_burn = {},
       fuel_categories = fuel_categories,

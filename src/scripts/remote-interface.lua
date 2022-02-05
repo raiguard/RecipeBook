@@ -1,6 +1,6 @@
 local constants = require("constants")
 
-local recipe_book = require("scripts.recipe-book")
+local database = require("scripts.database")
 
 local remote_interface = {}
 
@@ -15,7 +15,7 @@ function remote_interface.open_page(player_index, class, name)
   if not name then
     return false, "Did not provide a name"
   end
-  local data = recipe_book[class][name]
+  local data = database[class][name]
   if not data then
     return false, "Did not provide a valid object"
   end

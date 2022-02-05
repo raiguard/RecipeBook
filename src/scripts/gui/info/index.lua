@@ -3,8 +3,8 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
-local recipe_book = require("scripts.recipe-book")
 local player_data = require("scripts.player-data")
 local util = require("scripts.util")
 
@@ -99,7 +99,7 @@ function Gui:update_contents(options)
 
   -- COMMON DATA
 
-  local obj_data = recipe_book[context.class][context.name]
+  local obj_data = database[context.class][context.name]
 
   local player_data = formatter.build_player_data(self.player, self.player_table)
   local gui_translations = player_data.translations.gui
@@ -119,7 +119,7 @@ function Gui:update_contents(options)
   local history_len = #history
   local entries = {}
   for i, history_context in ipairs(history) do
-    local obj_data = recipe_book[history_context.class][history_context.name]
+    local obj_data = database[history_context.class][history_context.name]
     local info = formatter(obj_data, player_data, { always_show = true, label_only = true })
     local caption = info.caption
     if not info.researched then
@@ -191,7 +191,7 @@ function Gui:update_contents(options)
   local list_context = context.list
   if list_context then
     local source = list_context.context
-    local source_data = recipe_book[source.class][source.name]
+    local source_data = database[source.class][source.name]
     local list = source_data[list_context.source]
     local list_len = #list
     local index = list_context.index

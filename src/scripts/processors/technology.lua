@@ -4,7 +4,7 @@ local constants = require("constants")
 
 local util = require("scripts.util")
 
-return function(recipe_book, dictionaries, metadata)
+return function(database, dictionaries, metadata)
   for name, prototype in pairs(global.prototypes.technology) do
     local unlocks_equipment = util.unique_obj_array()
     local unlocks_fluids = util.unique_obj_array()
@@ -31,7 +31,7 @@ return function(recipe_book, dictionaries, metadata)
     -- Unlocks recipes, materials, machines
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
-        local recipe_data = recipe_book.recipe[modifier.recipe]
+        local recipe_data = database.recipe[modifier.recipe]
 
         -- Check if the category should be ignored for recipe availability
         local disabled = constants.disabled_categories.recipe_category[recipe_data.recipe_category.name]
@@ -41,7 +41,7 @@ return function(recipe_book, dictionaries, metadata)
           unlocks_recipes[#unlocks_recipes + 1] = { class = "recipe", name = modifier.recipe }
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
-            local product_data = recipe_book[product.class][product_name]
+            local product_data = database[product.class][product_name]
             local product_ident = { class = product_data.class, name = product_data.prototype_name }
 
             -- For "empty X barrel" recipes, do not unlock the fluid with the recipe
@@ -63,7 +63,7 @@ return function(recipe_book, dictionaries, metadata)
             -- Machines
             local place_result = metadata.place_results[product_name]
             if place_result and constants.machine_classes_lookup[place_result.class] then
-              local machine_data = recipe_book[place_result.class][place_result.name]
+              local machine_data = database[place_result.class][place_result.name]
               if machine_data then
                 machine_data.researched_forces = {}
                 machine_data.unlocked_by[#machine_data.unlocked_by + 1] = { class = "technology", name = name }
@@ -74,7 +74,7 @@ return function(recipe_book, dictionaries, metadata)
             -- Equipment
             local place_as_equipment_result = metadata.place_as_equipment_results[product_name]
             if place_as_equipment_result then
-              local equipment_data = recipe_book.equipment[place_as_equipment_result.name]
+              local equipment_data = database.equipment[place_as_equipment_result.name]
               if equipment_data then
                 equipment_data.researched_forces = {}
                 equipment_data.unlocked_by[#equipment_data.unlocked_by + 1] = { class = "technology", name = name }
@@ -89,7 +89,7 @@ return function(recipe_book, dictionaries, metadata)
     local level = prototype.level
     local max_level = prototype.max_level
 
-    recipe_book.technology[name] = {
+    database.technology[name] = {
       class = "technology",
       hidden = prototype.hidden,
       max_level = max_level,
@@ -127,13 +127,13 @@ return function(recipe_book, dictionaries, metadata)
   end
 
   -- Generate prerequisites and prerequisite_of
-  for name, technology in pairs(recipe_book.technology) do
+  for name, technology in pairs(database.technology) do
     local prototype = global.prototypes.technology[name]
 
     if prototype.prerequisites then
       for prerequisite_name in pairs(prototype.prerequisites) do
         technology.prerequisites[#technology.prerequisites + 1] = { class = "technology", name = prerequisite_name }
-        local prerequisite_data = recipe_book.technology[prerequisite_name]
+        local prerequisite_data = database.technology[prerequisite_name]
         prerequisite_data.prerequisite_of[#prerequisite_data.prerequisite_of + 1] = {
           class = "technology",
           name = name,

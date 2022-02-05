@@ -1,8 +1,8 @@
 local equipment_category_proc = {}
 
-function equipment_category_proc.build(recipe_book, dictionaries)
+function equipment_category_proc.build(database, dictionaries)
   for name, prototype in pairs(global.prototypes.equipment_category) do
-    recipe_book.equipment_category[name] = {
+    database.equipment_category[name] = {
       class = "equipment_category",
       enabled_at_start = true,
       equipment = {},

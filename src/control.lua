@@ -5,12 +5,12 @@ local migration = require("__flib__.migration")
 local on_tick_n = require("__flib__.on-tick-n")
 local reverse_defines = require("__flib__.reverse-defines")
 
-local formatter = require("scripts.formatter")
 local constants = require("constants")
+local database = require("scripts.database")
+local formatter = require("scripts.formatter")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
-local recipe_book = require("scripts.recipe-book")
 local remote_interface = require("scripts.remote-interface")
 local util = require("scripts.util")
 
@@ -103,7 +103,7 @@ commands.add_command("rb-print-object", nil, function(e)
     player.print("Invalid arguments format")
     return
   end
-  local obj = recipe_book[class] and recipe_book[class][name]
+  local obj = database[class] and database[class][name]
   if not obj then
     player.print("Not a valid object")
     return
@@ -123,7 +123,7 @@ commands.add_command("rb-count-objects", nil, function(e)
     player.print({ "cant-run-command-not-admin", "rb-dump-data" })
     return
   end
-  for name, tbl in pairs(recipe_book) do
+  for name, tbl in pairs(database) do
     if type(tbl) == "table" then
       local output = name .. ": " .. table_size(tbl)
       player.print(output)
@@ -139,7 +139,7 @@ commands.add_command("rb-dump-data", nil, function(e)
     return
   end
   if __DebugAdapter and (not e.parameter or #e.parameter == 0) then
-    __DebugAdapter.print(recipe_book)
+    __DebugAdapter.print(database)
     game.print("Recipe Book data has been dumped to the debug console.")
   else
     game.print("[color=red]DUMPING ALL RECIPE BOOK DATA[/color]")
@@ -161,8 +161,8 @@ event.on_init(function()
   global_data.update_sync_data()
   global_data.build_prototypes()
 
-  recipe_book.build()
-  recipe_book.check_forces()
+  database.build()
+  database.check_forces()
 
   for i, player in pairs(game.players) do
     player_data.init(i)
@@ -177,8 +177,8 @@ event.on_load(function()
 
   -- When mod configuration changes, don't bother to build anything because it'll have to be built again anyway
   if global_data.check_should_load() then
-    recipe_book.build()
-    recipe_book.check_forces()
+    database.build()
+    database.check_forces()
   end
 
   -- Load GUIs
@@ -211,8 +211,8 @@ event.on_configuration_changed(function(e)
     global_data.update_sync_data()
     global_data.build_prototypes()
 
-    recipe_book.build()
-    recipe_book.check_forces()
+    database.build()
+    database.check_forces()
 
     for i, player in pairs(game.players) do
       player_data.refresh(player, global.players[i])
@@ -223,23 +223,23 @@ end)
 -- FORCE
 
 event.on_force_created(function(e)
-  if not global.forces or not recipe_book.generated then
+  if not global.forces or not database.generated then
     return
   end
   global_data.add_force(e.force)
-  recipe_book.check_force(e.force)
+  database.check_force(e.force)
 end)
 
 event.register({ defines.events.on_research_finished, defines.events.on_research_reversed }, function(e)
   -- This can be called by other mods before we get a chance to load
-  if not global.players or not recipe_book.generated then
+  if not global.players or not database.generated then
     return
   end
-  if not recipe_book[constants.classes[1]] then
+  if not database[constants.classes[1]] then
     return
   end
 
-  recipe_book.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
+  database.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
 
   -- Refresh all GUIs to reflect finished research
   for _, player in pairs(e.research.force.players) do
@@ -340,7 +340,7 @@ event.on_lua_shortcut(function(e)
 
     local cursor_stack = player.cursor_stack
     if cursor_stack and cursor_stack.valid_for_read then
-      local data = recipe_book.item[cursor_stack.name]
+      local data = database.item[cursor_stack.name]
       if data then
         OPEN_PAGE(player, player_table, { class = "item", name = cursor_stack.name })
       else
@@ -414,7 +414,7 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
         -- Not everything will have a Recipe Book entry
         if class then
           local name = selected_prototype.name
-          local obj_data = recipe_book[class][name]
+          local obj_data = database[class][name]
           if obj_data then
             local options
             if player_table.settings.general.interface.open_info_relative_to_gui then
@@ -511,12 +511,12 @@ event.on_tick(function(e)
         handle_gui_action(msg, { player_index = msg.player_index })
       elseif msg.action == "dump_data" then
         local func = msg.raw and serpent.dump or serpent.block
-        game.write_file("rb-dump.txt", func(recipe_book), false, msg.player_index)
+        game.write_file("rb-dump.txt", func(database), false, msg.player_index)
         game.print("[color=green]Dumped RB data to script-output/rb-dump.txt[/color]")
       elseif msg.action == "refresh_all" then
         dictionary.init()
-        recipe_book.build()
-        recipe_book.check_forces()
+        database.build()
+        database.check_forces()
         for player_index, player in pairs(game.players) do
           local player_table = global.players[player_index]
           player_data.refresh(player, player_table)

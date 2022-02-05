@@ -1,8 +1,8 @@
 local util = require("scripts.util")
 
-return function(recipe_book, dictionaries)
+return function(database, dictionaries)
   for name, prototype in pairs(global.prototypes.recipe_category) do
-    recipe_book.recipe_category[name] = {
+    database.recipe_category[name] = {
       class = "recipe_category",
       enabled_at_start = true,
       fluids = util.unique_obj_array({}),

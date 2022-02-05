@@ -1,8 +1,8 @@
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
-local recipe_book = require("scripts.recipe-book")
 
 local list_box = {}
 
@@ -86,7 +86,7 @@ function list_box.update(component, refs, object_data, player_data, settings, va
     end
 
     if matched then
-      local obj_data = recipe_book[obj.class][obj.name]
+      local obj_data = database[obj.class][obj.name]
       local info = formatter(obj_data, player_data, {
         always_show = always_show,
         amount_ident = obj.amount_ident,

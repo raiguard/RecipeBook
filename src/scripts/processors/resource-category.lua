@@ -1,8 +1,8 @@
 local util = require("scripts.util")
 
-return function(recipe_book, dictionaries)
+return function(database, dictionaries)
   for name, prototype in pairs(global.prototypes.resource_category) do
-    recipe_book.resource_category[name] = {
+    database.resource_category[name] = {
       class = "resource_category",
       enabled_at_start = true,
       mining_drills = {},

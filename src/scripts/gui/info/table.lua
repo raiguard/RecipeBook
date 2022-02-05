@@ -1,8 +1,8 @@
 local gui = require("__flib__.gui")
 local table = require("__flib__.table")
 
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
-local recipe_book = require("scripts.recipe-book")
 
 local table_comp = {}
 
@@ -126,7 +126,7 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
               index = i,
             })
           end
-          local source_data = recipe_book[value.class][value.name]
+          local source_data = database[value.class][value.name]
           local options = table.shallow_copy(row.options or {})
           options.label_only = true
           options.amount_ident = value.amount_ident

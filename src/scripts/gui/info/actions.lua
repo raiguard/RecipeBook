@@ -3,8 +3,8 @@ local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
 
+local database = require("scripts.database")
 local gui_util = require("scripts.gui.util")
-local recipe_book = require("scripts.recipe-book")
 local util = require("scripts.util")
 
 local actions = {}
@@ -154,7 +154,7 @@ end
 
 --- @param Gui InfoGui
 function actions.go_to_base_fluid(Gui, _, _)
-  local base_fluid = recipe_book.fluid[Gui:get_context().name].prototype_name
+  local base_fluid = database.fluid[Gui:get_context().name].prototype_name
   Gui:update_contents({ new_context = { class = "fluid", name = base_fluid } })
 end
 
@@ -236,7 +236,7 @@ end
 function actions.open_list(Gui, msg, _)
   local list_context = msg.context
   local source = msg.source
-  local list = recipe_book[list_context.class][list_context.name][source]
+  local list = database[list_context.class][list_context.name][source]
   if list and #list > 0 then
     local first_obj = list[1]
     OPEN_PAGE(Gui.player, Gui.player_table, {
@@ -272,7 +272,7 @@ function actions.change_tech_level(Gui, msg, _)
   local context = Gui:get_context()
   local state = Gui.state
 
-  local context_data = recipe_book[context.class][context.name]
+  local context_data = database[context.class][context.name]
   local min = context_data.min_level
   local max = context_data.max_level
   local new_level = math.clamp(state.selected_tech_level + msg.delta, min, max)
@@ -300,7 +300,7 @@ end
 --- @param Gui InfoGui
 function actions.print_object(Gui, _, _)
   local context = Gui:get_context()
-  local obj_data = recipe_book[context.class][context.name]
+  local obj_data = database[context.class][context.name]
 
   if obj_data then
     if __DebugAdapter then

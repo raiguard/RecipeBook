@@ -1,6 +1,6 @@
 local util = require("scripts.util")
 
-return function(recipe_book, dictionaries)
+return function(database, dictionaries)
   for name, prototype in pairs(global.prototypes.machine) do
     local equipment_categories = util.unique_obj_array()
     local equipment = util.unique_obj_array()
@@ -8,7 +8,7 @@ return function(recipe_book, dictionaries)
     if equipment_grid then
       for _, equipment_category in pairs(equipment_grid.equipment_categories) do
         table.insert(equipment_categories, { class = "equipment_category", name = equipment_category })
-        local category_data = recipe_book.equipment_category[equipment_category]
+        local category_data = database.equipment_category[equipment_category]
         if category_data then
           for _, equipment_name in pairs(category_data.equipment) do
             table.insert(equipment, equipment_name)
@@ -19,7 +19,7 @@ return function(recipe_book, dictionaries)
 
     local fuel_categories = util.process_energy_source(prototype) or {}
 
-    recipe_book.machine[name] = {
+    database.machine[name] = {
       class = "machine",
       accepted_equipment = equipment,
       can_burn = {},

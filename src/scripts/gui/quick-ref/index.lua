@@ -2,8 +2,8 @@ local gui = require("__flib__.gui")
 
 local constants = require("constants")
 
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
-local recipe_book = require("scripts.recipe-book")
 local util = require("scripts.util")
 
 local function quick_ref_panel(ref)
@@ -57,7 +57,7 @@ function Gui:update_contents()
 
   local show_made_in = self.player_table.settings.general.content.show_made_in_in_quick_ref
 
-  local recipe_data = recipe_book.recipe[self.recipe_name]
+  local recipe_data = database.recipe[self.recipe_name]
   local player_data = formatter.build_player_data(self.player, self.player_table)
 
   -- Label
@@ -84,7 +84,7 @@ function Gui:update_contents()
     local buttons = table.children
     local i = 0
     for _, object in pairs(recipe_data[source]) do
-      local object_data = recipe_book[object.class][object.name]
+      local object_data = database[object.class][object.name]
       local object_info = formatter(object_data, player_data, {
         amount_ident = object.amount_ident,
         amount_only = true,

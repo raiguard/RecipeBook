@@ -2,8 +2,8 @@ local gui = require("__flib__.gui")
 local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
-local recipe_book = require("scripts.recipe-book")
 
 local actions = {}
 
@@ -36,7 +36,7 @@ function actions.open_object(Gui, _, e)
     list_name = "ingredient_in"
   end
 
-  local list = recipe_book[context.class][context.name][list_name]
+  local list = database[context.class][context.name][list_name]
   if list and #list > 0 then
     local first_obj = list[1]
     OPEN_PAGE(Gui.player, Gui.player_table, {
@@ -119,7 +119,7 @@ function actions.update_search_results(Gui, _, _)
 
         -- Match fluid temperature
         if matched and context.class == "fluid" then
-          local temperature_ident = recipe_book[context.class][context.name].temperature_ident
+          local temperature_ident = database[context.class][context.name].temperature_ident
           if temperature_ident then
             local is_range = temperature_ident.min ~= temperature_ident.max
             if is_range then

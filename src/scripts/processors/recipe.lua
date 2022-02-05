@@ -6,7 +6,7 @@ local util = require("scripts.util")
 
 local fluid_proc = require("scripts.processors.fluid")
 
-return function(recipe_book, dictionaries, metadata)
+return function(database, dictionaries, metadata)
   for name, prototype in pairs(global.prototypes.recipe) do
     local category = prototype.category
     local group = prototype.group
@@ -14,11 +14,11 @@ return function(recipe_book, dictionaries, metadata)
     local enabled_at_start = prototype.enabled
 
     -- Add to recipe category
-    local category_data = recipe_book.recipe_category[category]
+    local category_data = database.recipe_category[category]
     category_data.recipes[#category_data.recipes + 1] = { class = "recipe", name = name }
 
     -- Add to group
-    local group_data = recipe_book.group[group.name]
+    local group_data = database.group[group.name]
     group_data.recipes[#group_data.recipes + 1] = { class = "recipe", name = name }
 
     local data = {
@@ -46,7 +46,7 @@ return function(recipe_book, dictionaries, metadata)
           name = material.name,
           amount_ident = amount_ident,
         }
-        local material_data = recipe_book[material.type][material.name]
+        local material_data = database[material.type][material.name]
         local lookup_table = material_data[lookup_type]
         lookup_table[#lookup_table + 1] = { class = "recipe", name = name }
         output[i] = material_io_data
@@ -71,10 +71,10 @@ return function(recipe_book, dictionaries, metadata)
           if temperature_ident then
             material_io_data.temperature_ident = temperature_ident
             fluid_proc.add_temperature(
-              recipe_book,
+              database,
               dictionaries,
               metadata,
-              recipe_book.fluid[material.name],
+              database.fluid[material.name],
               temperature_ident
             )
           end
@@ -88,7 +88,7 @@ return function(recipe_book, dictionaries, metadata)
 
     -- Made in
     local num_ingredients = #data.ingredients
-    for crafter_name, crafter_data in pairs(recipe_book.crafter) do
+    for crafter_name, crafter_data in pairs(database.crafter) do
       local fluidbox_counts = metadata.crafter_fluidbox_counts[crafter_name] or { inputs = 0, outputs = 0 }
       if
         (crafter_data.ingredient_limit or 255) >= num_ingredients
@@ -113,7 +113,7 @@ return function(recipe_book, dictionaries, metadata)
       end
     end
 
-    recipe_book.recipe[name] = data
+    database.recipe[name] = data
     dictionaries.recipe:add(name, prototype.localised_name)
     dictionaries.recipe_description:add(name, prototype.localised_description)
   end

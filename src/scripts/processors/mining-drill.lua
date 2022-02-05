@@ -2,14 +2,14 @@ local util = require("scripts.util")
 
 local mining_drill_proc = {}
 
-function mining_drill_proc.build(recipe_book, dictionaries)
+function mining_drill_proc.build(database, dictionaries)
   for name, prototype in pairs(global.prototypes.mining_drill) do
     for category in pairs(prototype.resource_categories) do
-      local category_data = recipe_book.resource_category[category]
+      local category_data = database.resource_category[category]
       category_data.mining_drills[#category_data.mining_drills + 1] = { class = "mining_drill", name = name }
     end
 
-    recipe_book.mining_drill[name] = {
+    database.mining_drill[name] = {
       class = "mining_drill",
       can_burn = {},
       enabled = true,
@@ -29,13 +29,13 @@ function mining_drill_proc.build(recipe_book, dictionaries)
   end
 end
 
-function mining_drill_proc.add_resources(recipe_book)
-  for _, drill_data in pairs(recipe_book.mining_drill) do
+function mining_drill_proc.add_resources(database)
+  for _, drill_data in pairs(database.mining_drill) do
     local can_mine = util.unique_obj_array()
     for category in pairs(drill_data.resource_categories_lookup) do
-      local category_data = recipe_book.resource_category[category]
+      local category_data = database.resource_category[category]
       for _, resource_ident in pairs(category_data.resources) do
-        local resource_data = recipe_book.resource[resource_ident.name]
+        local resource_data = database.resource[resource_ident.name]
         if not resource_data.required_fluid or drill_data.supports_fluid then
           can_mine[#can_mine + 1] = resource_ident
         end

@@ -5,10 +5,10 @@ local util = require("scripts.util")
 
 local fuel_category_proc = {}
 
-function fuel_category_proc.build(recipe_book, dictionaries)
+function fuel_category_proc.build(database, dictionaries)
   -- Add the actual fuel categories
   for name, prototype in pairs(global.prototypes.fuel_category) do
-    recipe_book.fuel_category[name] = {
+    database.fuel_category[name] = {
       class = "fuel_category",
       enabled_at_start = true,
       fluids = {}, -- Will always be empty
@@ -20,7 +20,7 @@ function fuel_category_proc.build(recipe_book, dictionaries)
   end
 
   -- Add our fake fuel category for fluids
-  recipe_book.fuel_category[fake_name] = {
+  database.fuel_category[fake_name] = {
     class = "fuel_category",
     enabled_at_start = true,
     fluids = util.unique_obj_array({}),
@@ -29,15 +29,15 @@ function fuel_category_proc.build(recipe_book, dictionaries)
   }
 end
 
-function fuel_category_proc.check_fake_category(recipe_book, dictionaries)
-  local category = recipe_book.fuel_category[fake_name]
+function fuel_category_proc.check_fake_category(database, dictionaries)
+  local category = database.fuel_category[fake_name]
   if #category.fluids > 0 then
     -- Add translations
     dictionaries.fuel_category:add(fake_name, { "fuel-category-name." .. fake_name })
     dictionaries.fuel_category_description:add(fake_name, { "fuel-category-description." .. fake_name })
   else
     -- Remove the category
-    recipe_book.fuel_category[fake_name] = nil
+    database.fuel_category[fake_name] = nil
   end
 end
 

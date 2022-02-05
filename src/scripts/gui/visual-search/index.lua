@@ -1,7 +1,7 @@
 local gui = require("__flib__.gui")
 
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
-local recipe_book = require("scripts.recipe-book")
 local util = require("scripts.util")
 
 --- @class VisualSearchGuiRefs
@@ -39,7 +39,7 @@ function index.build(player, player_table)
   local current_group_table, current_subgroup_table
   local first_group
   --- @type table<string, ItemData>
-  local items = recipe_book.item
+  local items = database.item
   for name, item in pairs(items) do
     local data = formatter(item, player_data, { is_visual_search_result = true })
     if data then
@@ -119,7 +119,7 @@ function index.build(player, player_table)
   })
 
   local fluids_table = { type = "table", style = "slot_table", column_count = 10 }
-  for _, fluid in pairs(recipe_book.fluid) do
+  for _, fluid in pairs(database.fluid) do
     local fluid_data = formatter(fluid, player_data, { is_visual_search_result = true })
     if fluid_data then
       table.insert(fluids_table, {

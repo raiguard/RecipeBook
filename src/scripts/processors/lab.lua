@@ -2,17 +2,17 @@ local table = require("__flib__.table")
 
 local util = require("scripts.util")
 
-return function(recipe_book, dictionaries)
+return function(database, dictionaries)
   for name, prototype in pairs(global.prototypes.lab) do
     -- Add to items
     for _, item_name in ipairs(prototype.lab_inputs) do
-      local item_data = recipe_book.item[item_name]
+      local item_data = database.item[item_name]
       if item_data then
         item_data.researched_in[#item_data.researched_in + 1] = { class = "lab", name = name }
       end
     end
 
-    recipe_book.lab[name] = {
+    database.lab[name] = {
       class = "lab",
       can_burn = {},
       fuel_categories = util.process_energy_source(prototype),

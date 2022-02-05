@@ -2,17 +2,17 @@ local util = require("scripts.util")
 
 local offshore_pump_proc = {}
 
-function offshore_pump_proc.build(recipe_book, dictionaries)
+function offshore_pump_proc.build(database, dictionaries)
   -- Iterate offshore pumps
   for name, prototype in pairs(global.prototypes.offshore_pump) do
     -- Add to material
     local fluid = prototype.fluid
-    local fluid_data = recipe_book.fluid[fluid.name]
+    local fluid_data = database.fluid[fluid.name]
     if fluid_data then
       fluid_data.pumped_by[#fluid_data.pumped_by + 1] = { class = "offshore_pump", name = name }
     end
 
-    recipe_book.offshore_pump[name] = {
+    database.offshore_pump[name] = {
       class = "offshore_pump",
       enabled = true,
       fluid = { class = "fluid", name = fluid.name },
@@ -28,10 +28,10 @@ function offshore_pump_proc.build(recipe_book, dictionaries)
   end
 end
 
-function offshore_pump_proc.check_enabled_at_start(recipe_book)
-  for _, data in pairs(recipe_book.offshore_pump) do
+function offshore_pump_proc.check_enabled_at_start(database)
+  for _, data in pairs(database.offshore_pump) do
     if not data.researched_forces then
-      local fluid_data = recipe_book.fluid[data.fluid.name]
+      local fluid_data = database.fluid[data.fluid.name]
       fluid_data.researched_forces = nil
       fluid_data.unlocked_by = {}
     end

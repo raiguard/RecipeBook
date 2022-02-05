@@ -2,9 +2,9 @@ local dictionary = require("__flib__.dictionary")
 local on_tick_n = require("__flib__.on-tick-n")
 local table = require("__flib__.table")
 
+local database = require("scripts.database")
 local global_data = require("scripts.global-data")
 local player_data = require("scripts.player-data")
-local recipe_book = require("scripts.recipe-book")
 
 return {
   -- Migrations from before 3.0 are no longer required
@@ -18,8 +18,8 @@ return {
     global_data.init()
     global_data.build_prototypes()
 
-    recipe_book.build()
-    recipe_book.check_forces()
+    database.build()
+    database.check_forces()
 
     on_tick_n.init()
     for i, player in pairs(game.players) do

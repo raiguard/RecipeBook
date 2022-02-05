@@ -2,8 +2,8 @@ local dictionary = require("__flib__.dictionary")
 local table = require("__flib__.table")
 
 local constants = require("constants")
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
-local recipe_book = require("scripts.recipe-book")
 local util = require("scripts.util")
 
 local player_data = {}
@@ -72,7 +72,7 @@ function player_data.update_settings(player, player_table)
     local former_category_settings = former_settings.categories[category_class_name] or {}
     local category_settings = {}
     settings.categories[category_class_name] = category_settings
-    for category_name in pairs(recipe_book[category_class_name]) do
+    for category_name in pairs(database[category_class_name]) do
       local disabled_by_default = constants.disabled_categories[category_class_name][category_name]
       local former_setting = former_category_settings[category_name]
       if former_setting ~= nil then
@@ -129,7 +129,7 @@ function player_data.validate_favorites(favorites)
     local i = 1
     local obj = favorites[i]
     if obj then
-      if recipe_book[obj.class] and recipe_book[obj.class][obj.name] then
+      if database[obj.class] and database[obj.class][obj.name] then
         i = i + 1
       else
         table.remove(favorites, i)
@@ -144,7 +144,7 @@ end
 function player_data.validate_global_history(global_history)
   for i = #global_history, 1, -1 do
     local entry = global_history[i]
-    if not (recipe_book[entry.class] and recipe_book[entry.class][entry.name]) then
+    if not (database[entry.class] and database[entry.class][entry.name]) then
       table.remove(global_history, i)
       global_history[entry.class .. "." .. entry.name] = nil
     end
@@ -196,7 +196,7 @@ end
 
 function player_data.check_cursor_stack(player)
   local cursor_stack = player.cursor_stack
-  if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and recipe_book.item[cursor_stack.name] then
+  if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and database.item[cursor_stack.name] then
     return cursor_stack.name
   end
   return false

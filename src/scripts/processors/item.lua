@@ -6,7 +6,7 @@ local util = require("scripts.util")
 
 local item_proc = {}
 
-function item_proc.build(recipe_book, dictionaries, metadata)
+function item_proc.build(database, dictionaries, metadata)
   local modules = {}
   local place_as_equipment_results = {}
   local place_results = {}
@@ -15,7 +15,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
   for name, prototype in pairs(global.prototypes.item) do
     -- Group
     local group = prototype.group
-    local group_data = recipe_book.group[group.name]
+    local group_data = database.group[group.name]
     group_data.items[#group_data.items + 1] = { class = "item", name = name }
     -- Rocket launch products
     local launch_products = {}
@@ -49,7 +49,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     local place_result = prototype.place_result
     if place_result then
       local class = constants.derived_type_to_class[place_result.type]
-      if class and recipe_book[class][place_result.name] then
+      if class and database[class][place_result.name] then
         place_result = { class = class, name = place_result.name }
         place_results[name] = place_result
       else
@@ -68,7 +68,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
     if equipment_grid then
       for _, equipment_category in pairs(equipment_grid.equipment_categories) do
         table.insert(equipment_categories, { class = "equipment_category", name = equipment_category })
-        local category_data = recipe_book.equipment_category[equipment_category]
+        local category_data = database.equipment_category[equipment_category]
         if category_data then
           for _, equipment_name in pairs(category_data.equipment) do
             table.insert(equipment, equipment_name)
@@ -97,7 +97,7 @@ function item_proc.build(recipe_book, dictionaries, metadata)
         }
       end
       -- Process which crafters this module is compatible with
-      for crafter_name, crafter_data in pairs(recipe_book.crafter) do
+      for crafter_name, crafter_data in pairs(database.crafter) do
         local allowed_effects = metadata.allowed_effects[crafter_name]
         local compatible = true
         if allowed_effects then
@@ -116,12 +116,12 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 
     local fuel_category = util.convert_to_ident("fuel_category", prototype.fuel_category)
     if fuel_category then
-      local items = recipe_book.fuel_category[fuel_category.name].items
+      local items = database.fuel_category[fuel_category.name].items
       items[#items + 1] = { class = "item", name = name }
     end
 
     --- @class ItemData
-    recipe_book.item[name] = {
+    database.item[name] = {
       burned_in = {},
       burnt_result = burnt_result,
       burnt_result_of = {},
@@ -162,11 +162,11 @@ function item_proc.build(recipe_book, dictionaries, metadata)
 
   -- Add rocket launch payloads to their material tables
   for product, payloads in pairs(rocket_launch_payloads) do
-    local product_data = recipe_book.item[product]
+    local product_data = database.item[product]
     product_data.rocket_launch_product_of = table.array_copy(payloads)
     for i = 1, #payloads do
       local payload = payloads[i]
-      local payload_data = recipe_book.item[payload.name]
+      local payload_data = database.item[payload.name]
       local payload_unlocked_by = payload_data.unlocked_by
       for j = 1, #payload_unlocked_by do
         product_data.unlocked_by[#product_data.unlocked_by + 1] = payload_unlocked_by[j]

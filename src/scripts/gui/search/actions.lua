@@ -4,9 +4,9 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
 local gui_util = require("scripts.gui.util")
-local recipe_book = require("scripts.recipe-book")
 local util = require("scripts.util")
 
 local actions = {}
@@ -192,7 +192,7 @@ function actions.update_search_results(Gui, _, _)
           end
 
           if matched then
-            local obj_data = recipe_book[class][internal]
+            local obj_data = database[class][internal]
 
             -- Check temperature settings
             local passed = true
