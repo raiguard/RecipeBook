@@ -5,6 +5,8 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
+local core_util = require("__core__.lualib.util")
+
 local util = {}
 
 --- @return AmountIdent
@@ -29,22 +31,33 @@ function util.build_temperature_ident(fluid)
   local temperature_min = fluid.minimum_temperature
   local temperature_max = fluid.maximum_temperature
   local temperature_string
+  local short_temperature_string
   if temperature then
     temperature_string = format_number(temperature)
+    short_temperature_string = core_util.format_number(temperature, true)
     temperature_min = temperature
     temperature_max = temperature
   elseif temperature_min and temperature_max then
     if temperature_min == math.min_double then
       temperature_string = "≤" .. format_number(temperature_max)
+      short_temperature_string = "≤" .. core_util.format_number(temperature_max, true)
     elseif temperature_max == math.max_double then
       temperature_string = "≥" .. format_number(temperature_min)
+      short_temperature_string = "≥" .. core_util.format_number(temperature_min, true)
     else
       temperature_string = "" .. format_number(temperature_min) .. "-" .. format_number(temperature_max)
+      -- TODO: Find a good way to do this
+      short_temperature_string = "TODO"
     end
   end
 
   if temperature_string then
-    return { string = temperature_string, min = temperature_min, max = temperature_max }
+    return {
+      string = temperature_string,
+      short_string = short_temperature_string,
+      min = temperature_min,
+      max = temperature_max,
+    }
   end
 end
 

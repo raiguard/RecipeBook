@@ -112,7 +112,7 @@ function Gui:update_contents()
             temperature_ident and {
               type = "label",
               style = "rb_slot_label",
-              caption = temperature_ident.string,
+              caption = temperature_ident.short_string,
               ignored_by_interaction = true,
             } or nil,
           })
