@@ -4,26 +4,43 @@ local database = require("scripts.database")
 
 local remote_interface = {}
 
+--- Returns a copy of the given object's information in the Recipe Book database.
+--- @param class string One of `crafter`, `equipment`, `equipment_category`, `fluid`, `fuel_category`, `group`, `item`, `lab`, `machine`, `mining_drill`, `offshore_pump`, `recipe`, `recipe_category`, `resource`, `resource_category`, or `technology`.
+--- @param name string The name of the object to get data for.
+--- @return table? The object's data, or `nil` if the object was not found.
+function remote_interface.get_object_data(class, name)
+  if not class then
+    error("Remote interface caller did not provide an object class.")
+  end
+  if not constants.pages[class] then
+    error("Remote interface caller provided an invalid class: `" .. class .. "`")
+  end
+  if not name then
+    error("Remote interface caller did not provide an object name.")
+  end
+
+  return database[class][name]
+end
+
 --- Opens the given info page in a Recipe Book window.
 --- @param player_index number
 --- @param class string One of `crafter`, `equipment`, `equipment_category`, `fluid`, `fuel_category`, `group`, `item`, `lab`, `machine`, `mining_drill`, `offshore_pump`, `recipe`, `recipe_category`, `resource`, `resource_category`, or `technology`.
 --- @param name string The name of the object to open.
 --- @return boolean did_open Whether or not the page was opened.
---- @return string? error_message An explanation as to why the page did not open.
 function remote_interface.open_page(player_index, class, name)
   if not class then
-    return false, "Did not provide a class"
+    error("Remote interface caller did not provide an object class.")
   end
-
   if not constants.pages[class] then
-    return false, "Did not provide a valid class"
+    error("Remote interface caller provided an invalid class: `" .. class .. "`")
   end
   if not name then
-    return false, "Did not provide a name"
+    error("Remote interface caller did not provide an object name.")
   end
+
   local data = database[class][name]
   if not data then
-    return false, "Did not provide a valid object"
+    return false
   end
 
   local player = game.get_player(player_index)
@@ -33,7 +50,7 @@ function remote_interface.open_page(player_index, class, name)
     OPEN_PAGE(player, player_table, { class = class, name = name })
     return true
   else
-    return false, "Recipe Book is not yet ready to be opened"
+    return false
   end
 end
 
