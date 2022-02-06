@@ -310,7 +310,12 @@ local function get_tooltip_deets(obj_data, player_data, options)
   local gui_translations = player_data.translations.gui
 
   local cache = caches[player_data.player_index]
-  local cache_key = build_cache_key("tooltip_deets", obj_data.class, obj_data.name or obj_data.prototype_name)
+  local cache_key = build_cache_key(
+    "tooltip_deets",
+    obj_data.class,
+    obj_data.name or obj_data.prototype_name,
+    options.is_visual_search_result
+  )
   local cached = cache[cache_key]
   if cached then
     return cached
@@ -368,6 +373,7 @@ local function get_interaction_helps(obj_data, player_data, options)
     "interaction_helps",
     obj_data.class,
     obj_data.name or obj_data.prototype_name,
+    options.is_visual_search_result,
     options.blueprint_recipe
   )
   local cached = cache[cache_key]

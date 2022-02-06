@@ -153,7 +153,7 @@ function item_proc.build(database, dictionaries, metadata)
       rocket_launch_product_of = {},
       rocket_launch_products = launch_products,
       stack_size = prototype.stack_size,
-      subgroup = prototype.subgroup,
+      subgroup = { class = "group", name = prototype.subgroup.name },
       unlocked_by = util.unique_obj_array(),
     }
     dictionaries.item:add(name, prototype.localised_name)

@@ -1,4 +1,5 @@
 local gui = require("__flib__.gui")
+local table = require("__flib__.table")
 
 local database = require("scripts.database")
 local formatter = require("scripts.formatter")
@@ -32,101 +33,53 @@ function Gui:update_contents()
 
   -- ITEMS
 
-  local group_buttons = {}
-  local object_frame_children = {}
-  local current_group, current_subgroup
-  local current_group_table, current_subgroup_table
-  local first_group
-  --- @type table<string, ItemData>
-  local items = database.item
-  for name, item in pairs(items) do
-    local data = formatter(item, player_data, { is_visual_search_result = true })
-    if data then
-      -- Cycle group and subgroup if necessary
-      if item.group.name ~= current_group then
-        if current_group and #current_group > 0 then
-          local is_selected = current_group == first_group
-          table.insert(group_buttons, {
-            type = "sprite-button",
-            name = current_group,
-            style = "rb_filter_group_button_tab",
-            sprite = "item-group/" .. current_group,
-            tooltip = { "item-group-name." .. current_group },
-            enabled = not is_selected,
-            actions = {
-              on_click = { gui = "visual_search", action = "change_group", group = current_group },
-            },
-          })
-        elseif not current_group then
-          first_group = item.group.name
-        end
-        current_group = item.group.name
-        current_group_table = {
-          type = "scroll-pane",
-          name = current_group,
-          style = "rb_filter_scroll_pane",
-          visible = #object_frame_children == 0,
-          vertical_scroll_policy = "always",
-        }
-        table.insert(object_frame_children, current_group_table)
-      end
-      if item.subgroup ~= current_subgroup then
-        current_subgroup = item.subgroup
-        current_subgroup_table = { type = "table", style = "slot_table", column_count = 10 }
-        table.insert(current_group_table, current_subgroup_table)
-      end
-      -- Create the button
-      table.insert(current_subgroup_table, {
-        type = "sprite-button",
-        style = "flib_slot_button_" .. (data.researched and "default" or "red"),
-        sprite = "item/" .. name,
-        tooltip = data.tooltip,
-        tags = {
-          context = { class = "item", name = name },
-        },
-        actions = {
-          on_click = { gui = "visual_search", action = "open_object" },
-        },
-      })
-    end
-  end
-  if current_group and #current_group > 0 then
-    local is_selected = current_group == first_group
-    table.insert(group_buttons, {
-      type = "sprite-button",
-      name = current_group,
-      style = "rb_filter_group_button_tab",
-      sprite = "item-group/" .. current_group,
-      tooltip = { "item-group-name." .. current_group },
-      enabled = not is_selected,
-      actions = {
-        on_click = { gui = "visual_search", action = "change_group", group = current_group },
-      },
-    })
-  end
-
-  -- FLUIDS
-
-  table.insert(group_buttons, {
-    type = "sprite-button",
-    name = "fluids",
-    style = "rb_filter_group_button_tab",
-    sprite = "item-group/fluids",
-    tooltip = { "item-group-name.fluids" },
-    actions = {
-      on_click = { gui = "visual_search", action = "change_group", group = "fluids" },
-    },
-  })
-
   local show_fluid_temperatures = player_data.settings.general.search.show_fluid_temperatures
-  local fluids_table = { type = "table", style = "slot_table", column_count = 10 }
+  local groups = {}
+  local first_group
 
-  for _, fluid in pairs(database.fluid) do
-    local fluid_data = formatter(fluid, player_data, { is_visual_search_result = true })
-    if fluid_data then
-      -- Match fluid temperature
+  for _, objects in pairs({ database.item, database.fluid }) do
+    for name, object in pairs(objects) do
+      -- Create / retrieve group and subgroup
+      local group = object.group
+      local group_table = groups[group.name]
+      if not group_table then
+        group_table = {
+          button = {
+            type = "sprite-button",
+            name = group.name,
+            style = "rb_filter_group_button_tab",
+            sprite = "item-group/" .. group.name,
+            tooltip = { "item-group-name." .. group.name },
+            actions = {
+              on_click = { gui = "visual_search", action = "change_group", group = group.name },
+            },
+          },
+          members = 0,
+          scroll_pane = {
+            type = "scroll-pane",
+            name = group.name,
+            style = "rb_filter_scroll_pane",
+            vertical_scroll_policy = "always",
+            visible = false,
+          },
+          subgroups = {},
+        }
+        groups[group.name] = group_table
+        if not first_group then
+          first_group = group.name
+        end
+      end
+      local subgroup = object.subgroup
+      local subgroup_table = group_table.subgroups[subgroup.name]
+      if not subgroup_table then
+        subgroup_table = { type = "table", style = "slot_table", column_count = 10 }
+        group_table.subgroups[subgroup.name] = subgroup_table
+        table.insert(group_table.scroll_pane, subgroup_table)
+      end
+
+      -- Check fluid temperature
       local matched = true
-      local temperature_ident = fluid.temperature_ident
+      local temperature_ident = object.temperature_ident
       if temperature_ident then
         local is_range = temperature_ident.min ~= temperature_ident.max
         if is_range then
@@ -141,49 +94,60 @@ function Gui:update_contents()
       end
 
       if matched then
-        local style = "default"
-        if not fluid_data.researched then
-          style = "red"
+        local formatted = formatter(object, player_data, { is_visual_search_result = true })
+        if formatted then
+          group_table.members = group_table.members + 1
+          -- Create the button
+          table.insert(subgroup_table, {
+            type = "sprite-button",
+            style = "flib_slot_button_" .. (formatted.researched and "default" or "red"),
+            sprite = object.class .. "/" .. object.prototype_name,
+            tooltip = formatted.tooltip,
+            tags = {
+              context = { class = object.class, name = name },
+            },
+            actions = {
+              on_click = { gui = "visual_search", action = "open_object" },
+            },
+            temperature_ident and {
+              type = "label",
+              style = "rb_slot_label",
+              caption = temperature_ident.string,
+              ignored_by_interaction = true,
+            } or nil,
+          })
         end
-
-        table.insert(fluids_table, {
-          type = "sprite-button",
-          style = "flib_slot_button_" .. style,
-          sprite = "fluid/" .. fluid.prototype_name,
-          tooltip = fluid_data.tooltip,
-          tags = {
-            context = { class = "fluid", name = fluid.prototype_name },
-          },
-          actions = {
-            on_click = { gui = "visual_search", action = "open_object" },
-          },
-          temperature_ident and {
-            type = "label",
-            style = "rb_slot_label",
-            caption = temperature_ident.string,
-            ignored_by_interaction = true,
-          } or nil,
-        })
       end
     end
   end
-  table.insert(object_frame_children, {
-    type = "scroll-pane",
-    name = "fluids",
-    style = "rb_filter_scroll_pane",
-    visible = false,
-    vertical_scroll_policy = "always",
-    fluids_table,
-  })
 
-  self.state.active_group = first_group
+  local group_buttons = {}
+  local group_scroll_panes = {}
+  for _, group in pairs(groups) do
+    if group.members > 0 then
+      table.insert(group_buttons, group.button)
+      table.insert(group_scroll_panes, group.scroll_pane)
+    end
+  end
+
+  if
+    #self.state.active_group == 0
+    or not table.for_each(group_buttons, function(button)
+      return button.name == self.state.active_group
+    end)
+  then
+    self.state.active_group = first_group
+  end
 
   local refs = self.refs
+
   refs.group_table.clear()
   gui.build(refs.group_table, group_buttons)
 
   refs.objects_frame.clear()
-  gui.build(refs.objects_frame, object_frame_children)
+  gui.build(refs.objects_frame, group_scroll_panes)
+
+  self:dispatch({ action = "change_group", group = self.state.active_group, ignore_last_button = true })
 end
 
 local index = {}

@@ -35,6 +35,7 @@ function fluid_proc.build(database, dictionaries, metadata)
       prototype_name = name,
       pumped_by = {},
       recipe_categories = util.unique_obj_array(),
+      subgroup = { class = "group", name = prototype.subgroup.name },
       temperatures = {},
       unlocked_by = util.unique_obj_array(),
     }
@@ -59,12 +60,14 @@ function fluid_proc.add_temperature(database, dictionaries, metadata, fluid_data
       class = "fluid",
       default_temperature = fluid_data.default_temperature,
       fuel_value = fluid_data.fuel_value,
+      group = fluid_data.group,
       hidden = fluid_data.hidden,
       ingredient_in = {},
       name = combined_name,
       product_of = {},
       prototype_name = fluid_data.prototype_name,
       recipe_categories = util.unique_obj_array(),
+      subgroup = fluid_data.subgroup,
       temperature_ident = temperature_ident,
       unlocked_by = util.unique_obj_array(),
     }
