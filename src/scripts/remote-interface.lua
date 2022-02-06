@@ -4,6 +4,12 @@ local database = require("scripts.database")
 
 local remote_interface = {}
 
+--- Opens the given info page in a Recipe Book window.
+--- @param player_index number
+--- @param class string One of `crafter`, `equipment`, `equipment_category`, `fluid`, `fuel_category`, `group`, `item`, `lab`, `machine`, `mining_drill`, `offshore_pump`, `recipe`, `recipe_category`, `resource`, `resource_category`, or `technology`.
+--- @param name string The name of the object to open.
+--- @return boolean did_open Whether or not the page was opened.
+--- @return string? error_message An explanation as to why the page did not open.
 function remote_interface.open_page(player_index, class, name)
   if not class then
     return false, "Did not provide a class"
@@ -31,6 +37,12 @@ function remote_interface.open_page(player_index, class, name)
   end
 end
 
+--- Returns the current interface version.
+---
+--- This version will be incremented if breaking changes are made to the interface. Check against this version before calling interface functions to avoid crashing.
+---
+--- The current interface version is `4`.
+--- @return number
 function remote_interface.version()
   return constants.interface_version
 end
