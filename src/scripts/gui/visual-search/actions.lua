@@ -36,19 +36,20 @@ function actions.open_object(Gui, _, e)
     list_name = "ingredient_in"
   end
 
-  local list = database[context.class][context.name][list_name]
-  if list and #list > 0 then
-    local first_obj = list[1]
-    OPEN_PAGE(Gui.player, Gui.player_table, {
-      class = first_obj.class,
-      name = first_obj.name,
-      list = {
-        context = context,
-        index = 1,
-        source = list_name,
-      },
-    })
-  end
+  -- local list = database[context.class][context.name][list_name]
+  -- if list and #list > 0 then
+  --   local first_obj = list[1]
+  --   OPEN_PAGE(Gui.player, Gui.player_table, {
+  --     class = first_obj.class,
+  --     name = first_obj.name,
+  --     list = {
+  --       context = context,
+  --       index = 1,
+  --       source = list_name,
+  --     },
+  --   })
+  -- end
+  OPEN_PAGE(Gui.player, Gui.player_table, context)
 end
 
 --- @param Gui SearchGui

@@ -94,7 +94,7 @@ function Gui:update_contents()
       end
 
       if matched then
-        local formatted = formatter(object, player_data, { is_visual_search_result = true })
+        local formatted = formatter(object, player_data)
         if formatted then
           group_table.members = group_table.members + 1
           -- Create the button
