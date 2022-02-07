@@ -3,6 +3,8 @@ Version: 3.3.0
 Date: ????
   Changes:
     - Refactored all GUI code to improve modularity and significantly cleaned up the codebase
+  Bugfixes:
+    - Fixed "can mine" table header being unlocalised
 ---------------------------------------------------------------------------------------------------
 Version: 3.2.3
 Date: 2022-01-08
