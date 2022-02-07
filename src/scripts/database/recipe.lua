@@ -70,13 +70,7 @@ return function(database, dictionaries, metadata)
           local temperature_ident = util.build_temperature_ident(material)
           if temperature_ident then
             material_io_data.temperature_ident = temperature_ident
-            fluid_proc.add_temperature(
-              database,
-              dictionaries,
-              metadata,
-              database.fluid[material.name],
-              temperature_ident
-            )
+            fluid_proc.add_temperature(database.fluid[material.name], temperature_ident)
           end
           -- Add to aggregate
           fluids[io_type] = fluids[io_type] + 1

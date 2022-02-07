@@ -26,6 +26,13 @@ local function format_number(value)
   return misc.delineate_number(math.round_to(value, 2))
 end
 
+--- @class TemperatureIdent
+--- @field string string
+--- @field short_string string
+--- @field min double
+--- @field max double
+
+--- Builds a `TemperatureIdent` based on the fluid input/output parameters.
 function util.build_temperature_ident(fluid)
   local temperature = fluid.temperature
   local temperature_min = fluid.minimum_temperature
@@ -58,6 +65,20 @@ function util.build_temperature_ident(fluid)
       min = temperature_min,
       max = temperature_max,
     }
+  end
+end
+
+--- Get the "sorting number" of a temperature. Will sort in ascending order, with absolute, then min range, then max range.
+--- @param temperature_ident TemperatureIdent
+function util.get_sorting_number(temperature_ident)
+  if temperature_ident.min == math.min_double then
+    return temperature_ident.max + 1
+  elseif temperature_ident.max == math.max_double then
+    return temperature_ident.min + 2
+  elseif temperature_ident.min ~= temperature_ident.max then
+    return (temperature_ident.min + temperature_ident.max) / 2
+  else
+    return temperature_ident.min
   end
 end
 

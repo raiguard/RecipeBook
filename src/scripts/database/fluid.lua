@@ -6,7 +6,7 @@ local util = require("scripts.util")
 
 local fluid_proc = {}
 
-function fluid_proc.build(database, dictionaries, metadata)
+function fluid_proc.build(database, _, metadata)
   local localised_fluids = {}
   for name, prototype in pairs(global.prototypes.fluid) do
     -- Group
@@ -39,23 +39,19 @@ function fluid_proc.build(database, dictionaries, metadata)
       temperatures = {},
       unlocked_by = util.unique_obj_array(),
     }
-    -- Add strings
-    dictionaries.fluid:add(name, prototype.localised_name)
-    dictionaries.fluid_description:add(name, prototype.localised_description)
-    localised_fluids[name] = prototype.localised_name
+    -- Don't add strings yet - they will be added in process_temperatures() to improve the ordering
+    localised_fluids[name] = { name = prototype.localised_name, description = prototype.localised_description }
   end
   metadata.localised_fluids = localised_fluids
 end
 
 -- Adds a fluid temperature definition if one doesn't exist yet
-function fluid_proc.add_temperature(database, dictionaries, metadata, fluid_data, temperature_ident)
+function fluid_proc.add_temperature(fluid_data, temperature_ident)
   local temperature_string = temperature_ident.string
 
   local temperatures = fluid_data.temperatures
   if not temperatures[temperature_string] then
-    local combined_name = fluid_data.prototype_name .. "." .. temperature_string
-
-    local temperature_data = {
+    temperatures[temperature_string] = {
       base_fluid = { class = "fluid", name = fluid_data.prototype_name },
       class = "fluid",
       default_temperature = fluid_data.default_temperature,
@@ -63,7 +59,7 @@ function fluid_proc.add_temperature(database, dictionaries, metadata, fluid_data
       group = fluid_data.group,
       hidden = fluid_data.hidden,
       ingredient_in = {},
-      name = combined_name,
+      name = fluid_data.prototype_name .. "." .. temperature_string,
       product_of = {},
       prototype_name = fluid_data.prototype_name,
       recipe_categories = util.unique_obj_array(),
@@ -71,15 +67,6 @@ function fluid_proc.add_temperature(database, dictionaries, metadata, fluid_data
       temperature_ident = temperature_ident,
       unlocked_by = util.unique_obj_array(),
     }
-    temperatures[temperature_string] = temperature_data
-    database.fluid[combined_name] = temperature_data
-    dictionaries.fluid:add(combined_name, {
-      "",
-      metadata.localised_fluids[fluid_data.prototype_name],
-      " (",
-      { "format-degrees-c-compact", temperature_string },
-      ")",
-    })
   end
 end
 
@@ -93,25 +80,55 @@ function fluid_proc.is_within_range(base, comp, flip)
 end
 
 function fluid_proc.process_temperatures(database, dictionaries, metadata)
+  -- Create a new fluids table so insertion order will neatly organize the temperature variants
+  local new_fluid_table = {}
   for fluid_name, fluid_data in pairs(database.fluid) do
+    new_fluid_table[fluid_name] = fluid_data
+    local localised = metadata.localised_fluids[fluid_name]
+    dictionaries.fluid:add(fluid_name, localised.name)
+    dictionaries.fluid_description:add(fluid_name, localised.description)
     local temperatures = fluid_data.temperatures
     if temperatures and table_size(temperatures) > 0 then
       -- Step 1: Add a variant for the default temperature if one does not exist
       local default_temperature = fluid_data.default_temperature
       local default_temperature_ident = util.build_temperature_ident({ temperature = default_temperature })
       if not temperatures[default_temperature_ident.string] then
-        fluid_proc.add_temperature(database, dictionaries, metadata, fluid_data, default_temperature_ident)
+        fluid_proc.add_temperature(fluid_data, default_temperature_ident)
       end
 
-      -- Step 2: Add researched properties to temperature variants
-      for _, temperature_data in pairs(fluid_data.temperatures) do
+      -- Step 2: Sort the temperature variants
+      local temp = {}
+      for _, temperature_data in pairs(temperatures) do
+        table.insert(temp, temperature_data)
+      end
+      table.sort(temp, function(temp_a, temp_b)
+        return util.get_sorting_number(temp_a.temperature_ident) < util.get_sorting_number(temp_b.temperature_ident)
+      end)
+      -- Create a new table and insert in order
+      temperatures = {}
+      for _, temperature_data in pairs(temp) do
+        temperatures[temperature_data.name] = temperature_data
+        -- Add to database and add translation
+        new_fluid_table[temperature_data.name] = temperature_data
+        dictionaries.fluid:add(temperature_data.name, {
+          "",
+          localised.name,
+          " (",
+          { "format-degrees-c-compact", temperature_data.temperature_ident.string },
+          ")",
+        })
+      end
+      fluid_data.temperatures = temperatures
+
+      -- Step 3: Add researched properties to temperature variants
+      for _, temperature_data in pairs(temperatures) do
         temperature_data.enabled_at_start = fluid_data.enabled_at_start
         if fluid_data.researched_forces then
           temperature_data.researched_forces = {}
         end
       end
 
-      -- Step 3: Add properties from base fluid to temperature variants
+      -- Step 4: Add properties from base fluid to temperature variants
       for recipe_tbl_name, fluid_tbl_name in pairs({ ingredients = "ingredient_in", products = "product_of" }) do
         for _, recipe_ident in pairs(fluid_data[fluid_tbl_name]) do
           local recipe_data = database.recipe[recipe_ident.name]
@@ -176,7 +193,7 @@ function fluid_proc.process_temperatures(database, dictionaries, metadata)
         end
       end
 
-      -- Step 4: If this variant is not produced by anything, unlock with the base fluid
+      -- Step 5: If this variant is not produced by anything, unlock with the base fluid
       for _, temperature_data in pairs(temperatures) do
         if #temperature_data.product_of == 0 and #temperature_data.unlocked_by == 0 then
           temperature_data.unlocked_by = table.deep_copy(fluid_data.unlocked_by)
@@ -191,6 +208,11 @@ function fluid_proc.process_temperatures(database, dictionaries, metadata)
         end
       end
     end
+  end
+  database.fluid = new_fluid_table
+
+  for key in pairs(new_fluid_table) do
+    log(key)
   end
 end
 
