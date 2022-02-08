@@ -376,7 +376,7 @@ function index.build(player, player_table, context, options)
   local id = player_table.guis.info._next_id
   player_table.guis.info._next_id = id + 1
   local root_elem = options.parent or player.gui.screen
-  local search_info = root_elem.name == "rb_search_window"
+  local search_info = root_elem.name == "rb_search_window" or root_elem.name == "rb_visual_search_window"
   local relative = options.parent and not search_info
   local refs = gui.build(root_elem, {
     {

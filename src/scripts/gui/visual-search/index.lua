@@ -31,8 +31,6 @@ end
 function Gui:update_contents()
   local player_data = formatter.build_player_data(self.player, self.player_table)
 
-  -- ITEMS
-
   local show_fluid_temperatures = player_data.settings.general.search.show_fluid_temperatures
   local groups = {}
   local first_group
@@ -103,6 +101,7 @@ function Gui:update_contents()
             style = "flib_slot_button_" .. (formatted.researched and "default" or "red"),
             sprite = object.class .. "/" .. object.prototype_name,
             tooltip = formatted.tooltip,
+            mouse_button_filter = { "left", "middle", "right" },
             tags = {
               context = { class = object.class, name = name },
             },
@@ -159,59 +158,69 @@ function index.build(player, player_table)
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
-      direction = "vertical",
+      name = "rb_visual_search_window",
+      style = "invisible_frame",
       ref = { "window" },
       {
-        type = "flow",
-        style = "flib_titlebar_flow",
-        ref = { "titlebar_flow" },
-        { type = "label", style = "frame_title", caption = { "gui.rb-search-title" }, ignored_by_interaction = true },
-        { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
-        {
-          type = "textfield",
-          style_mods = {
-            top_margin = -3,
-            right_padding = 3,
-            width = 120,
-          },
-          clear_and_focus_on_right_click = true,
-          actions = {
-            on_text_changed = { gui = "visual_search", action = "update_search_query" },
-          },
-        },
-        util.frame_action_button("utility/close", { "gui.close-instruction" }, { "close_button" }),
-      },
-      {
         type = "frame",
-        style = "inside_deep_frame",
         direction = "vertical",
         {
-          type = "table",
-          style = "filter_group_table",
-          style_mods = { width = 426 },
-          column_count = 6,
-          ref = { "group_table" },
+          type = "flow",
+          style = "flib_titlebar_flow",
+          ref = { "titlebar_flow" },
+          {
+            type = "label",
+            style = "frame_title",
+            caption = { "gui.rb-search-title" },
+            ignored_by_interaction = true,
+          },
+          { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
+          {
+            type = "textfield",
+            style_mods = {
+              top_margin = -3,
+              right_padding = 3,
+              width = 120,
+            },
+            clear_and_focus_on_right_click = true,
+            actions = {
+              on_text_changed = { gui = "visual_search", action = "update_search_query" },
+            },
+          },
+          util.frame_action_button("utility/close", { "gui.close-instruction" }, { "close_button" }),
         },
         {
           type = "frame",
-          style = "rb_filter_frame",
+          style = "inside_deep_frame",
+          direction = "vertical",
           {
-            type = "frame",
-            style = "deep_frame_in_shallow_frame",
-            style_mods = { height = 40 * 15, natural_width = 40 * 10 },
-            ref = { "objects_frame" },
+            type = "table",
+            style = "filter_group_table",
+            style_mods = { width = 426 },
+            column_count = 6,
+            ref = { "group_table" },
           },
           {
             type = "frame",
-            style = "rb_warning_frame_in_shallow_frame",
-            style_mods = { height = 40 * 15, width = 40 * 10 },
-            ref = { "warning_frame" },
-            visible = false,
+            style = "rb_filter_frame",
             {
-              type = "flow",
-              style = "rb_warning_flow",
-              direction = "vertical",
-              { type = "label", style = "bold_label", caption = { "gui.rb-no-results" } },
+              type = "frame",
+              style = "deep_frame_in_shallow_frame",
+              style_mods = { height = 40 * 15, natural_width = 40 * 10 },
+              ref = { "objects_frame" },
+            },
+            {
+              type = "frame",
+              style = "rb_warning_frame_in_shallow_frame",
+              style_mods = { height = 40 * 15, width = 40 * 10 },
+              ref = { "warning_frame" },
+              visible = false,
+              {
+                type = "flow",
+                style = "rb_warning_flow",
+                direction = "vertical",
+                { type = "label", style = "bold_label", caption = { "gui.rb-no-results" } },
+              },
             },
           },
         },

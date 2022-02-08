@@ -29,12 +29,12 @@ end
 function actions.open_object(Gui, _, e)
   local context = gui.get_tags(e.element).context
 
-  local list_name
-  if e.button == defines.mouse_button_type.left then
-    list_name = "product_of"
-  elseif e.button == defines.mouse_button_type.right then
-    list_name = "ingredient_in"
-  end
+  -- local list_name
+  -- if e.button == defines.mouse_button_type.left then
+  --   list_name = "product_of"
+  -- elseif e.button == defines.mouse_button_type.right then
+  --   list_name = "ingredient_in"
+  -- end
 
   -- local list = database[context.class][context.name][list_name]
   -- if list and #list > 0 then
@@ -49,7 +49,17 @@ function actions.open_object(Gui, _, e)
   --     },
   --   })
   -- end
-  OPEN_PAGE(Gui.player, Gui.player_table, context)
+  local attach = Gui.player_table.settings.general.interface.attach_search_results
+  local sticky = attach and e.button == defines.mouse_button_type.left
+  local id = sticky and Gui.state.id and Gui.player_table.guis.info[Gui.state.id] and Gui.state.id or nil
+  local parent = sticky and Gui.refs.window or nil
+  OPEN_PAGE(Gui.player, Gui.player_table, context, { id = id, parent = parent })
+  if sticky and not id then
+    Gui.state.id = Gui.player_table.guis.info._active_id
+  end
+  if not sticky and Gui.player_table.settings.general.interface.close_search_gui_after_selection then
+    -- actions.close(Gui)
+  end
 end
 
 --- @param Gui SearchGui
