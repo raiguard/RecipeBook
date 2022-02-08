@@ -269,7 +269,7 @@ function actions.open_object(Gui, _, e)
     local id = sticky and Gui.state.id and Gui.player_table.guis.info[Gui.state.id] and Gui.state.id or nil
     local parent = sticky and Gui.refs.window or nil
     OPEN_PAGE(Gui.player, Gui.player_table, context, { id = id, parent = parent })
-    if sticky then
+    if sticky and not id then
       Gui.state.id = Gui.player_table.guis.info._active_id
     end
     if not sticky and Gui.player_table.settings.general.interface.close_search_gui_after_selection then
