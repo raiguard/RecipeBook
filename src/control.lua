@@ -38,7 +38,7 @@ function OPEN_PAGE(player, player_table, context, options)
     --- @type InfoGui
     Gui = util.get_gui(player.index, "info", options.id)
   else
-    Gui = next(INFO_GUI.find_open_context(player_table, context))
+    _, Gui = next(INFO_GUI.find_open_context(player_table, context))
   end
 
   if Gui then
@@ -48,6 +48,10 @@ function OPEN_PAGE(player, player_table, context, options)
   end
 end
 
+--- Refresh the contents of all Recipe Book GUIs.
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+--- @param skip_memoizer_purge boolean
 function REFRESH_CONTENTS(player, player_table, skip_memoizer_purge)
   if not skip_memoizer_purge then
     formatter.create_cache(player.index)
