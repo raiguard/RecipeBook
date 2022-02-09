@@ -253,7 +253,7 @@ constants.general_settings = {
     },
   },
   search = {
-    gui_type = {
+    default_gui_type = {
       type = "enum",
       options = {
         "textual",
@@ -261,16 +261,6 @@ constants.general_settings = {
       },
       has_tooltip = true,
       default_value = "textual",
-    },
-    result_interaction_type = {
-      type = "enum",
-      options = {
-        "standard",
-        "crafting_usage",
-      },
-      has_tooltip = true,
-      default_value = "standard",
-      dependencies = { { category = "search", name = "gui_type", value = "visual" } },
     },
     fuzzy_search = {
       type = "bool",
@@ -356,6 +346,7 @@ constants.gui_strings = {
   crafting_speed = { "description.crafting-speed" },
   crafting_time_desc = { "gui.rb-crafting-time-desc" },
   crafting_time = { "gui.rb-crafting-time" },
+  default_gui_type = { "gui.rb-default-gui-type" },
   default_state = { "gui.rb-default-state" },
   default_temperature = { "gui.rb-default-temperature" },
   disabled_abbrev = { "gui.rb-disabled-abbrev" },
@@ -388,7 +379,6 @@ constants.gui_strings = {
   go_to_the_back = { "gui.rb-go-to-the-back" },
   go_to_the_front = { "gui.rb-go-to-the-front" },
   group = { "gui.rb-group" },
-  gui_type = { "gui.rb-gui-type" },
   hidden_abbrev = { "gui.rb-hidden-abbrev" },
   hidden = { "gui.rb-hidden" },
   ingredient_in = { "gui.rb-ingredient-in" },
@@ -445,7 +435,6 @@ constants.gui_strings = {
   resource_category = { "gui.rb-resource-category" },
   resource = { "gui.rb-resource" },
   resources = { "gui.rb-resources" },
-  result_interaction_type = { "gui.rb-result-interaction-type" },
   right_click = { "gui.rb-right-click" },
   robot_limit = { "gui.rb-robot-limit" },
   rocket_launch_product_of = { "gui.rb-rocket-launch-product-of" },

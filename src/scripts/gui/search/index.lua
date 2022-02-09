@@ -260,8 +260,11 @@ end
 
 local index = {}
 
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
 function index.build(player, player_table)
   --- @type SearchGuiRefs
+  local gui_type = player_table.settings.general.search.default_gui_type
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
@@ -346,12 +349,17 @@ function index.build(player, player_table)
                     },
                   },
                 },
-                { type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = { "textual_results_pane" } },
+                {
+                  type = "scroll-pane",
+                  style = "rb_search_results_scroll_pane",
+                  ref = { "textual_results_pane" },
+                  visible = gui_type == "textual",
+                },
                 {
                   type = "flow",
                   style_mods = { padding = 0, margin = 0, vertical_spacing = 0 },
                   direction = "vertical",
-                  visible = false,
+                  visible = gui_type == "visual",
                   ref = { "visual_results_flow" },
                   {
                     type = "table",
@@ -459,7 +467,7 @@ function index.build(player, player_table)
       ignore_closed = false,
       needs_visual_update = true,
       search_query = "",
-      search_type = "textual",
+      search_type = gui_type,
       pinned = false,
     },
     refs = refs,
@@ -469,6 +477,10 @@ function index.build(player, player_table)
 
   self:update_favorites()
   self:update_history()
+
+  if gui_type == "visual" then
+    self:update_visual_contents()
+  end
 end
 
 function index.load(self)
