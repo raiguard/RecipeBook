@@ -2,20 +2,24 @@ local table = require("__flib__.table")
 
 local util = require("scripts.util")
 
-local equipment_proc = {}
+local properties_by_type = {
+  ["active-defense-equipment"] = { { "energy_consumption", "energy" } },
+  ["battery-equipment"] = {}, -- TODO:
+  ["belt-immunity-equipment"] = { { "energy_consumption", "energy" } },
+  ["energy-shield-equipment"] = {
+    { "energy_consumption", "energy" },
+    { "shield", "number", "shield_points" },
+    { "energy_per_shield", "energy", "energy_per_shield_point" },
+  },
+  ["generator-equipment"] = { { "energy_production", "energy" } },
+  ["movement-bonus-equipment"] = { { "energy_consumption", "energy" }, { "movement_bonus", "percent" } },
+  ["night-vision-equipment"] = { { "energy_consumption", "energy" } },
+  ["roboport-equipment"] = { { "energy_consumption", "energy" } },
+  ["solar-panel-equipment"] = { { "energy_production", "energy" } },
+}
 
--- WORKAROUND: Many equipment propertis will error if you call them on the wrong kind of equipment
-local function pget(prototype, name)
-  local success, property = pcall(function()
-    return prototype[name]
-  end)
-  if success then
-    return property
-  end
-end
-
-local function get_equipment_property(properties, prototype, name, formatter, label)
-  local value = pget(prototype, name)
+local function get_equipment_property(properties, source, name, formatter, label)
+  local value = source[name]
   if value and value > 0 then
     table.insert(properties, {
       type = "plain",
@@ -26,8 +30,10 @@ local function get_equipment_property(properties, prototype, name, formatter, la
   end
 end
 
-function equipment_proc.build(database, dictionaries)
-  for name, prototype in pairs(global.prototypes.equipment) do
+return function(database, dictionaries)
+  --- @type table<string, LuaEquipmentPrototype>
+  local prototypes = global.prototypes.equipment
+  for name, prototype in pairs(prototypes) do
     local fuel_categories
     local burner = prototype.burner_prototype
     if burner then
@@ -39,15 +45,14 @@ function equipment_proc.build(database, dictionaries)
       category_data.equipment[#category_data.equipment + 1] = { class = "equipment", name = name }
     end
 
+    local equipment_type = prototype.type
     local properties = {}
-    get_equipment_property(properties, prototype, "energy_consumption", "energy")
-    get_equipment_property(properties, prototype, "energy_production", "energy")
-    get_equipment_property(properties, prototype, "shield", "number", "shield_points")
-    get_equipment_property(properties, prototype, "energy_per_shield", "energy_storage", "energy_per_shield_point")
-    get_equipment_property(properties, prototype, "movement_bonus", "percent")
+    for _, property in pairs(properties_by_type[equipment_type]) do
+      get_equipment_property(properties, prototype, property[1], property[2], property[3])
+    end
 
-    local logistic_parameters = pget(prototype, "logistic_parameters")
-    if logistic_parameters then
+    if equipment_type == "roboport-equipment" then
+      local logistic_parameters = prototype.logistic_parameters
       get_equipment_property(properties, logistic_parameters, "logistic_radius", "number")
       get_equipment_property(properties, logistic_parameters, "construction_radius", "number")
       get_equipment_property(properties, logistic_parameters, "robot_limit", "number")
@@ -74,12 +79,3 @@ function equipment_proc.build(database, dictionaries)
     dictionaries.equipment_description:add(name, prototype.localised_description)
   end
 end
-
--- When calling the module directly, call equipment_proc.build
-setmetatable(equipment_proc, {
-  __call = function(_, ...)
-    return equipment_proc.build(...)
-  end,
-})
-
-return equipment_proc
