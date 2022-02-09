@@ -186,6 +186,12 @@ function Gui:update_visual_contents()
               caption = temperature_ident.short_string,
               ignored_by_interaction = true,
             } or nil,
+            temperature_ident and temperature_ident.short_top_string and {
+              type = "label",
+              style = "rb_slot_label_top",
+              caption = temperature_ident.short_top_string,
+              ignored_by_interaction = true,
+            } or nil,
           })
         end
       end

@@ -39,6 +39,7 @@ function util.build_temperature_ident(fluid)
   local temperature_max = fluid.maximum_temperature
   local temperature_string
   local short_temperature_string
+  local short_top_string
   if temperature then
     temperature_string = format_number(temperature)
     short_temperature_string = core_util.format_number(temperature, true)
@@ -53,8 +54,8 @@ function util.build_temperature_ident(fluid)
       short_temperature_string = "≥" .. core_util.format_number(temperature_min, true)
     else
       temperature_string = "" .. format_number(temperature_min) .. "-" .. format_number(temperature_max)
-      -- TODO: Find a good way to do this
-      short_temperature_string = "TODO"
+      short_temperature_string = core_util.format_number(temperature_min, true)
+      short_top_string = core_util.format_number(temperature_max, true)
     end
   end
 
@@ -62,6 +63,7 @@ function util.build_temperature_ident(fluid)
     return {
       string = temperature_string,
       short_string = short_temperature_string,
+      short_top_string = short_top_string,
       min = temperature_min,
       max = temperature_max,
     }
@@ -72,11 +74,11 @@ end
 --- @param temperature_ident TemperatureIdent
 function util.get_sorting_number(temperature_ident)
   if temperature_ident.min == math.min_double then
-    return temperature_ident.max + 1
+    return temperature_ident.max + 0.001
   elseif temperature_ident.max == math.max_double then
-    return temperature_ident.min + 2
+    return temperature_ident.min + 0.003
   elseif temperature_ident.min ~= temperature_ident.max then
-    return (temperature_ident.min + temperature_ident.max) / 2
+    return temperature_ident.min + 0.002
   else
     return temperature_ident.min
   end
