@@ -146,12 +146,18 @@ function actions.update_search_query(Gui, _, e)
     -- Save query
     state.search_query = query
     state.class_filter = class_filter
-    -- Update in a while
-    state.update_results_ident = on_tick_n.add(
-      game.tick + constants.search_timeout,
-      { gui = "search", action = "update_search_results", player_index = e.player_index }
-    )
+    -- Reset textfield style
     refs.search_textfield.style = "rb_search_textfield"
+    if #query == 0 and not class_filter then
+      -- Update immediately
+      actions.update_search_results(Gui)
+    else
+      -- Update in a while
+      state.update_results_ident = on_tick_n.add(
+        game.tick + constants.search_timeout,
+        { gui = "search", action = "update_search_results", player_index = e.player_index }
+      )
+    end
   else
     state.search_query = ""
     refs.search_textfield.style = "rb_search_invalid_textfield"
@@ -169,93 +175,169 @@ function actions.update_search_results(Gui, _, _)
   local player_data = formatter.build_player_data(player, player_table)
   local show_fluid_temperatures = player_table.settings.general.search.show_fluid_temperatures
   local search_type = player_table.settings.general.search.search_type
-
-  -- Update results based on query
-  local i = 0
-  local pane = refs.search_results_pane
-  local children = pane.children
-  local max = constants.search_results_limit
   local class_filter = state.class_filter
   local query = state.search_query
-  if class_filter ~= false and (class_filter or #query >= 2) then
-    for class in pairs(constants.pages) do
-      if not class_filter or class_filter == class then
-        for internal, translation in pairs(player_table.translations[class]) do
-          -- Match against search string
-          local matched
-          if search_type == "both" then
-            matched = string.find(string.lower(internal), query) or string.find(string.lower(translation), query)
-          elseif search_type == "internal" then
-            matched = string.find(string.lower(internal), query)
-          elseif search_type == "localised" then
-            matched = string.find(string.lower(translation), query)
-          end
 
-          if matched then
-            local obj_data = database[class][internal]
+  if state.search_type == "textual" then
+    -- Update results based on query
+    local i = 0
+    local pane = refs.textual_results_pane
+    local children = pane.children
+    local max = constants.search_results_limit
+    if class_filter ~= false and (class_filter or #query >= 2) then
+      for class in pairs(constants.pages) do
+        if not class_filter or class_filter == class then
+          for internal, translation in pairs(player_table.translations[class]) do
+            -- Match against search string
+            local matched
+            if search_type == "both" then
+              matched = string.find(string.lower(internal), query) or string.find(string.lower(translation), query)
+            elseif search_type == "internal" then
+              matched = string.find(string.lower(internal), query)
+            elseif search_type == "localised" then
+              matched = string.find(string.lower(translation), query)
+            end
 
-            -- Check temperature settings
-            local passed = true
-            if obj_data.class == "fluid" then
-              local temperature_ident = obj_data.temperature_ident
-              if temperature_ident then
-                local is_range = temperature_ident.min ~= temperature_ident.max
-                if is_range then
-                  if show_fluid_temperatures ~= "all" then
-                    passed = false
-                  end
-                else
-                  if show_fluid_temperatures == "off" then
-                    passed = false
+            if matched then
+              local obj_data = database[class][internal]
+
+              -- Check temperature settings
+              local passed = true
+              if obj_data.class == "fluid" then
+                local temperature_ident = obj_data.temperature_ident
+                if temperature_ident then
+                  local is_range = temperature_ident.min ~= temperature_ident.max
+                  if is_range then
+                    if show_fluid_temperatures ~= "all" then
+                      passed = false
+                    end
+                  else
+                    if show_fluid_temperatures == "off" then
+                      passed = false
+                    end
                   end
                 end
               end
-            end
 
-            if passed then
-              local info = formatter(obj_data, player_data)
-              if info then
-                i = i + 1
-                local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
-                local item = children[i]
-                if item then
-                  item.style = style
-                  item.caption = info.caption
-                  item.tooltip = info.tooltip
-                  item.enabled = info.enabled
-                  gui.update_tags(item, { context = { class = class, name = internal } })
-                else
-                  gui.add(pane, {
-                    type = "button",
-                    style = style,
-                    caption = info.caption,
-                    tooltip = info.tooltip,
-                    enabled = info.enabled,
-                    mouse_button_filter = { "left", "middle" },
-                    tags = {
-                      context = { class = class, name = internal },
-                    },
-                    actions = {
-                      on_click = { gui = "search", action = "open_object" },
-                    },
-                  })
-                  if i >= max then
-                    break
+              if passed then
+                local info = formatter(obj_data, player_data)
+                if info then
+                  i = i + 1
+                  local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
+                  local item = children[i]
+                  if item then
+                    item.style = style
+                    item.caption = info.caption
+                    item.tooltip = info.tooltip
+                    item.enabled = info.enabled
+                    gui.update_tags(item, { context = { class = class, name = internal } })
+                  else
+                    gui.add(pane, {
+                      type = "button",
+                      style = style,
+                      caption = info.caption,
+                      tooltip = info.tooltip,
+                      enabled = info.enabled,
+                      mouse_button_filter = { "left", "middle" },
+                      tags = {
+                        context = { class = class, name = internal },
+                      },
+                      actions = {
+                        on_click = { gui = "search", action = "open_object" },
+                      },
+                    })
+                    if i >= max then
+                      break
+                    end
                   end
                 end
               end
             end
           end
         end
-      end
-      if i >= max then
-        break
+        if i >= max then
+          break
+        end
       end
     end
-  end
-  -- Destroy extraneous items
-  for j = i + 1, #children do
-    children[j].destroy()
+    -- Destroy extraneous items
+    for j = i + 1, #children do
+      children[j].destroy()
+    end
+  elseif state.search_type == "visual" then
+    refs.objects_frame.visible = true
+    refs.warning_frame.visible = false
+
+    --- @type LuaGuiElement
+    local group_table = refs.group_table
+
+    for _, group_scroll in pairs(refs.objects_frame.children) do
+      local group_has_results = false
+      for _, subgroup_table in pairs(group_scroll.children) do
+        local visible_count = 0
+        for _, obj_button in pairs(subgroup_table.children) do
+          local context = gui.get_tags(obj_button).context
+
+          local matched
+          -- Match against class filter
+          if not class_filter or class_filter == context.class then
+            local translation = player_data.translations[context.class][context.name]
+            -- Match against search string
+            if search_type == "both" then
+              matched = string.find(string.lower(context.name), query) or string.find(string.lower(translation), query)
+            elseif search_type == "internal" then
+              matched = string.find(string.lower(context.name), query)
+            elseif search_type == "localised" then
+              matched = string.find(string.lower(translation), query)
+            end
+          end
+
+          if matched then
+            obj_button.visible = true
+            visible_count = visible_count + 1
+          else
+            obj_button.visible = false
+          end
+        end
+
+        if visible_count > 0 then
+          group_has_results = true
+          subgroup_table.visible = true
+        else
+          subgroup_table.visible = false
+        end
+      end
+
+      local group_name = group_scroll.name
+      local group_button = group_table[group_name]
+      if group_has_results then
+        group_button.style = "rb_filter_group_button_tab"
+        group_button.enabled = state.active_group ~= group_scroll.name
+        if state.active_group == group_name then
+          group_scroll.visible = true
+        else
+          group_scroll.visible = false
+        end
+      else
+        group_scroll.visible = false
+        group_button.style = "rb_disabled_filter_group_button_tab"
+        group_button.enabled = false
+        if state.active_group == group_name then
+          local matched = false
+          for _, group_button in pairs(group_table.children) do
+            if group_button.enabled then
+              matched = true
+              actions.change_group(Gui, { group = group_button.name, ignore_last_button = true })
+              break
+            end
+          end
+          if not matched then
+            refs.objects_frame.visible = false
+            refs.warning_frame.visible = true
+          end
+        end
+      end
+    end
   end
 end
 
@@ -276,6 +358,43 @@ function actions.open_object(Gui, _, e)
       actions.close(Gui)
     end
   end
+end
+
+--- @param Gui SearchGui
+function actions.change_search_type(Gui)
+  local state = Gui.state
+  local refs = Gui.refs
+  if state.search_type == "textual" then
+    state.search_type = "visual"
+    refs.textual_results_pane.visible = false
+    refs.visual_results_flow.visible = true
+    if state.needs_visual_update then
+      state.needs_visual_update = false
+      Gui:update_visual_contents()
+    end
+  elseif state.search_type == "visual" then
+    state.search_type = "textual"
+    refs.textual_results_pane.visible = true
+    refs.visual_results_flow.visible = false
+  end
+  actions.update_search_results(Gui)
+end
+
+--- @param Gui SearchGui
+--- @param msg table
+function actions.change_group(Gui, msg)
+  local last_group = Gui.state.active_group
+
+  if not msg.ignore_last_button then
+    Gui.refs.group_table[last_group].enabled = true
+  end
+  Gui.refs.objects_frame[last_group].visible = false
+
+  local new_group = msg.group
+  Gui.refs.group_table[new_group].enabled = false
+  Gui.refs.objects_frame[new_group].visible = true
+
+  Gui.state.active_group = msg.group
 end
 
 --- @param Gui SearchGui

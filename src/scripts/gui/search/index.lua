@@ -3,9 +3,31 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
+local database = require("scripts.database")
 local formatter = require("scripts.formatter")
 local gui_util = require("scripts.gui.util")
 local util = require("scripts.util")
+
+--- @class SearchGuiRefs
+--- @field window LuaGuiElement
+--- @field titlebar SearchGuiTitlebarRefs
+--- @field tabbed_pane LuaGuiElement
+--- @field search_textfield LuaGuiElement
+--- @field textual_results_pane LuaGuiElement
+--- @field visual_results_flow LuaGuiElement
+--- @field group_table LuaGuiElement
+--- @field objects_frame LuaGuiElement
+--- @field warning_frame LuaGuiElement
+--- @field delete_favorites_button LuaGuiElement
+--- @field delete_history_button LuaGuiElement
+--- @field favorites_pane LuaGuiElement
+--- @field history_pane LuaGuiElement
+
+--- @class SearchGuiTitlebarRefs
+--- @field flow LuaGuiElement
+--- @field drag_handle LuaGuiElement
+--- @field pin_button LuaGuiElement
+--- @field settings_button LuaGuiElement
 
 --- @class SearchGui
 local Gui = {}
@@ -45,6 +67,10 @@ function Gui:open()
   end
 
   self.player.set_shortcut_toggled("rb-search", true)
+
+  if self.state.search_type == "visual" and self.state.needs_visual_update then
+    Gui:update_visual_contents()
+  end
 end
 
 function Gui:close()
@@ -64,6 +90,130 @@ function Gui:toggle()
   else
     self:open()
   end
+end
+
+function Gui:update_visual_contents()
+  self.state.needs_visual_update = false
+
+  local player_data = formatter.build_player_data(self.player, self.player_table)
+
+  local show_fluid_temperatures = player_data.settings.general.search.show_fluid_temperatures
+  local groups = {}
+  local first_group
+
+  for _, objects in pairs({ database.item, database.fluid }) do
+    for name, object in pairs(objects) do
+      -- Create / retrieve group and subgroup
+      local group = object.group
+      local group_table = groups[group.name]
+      if not group_table then
+        group_table = {
+          button = {
+            type = "sprite-button",
+            name = group.name,
+            style = "rb_filter_group_button_tab",
+            sprite = "item-group/" .. group.name,
+            tooltip = { "item-group-name." .. group.name },
+            actions = {
+              on_click = { gui = "search", action = "change_group", group = group.name },
+            },
+          },
+          members = 0,
+          scroll_pane = {
+            type = "scroll-pane",
+            name = group.name,
+            style = "rb_filter_scroll_pane",
+            vertical_scroll_policy = "always",
+            visible = false,
+          },
+          subgroups = {},
+        }
+        groups[group.name] = group_table
+        if not first_group then
+          first_group = group.name
+        end
+      end
+      local subgroup = object.subgroup
+      local subgroup_table = group_table.subgroups[subgroup.name]
+      if not subgroup_table then
+        subgroup_table = { type = "table", style = "slot_table", column_count = 10 }
+        group_table.subgroups[subgroup.name] = subgroup_table
+        table.insert(group_table.scroll_pane, subgroup_table)
+      end
+
+      -- Check fluid temperature
+      local matched = true
+      local temperature_ident = object.temperature_ident
+      if temperature_ident then
+        local is_range = temperature_ident.min ~= temperature_ident.max
+        if is_range then
+          if show_fluid_temperatures ~= "all" then
+            matched = false
+          end
+        else
+          if show_fluid_temperatures == "off" then
+            matched = false
+          end
+        end
+      end
+
+      if matched then
+        local formatted = formatter(object, player_data)
+        if formatted then
+          group_table.members = group_table.members + 1
+          -- Create the button
+          table.insert(subgroup_table, {
+            type = "sprite-button",
+            style = "flib_slot_button_" .. (formatted.researched and "default" or "red"),
+            sprite = object.class .. "/" .. object.prototype_name,
+            tooltip = formatted.tooltip,
+            mouse_button_filter = { "left", "middle", "right" },
+            tags = {
+              context = { class = object.class, name = name },
+            },
+            actions = {
+              on_click = { gui = "search", action = "open_object" },
+            },
+            temperature_ident and {
+              type = "label",
+              style = "rb_slot_label",
+              caption = temperature_ident.short_string,
+              ignored_by_interaction = true,
+            } or nil,
+          })
+        end
+      end
+    end
+  end
+
+  local group_buttons = {}
+  local group_scroll_panes = {}
+  for _, group in pairs(groups) do
+    if group.members > 0 then
+      table.insert(group_buttons, group.button)
+      table.insert(group_scroll_panes, group.scroll_pane)
+    end
+  end
+
+  if
+    #self.state.active_group == 0
+    or not table.for_each(group_buttons, function(button)
+      return button.name == self.state.active_group
+    end)
+  then
+    self.state.active_group = first_group
+  end
+
+  local refs = self.refs
+
+  refs.group_table.clear()
+  gui.build(refs.group_table, group_buttons)
+
+  refs.objects_frame.clear()
+  gui.build(refs.objects_frame, group_scroll_panes)
+
+  self:dispatch({ action = "change_group", group = self.state.active_group, ignore_last_button = true })
+  self:dispatch("update_search_results")
 end
 
 function Gui:update_favorites()
@@ -99,9 +249,9 @@ function Gui:update_history()
 end
 
 function Gui:update_width()
-  local width = (constants.gui_sizes[self.player_table.language] or constants.gui_sizes.en).search_width
+  -- local width = (constants.gui_sizes[self.player_table.language] or constants.gui_sizes.en).search_width
 
-  self.refs.tab_frame.style.width = width
+  -- self.refs.tab_frame.style.width = width
 end
 
 function Gui:bring_to_front()
@@ -111,13 +261,14 @@ end
 local index = {}
 
 function index.build(player, player_table)
-  local width = (constants.gui_sizes[player_table.language] or constants.gui_sizes.en).search_width
+  -- local width = (constants.gui_sizes[player_table.language] or constants.gui_sizes.en).search_width
+  --- @type SearchGuiRefs
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
       name = "rb_search_window",
       style = "invisible_frame",
-      style_mods = { height = 596 },
+      -- style_mods = { height = 596 },
       visible = false,
       ref = { "window" },
       actions = {
@@ -163,13 +314,13 @@ function index.build(player, player_table)
         {
           type = "frame",
           style = "inside_deep_frame_for_tabs",
-          style_mods = { width = width },
+          -- style_mods = { width = width },
           direction = "vertical",
           ref = { "tab_frame" },
           {
             type = "tabbed-pane",
             style = "tabbed_pane_with_no_side_padding",
-            style_mods = { height = 532 },
+            -- style_mods = { height = 532 },
             ref = { "tabbed_pane" },
             {
               tab = { type = "tab", caption = { "gui.search" } },
@@ -180,7 +331,6 @@ function index.build(player, player_table)
                 {
                   type = "frame",
                   style = "rb_subheader_frame",
-                  direction = "vertical",
                   {
                     type = "textfield",
                     style = "flib_widthless_textfield",
@@ -191,8 +341,52 @@ function index.build(player, player_table)
                       on_text_changed = { gui = "search", action = "update_search_query" },
                     },
                   },
+                  {
+                    type = "sprite-button",
+                    style = "tool_button",
+                    actions = {
+                      on_click = { gui = "search", action = "change_search_type" },
+                    },
+                  },
                 },
-                { type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = { "search_results_pane" } },
+                { type = "scroll-pane", style = "rb_search_results_scroll_pane", ref = { "textual_results_pane" } },
+                {
+                  type = "flow",
+                  style_mods = { padding = 0, margin = 0, vertical_spacing = 0 },
+                  direction = "vertical",
+                  visible = false,
+                  ref = { "visual_results_flow" },
+                  {
+                    type = "table",
+                    style = "filter_group_table",
+                    style_mods = { width = 426 },
+                    column_count = 6,
+                    ref = { "group_table" },
+                  },
+                  {
+                    type = "frame",
+                    style = "rb_filter_frame",
+                    {
+                      type = "frame",
+                      style = "deep_frame_in_shallow_frame",
+                      style_mods = { natural_height = 40 * 15, natural_width = 40 * 10 },
+                      ref = { "objects_frame" },
+                    },
+                    {
+                      type = "frame",
+                      style = "rb_warning_frame_in_shallow_frame",
+                      style_mods = { height = 40 * 15, width = 40 * 10 },
+                      ref = { "warning_frame" },
+                      visible = false,
+                      {
+                        type = "flow",
+                        style = "rb_warning_flow",
+                        direction = "vertical",
+                        { type = "label", style = "bold_label", caption = { "gui.rb-no-results" } },
+                      },
+                    },
+                  },
+                },
               },
             },
             {
@@ -264,8 +458,11 @@ function index.build(player, player_table)
     player = player,
     player_table = player_table,
     state = {
+      active_group = "",
       ignore_closed = false,
+      needs_visual_update = true,
       search_query = "",
+      search_type = "textual",
       pinned = false,
     },
     refs = refs,

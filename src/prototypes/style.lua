@@ -301,7 +301,7 @@ styles.rb_search_results_scroll_pane = {
   type = "scroll_pane_style",
   parent = "rb_list_box_scroll_pane",
   vertically_stretchable = "on",
-  -- height = 28 * constants.search_results_visible_items
+  minimal_height = 28 * constants.search_results_visible_items,
 }
 
 styles.rb_filter_scroll_pane = {

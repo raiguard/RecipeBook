@@ -22,7 +22,6 @@ INFO_GUI = require("scripts.gui.info.index")
 QUICK_REF_GUI = require("scripts.gui.quick-ref.index")
 SEARCH_GUI = require("scripts.gui.search.index")
 SETTINGS_GUI = require("scripts.gui.settings.index")
-VISUAL_SEARCH_GUI = require("scripts.gui.visual-search.index")
 
 --- Open the given page.
 --- @param player LuaPlayer
@@ -72,17 +71,18 @@ function REFRESH_CONTENTS(player, player_table, skip_memoizer_purge)
   --- @type SearchGui?
   local SearchGui = util.get_gui(player.index, "search")
   if SearchGui then
-    SearchGui:dispatch("update_search_results")
     SearchGui:dispatch("update_favorites")
     SearchGui:dispatch("update_history")
-    SearchGui:update_width()
-  end
 
-  --- @type VisualSearchGui?
-  local VisualSearchGui = util.get_gui(player.index, "visual_search")
-  if VisualSearchGui then
-    VisualSearchGui:update_contents()
-    VisualSearchGui:dispatch("update_search_results")
+    if SearchGui.state.search_type == "textual" then
+      SearchGui:dispatch("update_search_results")
+    elseif SearchGui.state.search_type == "visual" then
+      if SearchGui.refs.window.visible then
+        SearchGui:update_visual_contents()
+      else
+        SearchGui.state.needs_visual_update = true
+      end
+    end
   end
 end
 
@@ -208,9 +208,6 @@ event.on_load(function()
     end
     if guis.settings then
       SETTINGS_GUI.load(guis.settings)
-    end
-    if guis.visual_search then
-      VISUAL_SEARCH_GUI.load(guis.visual_search)
     end
   end
 end)
@@ -570,7 +567,7 @@ event.on_string_translated(function(e)
         -- Enable shortcut
         player.set_shortcut_available("rb-search", true)
         -- TEMPORARY:
-        VISUAL_SEARCH_GUI.build(player, player_table)
+        -- VISUAL_SEARCH_GUI.build(player, player_table)
       end
     end
   end
