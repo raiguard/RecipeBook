@@ -566,7 +566,10 @@ function formatter.format(obj_data, player_data, options)
 
   return {
     caption = caption_output,
+    -- TODO: Rename this to avoid confusion
     enabled = num_interactions > 0,
+    disabled = not obj_properties.enabled,
+    hidden = obj_properties.hidden,
     researched = obj_properties.researched,
     tooltip = tooltip_output,
   }

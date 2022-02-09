@@ -254,12 +254,6 @@ function Gui:update_history()
   refs.delete_history_button.enabled = table_size(self.player_table.global_history) > 0 and true or false
 end
 
-function Gui:update_width()
-  -- local width = (constants.gui_sizes[self.player_table.language] or constants.gui_sizes.en).search_width
-
-  -- self.refs.tab_frame.style.width = width
-end
-
 function Gui:bring_to_front()
   self.refs.window.bring_to_front()
 end
@@ -267,14 +261,12 @@ end
 local index = {}
 
 function index.build(player, player_table)
-  -- local width = (constants.gui_sizes[player_table.language] or constants.gui_sizes.en).search_width
   --- @type SearchGuiRefs
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
       name = "rb_search_window",
       style = "invisible_frame",
-      -- style_mods = { height = 596 },
       visible = false,
       ref = { "window" },
       actions = {
@@ -320,13 +312,12 @@ function index.build(player, player_table)
         {
           type = "frame",
           style = "inside_deep_frame_for_tabs",
-          -- style_mods = { width = width },
           direction = "vertical",
           ref = { "tab_frame" },
           {
             type = "tabbed-pane",
             style = "tabbed_pane_with_no_side_padding",
-            -- style_mods = { height = 532 },
+            style_mods = { maximal_width = 426 },
             ref = { "tabbed_pane" },
             {
               tab = { type = "tab", caption = { "gui.search" } },
