@@ -161,18 +161,6 @@ end
 --- @param Gui InfoGui
 function actions.toggle_quick_ref(Gui, _, _)
   local player = Gui.player
-  local state = Gui.state
-  local location
-  if not (state.docked and not state.search_info) then
-    local sizes = constants.gui_sizes[Gui.player_table.language] or constants.gui_sizes.en
-    local offset = sizes.info_width + (state.search_info and (sizes.search_width + 24) or 0)
-    offset = offset * player.display_scale
-    local root_location = Gui.refs.root.location
-    if root_location then
-      root_location.x = root_location.x + offset
-      location = root_location
-    end
-  end
   -- Toggle quick ref GUI
   local name = Gui:get_context().name
   --- @type QuickRefGui
@@ -182,7 +170,7 @@ function actions.toggle_quick_ref(Gui, _, _)
     QuickRefGui:destroy()
   else
     to_state = true
-    QUICK_REF_GUI.build(player, Gui.player_table, name, location)
+    QUICK_REF_GUI.build(player, Gui.player_table, name)
   end
   -- Update all quick ref buttons
   for _, InfoGui in pairs(INFO_GUI.find_open_context(Gui.player_table, Gui:get_context())) do

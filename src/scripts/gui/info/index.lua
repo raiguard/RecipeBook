@@ -371,8 +371,6 @@ local index = {}
 function index.build(player, player_table, context, options)
   options = options or {}
 
-  local width = (constants.gui_sizes[player_table.language] or constants.gui_sizes.en).info_width
-
   local id = player_table.guis.info._next_id
   player_table.guis.info._next_id = id + 1
   local root_elem = options.parent or player.gui.screen
@@ -381,7 +379,7 @@ function index.build(player, player_table, context, options)
   local refs = gui.build(root_elem, {
     {
       type = "frame",
-      style_mods = { width = width },
+      style_mods = { minimal_width = 430, maximal_width = 600 },
       direction = "vertical",
       ref = { "window" },
       anchor = options.anchor,

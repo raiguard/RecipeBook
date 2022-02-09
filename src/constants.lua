@@ -331,21 +331,6 @@ constants.general_settings = {
 
 constants.global_history_size = 30
 
-constants.gui_sizes = {
-  en = {
-    search_width = 276,
-    info_width = 430,
-  },
-  ["pt-BR"] = {
-    search_width = 276,
-    info_width = 430,
-  },
-  ru = {
-    search_width = 279,
-    info_width = 430,
-  },
-}
-
 constants.gui_strings = {
   accepted_equipment = { "gui.rb-accepted-equipment" },
   accepted_modules = { "gui.rb-accepted-modules" },

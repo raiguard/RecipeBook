@@ -161,10 +161,16 @@ function Gui:update_visual_contents()
         local formatted = formatter(object, player_data)
         if formatted then
           group_table.members = group_table.members + 1
+          local style = "default"
+          if formatted.disabled or formatted.hidden then
+            style = "grey"
+          elseif not formatted.researched then
+            style = "red"
+          end
           -- Create the button
           table.insert(subgroup_table, {
             type = "sprite-button",
-            style = "flib_slot_button_" .. (formatted.researched and "default" or "red"),
+            style = "flib_slot_button_" .. style,
             sprite = object.class .. "/" .. object.prototype_name,
             tooltip = formatted.tooltip,
             mouse_button_filter = { "left", "middle", "right" },

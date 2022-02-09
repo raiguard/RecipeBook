@@ -159,7 +159,7 @@ end
 
 local index = {}
 
-function index.build(player, player_table, recipe_name, window_location)
+function index.build(player, player_table, recipe_name)
   --- @type QuickRefGuiRefs
   local refs = gui.build(player.gui.screen, {
     {
@@ -209,10 +209,6 @@ function index.build(player, player_table, recipe_name, window_location)
       },
     },
   })
-
-  if window_location then
-    refs.window.location = window_location
-  end
 
   refs.titlebar_flow.drag_target = refs.window
 
