@@ -30,6 +30,7 @@ return function(database, dictionaries, metadata)
       hidden = prototype.hidden,
       made_in = {},
       prototype_name = name,
+      subgroup = { class = "group", name = prototype.subgroup.name },
       recipe_category = { class = "recipe_category", name = category },
       unlocked_by = {},
       used_as_fixed_recipe = metadata.fixed_recipes[name],

@@ -69,7 +69,7 @@ function Gui:open()
   self.player.set_shortcut_toggled("rb-search", true)
 
   if self.state.search_type == "visual" and self.state.needs_visual_update then
-    Gui:update_visual_contents()
+    self:update_visual_contents()
   end
 end
 
@@ -101,7 +101,12 @@ function Gui:update_visual_contents()
   local groups = {}
   local first_group
 
-  for _, objects in pairs({ database.item, database.fluid }) do
+  for _, objects in
+    pairs(
+      { database.item, database.fluid }
+      -- { database.recipe }
+    )
+  do
     for name, object in pairs(objects) do
       -- Create / retrieve group and subgroup
       local group = object.group
