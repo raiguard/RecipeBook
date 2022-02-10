@@ -3,11 +3,13 @@ Version: 3.3.0
 Date: ????
   Features:
     - Added new properties:
+      - Fluid: fuel pollution
       - [NEW] Generator: fluid consumption, minimum / maximum temperatures, max power production, base pollution, can burn, unlocked by, and placeable by
     - Added Korean locale (#97) (x2605)
     - Added visual mode to the search GUI, providing a more vanilla-like search interface
       - This interface can only show items and fluids
   Changes:
+    - Category and group table items are hidden by default
     - Fluid temperature variants are now sorted and placed adjacent to their base fluid in search results
     - Refactored all GUI code to improve modularity and significantly cleaned up the codebase
   Bugfixes:
