@@ -1029,6 +1029,7 @@ constants.tooltips = {
   fluid = {
     { type = "plain", source = "default_temperature", formatter = "temperature" },
     { type = "plain", source = "fuel_value", formatter = "fuel_value" },
+    { type = "plain", source = "fuel_pollution", formatter = "percent" },
     { type = "plain", source = "fuel_category", formatter = "object", options = { hide_glyph = true } },
     { type = "plain", source = "group", formatter = "object", options = { hide_glyph = true } },
   },
