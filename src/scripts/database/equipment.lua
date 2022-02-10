@@ -69,7 +69,7 @@ return function(database, dictionaries)
       end),
       equipment_properties = properties,
       hidden = false,
-      placed_by = {},
+      placed_in = util.unique_obj_array(),
       prototype_name = name,
       size = prototype.shape and prototype.shape.width or nil, -- Equipments can have irregular shapes
       take_result = prototype.take_result and { class = "item", name = prototype.take_result.name } or nil,

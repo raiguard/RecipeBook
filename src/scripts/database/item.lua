@@ -70,8 +70,12 @@ function item_proc.build(database, dictionaries, metadata)
         table.insert(equipment_categories, { class = "equipment_category", name = equipment_category })
         local category_data = database.equipment_category[equipment_category]
         if category_data then
-          for _, equipment_name in pairs(category_data.equipment) do
-            table.insert(equipment, equipment_name)
+          for _, equipment_ident in pairs(category_data.equipment) do
+            table.insert(equipment, equipment_ident)
+            local equipment_data = database.equipment[equipment_ident.name]
+            if equipment_data then
+              equipment_data.placed_in[#equipment_data.placed_in + 1] = { class = "item", name = name }
+            end
           end
         end
       end

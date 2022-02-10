@@ -3,6 +3,7 @@ Version: 3.3.0
 Date: ????
   Features:
     - Added new properties:
+      - Equipment: Placed in
       - Fluid: fuel pollution
       - [NEW] Generator: fluid consumption, minimum / maximum temperatures, max power production, base pollution, can burn, unlocked by, and placeable by
     - Added Korean locale (#97) (x2605)
