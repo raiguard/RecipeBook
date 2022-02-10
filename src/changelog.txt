@@ -3,7 +3,7 @@ Version: 3.3.0
 Date: ????
   Features:
     - Added Korean locale (#97) (x2605)
-    - Added visual search GUI, providing a more vanilla-like search interface
+    - Added visual mode to the search GUI, providing a more vanilla-like search interface
       - This interface can only show items and fluids
   Changes:
     - Fluid temperature variants are now sorted and placed adjacent to their base fluid in search results

@@ -355,6 +355,17 @@ function index.build(player, player_table)
                   {
                     type = "sprite-button",
                     style = "tool_button",
+                    tooltip = { "gui.rb-search-filters" },
+                    sprite = "rb_filter",
+                    actions = {
+                      on_click = { gui = "search", action = "toggle_filters" },
+                    },
+                  },
+                  {
+                    type = "sprite-button",
+                    style = "tool_button",
+                    tooltip = { "gui.rb-change-search-type" },
+                    sprite = "rb_swap",
                     actions = {
                       on_click = { gui = "search", action = "change_search_type" },
                     },

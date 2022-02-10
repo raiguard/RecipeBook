@@ -30,6 +30,8 @@ data:extend({
   data_util.build_sprite("rb_export_black", { 0, 192 }, tool_icons, 32, 2),
   data_util.build_sprite("rb_collapsed", { 0, 224 }, tool_icons, 32, 2),
   data_util.build_sprite("rb_expanded", { 0, 256 }, tool_icons, 32, 2),
+  data_util.build_sprite("rb_filter", { 0, 288 }, tool_icons, 32, 2),
+  data_util.build_sprite("rb_swap", { 0, 320 }, tool_icons, 32, 2),
   -- Small tool icons
   data_util.build_sprite("rb_plus_black", { 0, 0 }, small_tool_icons, 16, 2),
   data_util.build_sprite("rb_minus_black", { 0, 16 }, small_tool_icons, 16, 2),
