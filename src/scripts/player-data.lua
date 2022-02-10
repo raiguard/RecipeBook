@@ -111,7 +111,15 @@ function player_data.update_settings(player, player_table)
 
         for _, row_ident in pairs(component_ident.rows) do
           local row_name = row_ident.label or row_ident.source
-          row_settings[row_name] = former_row_settings[row_name] or row_ident.default_state or true
+          local state = former_row_settings[row_name]
+          if state == nil then
+            if row_ident.default_state ~= nil then
+              state = row_ident.default_state
+            else
+              state = true
+            end
+          end
+          row_settings[row_name] = state
         end
       end
     end
