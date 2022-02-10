@@ -26,6 +26,10 @@ function fluid_proc.build(database, _, metadata)
       class = "fluid",
       default_temperature = prototype.default_temperature,
       fuel_category = fuel_category,
+      fuel_pollution = prototype.fuel_value > 0
+          and prototype.emissions_multiplier ~= 1
+          and prototype.emissions_multiplier
+        or nil,
       fuel_value = prototype.fuel_value > 0 and prototype.fuel_value or nil,
       group = { class = "group", name = group.name },
       hidden = prototype.hidden,
@@ -55,6 +59,7 @@ function fluid_proc.add_temperature(fluid_data, temperature_ident)
       base_fluid = { class = "fluid", name = fluid_data.prototype_name },
       class = "fluid",
       default_temperature = fluid_data.default_temperature,
+      fuel_pollution = fluid_data.fuel_pollution,
       fuel_value = fluid_data.fuel_value,
       group = fluid_data.group,
       hidden = fluid_data.hidden,

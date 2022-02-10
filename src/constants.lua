@@ -723,6 +723,7 @@ constants.pages = {
       rows = {
         { type = "plain", source = "default_temperature", formatter = "temperature" },
         { type = "plain", source = "fuel_value", formatter = "fuel_value" },
+        { type = "plain", source = "fuel_pollution", formatter = "percent" },
         { type = "goto", source = "fuel_category", options = { hide_glyph = true } },
         { type = "goto", source = "group", options = { hide_glyph = true } },
       },
