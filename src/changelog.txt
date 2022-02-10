@@ -11,6 +11,7 @@ Date: ????
       - This interface can only show items and fluids
   Changes:
     - Category and group table items are hidden by default
+    - Technology unlocks equipment, unlocks fluids, unlocks items, and unlocks machines are hidden by default
     - Fluid temperature variants are now sorted and placed adjacent to their base fluid in search results
     - Refactored all GUI code to improve modularity and significantly cleaned up the codebase
   Bugfixes:
