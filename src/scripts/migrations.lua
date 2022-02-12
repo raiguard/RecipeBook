@@ -1,6 +1,5 @@
 local dictionary = require("__flib__.dictionary")
 local on_tick_n = require("__flib__.on-tick-n")
-local table = require("__flib__.table")
 
 local database = require("scripts.database")
 local global_data = require("scripts.global-data")
@@ -66,6 +65,34 @@ return {
             new_components[changes[name] or name] = data
           end
           page_settings[page_name] = new_components
+        end
+      end
+    end
+  end,
+  ["3.3.0"] = function()
+    -- Add player and player_table to all GUIs
+    for i, player_table in pairs(global.players) do
+      local player = game.get_player(i)
+      if player and player.valid then
+        local guis = player_table.guis
+        if guis.search then
+          guis.search.player = player
+          guis.search.player_table = player_table
+        end
+        if guis.settings then
+          guis.settings.player = player
+          guis.settings.player_table = player_table
+        end
+
+        for _, quick_ref_gui in pairs(guis.quick_ref) do
+          quick_ref_gui.player = player
+          quick_ref_gui.player_table = player_table
+        end
+        for _, info_gui in pairs(guis.info) do
+          if type(info_gui) == "table" then
+            info_gui.player = player
+            info_gui.player_table = player_table
+          end
         end
       end
     end
