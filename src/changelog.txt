@@ -17,6 +17,7 @@ Date: ????
   Bugfixes:
     - Fixed a crash when a mod prototype was removed without the mod versions changing
     - Fixed "can mine" table header being unlocalised
+    - Fixed recipe output percentages not being rounded
 ---------------------------------------------------------------------------------------------------
 Version: 3.2.3
 Date: 2022-01-08

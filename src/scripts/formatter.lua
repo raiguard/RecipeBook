@@ -159,7 +159,7 @@ local function get_amount_string(amount_ident, player_data, options)
     -- Probability
     local probability = amount_ident.probability
     if probability and probability < 1 then
-      output = (probability * 100) .. "% " .. output
+      output = math.round_to(probability * 100, 2) .. "% " .. output
     end
 
     -- Rocket parts required
