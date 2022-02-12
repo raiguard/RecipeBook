@@ -352,15 +352,15 @@ function index.build(player, player_table)
                       on_text_changed = { gui = "search", action = "update_search_query" },
                     },
                   },
-                  {
-                    type = "sprite-button",
-                    style = "tool_button",
-                    tooltip = { "gui.rb-search-filters" },
-                    sprite = "rb_filter",
-                    actions = {
-                      on_click = { gui = "search", action = "toggle_filters" },
-                    },
-                  },
+                  -- {
+                  --   type = "sprite-button",
+                  --   style = "tool_button",
+                  --   tooltip = { "gui.rb-search-filters" },
+                  --   sprite = "rb_filter",
+                  --   actions = {
+                  --     on_click = { gui = "search", action = "toggle_filters" },
+                  --   },
+                  -- },
                   {
                     type = "sprite-button",
                     style = "tool_button",
