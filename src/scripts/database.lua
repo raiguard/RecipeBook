@@ -3,6 +3,7 @@ dictionary.set_use_local_storage(true)
 
 local constants = require("constants")
 
+local beacon = require("scripts.database.beacon")
 local burning = require("scripts.database.burning")
 local crafter = require("scripts.database.crafter")
 local equipment_category = require("scripts.database.equipment-category")
@@ -51,6 +52,7 @@ function database.build()
 
   equipment(database, dictionaries)
 
+  beacon(database, dictionaries, metadata)
   crafter(database, dictionaries, metadata)
   generator(database, dictionaries)
   machine(database, dictionaries)

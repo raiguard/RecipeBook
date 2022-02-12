@@ -30,6 +30,7 @@ constants.category_class_plurals = {
 }
 
 constants.classes = {
+  "beacon",
   "crafter",
   "equipment",
   "equipment_category",
@@ -50,6 +51,7 @@ constants.classes = {
 }
 
 constants.class_to_font_glyph = {
+  beacon = "E",
   crafter = "E",
   equipment_category = "G",
   equipment = "H",
@@ -70,6 +72,7 @@ constants.class_to_font_glyph = {
 }
 
 constants.class_to_type = {
+  beacon = "entity",
   crafter = "entity",
   equipment_category = false,
   equipment = "equipment",
@@ -130,6 +133,7 @@ constants.default_max_rows = 8
 
 constants.derived_type_to_class = {
   ["assembling-machine"] = "crafter",
+  ["beacon"] = "beacon",
   ["boiler"] = "machine",
   ["burner-generator"] = "machine",
   ["car"] = "machine",
@@ -332,6 +336,7 @@ constants.gui_strings = {
   attach_search_results = { "gui.rb-attach-search-results" },
   base_pollution_desc = { "gui.rb-base-pollution-desc" },
   base_pollution = { "gui.rb-base-pollution" },
+  beacon = { "gui.rb-beacon" },
   buffer_capacity = { "gui.rb-buffer-capacity" },
   burned_in = { "gui.rb-burned-in" },
   burnt_result = { "gui.rb-burnt-result" },
@@ -358,6 +363,8 @@ constants.gui_strings = {
   default_temperature = { "gui.rb-default-temperature" },
   disabled_abbrev = { "gui.rb-disabled-abbrev" },
   disabled = { "entity-status.disabled" },
+  distribution_effectivity = { "gui.rb-distribution-effectivity" },
+  effect_area = { "gui.rb-effect-area" },
   energy_consumption = { "gui.rb-energy-consumption" },
   energy_per_shield_point = { "gui.rb-energy-per-shield-point" },
   energy_production = { "gui.rb-energy-production" },
@@ -416,6 +423,7 @@ constants.gui_strings = {
   mining_time = { "gui.rb-mining-time" },
   module_effects = { "gui.rb-module-effects" },
   modules = { "gui.rb-modules" },
+  module_slots = { "gui.rb-module-slots" },
   movement_bonus = { "description.movement-speed-bonus" },
   offshore_pump = { "gui.rb-offshore-pump" },
   open_info_relative_to_gui = { "gui.rb-open-info-relative-to-gui" },
@@ -520,6 +528,10 @@ constants.ignored_info_ids = table.invert({ "_active_id", "_next_id", "_relative
 
 -- NOTE: Modifiers must be in the order of "control", "shift" for those that are present
 constants.interactions = {
+  beacon = {
+    { modifiers = {}, action = "view_details" },
+    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+  },
   crafter = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
@@ -651,7 +663,9 @@ constants.input_sanitizers = {
 
 constants.interface_version = 4
 
+-- TODO: Rename this?
 constants.machine_classes = {
+  "beacon",
   "crafter",
   "generator",
   "lab",
@@ -677,6 +691,22 @@ constants.nav_event_properties = {
 }
 
 constants.pages = {
+  beacon = {
+    {
+      type = "table",
+      label = "general",
+      hide_count = true,
+      rows = {
+        { type = "plain", source = "size", formatter = "area" },
+        { type = "plain", source = "effect_area", formatter = "area" },
+        { type = "plain", source = "distribution_effectivity", formatter = "percent" },
+        { type = "plain", source = "module_slots", formatter = "number" },
+      },
+    },
+    { type = "list_box", source = "accepted_modules" },
+    { type = "list_box", source = "unlocked_by" },
+    { type = "list_box", source = "placed_by" },
+  },
   crafter = {
     {
       type = "table",
@@ -967,6 +997,7 @@ constants.pages = {
 constants.prototypes = {}
 
 constants.prototypes.filtered_entities = {
+  beacon = { { filter = "type", type = "beacon" } },
   machine = constants.machine_type_filters,
   character = { { filter = "type", type = "character" } },
   crafter = {
@@ -1009,6 +1040,11 @@ constants.session_history_size = 20
 constants.settings_gui_rows = 23
 
 constants.tooltips = {
+  beacon = {
+    { type = "plain", source = "effect_area", formatter = "area" },
+    { type = "plain", source = "distribution_effectivity", formatter = "percent" },
+    { type = "plain", source = "module_slots", formatter = "number" },
+  },
   crafter = {
     { type = "plain", source = "crafting_speed", formatter = "number" },
     { type = "plain", source = "fixed_recipe", formatter = "object", options = { hide_glyph = true } },

@@ -100,6 +100,22 @@ function item_proc.build(database, dictionaries, metadata)
           formatter = "percent",
         }
       end
+      -- Process which beacons this module is compatible with
+      for beacon_name, beacon_data in pairs(database.beacon) do
+        local allowed_effects = metadata.beacon_allowed_effects[beacon_name]
+        local compatible = true
+        if allowed_effects then
+          for effect_name in pairs(prototype.module_effects or {}) do
+            if not allowed_effects[effect_name] then
+              compatible = false
+              break
+            end
+          end
+        end
+        if compatible then
+          beacon_data.accepted_modules[#beacon_data.accepted_modules + 1] = { class = "item", name = name }
+        end
+      end
       -- Process which crafters this module is compatible with
       for crafter_name, crafter_data in pairs(database.crafter) do
         local allowed_effects = metadata.allowed_effects[crafter_name]

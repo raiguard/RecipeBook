@@ -3,7 +3,8 @@ Version: 3.3.0
 Date: ????
   Features:
     - Added new properties:
-      - Equipment: Buffer capacity, placed in
+      - [NEW] Beacon: size, effect area, distribution effectivity, module slots, accepted modules, unlocked by, placed by
+      - Equipment: buffer capacity, placed in
       - Fluid: fuel pollution
       - [NEW] Generator: fluid consumption, minimum / maximum temperatures, max power production, base pollution, can burn, unlocked by, and placeable by
     - Added Korean locale (#97) (x2605)
