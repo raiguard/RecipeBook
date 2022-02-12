@@ -4,7 +4,7 @@ local util = require("scripts.util")
 
 local properties_by_type = {
   ["active-defense-equipment"] = { { "energy_consumption", "energy" } },
-  ["battery-equipment"] = {}, -- TODO:
+  ["battery-equipment"] = {},
   ["belt-immunity-equipment"] = { { "energy_consumption", "energy" } },
   ["energy-shield-equipment"] = {
     { "energy_consumption", "energy" },
@@ -49,6 +49,11 @@ return function(database, dictionaries)
     local properties = {}
     for _, property in pairs(properties_by_type[equipment_type]) do
       get_equipment_property(properties, prototype, property[1], property[2], property[3])
+    end
+
+    local energy_source = prototype.energy_source
+    if energy_source then
+      get_equipment_property(properties, energy_source, "buffer_capacity", "energy_storage")
     end
 
     if equipment_type == "roboport-equipment" then

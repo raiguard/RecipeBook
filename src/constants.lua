@@ -332,6 +332,7 @@ constants.gui_strings = {
   attach_search_results = { "gui.rb-attach-search-results" },
   base_pollution_desc = { "gui.rb-base-pollution-desc" },
   base_pollution = { "gui.rb-base-pollution" },
+  buffer_capacity = { "gui.rb-buffer-capacity" },
   burned_in = { "gui.rb-burned-in" },
   burnt_result = { "gui.rb-burnt-result" },
   burnt_result_of = { "gui.rb-burnt-result-of" },
