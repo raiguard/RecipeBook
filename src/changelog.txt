@@ -15,6 +15,7 @@ Date: ????
     - Fluid temperature variants are now sorted and placed adjacent to their base fluid in search results
     - Refactored all GUI code to improve modularity and significantly cleaned up the codebase
   Bugfixes:
+    - Fixed a crash when a mod prototype was removed without the mod versions changing
     - Fixed "can mine" table header being unlocalised
 ---------------------------------------------------------------------------------------------------
 Version: 3.2.3
