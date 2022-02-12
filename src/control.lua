@@ -519,8 +519,15 @@ event.on_tick(function(e)
       if msg.gui then
         handle_gui_action(msg, { player_index = msg.player_index })
       elseif msg.action == "dump_data" then
-        local func = msg.raw and serpent.dump or serpent.block
-        game.write_file("rb-dump.txt", func(database), false, msg.player_index)
+        local func = msg.raw and serpent.dump or game.table_to_json
+        -- game.table_to_json() does not like functions
+        local output = {}
+        for key, value in pairs(database) do
+          if type(value) ~= "function" then
+            output[key] = value
+          end
+        end
+        game.write_file("rb-dump.txt", func(output), false, msg.player_index)
         game.print("[color=green]Dumped RB data to script-output/rb-dump.txt[/color]")
       elseif msg.action == "refresh_all" then
         dictionary.init()
