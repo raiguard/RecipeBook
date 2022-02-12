@@ -142,7 +142,7 @@ commands.add_command("rb-count-objects", nil, function(e)
   end
 end)
 
-commands.add_command("rb-dump-data", nil, function(e)
+commands.add_command("rb-dump-database", nil, function(e)
   local player = game.get_player(e.player_index)
   if not player.admin then
     player.print({ "cant-run-command-not-admin", "rb-dump-data" })
@@ -150,11 +150,14 @@ commands.add_command("rb-dump-data", nil, function(e)
   end
   if __DebugAdapter and (not e.parameter or #e.parameter == 0) then
     __DebugAdapter.print(database)
-    game.print("Recipe Book data has been dumped to the debug console.")
+    game.print("Database has been dumped to the debug console.")
   else
-    game.print("[color=red]DUMPING ALL RECIPE BOOK DATA[/color]")
+    game.print("[color=red]DUMPING RECIPE BOOK DATABASE[/color]")
     game.print("Get comfortable, this could take a while!")
-    on_tick_n.add(game.tick + 1, { action = "dump_data", player_index = e.player_index, raw = e.parameter == "raw" })
+    on_tick_n.add(
+      game.tick + 1,
+      { action = "dump_database", player_index = e.player_index, raw = e.parameter == "raw" }
+    )
   end
 end)
 
@@ -518,8 +521,7 @@ event.on_tick(function(e)
     for _, msg in pairs(actions) do
       if msg.gui then
         handle_gui_action(msg, { player_index = msg.player_index })
-      elseif msg.action == "dump_data" then
-        local func = msg.raw and serpent.dump or game.table_to_json
+      elseif msg.action == "dump_database" then
         -- game.table_to_json() does not like functions
         local output = {}
         for key, value in pairs(database) do
@@ -527,8 +529,9 @@ event.on_tick(function(e)
             output[key] = value
           end
         end
-        game.write_file("rb-dump.txt", func(output), false, msg.player_index)
-        game.print("[color=green]Dumped RB data to script-output/rb-dump.txt[/color]")
+        local func = msg.raw and serpent.dump or game.table_to_json
+        game.write_file("rb-dump", func(output), false, msg.player_index)
+        game.print("[color=green]Dumped database to script-output/rb-dump[/color]")
       elseif msg.action == "refresh_all" then
         dictionary.init()
         database.build()
@@ -538,7 +541,7 @@ event.on_tick(function(e)
           player_data.refresh(player, player_table)
           player_table.flags.show_message_after_translation = true
         end
-        game.print("[color=green]Data refresh complete, retranslating dictionaries...[/color]")
+        game.print("[color=green]Database refresh complete, retranslating dictionaries...[/color]")
       end
     end
   end
