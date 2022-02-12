@@ -34,13 +34,12 @@ function OPEN_PAGE(player, player_table, context, options)
   --- @type InfoGui?
   local Gui
   if options.id then
-    --- @type InfoGui
     Gui = util.get_gui(player.index, "info", options.id)
   else
     _, Gui = next(INFO_GUI.find_open_context(player_table, context))
   end
 
-  if Gui then
+  if Gui and Gui.refs.root.visible then
     Gui:update_contents({ new_context = context })
   else
     INFO_GUI.build(player, player_table, context, options)
@@ -568,8 +567,6 @@ event.on_string_translated(function(e)
         player_table.flags.can_open_gui = true
         -- Enable shortcut
         player.set_shortcut_available("rb-search", true)
-        -- TEMPORARY:
-        -- VISUAL_SEARCH_GUI.build(player, player_table)
       end
     end
   end
