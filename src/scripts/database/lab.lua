@@ -12,8 +12,8 @@ return function(database, dictionaries)
       end
     end
 
-    database.lab[name] = {
-      class = "lab",
+    database.machine[name] = {
+      class = "machine",
       can_burn = {},
       fuel_categories = util.process_energy_source(prototype),
       hidden = prototype.has_flag("hidden"),
@@ -26,7 +26,7 @@ return function(database, dictionaries)
       size = util.get_size(prototype),
       unlocked_by = {},
     }
-    dictionaries.lab:add(name, prototype.localised_name)
-    dictionaries.lab_description:add(name, prototype.localised_description)
+    dictionaries.machine:add(name, prototype.localised_name)
+    dictionaries.machine_description:add(name, prototype.localised_description)
   end
 end

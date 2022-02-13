@@ -62,8 +62,9 @@ return function(database, dictionaries, metadata)
 
             -- Machines
             local place_result = metadata.place_results[product_name]
-            if place_result and constants.machine_classes_lookup[place_result.class] then
-              local machine_data = database[place_result.class][place_result.name]
+            if place_result then
+              -- TODO: Support non-machine place results
+              local machine_data = database.machine[place_result.name]
               if machine_data then
                 machine_data.researched_forces = {}
                 machine_data.unlocked_by[#machine_data.unlocked_by + 1] = { class = "technology", name = name }

@@ -3,14 +3,8 @@ local table = require("__flib__.table")
 local constants = {}
 
 constants.burner_classes = {
-  "crafter",
-  "lab",
-  "mining_drill",
-  "offshore_pump",
-  -- These are intentionally out of order so they show up last in lists
-  "generator",
-  "machine",
   "equipment",
+  "machine",
 }
 
 constants.category_classes = {
@@ -30,19 +24,13 @@ constants.category_class_plurals = {
 }
 
 constants.classes = {
-  "beacon",
-  "crafter",
   "equipment",
   "equipment_category",
   "fluid",
   "fuel_category",
-  "generator",
   "group",
   "item",
-  "lab",
   "machine",
-  "mining_drill",
-  "offshore_pump",
   "recipe",
   "recipe_category",
   "resource",
@@ -51,19 +39,13 @@ constants.classes = {
 }
 
 constants.class_to_font_glyph = {
-  beacon = "E",
-  crafter = "E",
   equipment_category = "G",
   equipment = "H",
   fluid = "B",
   fuel_category = "G",
-  generator = "E",
   group = "G",
   item = "C",
-  lab = "D",
   machine = "E",
-  mining_drill = "E",
-  offshore_pump = "E",
   recipe_category = "G",
   recipe = "D",
   resource_category = "G",
@@ -72,19 +54,13 @@ constants.class_to_font_glyph = {
 }
 
 constants.class_to_type = {
-  beacon = "entity",
-  crafter = "entity",
   equipment_category = false,
   equipment = "equipment",
   fluid = "fluid",
   fuel_category = false,
-  generator = "entity",
   group = "item-group",
   item = "item",
-  lab = "entity",
   machine = "entity",
-  mining_drill = "entity",
-  offshore_pump = "entity",
   recipe_category = false,
   recipe = "recipe",
   resource_category = false,
@@ -132,8 +108,8 @@ constants.colors = {
 constants.default_max_rows = 8
 
 constants.derived_type_to_class = {
-  ["assembling-machine"] = "crafter",
-  ["beacon"] = "beacon",
+  ["assembling-machine"] = "machine",
+  ["beacon"] = "machine",
   ["boiler"] = "machine",
   ["burner-generator"] = "machine",
   ["car"] = "machine",
@@ -141,15 +117,15 @@ constants.derived_type_to_class = {
   ["equipment"] = "equipment",
   ["fluid"] = "fluid",
   ["fuel-category"] = "fuel_category",
-  ["furnace"] = "crafter",
-  ["generator"] = "generator",
+  ["furnace"] = "machine",
+  ["generator"] = "machine",
   ["inserter"] = "machine",
   ["item-group"] = "group",
   ["item"] = "item",
-  ["lab"] = "lab",
+  ["lab"] = "machine",
   ["locomotive"] = "machine",
-  ["mining-drill"] = "mining_drill",
-  ["offshore-pump"] = "offshore_pump",
+  ["mining-drill"] = "machine",
+  ["offshore-pump"] = "machine",
   ["pump"] = "machine",
   ["radar"] = "machine",
   ["reactor"] = "machine",
@@ -157,7 +133,7 @@ constants.derived_type_to_class = {
   ["recipe"] = "recipe",
   ["resource-catgory"] = "resource_category",
   ["resource"] = "resource",
-  ["rocket-silo"] = "crafter",
+  ["rocket-silo"] = "machine",
   ["spider-vehicle"] = "machine",
   ["technology"] = "technology",
 }
@@ -528,28 +504,6 @@ constants.ignored_info_ids = table.invert({ "_active_id", "_next_id", "_relative
 
 -- NOTE: Modifiers must be in the order of "control", "shift" for those that are present
 constants.interactions = {
-  beacon = {
-    { modifiers = {}, action = "view_details" },
-    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
-  },
-  crafter = {
-    { modifiers = {}, action = "view_details" },
-    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
-    {
-      modifiers = { "shift" },
-      action = "get_blueprint",
-      test = function(obj_data, options)
-        return options.blueprint_recipe and obj_data.blueprintable
-      end,
-    },
-    {
-      modifiers = { "control" },
-      action = "view_source",
-      label = "view_fixed_recipe",
-      source = "fixed_recipe",
-      force_label = true,
-    },
-  },
   equipment_category = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
@@ -576,35 +530,27 @@ constants.interactions = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
   },
-  generator = {
-    { modifiers = {}, action = "view_details" },
-    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
-  },
   group = {
-    { modifiers = {}, action = "view_details" },
-    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
-  },
-  lab = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
   },
   machine = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
-  },
-  mining_drill = {
-    { modifiers = {}, action = "view_details" },
-    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
-  },
-  offshore_pump = {
-    { modifiers = {}, action = "view_details" },
-    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
     {
       modifiers = { "shift" },
-      action = "view_source",
-      label = "view_fluid",
-      source = "fluid",
+      action = "get_blueprint",
+      test = function(obj_data, options)
+        return options.blueprint_recipe and obj_data.blueprintable
+      end,
     },
+    -- {
+    --   modifiers = { "control" },
+    --   action = "view_source",
+    --   label = "view_fixed_recipe",
+    --   source = "fixed_recipe",
+    --   force_label = true,
+    -- },
   },
   recipe_category = {
     { modifiers = {}, action = "view_details" },
@@ -659,25 +605,6 @@ constants.input_sanitizers = {
 
 constants.interface_version = 4
 
-constants.machine_classes = {
-  "beacon",
-  "crafter",
-  "generator",
-  "lab",
-  "mining_drill",
-  "offshore_pump",
-  -- This is intentionally last so it will show up last in lists
-  "machine",
-}
-constants.machine_classes_lookup = table.invert(constants.machine_classes)
-
-constants.machine_type_filters = {}
-for derived_type, class in pairs(constants.derived_type_to_class) do
-  if class == "machine" then
-    table.insert(constants.machine_type_filters, { filter = "type", type = derived_type })
-  end
-end
-
 constants.nav_event_properties = {
   ["rb-jump-to-front"] = { delta = 1, shift = true },
   ["rb-navigate-backward"] = { delta = -1 },
@@ -686,43 +613,6 @@ constants.nav_event_properties = {
 }
 
 constants.pages = {
-  beacon = {
-    {
-      type = "table",
-      label = "general",
-      hide_count = true,
-      rows = {
-        { type = "plain", source = "size", formatter = "area" },
-        { type = "plain", source = "effect_area", formatter = "area" },
-        { type = "plain", source = "distribution_effectivity", formatter = "percent" },
-        { type = "plain", source = "module_slots", formatter = "number" },
-      },
-    },
-    { type = "list_box", source = "accepted_modules" },
-    { type = "list_box", source = "unlocked_by" },
-    { type = "list_box", source = "placed_by" },
-  },
-  crafter = {
-    {
-      type = "table",
-      label = "general",
-      hide_count = true,
-      rows = {
-        { type = "plain", source = "crafting_speed", formatter = "number" },
-        { type = "goto", source = "fixed_recipe", options = { always_show = true, hide_glyph = true } },
-        { type = "plain", source = "rocket_parts_required", formatter = "number" },
-        { type = "plain", source = "ingredient_limit", formatter = "number" },
-        { type = "plain", source = "size", formatter = "area" },
-      },
-    },
-    { type = "list_box", source = "can_craft", max_rows = 10 },
-    { type = "list_box", source = "recipe_categories", default_state = "hidden" },
-    { type = "list_box", source = "can_burn" },
-    { type = "list_box", source = "fuel_categories", default_state = "hidden" },
-    { type = "list_box", source = "accepted_modules", default_state = "hidden" },
-    { type = "list_box", source = "unlocked_by" },
-    { type = "list_box", source = "placed_by" },
-  },
   equipment_category = {
     { type = "list_box", source = "equipment" },
   },
@@ -767,29 +657,6 @@ constants.pages = {
   fuel_category = {
     { type = "list_box", source = "fluids" },
     { type = "list_box", source = "items" },
-  },
-
-  generator = {
-    {
-      type = "table",
-      label = "general",
-      hide_count = true,
-      rows = {
-        { type = "plain", source = "fluid_consumption", formatter = "per_second" },
-        { type = "plain", source = "maximum_temperature", formatter = "temperature" },
-        { type = "plain", source = "max_energy_production", formatter = "energy" },
-        {
-          type = "plain",
-          source = "base_pollution",
-          label_tooltip = "base_pollution_desc",
-          formatter = "per_second",
-        },
-      },
-    },
-    { type = "list_box", source = "can_burn" },
-    { type = "list_box", source = "fuel_categories", default_state = "hidden" },
-    { type = "list_box", source = "unlocked_by" },
-    { type = "list_box", source = "placed_by" },
   },
   group = {
     { type = "list_box", source = "fluids" },
@@ -842,12 +709,33 @@ constants.pages = {
     { type = "list_box", source = "equipment_categories", default_state = "hidden" },
     { type = "list_box", source = "unlocked_by" },
   },
-  lab = {
+  machine = {
     {
       type = "table",
       label = "general",
       hide_count = true,
       rows = {
+        { type = "plain", source = "size", formatter = "area" },
+        -- Beacon
+        { type = "plain", source = "effect_area", formatter = "area" },
+        { type = "plain", source = "distribution_effectivity", formatter = "percent" },
+        { type = "plain", source = "module_slots", formatter = "number" },
+        -- Crafter
+        { type = "plain", source = "crafting_speed", formatter = "number" },
+        { type = "goto", source = "fixed_recipe", options = { always_show = true, hide_glyph = true } },
+        { type = "plain", source = "rocket_parts_required", formatter = "number" },
+        { type = "plain", source = "ingredient_limit", formatter = "number" },
+        -- Generator
+        { type = "plain", source = "fluid_consumption", formatter = "per_second" },
+        { type = "plain", source = "maximum_temperature", formatter = "temperature" },
+        { type = "plain", source = "max_energy_production", formatter = "energy" },
+        {
+          type = "plain",
+          source = "base_pollution",
+          label_tooltip = "base_pollution_desc",
+          formatter = "per_second",
+        },
+        -- Lab
         {
           type = "plain",
           source = "researching_speed",
@@ -855,52 +743,24 @@ constants.pages = {
           label_tooltip = "research_speed_desc",
           formatter = "number",
         },
-        { type = "plain", source = "size", formatter = "area" },
-      },
-    },
-    { type = "list_box", source = "inputs" },
-    { type = "list_box", source = "can_burn" },
-    { type = "list_box", source = "fuel_categories", default_state = "hidden" },
-    { type = "list_box", source = "unlocked_by" },
-    { type = "list_box", source = "placed_by" },
-  },
-  machine = {
-    { type = "list_box", source = "can_burn" },
-    { type = "list_box", source = "fuel_categories", default_state = "hidden" },
-    { type = "list_box", source = "accepted_equipment", default_state = "collapsed" },
-    { type = "list_box", source = "equipment_categories", default_state = "hidden" },
-    { type = "list_box", source = "unlocked_by" },
-    { type = "list_box", source = "placed_by" },
-  },
-  mining_drill = {
-    {
-      type = "table",
-      label = "general",
-      hide_count = true,
-      rows = {
+        -- Mining drill
         { type = "plain", source = "mining_speed", formatter = "per_second" },
         { type = "plain", source = "mining_area", formatter = "area" },
-        { type = "plain", source = "size", formatter = "area" },
+        -- Offshore pump
+        { type = "plain", source = "pumping_speed", formatter = "per_second" },
+        { type = "goto", source = "fluid", options = { always_show = true, hide_glyph = true } },
       },
     },
     { type = "list_box", source = "can_mine" },
     { type = "list_box", source = "resource_categories", default_state = "hidden" },
+    { type = "list_box", source = "can_craft", max_rows = 10 },
+    { type = "list_box", source = "recipe_categories", default_state = "hidden" },
+    { type = "list_box", source = "inputs" },
     { type = "list_box", source = "can_burn" },
     { type = "list_box", source = "fuel_categories", default_state = "hidden" },
-    { type = "list_box", source = "unlocked_by" },
-    { type = "list_box", source = "placed_by" },
-  },
-  offshore_pump = {
-    {
-      type = "table",
-      label = "general",
-      hide_count = true,
-      rows = {
-        { type = "plain", source = "pumping_speed", formatter = "per_second" },
-        { type = "goto", source = "fluid", options = { always_show = true, hide_glyph = true } },
-        { type = "plain", source = "size", formatter = "area" },
-      },
-    },
+    { type = "list_box", source = "accepted_modules", default_state = "hidden" },
+    { type = "list_box", source = "accepted_equipment", default_state = "collapsed" },
+    { type = "list_box", source = "equipment_categories", default_state = "hidden" },
     { type = "list_box", source = "unlocked_by" },
     { type = "list_box", source = "placed_by" },
   },
@@ -993,7 +853,6 @@ constants.prototypes = {}
 
 constants.prototypes.filtered_entities = {
   beacon = { { filter = "type", type = "beacon" } },
-  machine = constants.machine_type_filters,
   character = { { filter = "type", type = "character" } },
   crafter = {
     { filter = "type", type = "assembling-machine" },
@@ -1002,6 +861,17 @@ constants.prototypes.filtered_entities = {
   },
   generator = { { filter = "type", type = "generator" } },
   lab = { { filter = "type", type = "lab" } },
+  machine = {
+    { filter = "type", type = "boiler" },
+    { filter = "type", type = "burner-generator" },
+    { filter = "type", type = "car" },
+    { filter = "type", type = "inserter" },
+    { filter = "type", type = "locomotive" },
+    { filter = "type", type = "pump" },
+    { filter = "type", type = "radar" },
+    { filter = "type", type = "reactor" },
+    { filter = "type", type = "spider-vehicle" },
+  },
   mining_drill = { { filter = "type", type = "mining-drill" } },
   offshore_pump = { { filter = "type", type = "offshore-pump" } },
   resource = { { filter = "type", type = "resource" } },

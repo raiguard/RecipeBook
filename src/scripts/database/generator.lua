@@ -11,10 +11,10 @@ return function(database, dictionaries)
       fuel_categories = { { class = "fuel_category", name = "burnable-fluid" } }
     end
 
-    database.generator[name] = {
+    database.machine[name] = {
       base_pollution = prototype.emissions_per_second > 0 and prototype.emissions_per_second or nil,
       can_burn = can_burn,
-      class = "generator",
+      class = "machine",
       fluid_consumption = prototype.fluid_usage_per_tick * 60,
       fuel_categories = fuel_categories,
       max_energy_production = prototype.max_energy_production,
@@ -25,7 +25,7 @@ return function(database, dictionaries)
       unlocked_by = {},
     }
 
-    dictionaries.generator:add(name, prototype.localised_name)
-    dictionaries.generator_description:add(name, prototype.localised_description)
+    dictionaries.machine:add(name, prototype.localised_name)
+    dictionaries.machine_description:add(name, prototype.localised_description)
   end
 end

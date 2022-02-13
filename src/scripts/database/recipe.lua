@@ -83,7 +83,8 @@ return function(database, dictionaries, metadata)
 
     -- Made in
     local num_ingredients = #data.ingredients
-    for crafter_name, crafter_data in pairs(database.crafter) do
+    for crafter_name in pairs(global.prototypes.crafter) do
+      local crafter_data = database.machine[crafter_name]
       local fluidbox_counts = metadata.crafter_fluidbox_counts[crafter_name] or { inputs = 0, outputs = 0 }
       if
         (crafter_data.ingredient_limit or 255) >= num_ingredients
