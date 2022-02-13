@@ -640,10 +640,6 @@ constants.interactions = {
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
     { modifiers = { "shift" }, action = "open_in_technology_window" },
   },
-  visual_search_result = {
-    { modifiers = {}, action = "view_product_of" },
-    { button = "right", modifiers = {}, action = "view_ingredient_in" },
-  },
 }
 
 constants.input_sanitizers = {
@@ -663,7 +659,6 @@ constants.input_sanitizers = {
 
 constants.interface_version = 4
 
--- TODO: Rename this?
 constants.machine_classes = {
   "beacon",
   "crafter",

@@ -306,16 +306,11 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
   return output
 end
 
-local function get_tooltip_deets(obj_data, player_data, options)
+local function get_tooltip_deets(obj_data, player_data)
   local gui_translations = player_data.translations.gui
 
   local cache = caches[player_data.player_index]
-  local cache_key = build_cache_key(
-    "tooltip_deets",
-    obj_data.class,
-    obj_data.name or obj_data.prototype_name,
-    options.is_visual_search_result
-  )
+  local cache_key = build_cache_key("tooltip_deets", obj_data.class, obj_data.name or obj_data.prototype_name)
   local cached = cache[cache_key]
   if cached then
     return cached
@@ -326,7 +321,7 @@ local function get_tooltip_deets(obj_data, player_data, options)
   local output = ""
 
   for _, deet in pairs(deets_structure) do
-    if deet.source ~= "group" or not options.is_visual_search_result then
+    if deet.source ~= "group" then
       local values
       local type = deet.type
       if type == "plain" then
@@ -373,7 +368,6 @@ local function get_interaction_helps(obj_data, player_data, options)
     "interaction_helps",
     obj_data.class,
     obj_data.name or obj_data.prototype_name,
-    options.is_visual_search_result,
     options.blueprint_recipe
   )
   local cached = cache[cache_key]
@@ -384,10 +378,6 @@ local function get_interaction_helps(obj_data, player_data, options)
   local helps_output = ""
 
   local interactions = constants.interactions[obj_data.class]
-
-  if options.is_visual_search_result then
-    interactions = constants.interactions.visual_search_result
-  end
 
   local num_interactions = 0
 
@@ -503,7 +493,6 @@ local available_options = {
   --- @type number?
   rocket_parts_required = false,
   amount_only = false,
-  is_visual_search_result = false,
 }
 
 --- @param options FormatOptions
@@ -526,7 +515,7 @@ function formatter.format(obj_data, player_data, options)
   local caption_output
   if amount_ident and options.amount_only then
     caption_output = get_amount_string(amount_ident, player_data, options)
-  elseif not options.is_visual_search_result then
+  else
     local caption = get_caption(obj_data, obj_properties, player_data, options)
     if amount_ident then
       caption_output = caption.before
@@ -555,7 +544,7 @@ function formatter.format(obj_data, player_data, options)
   end
   local settings = player_data.settings
   if settings.general.tooltips.show_detailed_tooltips and not options.base_tooltip_only then
-    tooltip_output = tooltip_output .. get_tooltip_deets(obj_data, player_data, options)
+    tooltip_output = tooltip_output .. get_tooltip_deets(obj_data, player_data)
   end
   local num_interactions = 0
   if not options.base_tooltip_only then
