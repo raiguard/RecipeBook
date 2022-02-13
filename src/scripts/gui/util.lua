@@ -50,11 +50,7 @@ function gui_util.navigate_to(e)
                   name = context.name,
                   position = {
                     -- Entities with an even number of tiles to a side need to be set at -0.5 instead of 0
-                    math.ceil(width)
-                            % 2
-                          == 0
-                        and -0.5
-                      or 0,
+                    math.ceil(width) % 2 == 0 and -0.5 or 0,
                     math.ceil(height) % 2 == 0 and -0.5 or 0,
                   },
                   recipe = blueprint_recipe,
@@ -100,7 +96,7 @@ function gui_util.update_list_box(pane, source_tbl, player_data, iterator, optio
         item.style = style
         item.caption = info.caption
         item.tooltip = info.tooltip
-        item.enabled = info.enabled
+        item.enabled = info.num_interactions > 0
         gui.update_tags(item, { context = { class = obj_ident.class, name = obj_ident.name } })
       else
         add({
@@ -108,7 +104,7 @@ function gui_util.update_list_box(pane, source_tbl, player_data, iterator, optio
           style = style,
           caption = info.caption,
           tooltip = info.tooltip,
-          enabled = info.enabled,
+          enabled = info.num_interactions > 0,
           mouse_button_filter = { "left", "middle" },
           tags = {
             [script.mod_name] = {
