@@ -6,7 +6,7 @@ function mining_drill_proc.build(database, dictionaries)
   for name, prototype in pairs(global.prototypes.mining_drill) do
     for category in pairs(prototype.resource_categories) do
       local category_data = database.resource_category[category]
-      category_data.mining_drills[#category_data.mining_drills + 1] = { class = "mining_drill", name = name }
+      category_data.mining_drills[#category_data.mining_drills + 1] = { class = "machine", name = name }
     end
 
     database.machine[name] = {

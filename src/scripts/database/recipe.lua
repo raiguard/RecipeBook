@@ -94,7 +94,7 @@ return function(database, dictionaries, metadata)
       then
         local crafting_time = math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
         data.made_in[#data.made_in + 1] = {
-          class = "crafter",
+          class = "machine",
           name = crafter_name,
           amount_ident = util.build_amount_ident({ amount = crafting_time, format = "format_seconds_parenthesis" }),
         }

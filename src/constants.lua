@@ -715,17 +715,13 @@ constants.pages = {
       label = "general",
       hide_count = true,
       rows = {
-        { type = "plain", source = "size", formatter = "area" },
-        -- Beacon
         { type = "plain", source = "effect_area", formatter = "area" },
         { type = "plain", source = "distribution_effectivity", formatter = "percent" },
         { type = "plain", source = "module_slots", formatter = "number" },
-        -- Crafter
         { type = "plain", source = "crafting_speed", formatter = "number" },
         { type = "goto", source = "fixed_recipe", options = { always_show = true, hide_glyph = true } },
         { type = "plain", source = "rocket_parts_required", formatter = "number" },
         { type = "plain", source = "ingredient_limit", formatter = "number" },
-        -- Generator
         { type = "plain", source = "fluid_consumption", formatter = "per_second" },
         { type = "plain", source = "maximum_temperature", formatter = "temperature" },
         { type = "plain", source = "max_energy_production", formatter = "energy" },
@@ -735,7 +731,6 @@ constants.pages = {
           label_tooltip = "base_pollution_desc",
           formatter = "per_second",
         },
-        -- Lab
         {
           type = "plain",
           source = "researching_speed",
@@ -743,12 +738,11 @@ constants.pages = {
           label_tooltip = "research_speed_desc",
           formatter = "number",
         },
-        -- Mining drill
         { type = "plain", source = "mining_speed", formatter = "per_second" },
         { type = "plain", source = "mining_area", formatter = "area" },
-        -- Offshore pump
         { type = "plain", source = "pumping_speed", formatter = "per_second" },
         { type = "goto", source = "fluid", options = { always_show = true, hide_glyph = true } },
+        { type = "plain", source = "size", formatter = "area" },
       },
     },
     { type = "list_box", source = "can_mine" },

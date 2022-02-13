@@ -49,7 +49,7 @@ return function(database, dictionaries)
         drill_data.resource_categories_lookup[resource_category]
         and (not required_fluid or drill_data.supports_fluid)
       then
-        mined_by[#mined_by + 1] = { class = "mining_drill", name = drill_name }
+        mined_by[#mined_by + 1] = { class = "machine", name = drill_name }
       end
     end
 

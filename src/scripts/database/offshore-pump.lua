@@ -9,7 +9,7 @@ function offshore_pump_proc.build(database, dictionaries)
     local fluid = prototype.fluid
     local fluid_data = database.fluid[fluid.name]
     if fluid_data then
-      fluid_data.pumped_by[#fluid_data.pumped_by + 1] = { class = "offshore_pump", name = name }
+      fluid_data.pumped_by[#fluid_data.pumped_by + 1] = { class = "machine", name = name }
     end
 
     database.machine[name] = {

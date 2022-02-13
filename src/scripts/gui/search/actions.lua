@@ -229,7 +229,7 @@ function actions.update_search_results(Gui, _, _)
                     item.style = style
                     item.caption = info.caption
                     item.tooltip = info.tooltip
-                    item.enabled = info.enabled
+                    item.enabled = info.num_interactions > 0
                     gui.update_tags(item, { context = { class = class, name = internal } })
                   else
                     gui.add(pane, {
@@ -237,7 +237,7 @@ function actions.update_search_results(Gui, _, _)
                       style = style,
                       caption = info.caption,
                       tooltip = info.tooltip,
-                      enabled = info.enabled,
+                      enabled = info.num_interactions > 0,
                       mouse_button_filter = { "left", "middle" },
                       tags = {
                         context = { class = class, name = internal },

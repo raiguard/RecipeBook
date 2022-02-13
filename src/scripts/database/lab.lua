@@ -8,7 +8,7 @@ return function(database, dictionaries)
     for _, item_name in ipairs(prototype.lab_inputs) do
       local item_data = database.item[item_name]
       if item_data then
-        item_data.researched_in[#item_data.researched_in + 1] = { class = "lab", name = name }
+        item_data.researched_in[#item_data.researched_in + 1] = { class = "machine", name = name }
       end
     end
 

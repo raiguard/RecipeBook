@@ -6,22 +6,28 @@ return function(database)
   -- Compatible fuels / burned in
   for _, class in pairs(constants.burner_classes) do
     for name, data in pairs(database[class]) do
-      -- Burned in
       local can_burn = data.can_burn
-      for i, category_ident in pairs(data.fuel_categories or {}) do
-        local category_data = database.fuel_category[category_ident.name]
-        if category_data then
-          -- Add fluids and items to the compatible fuels, and add the object to the material's burned in table
-          for _, objects in pairs({ category_data.fluids, category_data.items }) do
-            for _, obj_ident in pairs(objects) do
-              local obj_data = database[obj_ident.class][obj_ident.name]
-              obj_data.burned_in[#obj_data.burned_in + 1] = { class = class, name = name }
-              can_burn[#can_burn + 1] = table.shallow_copy(obj_ident)
+      if can_burn then
+        -- Generators might have a fluid defined here already
+        for _, fuel_ident in pairs(can_burn) do
+          local fuel_data = database[fuel_ident.class][fuel_ident.name]
+          fuel_data.burned_in[#fuel_data.burned_in + 1] = { class = class, name = name }
+        end
+        for i, category_ident in pairs(data.fuel_categories or {}) do
+          local category_data = database.fuel_category[category_ident.name]
+          if category_data then
+            -- Add fluids and items to the compatible fuels, and add the object to the material's burned in table
+            for _, objects in pairs({ category_data.fluids, category_data.items }) do
+              for _, obj_ident in pairs(objects) do
+                local obj_data = database[obj_ident.class][obj_ident.name]
+                obj_data.burned_in[#obj_data.burned_in + 1] = { class = class, name = name }
+                can_burn[#can_burn + 1] = table.shallow_copy(obj_ident)
+              end
             end
+          else
+            -- Remove this category from the machine
+            table.remove(data.fuel_categories, i)
           end
-        else
-          -- Remove this category from the machine
-          table.remove(data.fuel_categories, i)
         end
       end
     end
