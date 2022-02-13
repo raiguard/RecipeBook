@@ -102,7 +102,7 @@ function list_box.update(component, refs, object_data, player_data, settings, va
           item.style = style
           item.caption = info.caption
           item.tooltip = info.tooltip
-          item.enabled = info.enabled
+          item.enabled = info.num_interactions > 0
           gui.update_tags(
             item,
             { blueprint_recipe = blueprint_recipe, context = { class = obj.class, name = obj.name } }
@@ -113,7 +113,7 @@ function list_box.update(component, refs, object_data, player_data, settings, va
             style = style,
             caption = info.caption,
             tooltip = info.tooltip,
-            enabled = info.enabled,
+            enabled = info.num_interactions > 0,
             mouse_button_filter = { "left", "middle" },
             tags = {
               blueprint_recipe = blueprint_recipe,
