@@ -84,14 +84,16 @@ return {
           guis.settings.player_table = player_table
         end
 
-        for _, quick_ref_gui in pairs(guis.quick_ref) do
+        for recipe_name, quick_ref_gui in pairs(guis.quick_ref) do
           quick_ref_gui.player = player
           quick_ref_gui.player_table = player_table
+          quick_ref_gui.recipe_name = recipe_name
         end
-        for _, info_gui in pairs(guis.info) do
+        for id, info_gui in pairs(guis.info) do
           if type(info_gui) == "table" then
             info_gui.player = player
             info_gui.player_table = player_table
+            info_gui.id = id
           end
         end
       end
