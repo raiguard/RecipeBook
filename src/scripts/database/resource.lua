@@ -44,12 +44,12 @@ return function(database, dictionaries)
     local mined_by = {}
     local resource_category = prototype.resource_category
     for drill_name in pairs(global.prototypes.mining_drill) do
-      local drill_data = database.machine[drill_name]
+      local drill_data = database.entity[drill_name]
       if
         drill_data.resource_categories_lookup[resource_category]
         and (not required_fluid or drill_data.supports_fluid)
       then
-        mined_by[#mined_by + 1] = { class = "machine", name = drill_name }
+        mined_by[#mined_by + 1] = { class = "entity", name = drill_name }
       end
     end
 

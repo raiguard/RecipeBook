@@ -5,7 +5,7 @@ local database = require("scripts.database")
 local remote_interface = {}
 
 --- Returns a copy of the given object's information in the Recipe Book database.
---- @param class string One of `crafter`, `equipment`, `equipment_category`, `fluid`, `fuel_category`, `group`, `item`, `lab`, `machine`, `mining_drill`, `offshore_pump`, `recipe`, `recipe_category`, `resource`, `resource_category`, or `technology`.
+--- @param class string One of `crafter`, `entity`, `equipment_category`, `equipment`, `fluid`, `fuel_category`, `group`, `item`, `lab`, `mining_drill`, `offshore_pump`, `recipe_category`, `recipe`, `resource_category`, `resource`, or `technology`.
 --- @param name string The name of the object to get data for.
 --- @return table? The object's data, or `nil` if the object was not found.
 function remote_interface.get_object_data(class, name)
@@ -24,7 +24,7 @@ end
 
 --- Opens the given info page in a Recipe Book window.
 --- @param player_index number
---- @param class string One of `crafter`, `equipment`, `equipment_category`, `fluid`, `fuel_category`, `group`, `item`, `lab`, `machine`, `mining_drill`, `offshore_pump`, `recipe`, `recipe_category`, `resource`, `resource_category`, or `technology`.
+--- @param class string One of `crafter`, `entity`, `equipment_category`, `equipment`, `fluid`, `fuel_category`, `group`, `item`, `lab`, `mining_drill`, `offshore_pump`, `recipe_category`, `recipe`, `resource_category`, `resource`, or `technology`.
 --- @param name string The name of the object to open.
 --- @return boolean did_open Whether or not the page was opened.
 function remote_interface.open_page(player_index, class, name)

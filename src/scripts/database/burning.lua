@@ -25,7 +25,7 @@ return function(database)
               end
             end
           else
-            -- Remove this category from the machine
+            -- Remove this category from the entity
             table.remove(data.fuel_categories, i)
           end
         end

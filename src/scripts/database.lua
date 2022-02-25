@@ -6,6 +6,8 @@ local constants = require("constants")
 local beacon = require("scripts.database.beacon")
 local burning = require("scripts.database.burning")
 local crafter = require("scripts.database.crafter")
+local entity = require("scripts.database.entity")
+local entity_state = require("scripts.database.entity-state")
 local equipment_category = require("scripts.database.equipment-category")
 local equipment = require("scripts.database.equipment")
 local fluid = require("scripts.database.fluid")
@@ -14,8 +16,6 @@ local generator = require("scripts.database.generator")
 local group = require("scripts.database.group")
 local item = require("scripts.database.item")
 local lab = require("scripts.database.lab")
-local machine = require("scripts.database.machine")
-local machine_state = require("scripts.database.machine-state")
 local mining_drill = require("scripts.database.mining-drill")
 local offshore_pump = require("scripts.database.offshore-pump")
 local recipe_category = require("scripts.database.recipe-category")
@@ -55,7 +55,7 @@ function database.build()
   beacon(database, dictionaries, metadata)
   crafter(database, dictionaries, metadata)
   generator(database, dictionaries)
-  machine(database, dictionaries)
+  entity(database, dictionaries)
   mining_drill(database, dictionaries)
 
   fluid(database, dictionaries, metadata)
@@ -74,7 +74,7 @@ function database.build()
   fuel_category.check_fake_category(database, dictionaries)
 
   burning(database)
-  machine_state(database)
+  entity_state(database)
 
   database.generated = true
 end
@@ -104,7 +104,7 @@ function database.handle_research_updated(technology, to_value)
       technology_data.unlocks_equipment,
       technology_data.unlocks_fluids,
       technology_data.unlocks_items,
-      technology_data.unlocks_machines,
+      technology_data.unlocks_entities,
       technology_data.unlocks_recipes,
     })
   do

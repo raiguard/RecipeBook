@@ -102,7 +102,7 @@ function item_proc.build(database, dictionaries, metadata)
       end
       -- Process which beacons this module is compatible with
       for beacon_name in pairs(global.prototypes.beacon) do
-        local beacon_data = database.machine[beacon_name]
+        local beacon_data = database.entity[beacon_name]
         local allowed_effects = metadata.beacon_allowed_effects[beacon_name]
         local compatible = true
         if allowed_effects then
@@ -119,7 +119,7 @@ function item_proc.build(database, dictionaries, metadata)
       end
       -- Process which crafters this module is compatible with
       for crafter_name in pairs(global.prototypes.crafter) do
-        local crafter_data = database.machine[crafter_name]
+        local crafter_data = database.entity[crafter_name]
         local allowed_effects = metadata.allowed_effects[crafter_name]
         local compatible = true
         if allowed_effects then

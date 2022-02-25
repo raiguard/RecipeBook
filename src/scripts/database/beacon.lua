@@ -8,9 +8,9 @@ return function(database, dictionaries, metadata)
     local size = util.get_size(prototype)
     local effect_area = area.load(area.from_dimensions(size, { x = 0, y = 0 })):expand(prototype.supply_area_distance)
 
-    database.machine[name] = {
+    database.entity[name] = {
       accepted_modules = {},
-      class = "machine",
+      class = "entity",
       distribution_effectivity = prototype.distribution_effectivity,
       effect_area = { height = effect_area:height(), width = effect_area:width() },
       energy_usage = prototype.energy_usage,
@@ -21,8 +21,8 @@ return function(database, dictionaries, metadata)
       unlocked_by = {},
     }
 
-    dictionaries.machine:add(name, prototype.localised_name)
-    dictionaries.machine_description:add(name, prototype.localised_description)
+    dictionaries.entity:add(name, prototype.localised_name)
+    dictionaries.entity_description:add(name, prototype.localised_description)
 
     metadata.beacon_allowed_effects[name] = prototype.allowed_effects
   end

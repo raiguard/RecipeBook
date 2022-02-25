@@ -8,12 +8,12 @@ return function(database, dictionaries)
     for _, item_name in ipairs(prototype.lab_inputs) do
       local item_data = database.item[item_name]
       if item_data then
-        item_data.researched_in[#item_data.researched_in + 1] = { class = "machine", name = name }
+        item_data.researched_in[#item_data.researched_in + 1] = { class = "entity", name = name }
       end
     end
 
-    database.machine[name] = {
-      class = "machine",
+    database.entity[name] = {
+      class = "entity",
       can_burn = {},
       fuel_categories = util.process_energy_source(prototype),
       hidden = prototype.has_flag("hidden"),
@@ -26,7 +26,7 @@ return function(database, dictionaries)
       size = util.get_size(prototype),
       unlocked_by = {},
     }
-    dictionaries.machine:add(name, prototype.localised_name)
-    dictionaries.machine_description:add(name, prototype.localised_description)
+    dictionaries.entity:add(name, prototype.localised_name)
+    dictionaries.entity_description:add(name, prototype.localised_description)
   end
 end

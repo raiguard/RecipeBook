@@ -3,8 +3,8 @@ local table = require("__flib__.table")
 local constants = {}
 
 constants.burner_classes = {
+  "entity",
   "equipment",
-  "machine",
 }
 
 constants.category_classes = {
@@ -24,13 +24,13 @@ constants.category_class_plurals = {
 }
 
 constants.classes = {
+  "entity",
   "equipment",
   "equipment_category",
   "fluid",
   "fuel_category",
   "group",
   "item",
-  "machine",
   "recipe",
   "recipe_category",
   "resource",
@@ -39,13 +39,13 @@ constants.classes = {
 }
 
 constants.class_to_font_glyph = {
+  entity = "E",
   equipment_category = "G",
   equipment = "H",
   fluid = "B",
   fuel_category = "G",
   group = "G",
   item = "C",
-  machine = "E",
   recipe_category = "G",
   recipe = "D",
   resource_category = "G",
@@ -54,13 +54,13 @@ constants.class_to_font_glyph = {
 }
 
 constants.class_to_type = {
+  entity = "entity",
   equipment_category = false,
   equipment = "equipment",
   fluid = "fluid",
   fuel_category = false,
   group = "item-group",
   item = "item",
-  machine = "entity",
   recipe_category = false,
   recipe = "recipe",
   resource_category = false,
@@ -108,33 +108,33 @@ constants.colors = {
 constants.default_max_rows = 8
 
 constants.derived_type_to_class = {
-  ["assembling-machine"] = "machine",
-  ["beacon"] = "machine",
-  ["boiler"] = "machine",
-  ["burner-generator"] = "machine",
-  ["car"] = "machine",
+  ["assembling-machine"] = "entity",
+  ["beacon"] = "entity",
+  ["boiler"] = "entity",
+  ["burner-generator"] = "entity",
+  ["car"] = "entity",
   ["equipment-category"] = "equipment_category",
   ["equipment"] = "equipment",
   ["fluid"] = "fluid",
   ["fuel-category"] = "fuel_category",
-  ["furnace"] = "machine",
-  ["generator"] = "machine",
-  ["inserter"] = "machine",
+  ["furnace"] = "entity",
+  ["generator"] = "entity",
+  ["inserter"] = "entity",
   ["item-group"] = "group",
   ["item"] = "item",
-  ["lab"] = "machine",
-  ["locomotive"] = "machine",
-  ["mining-drill"] = "machine",
-  ["offshore-pump"] = "machine",
-  ["pump"] = "machine",
-  ["radar"] = "machine",
-  ["reactor"] = "machine",
+  ["lab"] = "entity",
+  ["locomotive"] = "entity",
+  ["mining-drill"] = "entity",
+  ["offshore-pump"] = "entity",
+  ["pump"] = "entity",
+  ["radar"] = "entity",
+  ["reactor"] = "entity",
   ["recipe-catgory"] = "recipe_category",
   ["recipe"] = "recipe",
   ["resource-catgory"] = "resource_category",
   ["resource"] = "resource",
-  ["rocket-silo"] = "machine",
-  ["spider-vehicle"] = "machine",
+  ["rocket-silo"] = "entity",
+  ["spider-vehicle"] = "entity",
   ["technology"] = "technology",
 }
 
@@ -344,6 +344,7 @@ constants.gui_strings = {
   energy_consumption = { "gui.rb-energy-consumption" },
   energy_per_shield_point = { "gui.rb-energy-per-shield-point" },
   energy_production = { "gui.rb-energy-production" },
+  entity = { "gui.rb-entity" },
   equipment_categories = { "gui.rb-equipment-categories" },
   equipment_category = { "gui.rb-equipment-category" },
   equipment = { "gui.rb-equipment" },
@@ -383,7 +384,6 @@ constants.gui_strings = {
   lab = { "gui.rb-lab" },
   list_box_label = { "gui.rb-list-box-label" },
   logistic_radius = { "gui.rb-logistic-radius" },
-  machine = { "gui.rb-machine" },
   made_in = { "gui.rb-made-in" },
   max_energy_production = { "gui.rb-max-energy-production" },
   maximum_temperature = { "gui.rb-maximum-temperature" },
@@ -472,7 +472,7 @@ constants.gui_strings = {
   unlocks_equipment = { "gui.rb-unlocks-equipment" },
   unlocks_fluids = { "gui.rb-unlocks-fluids" },
   unlocks_items = { "gui.rb-unlocks-items" },
-  unlocks_machines = { "gui.rb-unlocks-machines" },
+  unlocks_entities = { "gui.rb-unlocks-entities" },
   unlocks_recipes = { "gui.rb-unlocks-recipes" },
   unresearched = { "gui.rb-unresearched" },
   vehicle_acceleration = { "description.fuel-acceleration" },
@@ -504,6 +504,17 @@ constants.ignored_info_ids = table.invert({ "_active_id", "_next_id", "_relative
 
 -- NOTE: Modifiers must be in the order of "control", "shift" for those that are present
 constants.interactions = {
+  entity = {
+    { modifiers = {}, action = "view_details" },
+    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(obj_data, options)
+        return options.blueprint_recipe and obj_data.blueprintable
+      end,
+    },
+  },
   equipment_category = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
@@ -533,24 +544,6 @@ constants.interactions = {
   group = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
-  },
-  machine = {
-    { modifiers = {}, action = "view_details" },
-    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
-    {
-      modifiers = { "shift" },
-      action = "get_blueprint",
-      test = function(obj_data, options)
-        return options.blueprint_recipe and obj_data.blueprintable
-      end,
-    },
-    -- {
-    --   modifiers = { "control" },
-    --   action = "view_source",
-    --   label = "view_fixed_recipe",
-    --   source = "fixed_recipe",
-    --   force_label = true,
-    -- },
   },
   recipe_category = {
     { modifiers = {}, action = "view_details" },
@@ -613,6 +606,55 @@ constants.nav_event_properties = {
 }
 
 constants.pages = {
+  entity = {
+    {
+      type = "table",
+      label = "general",
+      hide_count = true,
+      rows = {
+        { type = "plain", source = "effect_area", formatter = "area" },
+        { type = "plain", source = "distribution_effectivity", formatter = "percent" },
+        { type = "plain", source = "module_slots", formatter = "number" },
+        { type = "plain", source = "crafting_speed", formatter = "number" },
+        { type = "goto", source = "fixed_recipe", options = { always_show = true, hide_glyph = true } },
+        { type = "plain", source = "rocket_parts_required", formatter = "number" },
+        { type = "plain", source = "ingredient_limit", formatter = "number" },
+        { type = "plain", source = "fluid_consumption", formatter = "per_second" },
+        { type = "plain", source = "maximum_temperature", formatter = "temperature" },
+        { type = "plain", source = "max_energy_production", formatter = "energy" },
+        {
+          type = "plain",
+          source = "base_pollution",
+          label_tooltip = "base_pollution_desc",
+          formatter = "per_second",
+        },
+        {
+          type = "plain",
+          source = "researching_speed",
+          label = "research_speed",
+          label_tooltip = "research_speed_desc",
+          formatter = "number",
+        },
+        { type = "plain", source = "mining_speed", formatter = "per_second" },
+        { type = "plain", source = "mining_area", formatter = "area" },
+        { type = "plain", source = "pumping_speed", formatter = "per_second" },
+        { type = "goto", source = "fluid", options = { always_show = true, hide_glyph = true } },
+        { type = "plain", source = "size", formatter = "area" },
+      },
+    },
+    { type = "list_box", source = "can_mine" },
+    { type = "list_box", source = "resource_categories", default_state = "hidden" },
+    { type = "list_box", source = "can_craft", max_rows = 10 },
+    { type = "list_box", source = "recipe_categories", default_state = "hidden" },
+    { type = "list_box", source = "inputs" },
+    { type = "list_box", source = "can_burn" },
+    { type = "list_box", source = "fuel_categories", default_state = "hidden" },
+    { type = "list_box", source = "accepted_modules", default_state = "hidden" },
+    { type = "list_box", source = "accepted_equipment", default_state = "collapsed" },
+    { type = "list_box", source = "equipment_categories", default_state = "hidden" },
+    { type = "list_box", source = "unlocked_by" },
+    { type = "list_box", source = "placed_by" },
+  },
   equipment_category = {
     { type = "list_box", source = "equipment" },
   },
@@ -709,55 +751,6 @@ constants.pages = {
     { type = "list_box", source = "equipment_categories", default_state = "hidden" },
     { type = "list_box", source = "unlocked_by" },
   },
-  machine = {
-    {
-      type = "table",
-      label = "general",
-      hide_count = true,
-      rows = {
-        { type = "plain", source = "effect_area", formatter = "area" },
-        { type = "plain", source = "distribution_effectivity", formatter = "percent" },
-        { type = "plain", source = "module_slots", formatter = "number" },
-        { type = "plain", source = "crafting_speed", formatter = "number" },
-        { type = "goto", source = "fixed_recipe", options = { always_show = true, hide_glyph = true } },
-        { type = "plain", source = "rocket_parts_required", formatter = "number" },
-        { type = "plain", source = "ingredient_limit", formatter = "number" },
-        { type = "plain", source = "fluid_consumption", formatter = "per_second" },
-        { type = "plain", source = "maximum_temperature", formatter = "temperature" },
-        { type = "plain", source = "max_energy_production", formatter = "energy" },
-        {
-          type = "plain",
-          source = "base_pollution",
-          label_tooltip = "base_pollution_desc",
-          formatter = "per_second",
-        },
-        {
-          type = "plain",
-          source = "researching_speed",
-          label = "research_speed",
-          label_tooltip = "research_speed_desc",
-          formatter = "number",
-        },
-        { type = "plain", source = "mining_speed", formatter = "per_second" },
-        { type = "plain", source = "mining_area", formatter = "area" },
-        { type = "plain", source = "pumping_speed", formatter = "per_second" },
-        { type = "goto", source = "fluid", options = { always_show = true, hide_glyph = true } },
-        { type = "plain", source = "size", formatter = "area" },
-      },
-    },
-    { type = "list_box", source = "can_mine" },
-    { type = "list_box", source = "resource_categories", default_state = "hidden" },
-    { type = "list_box", source = "can_craft", max_rows = 10 },
-    { type = "list_box", source = "recipe_categories", default_state = "hidden" },
-    { type = "list_box", source = "inputs" },
-    { type = "list_box", source = "can_burn" },
-    { type = "list_box", source = "fuel_categories", default_state = "hidden" },
-    { type = "list_box", source = "accepted_modules", default_state = "hidden" },
-    { type = "list_box", source = "accepted_equipment", default_state = "collapsed" },
-    { type = "list_box", source = "equipment_categories", default_state = "hidden" },
-    { type = "list_box", source = "unlocked_by" },
-    { type = "list_box", source = "placed_by" },
-  },
   recipe_category = {
     { type = "list_box", source = "fluids" },
     { type = "list_box", source = "items" },
@@ -836,7 +829,7 @@ constants.pages = {
     { type = "list_box", source = "unlocks_equipment", default_state = "hidden" },
     { type = "list_box", source = "unlocks_fluids", default_state = "hidden" },
     { type = "list_box", source = "unlocks_items", default_state = "hidden" },
-    { type = "list_box", source = "unlocks_machines", default_state = "hidden" },
+    { type = "list_box", source = "unlocks_entities", default_state = "hidden" },
     { type = "list_box", source = "unlocks_recipes" },
     { type = "list_box", source = "prerequisites" },
     { type = "list_box", source = "prerequisite_of" },
@@ -855,7 +848,7 @@ constants.prototypes.filtered_entities = {
   },
   generator = { { filter = "type", type = "generator" } },
   lab = { { filter = "type", type = "lab" } },
-  machine = {
+  entity = {
     { filter = "type", type = "boiler" },
     { filter = "type", type = "burner-generator" },
     { filter = "type", type = "car" },
@@ -916,6 +909,7 @@ constants.tooltips = {
       options = { hide_glyph = true },
     },
   },
+  entity = {},
   equipment_category = {},
   equipment = {
     { type = "plain", source = "size", formatter = "area" },
@@ -950,7 +944,6 @@ constants.tooltips = {
     { type = "plain", source = "research_speed", formatter = "number" },
     { type = "list", source = "inputs", formatter = "object", options = { hide_glyph = true } },
   },
-  machine = {},
   mining_drill = {
     { type = "plain", source = "mining_speed", formatter = "per_second" },
     { type = "plain", source = "mining_area", formatter = "area" },
