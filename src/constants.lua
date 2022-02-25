@@ -892,12 +892,10 @@ constants.session_history_size = 20
 constants.settings_gui_rows = 23
 
 constants.tooltips = {
-  beacon = {
+  entity = {
     { type = "plain", source = "effect_area", formatter = "area" },
     { type = "plain", source = "distribution_effectivity", formatter = "percent" },
     { type = "plain", source = "module_slots", formatter = "number" },
-  },
-  crafter = {
     { type = "plain", source = "crafting_speed", formatter = "number" },
     { type = "plain", source = "fixed_recipe", formatter = "object", options = { hide_glyph = true } },
     { type = "plain", source = "rocket_parts_required", formatter = "number" },
@@ -908,8 +906,19 @@ constants.tooltips = {
       formatter = "object",
       options = { hide_glyph = true },
     },
+    { type = "plain", source = "research_speed", formatter = "number" },
+    { type = "list", source = "inputs", formatter = "object", options = { hide_glyph = true } },
+    { type = "plain", source = "mining_speed", formatter = "per_second" },
+    { type = "plain", source = "mining_area", formatter = "area" },
+    { type = "list", source = "resource_categories", formatter = "object" },
+    { type = "plain", source = "pumping_speed", formatter = "per_second" },
+    {
+      type = "plain",
+      source = "fluid",
+      formatter = "object",
+      options = { always_show = true, hide_glyph = true },
+    },
   },
-  entity = {},
   equipment_category = {},
   equipment = {
     { type = "plain", source = "size", formatter = "area" },
@@ -924,7 +933,6 @@ constants.tooltips = {
     { type = "plain", source = "group", formatter = "object", options = { hide_glyph = true } },
   },
   fuel_category = {},
-  generator = {},
   group = {},
   item = {
     { type = "plain", source = "stack_size", formatter = "number" },
@@ -939,24 +947,6 @@ constants.tooltips = {
     { type = "plain", source = "fuel_top_speed_multiplier", label = "vehicle_top_speed", formatter = "percent" },
     { type = "plain", source = "fuel_category", formatter = "object", options = { hide_glyph = true } },
     { type = "plain", source = "group", formatter = "object", options = { hide_glyph = true } },
-  },
-  lab = {
-    { type = "plain", source = "research_speed", formatter = "number" },
-    { type = "list", source = "inputs", formatter = "object", options = { hide_glyph = true } },
-  },
-  mining_drill = {
-    { type = "plain", source = "mining_speed", formatter = "per_second" },
-    { type = "plain", source = "mining_area", formatter = "area" },
-    { type = "list", source = "resource_categories", formatter = "object" },
-  },
-  offshore_pump = {
-    { type = "plain", source = "pumping_speed", formatter = "per_second" },
-    {
-      type = "plain",
-      source = "fluid",
-      formatter = "object",
-      options = { always_show = true, hide_glyph = true },
-    },
   },
   recipe_category = {},
   recipe = {
