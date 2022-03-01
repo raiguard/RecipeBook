@@ -21,8 +21,7 @@ return function(database, dictionaries)
         amount_ident = util.build_amount_ident({ amount = mineable_properties.fluid_amount / 10 }),
       }
     else
-      -- TODO: Validate that it's hand-mineable by checking character mineable categories
-      -- NOTE: It doesn't appear to be possible to do ths in the current version of the game (1.1.37)
+      -- TODO: Validate that it's hand-mineable by checking character mineable categories (requires an API addition)
       -- Enable resource items that are hand-minable
       for _, product in ipairs(mineable_properties.products or {}) do
         if product.type == "item" then

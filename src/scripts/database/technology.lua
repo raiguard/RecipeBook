@@ -60,10 +60,9 @@ return function(database, dictionaries, metadata)
               unlocks_fluids[#unlocks_fluids + 1] = product_ident
             end
 
-            -- Machines
+            -- Entities
             local place_result = metadata.place_results[product_name]
             if place_result then
-              -- TODO: Support non-entity place results
               local entity_data = database.entity[place_result.name]
               if entity_data then
                 entity_data.researched_forces = {}
