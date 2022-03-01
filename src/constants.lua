@@ -500,6 +500,15 @@ constants.header_button_tooltips = {
   },
 }
 
+constants.ignored_cursor_inspection_types = {
+  ["blueprint"] = true,
+  ["blueprint-book"] = true,
+  ["copy-paste-tool"] = true,
+  ["deconstruction-item"] = true,
+  ["selection-tool"] = true,
+  ["upgrade-item"] = true,
+}
+
 constants.ignored_info_ids = table.invert({ "_active_id", "_next_id", "_relative_id" })
 
 -- NOTE: Modifiers must be in the order of "control", "shift" for those that are present

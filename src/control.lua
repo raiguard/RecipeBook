@@ -421,6 +421,15 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
       -- Open the selected prototype
       local selected_prototype = e.selected_prototype
       if selected_prototype then
+        -- Special case: Don't open selection tools if we're holding them
+        if
+          constants.ignored_cursor_inspection_types[selected_prototype.derived_type]
+          and player.cursor_stack
+          and player.cursor_stack.valid_for_read
+          and player.cursor_stack.name == selected_prototype.name
+        then
+          return
+        end
         local class = constants.derived_type_to_class[selected_prototype.base_type]
           or constants.derived_type_to_class[selected_prototype.derived_type]
         -- Not everything will have a Recipe Book entry
