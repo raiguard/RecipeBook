@@ -898,7 +898,7 @@ constants.search_timeout = 30
 
 constants.session_history_size = 20
 
-constants.settings_gui_rows = 23
+constants.settings_gui_rows = 24
 
 constants.tooltips = {
   entity = {

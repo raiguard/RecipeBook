@@ -7,17 +7,17 @@ Date: ????
       - Equipment: buffer capacity, placed in
       - Fluid: fuel pollution
       - [NEW] Generator: fluid consumption, minimum / maximum temperatures, max power production, base pollution, can burn, unlocked by, and placeable by
-    - Added Korean locale (#97) (x2605)
+    - Added Korean locale (by x2605) (#97)
     - Added visual mode to the search GUI, providing a more vanilla-like search interface
       - This interface can only show items and fluids
   Changes:
     - Any blueprintable entity may be shift+clicked to get a blueprint of it, regardless of whether or not it has a recipe (#91)
     - Category and group table items are hidden by default
+    - Consolidated all machines into a single "entity" type
     - Fluid temperature variants are now sorted and placed adjacent to their base fluid in search results
     - Refactored all GUI code to improve modularity and significantly cleaned up the codebase
     - Technology unlocks equipment, unlocks fluids, unlocks items, and unlocks machines are hidden by default
     - Using the inspect hotkey while holding a selection tool will do nothing (#95)
-    - Updated Korean locale (by x2605) (#100)
   Bugfixes:
     - Fixed a crash when a mod prototype was removed without the mod versions changing
     - Fixed "can mine" table header being unlocalised
