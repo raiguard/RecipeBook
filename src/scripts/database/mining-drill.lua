@@ -6,11 +6,11 @@ function mining_drill_proc.build(database, dictionaries)
   for name, prototype in pairs(global.prototypes.mining_drill) do
     for category in pairs(prototype.resource_categories) do
       local category_data = database.resource_category[category]
-      category_data.mining_drills[#category_data.mining_drills + 1] = { class = "mining_drill", name = name }
+      category_data.mining_drills[#category_data.mining_drills + 1] = { class = "entity", name = name }
     end
 
-    database.mining_drill[name] = {
-      class = "mining_drill",
+    database.entity[name] = {
+      class = "entity",
       can_burn = {},
       enabled = true,
       fuel_categories = util.process_energy_source(prototype),
@@ -24,13 +24,14 @@ function mining_drill_proc.build(database, dictionaries)
       supports_fluid = #prototype.fluidbox_prototypes > 0,
       unlocked_by = {},
     }
-    dictionaries.mining_drill:add(name, prototype.localised_name)
-    dictionaries.mining_drill_description:add(name, prototype.localised_description)
+    dictionaries.entity:add(name, prototype.localised_name)
+    dictionaries.entity_description:add(name, prototype.localised_description)
   end
 end
 
 function mining_drill_proc.add_resources(database)
-  for _, drill_data in pairs(database.mining_drill) do
+  for name in pairs(global.prototypes.mining_drill) do
+    local drill_data = database.entity[name]
     local can_mine = util.unique_obj_array()
     for category in pairs(drill_data.resource_categories_lookup) do
       local category_data = database.resource_category[category]

@@ -9,7 +9,7 @@ return function(database, dictionaries, metadata)
     local unlocks_equipment = util.unique_obj_array()
     local unlocks_fluids = util.unique_obj_array()
     local unlocks_items = util.unique_obj_array()
-    local unlocks_machines = util.unique_obj_array()
+    local unlocks_entities = util.unique_obj_array()
     local unlocks_recipes = util.unique_obj_array()
     local research_ingredients_per_unit = {}
 
@@ -28,7 +28,7 @@ return function(database, dictionaries, metadata)
       research_unit_count = prototype.research_unit_count
     end
 
-    -- Unlocks recipes, materials, machines
+    -- Unlocks recipes, materials, entities
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
         local recipe_data = database.recipe[modifier.recipe]
@@ -62,12 +62,13 @@ return function(database, dictionaries, metadata)
 
             -- Machines
             local place_result = metadata.place_results[product_name]
-            if place_result and constants.machine_classes_lookup[place_result.class] then
-              local machine_data = database[place_result.class][place_result.name]
-              if machine_data then
-                machine_data.researched_forces = {}
-                machine_data.unlocked_by[#machine_data.unlocked_by + 1] = { class = "technology", name = name }
-                unlocks_machines[#unlocks_machines + 1] = place_result
+            if place_result then
+              -- TODO: Support non-entity place results
+              local entity_data = database.entity[place_result.name]
+              if entity_data then
+                entity_data.researched_forces = {}
+                entity_data.unlocked_by[#entity_data.unlocked_by + 1] = { class = "technology", name = name }
+                unlocks_entities[#unlocks_entities + 1] = place_result
               end
             end
 
@@ -105,7 +106,7 @@ return function(database, dictionaries, metadata)
       unlocks_equipment = unlocks_equipment,
       unlocks_fluids = unlocks_fluids,
       unlocks_items = unlocks_items,
-      unlocks_machines = unlocks_machines,
+      unlocks_entities = unlocks_entities,
       unlocks_recipes = unlocks_recipes,
       upgrade = prototype.upgrade,
     }

@@ -1,7 +1,7 @@
 local util = require("scripts.util")
 
 return function(database, dictionaries)
-  for name, prototype in pairs(global.prototypes.machine) do
+  for name, prototype in pairs(global.prototypes.entity) do
     local equipment_categories = util.unique_obj_array()
     local equipment = util.unique_obj_array()
     local equipment_grid = prototype.grid_prototype
@@ -19,8 +19,8 @@ return function(database, dictionaries)
 
     local fuel_categories = util.process_energy_source(prototype) or {}
 
-    database.machine[name] = {
-      class = "machine",
+    database.entity[name] = {
+      class = "entity",
       accepted_equipment = equipment,
       can_burn = {},
       equipment_categories = equipment_categories,
@@ -30,7 +30,7 @@ return function(database, dictionaries)
       unlocked_by = {},
     }
 
-    dictionaries.machine:add(name, prototype.localised_name)
-    dictionaries.machine_description:add(name, prototype.localised_description)
+    dictionaries.entity:add(name, prototype.localised_name)
+    dictionaries.entity_description:add(name, prototype.localised_description)
   end
 end

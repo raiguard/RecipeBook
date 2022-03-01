@@ -7,11 +7,11 @@ return function(database, dictionaries, metadata)
     if ingredient_limit == 255 then
       ingredient_limit = nil
     end
-    database.crafter[name] = {
+    database.entity[name] = {
       blueprintable = false,
       can_burn = {}, -- Always empty
       can_craft = {},
-      class = "crafter",
+      class = "entity",
       crafting_speed = 1,
       enabled = true,
       hidden = false,
@@ -24,8 +24,8 @@ return function(database, dictionaries, metadata)
       accepted_modules = {}, -- Always empty
       unlocked_by = {},
     }
-    dictionaries.crafter:add(name, prototype.localised_name)
-    dictionaries.crafter_description:add(name, prototype.localised_description)
+    dictionaries.entity:add(name, prototype.localised_name)
+    dictionaries.entity_description:add(name, prototype.localised_description)
   end
 
   -- Actual crafters
@@ -71,11 +71,11 @@ return function(database, dictionaries, metadata)
     end
 
     local is_hidden = prototype.has_flag("hidden")
-    database.crafter[name] = {
+    database.entity[name] = {
       blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
       can_burn = {},
       can_craft = {},
-      class = "crafter",
+      class = "entity",
       crafting_speed = prototype.crafting_speed,
       fixed_recipe = fixed_recipe,
       fuel_categories = util.process_energy_source(prototype),
@@ -90,8 +90,8 @@ return function(database, dictionaries, metadata)
       accepted_modules = {},
       unlocked_by = {},
     }
-    dictionaries.crafter:add(name, prototype.localised_name)
-    dictionaries.crafter_description:add(name, prototype.localised_description)
+    dictionaries.entity:add(name, prototype.localised_name)
+    dictionaries.entity_description:add(name, prototype.localised_description)
   end
 
   metadata.rocket_silo_categories = rocket_silo_categories

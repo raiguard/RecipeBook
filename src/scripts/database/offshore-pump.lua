@@ -9,11 +9,11 @@ function offshore_pump_proc.build(database, dictionaries)
     local fluid = prototype.fluid
     local fluid_data = database.fluid[fluid.name]
     if fluid_data then
-      fluid_data.pumped_by[#fluid_data.pumped_by + 1] = { class = "offshore_pump", name = name }
+      fluid_data.pumped_by[#fluid_data.pumped_by + 1] = { class = "entity", name = name }
     end
 
-    database.offshore_pump[name] = {
-      class = "offshore_pump",
+    database.entity[name] = {
+      class = "entity",
       enabled = true,
       fluid = { class = "fluid", name = fluid.name },
       hidden = prototype.has_flag("hidden"),
@@ -23,15 +23,16 @@ function offshore_pump_proc.build(database, dictionaries)
       size = util.get_size(prototype),
       unlocked_by = {},
     }
-    dictionaries.offshore_pump:add(name, prototype.localised_name)
-    dictionaries.offshore_pump_description:add(name, prototype.localised_description)
+    dictionaries.entity:add(name, prototype.localised_name)
+    dictionaries.entity_description:add(name, prototype.localised_description)
   end
 end
 
 function offshore_pump_proc.check_enabled_at_start(database)
-  for _, data in pairs(database.offshore_pump) do
-    if not data.researched_forces then
-      local fluid_data = database.fluid[data.fluid.name]
+  for name in pairs(global.prototypes.offshore_pump) do
+    local pump_data = database.entity[name]
+    if not pump_data.researched_forces then
+      local fluid_data = database.fluid[pump_data.fluid.name]
       fluid_data.researched_forces = nil
       fluid_data.unlocked_by = {}
     end

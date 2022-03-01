@@ -83,7 +83,8 @@ return function(database, dictionaries, metadata)
 
     -- Made in
     local num_ingredients = #data.ingredients
-    for crafter_name, crafter_data in pairs(database.crafter) do
+    for crafter_name in pairs(global.prototypes.crafter) do
+      local crafter_data = database.entity[crafter_name]
       local fluidbox_counts = metadata.crafter_fluidbox_counts[crafter_name] or { inputs = 0, outputs = 0 }
       if
         (crafter_data.ingredient_limit or 255) >= num_ingredients
@@ -93,7 +94,7 @@ return function(database, dictionaries, metadata)
       then
         local crafting_time = math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
         data.made_in[#data.made_in + 1] = {
-          class = "crafter",
+          class = "entity",
           name = crafter_name,
           amount_ident = util.build_amount_ident({ amount = crafting_time, format = "format_seconds_parenthesis" }),
         }

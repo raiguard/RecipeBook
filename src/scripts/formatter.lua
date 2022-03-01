@@ -327,7 +327,7 @@ local function get_tooltip_deets(obj_data, player_data)
       if type == "plain" then
         values = { obj_data[deet.source] }
       elseif type == "list" then
-        values = table.array_copy(obj_data[deet.source])
+        values = table.array_copy(obj_data[deet.source] or {})
       end
 
       local values_output = ""
