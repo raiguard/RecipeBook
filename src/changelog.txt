@@ -17,6 +17,7 @@ Date: ????
     - Refactored all GUI code to improve modularity and significantly cleaned up the codebase
     - Technology unlocks equipment, unlocks fluids, unlocks items, and unlocks machines are hidden by default
     - Using the inspect hotkey while holding a selection tool will do nothing (#95)
+    - Updated Koran locale (by x2605) (#100)
   Bugfixes:
     - Fixed a crash when a mod prototype was removed without the mod versions changing
     - Fixed "can mine" table header being unlocalised
