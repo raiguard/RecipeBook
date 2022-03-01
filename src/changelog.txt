@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.3.0
-Date: ????
+Date: 2022-03-01
   Features:
     - Added new properties:
       - [NEW] Beacon: size, effect area, distribution effectivity, module slots, accepted modules, unlocked by, placed by
