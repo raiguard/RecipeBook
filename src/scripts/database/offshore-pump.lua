@@ -13,6 +13,7 @@ function offshore_pump_proc.build(database, dictionaries)
     end
 
     database.entity[name] = {
+      blueprintable = not prototype.has_flag("hidden") and not prototype.has_flag("not-blueprintable"),
       class = "entity",
       enabled = true,
       fluid = { class = "fluid", name = fluid.name },

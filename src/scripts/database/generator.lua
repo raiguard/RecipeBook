@@ -13,6 +13,7 @@ return function(database, dictionaries)
 
     database.entity[name] = {
       base_pollution = prototype.emissions_per_second > 0 and prototype.emissions_per_second or nil,
+      blueprintable = not prototype.has_flag("hidden") and not prototype.has_flag("not-blueprintable"),
       can_burn = can_burn,
       class = "entity",
       fluid_consumption = prototype.fluid_usage_per_tick * 60,

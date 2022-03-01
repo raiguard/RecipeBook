@@ -20,9 +20,10 @@ return function(database, dictionaries)
     local fuel_categories = util.process_energy_source(prototype) or {}
 
     database.entity[name] = {
-      class = "entity",
       accepted_equipment = equipment,
+      blueprintable = not prototype.has_flag("hidden") and not prototype.has_flag("not-blueprintable"),
       can_burn = {},
+      class = "entity",
       equipment_categories = equipment_categories,
       fuel_categories = fuel_categories,
       placed_by = util.process_placed_by(prototype),

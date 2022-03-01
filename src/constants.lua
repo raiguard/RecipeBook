@@ -510,8 +510,8 @@ constants.interactions = {
     {
       modifiers = { "shift" },
       action = "get_blueprint",
-      test = function(obj_data, options)
-        return options.blueprint_recipe and obj_data.blueprintable
+      test = function(obj_data, _)
+        return obj_data.blueprintable
       end,
     },
   },

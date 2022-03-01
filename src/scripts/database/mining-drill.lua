@@ -10,6 +10,7 @@ function mining_drill_proc.build(database, dictionaries)
     end
 
     database.entity[name] = {
+      blueprintable = not prototype.has_flag("hidden") and not prototype.has_flag("not-blueprintable"),
       class = "entity",
       can_burn = {},
       enabled = true,
