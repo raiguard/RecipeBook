@@ -17,7 +17,6 @@ local util = require("scripts.util")
 -- -----------------------------------------------------------------------------
 -- GLOBALS
 
-DOCK_GUI = require("scripts.gui.dock.index")
 INFO_GUI = require("scripts.gui.info.index")
 QUICK_REF_GUI = require("scripts.gui.quick-ref.index")
 SEARCH_GUI = require("scripts.gui.search.index")
