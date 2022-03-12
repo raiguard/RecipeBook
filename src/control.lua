@@ -487,12 +487,15 @@ event.register({ "rb-navigate-backward", "rb-navigate-forward", "rb-return-to-ho
     and (not opened or (opened.valid and player.opened.name == "rb_search_window"))
   then
     local event_properties = constants.nav_event_properties[e.input_name]
-    local InfoGui = util.get_gui(e.player_index, "info", player_table.guis.info._active_id)
-    if InfoGui then
-      InfoGui:dispatch(
-        { action = "navigate", delta = event_properties.delta },
-        { player_index = e.player_index, shift = event_properties.shift }
-      )
+    local active_id = player_table.guis.info._active_id
+    if active_id then
+      local InfoGui = util.get_gui(e.player_index, "info", active_id)
+      if InfoGui then
+        InfoGui:dispatch(
+          { action = "navigate", delta = event_properties.delta },
+          { player_index = e.player_index, shift = event_properties.shift }
+        )
+      end
     end
   end
 end)
