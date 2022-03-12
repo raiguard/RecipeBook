@@ -7,6 +7,7 @@ Version: 3.3.1
 Date: 2022-03-12
   Changes:
     - Updated Korean locale (by x2605) (#101)
+    - Updated Russian locale (by Astorin) (#103)
   Bugfixes:
     - Fixed a crash when the first item group has no visible members in visual search (#102)
     - Fixed a crash when using navigation hotkeys before opening an info GUI (#105)
