@@ -99,7 +99,6 @@ function Gui:update_visual_contents()
 
   local show_fluid_temperatures = player_data.settings.general.search.show_fluid_temperatures
   local groups = {}
-  local first_group
 
   for _, objects in
     pairs(
@@ -134,9 +133,6 @@ function Gui:update_visual_contents()
           subgroups = {},
         }
         groups[group.name] = group_table
-        if not first_group then
-          first_group = group.name
-        end
       end
       local subgroup = object.subgroup
       local subgroup_table = group_table.subgroups[subgroup.name]
@@ -205,10 +201,14 @@ function Gui:update_visual_contents()
 
   local group_buttons = {}
   local group_scroll_panes = {}
-  for _, group in pairs(groups) do
+  local first_group
+  for group_name, group in pairs(groups) do
     if group.members > 0 then
       table.insert(group_buttons, group.button)
       table.insert(group_scroll_panes, group.scroll_pane)
+      if not first_group then
+        first_group = group_name
+      end
     end
   end
 
