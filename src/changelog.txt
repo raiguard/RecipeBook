@@ -3,6 +3,7 @@ Version: 3.3.2
 Date: ????
   Bugfixes:
     - Fixed a crash when a favorites entry was removed from the game (#107)
+    - Fixed that using Control + F to focus search did not work
 ---------------------------------------------------------------------------------------------------
 Version: 3.3.1
 Date: 2022-03-12

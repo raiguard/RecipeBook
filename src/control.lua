@@ -318,30 +318,6 @@ event.on_gui_closed(function(e)
   end
 end)
 
-event.register("rb-linked-focus-search", function(e)
-  -- local player = game.get_player(e.player_index)
-  -- local player_table = global.players[e.player_index]
-  -- local opened = player.opened
-  -- local opened_gui_type = player.opened_gui_type
-  -- local opened_is_ok = opened_gui_type == 0
-  --   or (
-  --     opened_gui_type == defines.gui_type.custom
-  --     and (opened.name == "rb_search_window" or opened.name == "rb_settings_window")
-  --   )
-  -- if player_table.flags.can_open_gui and opened_is_ok and opened.name == "rb_search_window" then
-  --   local InfoGui = util.get_gui(e.player_index, "info", player_table.guis._active_id)
-  --   if InfoGui then
-  --     InfoGui:dispatch("toggle_search")
-  --   end
-  -- elseif opened_is_ok and opened.name == "rb_settings_window" then
-  --   --- @type SettingsGui
-  --   local SettingsGui = util.get_gui(e.player_index, "settings")
-  --   if SettingsGui then
-  --     SettingsGui:dispatch("toggle_search")
-  --   end
-  -- end
-end)
-
 -- INTERACTION
 
 event.on_lua_shortcut(function(e)
@@ -477,28 +453,36 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
   end
 end)
 
-event.register({ "rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front" }, function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  local opened = player.opened
-  if
-    player_table.flags.can_open_gui
-    and player.opened_gui_type == defines.gui_type.custom
-    and (not opened or (opened.valid and player.opened.name == "rb_search_window"))
-  then
-    local event_properties = constants.nav_event_properties[e.input_name]
-    local active_id = player_table.guis.info._active_id
-    if active_id then
-      local InfoGui = util.get_gui(e.player_index, "info", active_id)
-      if InfoGui then
-        InfoGui:dispatch(
-          { action = "navigate", delta = event_properties.delta },
-          { player_index = e.player_index, shift = event_properties.shift }
-        )
+event.register(
+  { "rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front", "rb-linked-focus-search" },
+  function(e)
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    local opened = player.opened
+    if
+      player_table.flags.can_open_gui
+      and player.opened_gui_type == defines.gui_type.custom
+      and (not opened or (opened.valid and player.opened.name == "rb_search_window"))
+    then
+      local active_id = player_table.guis.info._active_id
+      if active_id then
+        --- @type InfoGui
+        local InfoGui = util.get_gui(e.player_index, "info", active_id)
+        if InfoGui then
+          if e.input_name == "rb-linked-focus-search" then
+            InfoGui:dispatch({ action = "toggle_search" })
+          else
+            local event_properties = constants.nav_event_properties[e.input_name]
+            InfoGui:dispatch(
+              { action = "navigate", delta = event_properties.delta },
+              { player_index = e.player_index, shift = event_properties.shift }
+            )
+          end
+        end
       end
     end
   end
-end)
+)
 
 -- PLAYER
 
