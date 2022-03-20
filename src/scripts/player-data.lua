@@ -133,19 +133,14 @@ function player_data.update_settings(player, player_table)
 end
 
 function player_data.validate_favorites(favorites)
-  while true do
-    local i = 1
-    local obj = favorites[i]
-    if obj then
-      if database[obj.class] and database[obj.class][obj.name] then
-        i = i + 1
-      else
-        table.remove(favorites, i)
-        favorites[obj.class .. "." .. obj.name] = nil
-      end
-    else
-      break
+  local to_remove = {}
+  for key, obj in pairs(favorites) do
+    if not database[obj.class] or not database[obj.class][obj.name] then
+      table.insert(to_remove, key)
     end
+  end
+  for _, key in pairs(to_remove) do
+    favorites[key] = nil
   end
 end
 
