@@ -56,14 +56,16 @@ function REFRESH_CONTENTS(player, player_table, skip_memoizer_purge)
   --- @type table<number|string, InfoGui>
   local info_guis = player_table.guis.info
   for id, InfoGui in pairs(info_guis) do
-    if not constants.ignored_info_ids[id] then
+    if not constants.ignored_info_ids[id] and InfoGui.refs.window.valid then
       InfoGui:update_contents({ refresh = true })
     end
   end
   --- @type table<string, QuickRefGui>
   local quick_ref_guis = player_table.guis.quick_ref
   for _, QuickRefGui in pairs(quick_ref_guis) do
-    QuickRefGui:update_contents()
+    if QuickRefGui.refs.window.valid then
+      QuickRefGui:update_contents()
+    end
   end
 
   --- @type SearchGui?
