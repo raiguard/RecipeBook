@@ -3,6 +3,7 @@ Version: 3.3.3
 Date: ????
   Bugfixes:
     - Fixed a crash when refreshing contents with an invalid info or quick ref GUI (#110)
+    - Fixed that certain entities had a "get blueprint" action when they weren't blueprintable (#111)
 ---------------------------------------------------------------------------------------------------
 Version: 3.3.2
 Date: 2022-03-20

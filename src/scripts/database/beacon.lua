@@ -10,7 +10,7 @@ return function(database, dictionaries, metadata)
 
     database.entity[name] = {
       accepted_modules = {},
-      blueprintable = not prototype.has_flag("hidden") and not prototype.has_flag("not-blueprintable"),
+      blueprintable = util.is_blueprintable(prototype),
       class = "entity",
       distribution_effectivity = prototype.distribution_effectivity,
       effect_area = { height = effect_area:height(), width = effect_area:width() },

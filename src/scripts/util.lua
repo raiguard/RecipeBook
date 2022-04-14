@@ -218,4 +218,14 @@ function util.dispatch_all(player_index, gui_name, msg)
   end
 end
 
+--- Determine if the given prototype is blueprintable
+--- @param prototype LuaEntityPrototype
+--- @return boolean
+function util.is_blueprintable(prototype)
+  return prototype.has_flag("player-creation")
+    and not prototype.has_flag("not-selectable-in-game")
+    and not prototype.has_flag("not-blueprintable")
+    and not prototype.has_flag("hidden")
+end
+
 return util

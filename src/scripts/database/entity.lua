@@ -21,7 +21,7 @@ return function(database, dictionaries)
 
     database.entity[name] = {
       accepted_equipment = equipment,
-      blueprintable = not prototype.has_flag("hidden") and not prototype.has_flag("not-blueprintable"),
+      blueprintable = util.is_blueprintable(prototype),
       can_burn = {},
       class = "entity",
       equipment_categories = equipment_categories,

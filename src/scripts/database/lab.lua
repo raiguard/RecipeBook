@@ -13,7 +13,7 @@ return function(database, dictionaries)
     end
 
     database.entity[name] = {
-      blueprintable = not prototype.has_flag("hidden") and not prototype.has_flag("not-blueprintable"),
+      blueprintable = util.is_blueprintable(prototype),
       class = "entity",
       can_burn = {},
       fuel_categories = util.process_energy_source(prototype),

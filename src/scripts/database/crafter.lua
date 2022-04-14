@@ -72,7 +72,7 @@ return function(database, dictionaries, metadata)
 
     local is_hidden = prototype.has_flag("hidden")
     database.entity[name] = {
-      blueprintable = not is_hidden and not prototype.has_flag("not-blueprintable"),
+      blueprintable = util.is_blueprintable(prototype),
       can_burn = {},
       can_craft = {},
       class = "entity",
