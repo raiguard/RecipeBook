@@ -89,7 +89,7 @@ end
 -- -----------------------------------------------------------------------------
 -- COMMANDS
 
--- Debug commands
+-- User commands
 
 commands.add_command("rb-refresh-all", { "command-help.rb-refresh-all" }, function(e)
   local player = game.get_player(e.player_index)
@@ -102,6 +102,8 @@ commands.add_command("rb-refresh-all", { "command-help.rb-refresh-all" }, functi
   game.print("Get comfortable, this could take a while!")
   on_tick_n.add(game.tick + 1, { action = "refresh_all" })
 end)
+
+-- Debug commands
 
 commands.add_command("rb-print-object", nil, function(e)
   local player = game.get_player(e.player_index)
