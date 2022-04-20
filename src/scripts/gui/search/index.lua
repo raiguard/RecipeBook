@@ -159,7 +159,8 @@ function Gui:update_visual_contents()
       end
 
       if matched then
-        local formatted = formatter(object, player_data)
+        local blueprint_result = object.place_result and { name = object.place_result.name } or nil
+        local formatted = formatter(object, player_data, { blueprint_result = blueprint_result })
         if formatted then
           group_table.members = group_table.members + 1
           local style = "default"
@@ -176,6 +177,7 @@ function Gui:update_visual_contents()
             tooltip = formatted.tooltip,
             mouse_button_filter = { "left", "middle", "right" },
             tags = {
+              blueprint_result = blueprint_result,
               context = { class = object.class, name = name },
             },
             actions = {

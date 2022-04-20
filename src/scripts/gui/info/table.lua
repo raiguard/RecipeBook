@@ -130,12 +130,17 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
           local options = table.shallow_copy(row.options or {})
           options.label_only = true
           options.amount_ident = value.amount_ident
+          options.blueprint_result = value.class == "entity" and source_data.blueprintable and { name = value.name }
+            or nil
           local info = formatter(source_data, player_data, options)
           if info then
             button.caption = info.caption
             button.tooltip = info.tooltip
             gui.set_action(button, "on_click", { gui = "info", id = variables.gui_id, action = "navigate_to" })
-            gui.update_tags(button, { context = { class = value.class, name = value.name } })
+            gui.update_tags(
+              button,
+              { context = { class = value.class, name = value.name }, blueprint_result = options.blueprint_result }
+            )
           else
             -- Don't actually show this row
             -- This is an ugly way to do it, but whatever

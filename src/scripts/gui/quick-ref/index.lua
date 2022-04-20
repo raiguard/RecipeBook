@@ -78,18 +78,17 @@ function Gui:update_contents()
       box.flow.visible = true
     end
 
-    local blueprint_recipe = source == "made_in" and self.recipe_name or nil
-
     local table = box.table
     local buttons = table.children
     local i = 0
     for _, object in pairs(recipe_data[source]) do
       local object_data = database[object.class][object.name]
+      local blueprint_result = source == "made_in" and { name = object.name, self.recipe_name } or nil
       local object_info = formatter(object_data, player_data, {
+        always_show = source ~= "made_in",
         amount_ident = object.amount_ident,
         amount_only = true,
-        always_show = source ~= "made_in",
-        blueprint_recipe = blueprint_recipe,
+        blueprint_result = blueprint_result,
       })
       if object_info then
         i = i + 1
@@ -103,7 +102,7 @@ function Gui:update_contents()
           button.sprite = constants.class_to_type[object.class] .. "/" .. object_data.prototype_name
           button.tooltip = object_info.tooltip
           gui.update_tags(button, {
-            blueprint_recipe = blueprint_recipe,
+            blueprint_result = blueprint_result,
             context = object,
             researched = object_data.researched,
           })
@@ -119,7 +118,7 @@ function Gui:update_contents()
               sprite = constants.class_to_type[object.class] .. "/" .. object_data.prototype_name,
               tooltip = object_info.tooltip,
               tags = {
-                blueprint_recipe = blueprint_recipe,
+                blueprint_result = blueprint_result,
                 context = object,
                 researched = object_data.researched,
               },

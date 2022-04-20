@@ -1,5 +1,5 @@
-local event = require("__flib__.event")
 local dictionary = require("__flib__.dictionary")
+local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
 local on_tick_n = require("__flib__.on-tick-n")

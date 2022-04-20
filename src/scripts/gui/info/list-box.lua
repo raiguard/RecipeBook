@@ -56,7 +56,7 @@ function list_box.default_state(settings)
   return { collapsed = settings.default_state == "collapsed" }
 end
 
-function list_box.update(component, refs, object_data, player_data, settings, variables)
+function list_box.update(component, refs, context_data, player_data, settings, variables)
   -- Scroll pane
   local scroll = refs.scroll_pane
   local children = scroll.children
@@ -64,7 +64,6 @@ function list_box.update(component, refs, object_data, player_data, settings, va
   -- Settings and variables
   local always_show = component.always_show
   local context = variables.context
-  local blueprint_recipe = context.class == "recipe" and component.source == "made_in" and context.name or nil
   local query = variables.search_query
 
   local search_type = player_data.settings.general.search.search_type
@@ -72,7 +71,7 @@ function list_box.update(component, refs, object_data, player_data, settings, va
   -- Add items
   local i = 0 -- The "added" index
   local iterator = component.use_pairs and pairs or ipairs
-  local objects = settings.default_state ~= "hidden" and object_data[component.source] or {}
+  local objects = settings.default_state ~= "hidden" and context_data[component.source] or {}
   for _, obj in iterator(objects) do
     local translation = player_data.translations[obj.class][obj.name]
     -- Match against search string
@@ -87,10 +86,16 @@ function list_box.update(component, refs, object_data, player_data, settings, va
 
     if matched then
       local obj_data = database[obj.class][obj.name]
+      local blueprint_result
+      if context.class == "recipe" and component.source == "made_in" and obj_data.blueprintable then
+        blueprint_result = { name = obj.name, recipe = context.name }
+      elseif context.class == "entity" and component.source == "can_craft" and context_data.blueprintable then
+        blueprint_result = { name = context.name, recipe = obj.name }
+      end
       local info = formatter(obj_data, player_data, {
         always_show = always_show,
         amount_ident = obj.amount_ident,
-        blueprint_recipe = blueprint_recipe,
+        blueprint_result = blueprint_result,
         rocket_parts_required = obj_data.rocket_parts_required,
       })
 
@@ -105,7 +110,7 @@ function list_box.update(component, refs, object_data, player_data, settings, va
           item.enabled = info.num_interactions > 0
           gui.update_tags(
             item,
-            { blueprint_recipe = blueprint_recipe, context = { class = obj.class, name = obj.name } }
+            { blueprint_result = blueprint_result, context = { class = obj.class, name = obj.name } }
           )
         else
           gui.add(scroll, {
@@ -116,7 +121,7 @@ function list_box.update(component, refs, object_data, player_data, settings, va
             enabled = info.num_interactions > 0,
             mouse_button_filter = { "left", "middle" },
             tags = {
-              blueprint_recipe = blueprint_recipe,
+              blueprint_result = blueprint_result,
               context = { class = obj.class, name = obj.name },
             },
             actions = {

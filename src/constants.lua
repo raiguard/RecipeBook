@@ -524,24 +524,45 @@ constants.interactions = {
     {
       modifiers = { "shift" },
       action = "get_blueprint",
-      test = function(obj_data, _)
-        return obj_data.blueprintable
+      test = function(_, options)
+        return options.blueprint_result
       end,
     },
   },
   equipment_category = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
   },
   equipment = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
   },
   fluid = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
     {
       modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
+    {
+      modifiers = { "control" },
       action = "view_source",
       label = "view_base_fluid",
       source = "base_fluid",
@@ -550,24 +571,59 @@ constants.interactions = {
   fuel_category = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
   },
   item = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
   },
   group = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
   },
   recipe_category = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
   },
   recipe = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
     {
       modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
+    {
+      modifiers = { "control" },
       action = "view_product_details",
       test = function(obj_data, _)
         return #obj_data.products == 1
@@ -577,12 +633,26 @@ constants.interactions = {
   resource_category = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
   },
   resource = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
     {
       modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
+    {
+      modifiers = { "control" },
       action = "view_source",
       label = "view_required_fluid",
       source = "required_fluid",
@@ -591,7 +661,14 @@ constants.interactions = {
   technology = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
-    { modifiers = { "shift" }, action = "open_in_technology_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
+    { modifiers = { "control" }, action = "open_in_technology_window" },
   },
 }
 

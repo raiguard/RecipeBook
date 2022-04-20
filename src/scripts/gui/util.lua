@@ -34,24 +34,25 @@ function gui_util.navigate_to(e)
       elseif action == "view_product_details" and #context_data.products == 1 then
         return context_data.products[1]
       elseif action == "get_blueprint" then
-        if context_data.blueprintable then
+        local blueprint_result = tags.blueprint_result
+        if blueprint_result then
           local cursor_stack = player.cursor_stack
           player.clear_cursor()
           if cursor_stack and cursor_stack.valid then
-            local CollisionBox = area.load(game.entity_prototypes[context.name].collision_box)
+            local CollisionBox = area.load(game.entity_prototypes[blueprint_result.name].collision_box)
             local height = CollisionBox:height()
             local width = CollisionBox:width()
             cursor_stack.set_stack({ name = "blueprint", count = 1 })
             cursor_stack.set_blueprint_entities({
               {
                 entity_number = 1,
-                name = context.name,
+                name = blueprint_result.name,
                 position = {
                   -- Entities with an even number of tiles to a side need to be set at -0.5 instead of 0
                   math.ceil(width) % 2 == 0 and -0.5 or 0,
                   math.ceil(height) % 2 == 0 and -0.5 or 0,
                 },
-                recipe = tags.blueprint_recipe,
+                recipe = blueprint_result.recipe,
               },
             })
             player.add_to_clipboard(cursor_stack)

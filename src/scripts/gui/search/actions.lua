@@ -220,7 +220,8 @@ function actions.update_search_results(Gui, _, _)
               end
 
               if passed then
-                local info = formatter(obj_data, player_data)
+                local blueprint_result = class == "entity" and obj_data.blueprintable and { name = internal } or nil
+                local info = formatter(obj_data, player_data, { blueprint_result = blueprint_result })
                 if info then
                   i = i + 1
                   local style = info.researched and "rb_list_box_item" or "rb_unresearched_list_box_item"
@@ -230,7 +231,10 @@ function actions.update_search_results(Gui, _, _)
                     item.caption = info.caption
                     item.tooltip = info.tooltip
                     item.enabled = info.num_interactions > 0
-                    gui.update_tags(item, { context = { class = class, name = internal } })
+                    gui.update_tags(
+                      item,
+                      { blueprint_result = blueprint_result, context = { class = class, name = internal } }
+                    )
                   else
                     gui.add(pane, {
                       type = "button",
@@ -240,6 +244,7 @@ function actions.update_search_results(Gui, _, _)
                       enabled = info.num_interactions > 0,
                       mouse_button_filter = { "left", "middle" },
                       tags = {
+                        blueprint_result = blueprint_result,
                         context = { class = class, name = internal },
                       },
                       actions = {
