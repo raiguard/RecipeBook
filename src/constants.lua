@@ -509,7 +509,12 @@ constants.ignored_cursor_inspection_types = {
   ["upgrade-item"] = true,
 }
 
-constants.ignored_info_ids = table.invert({ "_active_id", "_next_id", "_relative_id" })
+constants.ignored_info_ids = table.invert({
+  "_active_id",
+  "_next_id",
+  "_relative_id",
+  "_sticky_id", -- For legacy reasons
+})
 
 -- NOTE: Modifiers must be in the order of "control", "shift" for those that are present
 constants.interactions = {
