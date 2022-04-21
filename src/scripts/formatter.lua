@@ -453,29 +453,42 @@ local function get_obj_properties(obj_data, player_data, options)
     and (show_disabled or obj_properties.enabled)
   then
     -- Check categories
-    -- Logic: At least one entry from each category that the object has must be enabled
-    local matched_categories = 0
+    -- At least one entry from each category that the object has must be enabled, except for science packs, which all must be enabled
     local good_categories = 0
+    local has_categories = 0
     for _, category in pairs(constants.category_classes) do
       local obj_category = obj_data[category]
       local obj_categories = obj_data[constants.category_class_plurals[category]]
       if obj_category then
-        good_categories = good_categories + 1
+        has_categories = has_categories + 1
         if player_settings.categories[category][obj_category.name] then
-          matched_categories = matched_categories + 1
+          good_categories = good_categories + 1
         end
       elseif obj_categories and #obj_categories > 0 then
-        good_categories = good_categories + 1
+        has_categories = has_categories + 1
         local category_settings = player_settings.categories[category]
-        for _, category_ident in pairs(obj_categories) do
-          if category_settings[category_ident.name] then
-            matched_categories = matched_categories + 1
-            break
+        if constants.category_all_match[category] then
+          local matched_all = true
+          for _, category_ident in pairs(obj_categories) do
+            if not category_settings[category_ident.name] then
+              matched_all = false
+              break
+            end
+          end
+          if matched_all then
+            good_categories = good_categories + 1
+          end
+        else
+          for _, category_ident in pairs(obj_categories) do
+            if category_settings[category_ident.name] then
+              good_categories = good_categories + 1
+              break
+            end
           end
         end
       end
     end
-    if matched_categories == good_categories then
+    if good_categories == has_categories then
       should_show = true
     end
   end

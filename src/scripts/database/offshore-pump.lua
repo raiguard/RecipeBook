@@ -21,6 +21,7 @@ function offshore_pump_proc.build(database, dictionaries)
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       pumping_speed = prototype.pumping_speed * 60,
+      science_packs = util.unique_obj_array(),
       size = util.get_size(prototype),
       unlocked_by = {},
     }
@@ -35,6 +36,7 @@ function offshore_pump_proc.check_enabled_at_start(database)
     if not pump_data.researched_forces then
       local fluid_data = database.fluid[pump_data.fluid.name]
       fluid_data.researched_forces = nil
+      fluid_data.science_packs = util.unique_obj_array()
       fluid_data.unlocked_by = {}
     end
   end

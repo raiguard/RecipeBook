@@ -1,8 +1,15 @@
 local math = require("__flib__.math")
+local table = require("__flib__.table")
 
 local constants = require("constants")
 
 local util = require("scripts.util")
+
+local function insert_science_packs(obj_data, science_packs)
+  for _, pack in pairs(science_packs) do
+    table.insert(obj_data.science_packs, pack)
+  end
+end
 
 return function(database, dictionaries, metadata)
   for name, prototype in pairs(global.prototypes.technology) do
@@ -28,6 +35,10 @@ return function(database, dictionaries, metadata)
       research_unit_count = prototype.research_unit_count
     end
 
+    local science_packs = table.map(prototype.research_unit_ingredients, function(pack)
+      return { class = "science_pack", name = pack.name }
+    end)
+
     -- Unlocks recipes, materials, entities
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
@@ -36,6 +47,7 @@ return function(database, dictionaries, metadata)
         -- Check if the category should be ignored for recipe availability
         local disabled = constants.disabled_categories.recipe_category[recipe_data.recipe_category.name]
         if not disabled or disabled ~= 0 then
+          insert_science_packs(recipe_data, science_packs)
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = { class = "technology", name = name }
           recipe_data.researched_forces = {}
           unlocks_recipes[#unlocks_recipes + 1] = { class = "recipe", name = modifier.recipe }
@@ -50,6 +62,7 @@ return function(database, dictionaries, metadata)
 
             if product_data.class ~= "fluid" or not is_empty_barrel_recipe then
               product_data.researched_forces = {}
+              insert_science_packs(product_data, science_packs)
               product_data.unlocked_by[#product_data.unlocked_by + 1] = { class = "technology", name = name }
             end
 
@@ -66,6 +79,7 @@ return function(database, dictionaries, metadata)
               local entity_data = database.entity[place_result.name]
               if entity_data then
                 entity_data.researched_forces = {}
+                insert_science_packs(entity_data, science_packs)
                 entity_data.unlocked_by[#entity_data.unlocked_by + 1] = { class = "technology", name = name }
                 unlocks_entities[#unlocks_entities + 1] = place_result
               end
@@ -77,6 +91,7 @@ return function(database, dictionaries, metadata)
               local equipment_data = database.equipment[place_as_equipment_result.name]
               if equipment_data then
                 equipment_data.researched_forces = {}
+                insert_science_packs(equipment_data, science_packs)
                 equipment_data.unlocked_by[#equipment_data.unlocked_by + 1] = { class = "technology", name = name }
                 unlocks_equipment[#unlocks_equipment + 1] = place_as_equipment_result
               end
@@ -102,10 +117,11 @@ return function(database, dictionaries, metadata)
       research_unit_count_formula = formula,
       research_unit_count = research_unit_count,
       research_unit_energy = prototype.research_unit_energy / 60,
+      science_packs = science_packs,
+      unlocks_entities = unlocks_entities,
       unlocks_equipment = unlocks_equipment,
       unlocks_fluids = unlocks_fluids,
       unlocks_items = unlocks_items,
-      unlocks_entities = unlocks_entities,
       unlocks_recipes = unlocks_recipes,
       upgrade = prototype.upgrade,
     }

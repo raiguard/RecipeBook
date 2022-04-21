@@ -11,8 +11,8 @@ function mining_drill_proc.build(database, dictionaries)
 
     database.entity[name] = {
       blueprintable = util.is_blueprintable(prototype),
-      class = "entity",
       can_burn = {},
+      class = "entity",
       enabled = true,
       fuel_categories = util.process_energy_source(prototype),
       mining_area = math.ceil(prototype.mining_drill_radius * 2),
@@ -21,6 +21,7 @@ function mining_drill_proc.build(database, dictionaries)
       prototype_name = name,
       resource_categories_lookup = prototype.resource_categories,
       resource_categories = util.convert_categories(prototype.resource_categories, "resource_category"),
+      science_packs = util.unique_obj_array(),
       size = util.get_size(prototype),
       supports_fluid = #prototype.fluidbox_prototypes > 0,
       unlocked_by = {},

@@ -22,16 +22,17 @@ return function(database, dictionaries, metadata)
     group_data.recipes[#group_data.recipes + 1] = { class = "recipe", name = name }
 
     local data = {
-      class = "recipe",
       accepted_modules = {},
+      class = "recipe",
       enabled_at_start = enabled_at_start,
       energy = prototype.energy,
       group = { class = "group", name = group.name },
       hidden = prototype.hidden,
       made_in = {},
       prototype_name = name,
-      subgroup = { class = "group", name = prototype.subgroup.name },
       recipe_category = { class = "recipe_category", name = category },
+      science_packs = util.unique_obj_array(),
+      subgroup = { class = "group", name = prototype.subgroup.name },
       unlocked_by = {},
       used_as_fixed_recipe = metadata.fixed_recipes[name],
     }

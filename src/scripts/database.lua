@@ -22,6 +22,7 @@ local recipe_category = require("scripts.database.recipe-category")
 local recipe = require("scripts.database.recipe")
 local resource_category = require("scripts.database.resource-category")
 local resource = require("scripts.database.resource")
+local science_pack = require("scripts.database.science-pack")
 local technology = require("scripts.database.technology")
 
 local database = {}
@@ -49,6 +50,7 @@ function database.build()
   group(database, dictionaries)
   recipe_category(database, dictionaries)
   resource_category(database, dictionaries)
+  science_pack(database, dictionaries)
 
   equipment(database, dictionaries)
 

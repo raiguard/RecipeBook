@@ -14,8 +14,8 @@ return function(database, dictionaries)
 
     database.entity[name] = {
       blueprintable = util.is_blueprintable(prototype),
-      class = "entity",
       can_burn = {},
+      class = "entity",
       fuel_categories = util.process_energy_source(prototype),
       hidden = prototype.has_flag("hidden"),
       inputs = table.map(prototype.lab_inputs, function(v)
@@ -24,6 +24,7 @@ return function(database, dictionaries)
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       researching_speed = prototype.researching_speed,
+      science_packs = util.unique_obj_array(),
       size = util.get_size(prototype),
       unlocked_by = {},
     }

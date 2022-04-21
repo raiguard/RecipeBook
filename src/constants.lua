@@ -7,12 +7,17 @@ constants.burner_classes = {
   "equipment",
 }
 
+constants.category_all_match = {
+  science_pack = true,
+}
+
 constants.category_classes = {
   "equipment_category",
   "fuel_category",
   "group",
   "recipe_category",
   "resource_category",
+  "science_pack",
 }
 
 constants.category_class_plurals = {
@@ -21,6 +26,7 @@ constants.category_class_plurals = {
   group = "groups",
   recipe_category = "recipe_categories",
   resource_category = "resource_categories",
+  science_pack = "science_packs",
 }
 
 constants.classes = {
@@ -35,6 +41,7 @@ constants.classes = {
   "recipe_category",
   "resource",
   "resource_category",
+  "science_pack",
   "technology",
 }
 
@@ -50,6 +57,7 @@ constants.class_to_font_glyph = {
   recipe = "D",
   resource_category = "G",
   resource = "F",
+  science_pack = "G",
   technology = "A",
 }
 
@@ -65,6 +73,7 @@ constants.class_to_type = {
   recipe = "recipe",
   resource_category = false,
   resource = "entity",
+  science_pack = "item",
   technology = "technology",
 }
 
@@ -175,6 +184,7 @@ constants.disabled_categories = {
     ["transport-fluid-request"] = 0,
   },
   resource_category = {},
+  science_pack = {},
 }
 
 constants.fake_fluid_fuel_category = "burnable-fluid"
@@ -437,6 +447,7 @@ constants.gui_strings = {
   rocket_launch_product_of = { "gui.rb-rocket-launch-product-of" },
   rocket_launch_products = { "gui.rb-rocket-launch-products" },
   rocket_parts_required = { "gui.rb-rocket-parts-required" },
+  science_pack = { "gui.rb-science-pack" },
   search_gui_location = { "gui.rb-search-gui-location" },
   search = { "gui.rb-search" },
   search_type = { "gui.rb-search-type" },
@@ -926,6 +937,11 @@ constants.pages = {
     { type = "list_box", source = "prerequisite_of" },
   },
 }
+
+constants.pages_arr = {}
+for name in pairs(constants.pages) do
+  table.insert(constants.pages_arr, name)
+end
 
 constants.prototypes = {}
 

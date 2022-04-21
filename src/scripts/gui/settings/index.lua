@@ -164,7 +164,7 @@ function Gui:update_contents(tab)
   if not tab or tab == "pages" then
     local pages_pane = refs.pages.pane
     pages_pane.clear()
-    local selected_page = constants.classes[state.selected_page]
+    local selected_page = constants.pages_arr[state.selected_page]
     local page_settings = actual_settings.pages[selected_page]
     local children = {}
     for component_name, component_settings in pairs(page_settings) do
@@ -376,8 +376,7 @@ function index.build(player, player_table)
             "change_page",
             false,
             false,
-            -- NOTE: If we add a class that does not have a page, this will break
-            table.map(constants.classes, function(class)
+            table.map(constants.pages_arr, function(class)
               return gui_translations[class] or class
             end)
           ),

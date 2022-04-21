@@ -144,11 +144,11 @@ function item_proc.build(database, dictionaries, metadata)
 
     --- @class ItemData
     database.item[name] = {
+      accepted_equipment = equipment,
       burned_in = {},
       burnt_result = burnt_result,
       burnt_result_of = {},
       class = "item",
-      accepted_equipment = equipment,
       equipment_categories = equipment_categories,
       fuel_acceleration_multiplier = has_fuel_value
           and fuel_acceleration_multiplier ~= 1
@@ -174,6 +174,7 @@ function item_proc.build(database, dictionaries, metadata)
       researched_in = {},
       rocket_launch_product_of = {},
       rocket_launch_products = launch_products,
+      science_packs = util.unique_obj_array(),
       stack_size = prototype.stack_size,
       subgroup = { class = "group", name = prototype.subgroup.name },
       unlocked_by = util.unique_obj_array(),

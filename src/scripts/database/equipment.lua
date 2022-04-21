@@ -65,17 +65,18 @@ return function(database, dictionaries)
     end
 
     database.equipment[name] = {
-      class = "equipment",
       can_burn = {},
-      fuel_categories = fuel_categories,
+      class = "equipment",
       enabled = true,
       equipment_categories = table.map(prototype.equipment_categories, function(category)
         return { class = "equipment_category", name = category }
       end),
       equipment_properties = properties,
+      fuel_categories = fuel_categories,
       hidden = false,
       placed_in = util.unique_obj_array(),
       prototype_name = name,
+      science_packs = util.unique_obj_array(),
       size = prototype.shape and prototype.shape.width or nil, -- Equipments can have irregular shapes
       take_result = prototype.take_result and { class = "item", name = prototype.take_result.name } or nil,
       unlocked_by = {},

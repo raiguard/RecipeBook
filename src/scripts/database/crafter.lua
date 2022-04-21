@@ -8,6 +8,7 @@ return function(database, dictionaries, metadata)
       ingredient_limit = nil
     end
     database.entity[name] = {
+      accepted_modules = {}, -- Always empty
       blueprintable = false,
       can_burn = {}, -- Always empty
       can_craft = {},
@@ -19,9 +20,9 @@ return function(database, dictionaries, metadata)
       is_character = true,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
-      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       recipe_categories_lookup = prototype.crafting_categories,
-      accepted_modules = {}, -- Always empty
+      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
+      science_packs = util.unique_obj_array(),
       unlocked_by = {},
     }
     dictionaries.entity:add(name, prototype.localised_name)
@@ -72,6 +73,7 @@ return function(database, dictionaries, metadata)
 
     local is_hidden = prototype.has_flag("hidden")
     database.entity[name] = {
+      accepted_modules = {},
       blueprintable = util.is_blueprintable(prototype),
       can_burn = {},
       can_craft = {},
@@ -83,11 +85,11 @@ return function(database, dictionaries, metadata)
       ingredient_limit = ingredient_limit,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
-      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       recipe_categories_lookup = prototype.crafting_categories,
+      recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       rocket_parts_required = prototype.rocket_parts_required,
+      science_packs = util.unique_obj_array(),
       size = util.get_size(prototype),
-      accepted_modules = {},
       unlocked_by = {},
     }
     dictionaries.entity:add(name, prototype.localised_name)
