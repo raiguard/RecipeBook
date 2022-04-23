@@ -453,7 +453,6 @@ local function get_obj_properties(obj_data, player_data, options)
     and (show_disabled or obj_properties.enabled)
   then
     -- Check categories
-    -- At least one entry from each category that the object has must be enabled, except for science packs, which all must be enabled
     local good_categories = 0
     local has_categories = 0
     for _, category in pairs(constants.category_classes) do
@@ -464,10 +463,11 @@ local function get_obj_properties(obj_data, player_data, options)
         if player_settings.categories[category][obj_category.name] then
           good_categories = good_categories + 1
         end
-      elseif obj_categories and #obj_categories > 0 then
+      elseif obj_categories and #obj_categories > 0 then -- Empty category lists pass by default
         has_categories = has_categories + 1
         local category_settings = player_settings.categories[category]
         if constants.category_all_match[category] then
+          -- All categories must be enabled
           local matched_all = true
           for _, category_ident in pairs(obj_categories) do
             if not category_settings[category_ident.name] then
@@ -479,6 +479,7 @@ local function get_obj_properties(obj_data, player_data, options)
             good_categories = good_categories + 1
           end
         else
+          -- At least one category must be enabled
           for _, category_ident in pairs(obj_categories) do
             if category_settings[category_ident.name] then
               good_categories = good_categories + 1
