@@ -28,7 +28,7 @@ return function(database, dictionaries)
       fuel_categories = fuel_categories,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
-      science_packs = util.unique_obj_array(),
+      science_packs = {},
       unlocked_by = {},
     }
 

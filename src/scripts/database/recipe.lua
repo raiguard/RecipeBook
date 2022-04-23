@@ -31,7 +31,7 @@ return function(database, dictionaries, metadata)
       made_in = {},
       prototype_name = name,
       recipe_category = { class = "recipe_category", name = category },
-      science_packs = util.unique_obj_array(),
+      science_packs = {},
       subgroup = { class = "group", name = prototype.subgroup.name },
       unlocked_by = {},
       used_as_fixed_recipe = metadata.fixed_recipes[name],

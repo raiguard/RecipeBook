@@ -24,7 +24,7 @@ return function(database, dictionaries)
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       researching_speed = prototype.researching_speed,
-      science_packs = util.unique_obj_array(),
+      science_packs = {},
       size = util.get_size(prototype),
       unlocked_by = {},
     }

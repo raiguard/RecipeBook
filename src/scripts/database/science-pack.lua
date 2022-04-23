@@ -1,8 +1,11 @@
 return function(database, dictionaries)
-  for name, prototype in pairs(global.prototypes.item) do
+  --- @type table<string, LuaItemPrototype>
+  local prototypes = global.prototypes.item
+  for name, prototype in pairs(prototypes) do
     if prototype.type == "tool" then
       database.science_pack[name] = {
         class = "science_pack",
+        order = prototype.order,
         prototype_name = name,
       }
       dictionaries.science_pack:add(name, prototype.localised_name)

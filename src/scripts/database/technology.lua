@@ -5,9 +5,25 @@ local constants = require("constants")
 
 local util = require("scripts.util")
 
-local function insert_science_packs(obj_data, science_packs)
-  for _, pack in pairs(science_packs) do
-    table.insert(obj_data.science_packs, pack)
+local function insert_science_packs(database, obj_data, science_packs)
+  local existing = obj_data.science_packs
+  local existing_len = #existing
+
+  -- If there are no existing science packs
+  if #obj_data.science_packs == 0 then
+    obj_data.science_packs = science_packs
+    return
+  end
+
+  local existing_highest_ident = existing[existing_len]
+  local existing_highest_data = database.science_pack[existing_highest_ident.name]
+
+  local new_highest_ident = science_packs[#science_packs]
+  local new_highest_data = database.science_pack[new_highest_ident.name]
+
+  -- The object should show when the fewest possible science packs are enabled
+  if existing_highest_data.order > new_highest_data.order then
+    obj_data.science_packs = science_packs
   end
 end
 
@@ -47,7 +63,7 @@ return function(database, dictionaries, metadata)
         -- Check if the category should be ignored for recipe availability
         local disabled = constants.disabled_categories.recipe_category[recipe_data.recipe_category.name]
         if not disabled or disabled ~= 0 then
-          insert_science_packs(recipe_data, science_packs)
+          insert_science_packs(database, recipe_data, science_packs)
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = { class = "technology", name = name }
           recipe_data.researched_forces = {}
           unlocks_recipes[#unlocks_recipes + 1] = { class = "recipe", name = modifier.recipe }
@@ -62,7 +78,7 @@ return function(database, dictionaries, metadata)
 
             if product_data.class ~= "fluid" or not is_empty_barrel_recipe then
               product_data.researched_forces = {}
-              insert_science_packs(product_data, science_packs)
+              insert_science_packs(database, product_data, science_packs)
               product_data.unlocked_by[#product_data.unlocked_by + 1] = { class = "technology", name = name }
             end
 
@@ -79,7 +95,7 @@ return function(database, dictionaries, metadata)
               local entity_data = database.entity[place_result.name]
               if entity_data then
                 entity_data.researched_forces = {}
-                insert_science_packs(entity_data, science_packs)
+                insert_science_packs(database, entity_data, science_packs)
                 entity_data.unlocked_by[#entity_data.unlocked_by + 1] = { class = "technology", name = name }
                 unlocks_entities[#unlocks_entities + 1] = place_result
               end
@@ -91,7 +107,7 @@ return function(database, dictionaries, metadata)
               local equipment_data = database.equipment[place_as_equipment_result.name]
               if equipment_data then
                 equipment_data.researched_forces = {}
-                insert_science_packs(equipment_data, science_packs)
+                insert_science_packs(database, equipment_data, science_packs)
                 equipment_data.unlocked_by[#equipment_data.unlocked_by + 1] = { class = "technology", name = name }
                 unlocks_equipment[#unlocks_equipment + 1] = place_as_equipment_result
               end

@@ -76,7 +76,7 @@ return function(database, dictionaries)
       hidden = false,
       placed_in = util.unique_obj_array(),
       prototype_name = name,
-      science_packs = util.unique_obj_array(),
+      science_packs = {},
       size = prototype.shape and prototype.shape.width or nil, -- Equipments can have irregular shapes
       take_result = prototype.take_result and { class = "item", name = prototype.take_result.name } or nil,
       unlocked_by = {},

@@ -18,7 +18,7 @@ return function(database, dictionaries, metadata)
       module_slots = prototype.module_inventory_size,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
-      science_packs = util.unique_obj_array(),
+      science_packs = {},
       size = size,
       unlocked_by = {},
     }

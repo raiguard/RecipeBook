@@ -174,7 +174,7 @@ function item_proc.build(database, dictionaries, metadata)
       researched_in = {},
       rocket_launch_product_of = {},
       rocket_launch_products = launch_products,
-      science_packs = util.unique_obj_array(),
+      science_packs = {},
       stack_size = prototype.stack_size,
       subgroup = { class = "group", name = prototype.subgroup.name },
       unlocked_by = util.unique_obj_array(),
