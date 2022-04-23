@@ -20,6 +20,7 @@ return function(database, dictionaries, metadata)
       prototype_name = name,
       science_packs = {},
       size = size,
+      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
 

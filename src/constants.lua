@@ -479,6 +479,7 @@ constants.gui_strings = {
   time_per_unit = { "gui.rb-time-per-unit" },
   toggle_completed = { "gui.rb-toggle-completed" },
   tooltips = { "gui.rb-tooltips" },
+  type = { "gui.rb-type" },
   unlocked_by = { "gui.rb-unlocked-by" },
   unlocks_entities = { "gui.rb-unlocks-entities" },
   unlocks_equipment = { "gui.rb-unlocks-equipment" },
@@ -714,6 +715,7 @@ constants.pages = {
       label = "general",
       hide_count = true,
       rows = {
+        { type = "plain", source = "type" }, -- This uses actual localised strings instead of translations
         { type = "plain", source = "effect_area", formatter = "area" },
         { type = "plain", source = "distribution_effectivity", formatter = "percent" },
         { type = "plain", source = "module_slots", formatter = "number" },

@@ -26,6 +26,7 @@ return function(database, dictionaries)
       researching_speed = prototype.researching_speed,
       science_packs = {},
       size = util.get_size(prototype),
+      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
     dictionaries.entity:add(name, prototype.localised_name)

@@ -2,6 +2,8 @@
 Version: 3.4.0
 Date: ????
   Features:
+    - Added new page contents:
+      - [Entity] Entity type
     - Added new categories
       - Science pack: Uncheck a science pack to hide all objects that it unlocks (#89)
     - Added new interactions:

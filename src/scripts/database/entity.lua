@@ -29,6 +29,7 @@ return function(database, dictionaries)
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       science_packs = {},
+      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
 

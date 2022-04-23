@@ -23,6 +23,7 @@ function offshore_pump_proc.build(database, dictionaries)
       pumping_speed = prototype.pumping_speed * 60,
       science_packs = {},
       size = util.get_size(prototype),
+      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
     dictionaries.entity:add(name, prototype.localised_name)
