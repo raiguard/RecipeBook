@@ -24,12 +24,12 @@ return function(database, dictionaries)
       blueprintable = util.is_blueprintable(prototype),
       can_burn = {},
       class = "entity",
+      entity_type = { class = "entity_type", name = prototype.type },
       equipment_categories = equipment_categories,
       fuel_categories = fuel_categories,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       science_packs = {},
-      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
 

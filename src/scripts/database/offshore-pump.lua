@@ -16,6 +16,7 @@ function offshore_pump_proc.build(database, dictionaries)
       blueprintable = util.is_blueprintable(prototype),
       class = "entity",
       enabled = true,
+      entity_type = { class = "entity_type", name = prototype.type },
       fluid = { class = "fluid", name = fluid.name },
       hidden = prototype.has_flag("hidden"),
       placed_by = util.process_placed_by(prototype),
@@ -23,7 +24,6 @@ function offshore_pump_proc.build(database, dictionaries)
       pumping_speed = prototype.pumping_speed * 60,
       science_packs = {},
       size = util.get_size(prototype),
-      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
     dictionaries.entity:add(name, prototype.localised_name)

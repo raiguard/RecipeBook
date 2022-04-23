@@ -12,6 +12,7 @@ constants.category_all_match = {
 }
 
 constants.category_classes = {
+  "entity_type",
   "equipment_category",
   "fuel_category",
   "group",
@@ -21,6 +22,7 @@ constants.category_classes = {
 }
 
 constants.category_class_plurals = {
+  entity_type = "entity_types",
   equipment_category = "equipment_categories",
   fuel_category = "fuel_categories",
   group = "groups",
@@ -31,6 +33,7 @@ constants.category_class_plurals = {
 
 constants.classes = {
   "entity",
+  "entity_type",
   "equipment",
   "equipment_category",
   "fluid",
@@ -47,6 +50,7 @@ constants.classes = {
 
 constants.class_to_font_glyph = {
   entity = "E",
+  entity_type = "G",
   equipment_category = "G",
   equipment = "H",
   fluid = "B",
@@ -63,6 +67,7 @@ constants.class_to_font_glyph = {
 
 constants.class_to_type = {
   entity = "entity",
+  entity_type = false,
   equipment_category = false,
   equipment = "equipment",
   fluid = "fluid",
@@ -148,6 +153,7 @@ constants.derived_type_to_class = {
 }
 
 constants.disabled_categories = {
+  entity_type = {},
   equipment_category = {},
   fuel_category = {},
   group = {
@@ -354,7 +360,9 @@ constants.gui_strings = {
   energy_consumption = { "gui.rb-energy-consumption" },
   energy_per_shield_point = { "gui.rb-energy-per-shield-point" },
   energy_production = { "gui.rb-energy-production" },
+  entities = { "gui.rb-entities" },
   entity = { "gui.rb-entity" },
+  entity_type = { "gui.rb-entity-type" },
   equipment_categories = { "gui.rb-equipment-categories" },
   equipment_category = { "gui.rb-equipment-category" },
   equipment = { "gui.rb-equipment" },
@@ -479,7 +487,6 @@ constants.gui_strings = {
   time_per_unit = { "gui.rb-time-per-unit" },
   toggle_completed = { "gui.rb-toggle-completed" },
   tooltips = { "gui.rb-tooltips" },
-  type = { "gui.rb-type" },
   unlocked_by = { "gui.rb-unlocked-by" },
   unlocks_entities = { "gui.rb-unlocks-entities" },
   unlocks_equipment = { "gui.rb-unlocks-equipment" },
@@ -540,6 +547,10 @@ constants.interactions = {
         return options.blueprint_result
       end,
     },
+  },
+  entity_type = {
+    { modifiers = {}, action = "view_details" },
+    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
   },
   equipment_category = {
     { modifiers = {}, action = "view_details" },
@@ -715,7 +726,7 @@ constants.pages = {
       label = "general",
       hide_count = true,
       rows = {
-        { type = "plain", source = "type" }, -- This uses actual localised strings instead of translations
+        { type = "goto", source = "entity_type", options = { hide_glyph = true } },
         { type = "plain", source = "effect_area", formatter = "area" },
         { type = "plain", source = "distribution_effectivity", formatter = "percent" },
         { type = "plain", source = "module_slots", formatter = "number" },
@@ -758,6 +769,9 @@ constants.pages = {
     { type = "list_box", source = "equipment_categories", default_state = "hidden" },
     { type = "list_box", source = "unlocked_by" },
     { type = "list_box", source = "placed_by" },
+  },
+  entity_type = {
+    { type = "list_box", source = "entities", max_rows = 16 },
   },
   equipment_category = {
     { type = "list_box", source = "equipment" },
@@ -1021,6 +1035,7 @@ constants.tooltips = {
       options = { always_show = true, hide_glyph = true },
     },
   },
+  entity_type = {},
   equipment_category = {},
   equipment = {
     { type = "plain", source = "size", formatter = "area" },

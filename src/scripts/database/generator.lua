@@ -16,6 +16,7 @@ return function(database, dictionaries)
       blueprintable = util.is_blueprintable(prototype),
       can_burn = can_burn,
       class = "entity",
+      entity_type = { class = "entity_type", name = prototype.type },
       fluid_consumption = prototype.fluid_usage_per_tick * 60,
       fuel_categories = fuel_categories,
       max_energy_production = prototype.max_energy_production,
@@ -24,7 +25,6 @@ return function(database, dictionaries)
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       science_packs = {},
-      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
 

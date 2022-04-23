@@ -8,6 +8,7 @@ local burning = require("scripts.database.burning")
 local crafter = require("scripts.database.crafter")
 local entity = require("scripts.database.entity")
 local entity_state = require("scripts.database.entity-state")
+local entity_type = require("scripts.database.entity-type")
 local equipment_category = require("scripts.database.equipment-category")
 local equipment = require("scripts.database.equipment")
 local fluid = require("scripts.database.fluid")
@@ -45,6 +46,7 @@ function database.build()
   -- Data that is needed for generation but will not be saved
   local metadata = {}
 
+  entity_type(database, dictionaries)
   equipment_category(database, dictionaries)
   fuel_category(database, dictionaries)
   group(database, dictionaries)

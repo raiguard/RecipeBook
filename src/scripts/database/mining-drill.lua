@@ -14,6 +14,7 @@ function mining_drill_proc.build(database, dictionaries)
       can_burn = {},
       class = "entity",
       enabled = true,
+      entity_type = { class = "entity_type", name = prototype.type },
       fuel_categories = util.process_energy_source(prototype),
       mining_area = math.ceil(prototype.mining_drill_radius * 2),
       mining_speed = prototype.mining_speed,
@@ -24,7 +25,6 @@ function mining_drill_proc.build(database, dictionaries)
       science_packs = {},
       size = util.get_size(prototype),
       supports_fluid = #prototype.fluidbox_prototypes > 0,
-      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
     dictionaries.entity:add(name, prototype.localised_name)

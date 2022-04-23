@@ -15,6 +15,7 @@ return function(database, dictionaries, metadata)
       class = "entity",
       crafting_speed = 1,
       enabled = true,
+      entity_type = { class = "entity_type", name = prototype.type },
       hidden = false,
       ingredient_limit = ingredient_limit,
       is_character = true,
@@ -23,7 +24,6 @@ return function(database, dictionaries, metadata)
       recipe_categories_lookup = prototype.crafting_categories,
       recipe_categories = util.convert_categories(prototype.crafting_categories, "recipe_category"),
       science_packs = {},
-      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
     dictionaries.entity:add(name, prototype.localised_name)
@@ -80,6 +80,7 @@ return function(database, dictionaries, metadata)
       can_craft = {},
       class = "entity",
       crafting_speed = prototype.crafting_speed,
+      entity_type = { class = "entity_type", name = prototype.type },
       fixed_recipe = fixed_recipe,
       fuel_categories = util.process_energy_source(prototype),
       hidden = is_hidden,
@@ -91,7 +92,6 @@ return function(database, dictionaries, metadata)
       rocket_parts_required = prototype.rocket_parts_required,
       science_packs = {},
       size = util.get_size(prototype),
-      type = { "entity-type." .. prototype.type },
       unlocked_by = {},
     }
     dictionaries.entity:add(name, prototype.localised_name)
