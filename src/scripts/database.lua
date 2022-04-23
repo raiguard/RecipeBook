@@ -59,7 +59,7 @@ function database.build()
   beacon(database, dictionaries, metadata)
   crafter(database, dictionaries, metadata)
   generator(database, dictionaries)
-  entity(database, dictionaries)
+  entity(database, dictionaries, metadata)
   mining_drill(database, dictionaries)
 
   fluid(database, dictionaries, metadata)

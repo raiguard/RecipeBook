@@ -47,14 +47,11 @@ function item_proc.build(database, dictionaries, metadata)
     end
 
     local place_result = prototype.place_result
-    if place_result then
-      local class = constants.derived_type_to_class[place_result.type]
-      if class and database[class][place_result.name] then
-        place_result = { class = class, name = place_result.name }
-        place_results[name] = place_result
-      else
-        place_result = nil
-      end
+    if place_result and database.entity[place_result.name] then
+      place_result = { class = "entity", name = place_result.name }
+      place_results[name] = place_result
+    else
+      place_result = nil
     end
 
     local burnt_result = prototype.burnt_result
@@ -149,6 +146,7 @@ function item_proc.build(database, dictionaries, metadata)
       burnt_result = burnt_result,
       burnt_result_of = {},
       class = "item",
+      enabled_at_start = metadata.gathered_from[name] and true or false,
       equipment_categories = equipment_categories,
       fuel_acceleration_multiplier = has_fuel_value
           and fuel_acceleration_multiplier ~= 1
@@ -160,6 +158,7 @@ function item_proc.build(database, dictionaries, metadata)
       fuel_top_speed_multiplier = has_fuel_value and fuel_top_speed_multiplier ~= 1 and fuel_top_speed_multiplier
         or nil,
       fuel_value = has_fuel_value and fuel_value or nil,
+      gathered_from = metadata.gathered_from[name],
       group = { class = "group", name = group.name },
       hidden = prototype.has_flag("hidden"),
       ingredient_in = {},

@@ -3,7 +3,7 @@ return function(database)
     -- Hidden / disabled for entities
     if not entity_data.is_character then
       local placed_by_len = #(entity_data.placed_by or {})
-      if placed_by_len == 0 then
+      if placed_by_len == 0 and not entity_data.expected_resources then
         entity_data.enabled = false
       elseif placed_by_len == 1 then
         local item_ident = entity_data.placed_by[1]

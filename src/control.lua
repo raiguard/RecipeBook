@@ -409,8 +409,8 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
         then
           return
         end
-        local class = constants.derived_type_to_class[selected_prototype.base_type]
-          or constants.derived_type_to_class[selected_prototype.derived_type]
+        local class = constants.type_to_class[selected_prototype.derived_type]
+          or constants.type_to_class[selected_prototype.base_type]
         -- Not everything will have a Recipe Book entry
         if class then
           local name = selected_prototype.name
