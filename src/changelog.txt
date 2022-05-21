@@ -14,6 +14,8 @@ Date: ????
     - Added new pages:
       - Entity type: All entities of the given type
       - Item type: All items of the given type
+  Changes:
+    - Category lists will be hidden when that category is disabled
 ---------------------------------------------------------------------------------------------------
 Version: 3.3.4
 Date: 2022-04-20

@@ -452,45 +452,53 @@ local function get_obj_properties(obj_data, player_data, options)
     and (show_unresearched or obj_properties.researched)
     and (show_disabled or obj_properties.enabled)
   then
-    -- Check categories
-    local good_categories = 0
-    local has_categories = 0
-    for _, category in pairs(constants.category_classes) do
-      local obj_category = obj_data[category]
-      local obj_categories = obj_data[constants.category_class_plurals[category]]
-      if obj_category then
-        has_categories = has_categories + 1
-        if player_settings.categories[category][obj_category.name] then
-          good_categories = good_categories + 1
-        end
-      elseif obj_categories and #obj_categories > 0 then -- Empty category lists pass by default
-        has_categories = has_categories + 1
-        local category_settings = player_settings.categories[category]
-        if constants.category_all_match[category] then
-          -- All categories must be enabled
-          local matched_all = true
-          for _, category_ident in pairs(obj_categories) do
-            if not category_settings[category_ident.name] then
-              matched_all = false
-              break
-            end
-          end
-          if matched_all then
+    -- Indexing the plurals table is much faster than looping through the canonical table
+    if constants.category_class_plurals[obj_data.class] then
+      -- Check if this category is enabled
+      if player_settings.categories[obj_data.class][obj_data.prototype_name] then
+        should_show = true
+      end
+    else
+      -- Check categories
+      local good_categories = 0
+      local has_categories = 0
+      for _, category in pairs(constants.category_classes) do
+        local obj_category = obj_data[category]
+        local obj_categories = obj_data[constants.category_class_plurals[category]]
+        if obj_category then
+          has_categories = has_categories + 1
+          if player_settings.categories[category][obj_category.name] then
             good_categories = good_categories + 1
           end
-        else
-          -- At least one category must be enabled
-          for _, category_ident in pairs(obj_categories) do
-            if category_settings[category_ident.name] then
+        elseif obj_categories and #obj_categories > 0 then -- Empty category lists pass by default
+          has_categories = has_categories + 1
+          local category_settings = player_settings.categories[category]
+          if constants.category_all_match[category] then
+            -- All categories must be enabled
+            local matched_all = true
+            for _, category_ident in pairs(obj_categories) do
+              if not category_settings[category_ident.name] then
+                matched_all = false
+                break
+              end
+            end
+            if matched_all then
               good_categories = good_categories + 1
-              break
+            end
+          else
+            -- At least one category must be enabled
+            for _, category_ident in pairs(obj_categories) do
+              if category_settings[category_ident.name] then
+                good_categories = good_categories + 1
+                break
+              end
             end
           end
         end
       end
-    end
-    if good_categories == has_categories then
-      should_show = true
+      if good_categories == has_categories then
+        should_show = true
+      end
     end
   end
   return should_show and obj_properties or false
