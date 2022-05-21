@@ -142,6 +142,7 @@ function item_proc.build(database, dictionaries, metadata)
     --- @class ItemData
     database.item[name] = {
       accepted_equipment = equipment,
+      affects_recipes = {},
       burned_in = {},
       burnt_result = burnt_result,
       burnt_result_of = {},

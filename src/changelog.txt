@@ -10,7 +10,7 @@ Date: ????
       - [Entity] Shift + click to get a blueprint (not just on the recipe screen) (#98)
     - Added new page contents:
       - [Entity] Entity type, expected resources
-      - [Item] Gathered from, item type
+      - [Item] Affects recipes (for modules), Gathered from, item type
     - Added new pages:
       - Entity type: All entities of the given type
       - Item type: All items of the given type

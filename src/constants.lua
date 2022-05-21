@@ -323,6 +323,7 @@ constants.global_history_size = 30
 constants.gui_strings = {
   accepted_equipment = { "gui.rb-accepted-equipment" },
   accepted_modules = { "gui.rb-accepted-modules" },
+  affects_recipes = { "gui.rb-affects-recipes" },
   alt_click = { "gui.rb-alt-click" },
   attach_search_results = { "gui.rb-attach-search-results" },
   base_pollution_desc = { "gui.rb-base-pollution-desc" },
@@ -876,6 +877,7 @@ constants.pages = {
     { type = "list_box", source = "product_of" },
     { type = "list_box", source = "rocket_launch_product_of" },
     { type = "list_box", source = "rocket_launch_products" },
+    { type = "list_box", source = "affects_recipes", default_state = "disabled" },
     { type = "list_box", source = "gathered_from" },
     { type = "list_box", source = "mined_from" },
     { type = "list_box", source = "researched_in" },
