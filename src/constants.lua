@@ -16,6 +16,7 @@ constants.category_classes = {
   "equipment_category",
   "fuel_category",
   "group",
+  "item_type",
   "recipe_category",
   "resource_category",
   "science_pack",
@@ -26,6 +27,7 @@ constants.category_class_plurals = {
   equipment_category = "equipment_categories",
   fuel_category = "fuel_categories",
   group = "groups",
+  item_type = "item_types",
   recipe_category = "recipe_categories",
   resource_category = "resource_categories",
   science_pack = "science_packs",
@@ -40,6 +42,7 @@ constants.classes = {
   "fuel_category",
   "group",
   "item",
+  "item_type",
   "recipe",
   "recipe_category",
   "resource",
@@ -57,6 +60,7 @@ constants.class_to_font_glyph = {
   fuel_category = "G",
   group = "G",
   item = "C",
+  item_type = "G",
   recipe_category = "G",
   recipe = "D",
   resource_category = "G",
@@ -74,6 +78,7 @@ constants.class_to_type = {
   fuel_category = false,
   group = "item-group",
   item = "item",
+  item_type = false,
   recipe_category = false,
   recipe = "recipe",
   resource_category = false,
@@ -145,6 +150,14 @@ constants.disabled_categories = {
   group = {
     -- Editor extensions
     ["ee-tools"] = true,
+  },
+  item_type = {
+    ["blueprint"] = true,
+    ["blueprint-book"] = true,
+    ["copy-paste-tool"] = true,
+    ["deconstruction-item"] = true,
+    ["selection-tool"] = true,
+    ["upgrade-item"] = true,
   },
   -- Dictionary category -> modifier
   -- `0` - Disabled by default, does not affect object availability
@@ -387,6 +400,7 @@ constants.gui_strings = {
   interface = { "gui.rb-interface" },
   item = { "gui.rb-item" },
   items = { "gui.rb-items" },
+  item_type = { "gui.rb-item-type" },
   lab = { "gui.rb-lab" },
   list_box_label = { "gui.rb-list-box-label" },
   logistic_radius = { "gui.rb-logistic-radius" },
@@ -507,6 +521,13 @@ constants.header_button_tooltips = {
   },
 }
 
+constants.ignored_info_ids = table.invert({
+  "_active_id",
+  "_next_id",
+  "_relative_id",
+  "_sticky_id", -- For legacy reasons
+})
+
 constants.ignored_cursor_inspection_types = {
   ["blueprint"] = true,
   ["blueprint-book"] = true,
@@ -515,13 +536,6 @@ constants.ignored_cursor_inspection_types = {
   ["selection-tool"] = true,
   ["upgrade-item"] = true,
 }
-
-constants.ignored_info_ids = table.invert({
-  "_active_id",
-  "_next_id",
-  "_relative_id",
-  "_sticky_id", -- For legacy reasons
-})
 
 -- NOTE: Modifiers must be in the order of "control", "shift" for those that are present
 constants.interactions = {
@@ -590,6 +604,17 @@ constants.interactions = {
       end,
     },
   },
+  group = {
+    { modifiers = {}, action = "view_details" },
+    { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
+    {
+      modifiers = { "shift" },
+      action = "get_blueprint",
+      test = function(_, options)
+        return options.blueprint_result
+      end,
+    },
+  },
   item = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
@@ -601,7 +626,7 @@ constants.interactions = {
       end,
     },
   },
-  group = {
+  item_type = {
     { modifiers = {}, action = "view_details" },
     { button = "middle", modifiers = {}, action = "view_details_in_new_window" },
     {
@@ -818,6 +843,7 @@ constants.pages = {
       label = "general",
       hide_count = true,
       rows = {
+        { type = "goto", source = "item_type", options = { hide_glyph = true } },
         { type = "plain", source = "stack_size", formatter = "number" },
         { type = "plain", source = "fuel_value", formatter = "fuel_value" },
         {
@@ -858,6 +884,9 @@ constants.pages = {
     { type = "list_box", source = "accepted_equipment", default_state = "collapsed" },
     { type = "list_box", source = "equipment_categories", default_state = "hidden" },
     { type = "list_box", source = "unlocked_by" },
+  },
+  item_type = {
+    { type = "list_box", source = "items", max_rows = 16 },
   },
   recipe_category = {
     { type = "list_box", source = "fluids" },
@@ -1055,6 +1084,7 @@ constants.tooltips = {
     { type = "plain", source = "fuel_top_speed_multiplier", label = "vehicle_top_speed", formatter = "percent" },
     { type = "plain", source = "group", formatter = "object", options = { hide_glyph = true } },
   },
+  item_type = {},
   recipe_category = {},
   recipe = {
     { type = "plain", source = "group", formatter = "object", options = { hide_glyph = true } },

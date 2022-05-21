@@ -4,14 +4,16 @@ Date: ????
   Features:
     - Added new categories
       - Entity type
+      - Item type
       - Science pack: Uncheck a science pack to hide all objects that it unlocks (#89)
     - Added new interactions:
       - [Entity] Shift + click to get a blueprint (not just on the recipe screen) (#98)
     - Added new page contents:
       - [Entity] Entity type, expected resources
-      - [Item] Gathered from
+      - [Item] Gathered from, item type
     - Added new pages:
       - Entity type: All entities of the given type
+      - Item type: All items of the given type
 ---------------------------------------------------------------------------------------------------
 Version: 3.3.4
 Date: 2022-04-20

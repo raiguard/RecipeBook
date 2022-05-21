@@ -162,6 +162,7 @@ function item_proc.build(database, dictionaries, metadata)
       group = { class = "group", name = group.name },
       hidden = prototype.has_flag("hidden"),
       ingredient_in = {},
+      item_type = { class = "item_type", name = prototype.type },
       mined_from = {},
       module_category = util.convert_to_ident("module_category", prototype.category),
       module_effects = module_effects,
