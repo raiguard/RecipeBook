@@ -29,6 +29,7 @@ return function(database, dictionaries, metadata)
       group = { class = "group", name = group.name },
       hidden = prototype.hidden,
       made_in = {},
+      pollution_multiplier = prototype.emissions_multiplier ~= 1 and prototype.emissions_multiplier or nil,
       prototype_name = name,
       recipe_category = { class = "recipe_category", name = category },
       science_packs = {},
