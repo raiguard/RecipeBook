@@ -27,7 +27,13 @@ return function(database, dictionaries, metadata)
 
     local expected_resources
     local mineable = prototype.mineable_properties
-    if mineable and mineable.minable and #mineable.products > 0 and mineable.products[1].name ~= name then
+    if
+      mineable
+      and mineable.minable
+      and mineable.products
+      and #mineable.products > 0
+      and mineable.products[1].name ~= name
+    then
       expected_resources = table.map(mineable.products, function(product)
         if not metadata.gathered_from[product.name] then
           metadata.gathered_from[product.name] = {}
