@@ -6,6 +6,10 @@ local constants = require("constants")
 local util = require("scripts.util")
 
 local function insert_science_packs(database, obj_data, science_packs)
+  if #science_packs == 0 then
+    return
+  end
+
   local existing = obj_data.science_packs
   local existing_len = #existing
 
