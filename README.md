@@ -8,26 +8,26 @@ Download on the [Factorio mod portal](https://mods.factorio.com/mod/RecipeBook),
 
 ## Screenshots
 
-![](/screenshots/shortcut.png)
+![](screenshots/shortcut.png)
 
-![](/screenshots/search.png)
+![](screenshots/search.png)
 
-![](/screenshots/search-filter.png)
+![](screenshots/search-filter.png)
 
-![](/screenshots/crafter.png)
+![](screenshots/crafter.png)
 
-![](/screenshots/fluid.png)
+![](screenshots/fluid.png)
 
-![](/screenshots/item.png)
+![](screenshots/item.png)
 
-![](/screenshots/mining-drill.png)
+![](screenshots/mining-drill.png)
 
-![](/screenshots/recipe.png)
+![](screenshots/recipe.png)
 
-![](/screenshots/technology.png)
+![](screenshots/technology.png)
 
-![](/screenshots/settings.png)
+![](screenshots/settings.png)
 
-![](/screenshots/quick-ref.png)
+![](screenshots/quick-ref.png)
 
-![](/screenshots/multi-window.png)
+![](screenshots/multi-window.png)
