@@ -1,7 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.4.4
 Date: ????
-  Changes:
+  Bugfixes:
+    - Fixed a crash when the GUI tried to display the dummy-steel-axe item (https://todo.sr.ht/~raiguard/factorio-mods/28)
 ---------------------------------------------------------------------------------------------------
 Version: 3.4.3
 Date: 2022-05-22
