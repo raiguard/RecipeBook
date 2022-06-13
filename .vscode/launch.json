@@ -8,7 +8,14 @@
       "factorioPath": "/home/rai/dev/factorio/1/bin/x64/factorio",
       "hookMode": "debug",
       "hookControl": ["RecipeBook", "Sandbox"]
-      // "factorioArgs": ["--load-scenario", "EditorExtensions/testing"]
+    },
+    {
+      "type": "factoriomod",
+      "request": "launch",
+      "name": "Debug (1.1.x)",
+      "factorioPath": "/home/rai/dev/projects/wube/Factorio-1.1/bin/Debugx64Clang/factorio-run",
+      "hookMode": "debug",
+      "hookControl": ["RecipeBook", "Sandbox"]
     },
     {
       "type": "factoriomod",
@@ -19,7 +26,6 @@
       "hookControl": ["RecipeBook", "Sandbox"],
       "hookData": true,
       "hookSettings": true,
-      "factorioArgs": ["--load-scenario", "EditorExtensions/testing"]
     },
     {
       "type": "factoriomod",

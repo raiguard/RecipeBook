@@ -2,6 +2,7 @@
 Version: 3.4.4
 Date: ????
   Bugfixes:
+    - Fixed a crash when a character has no crafting categories
     - Fixed a crash when the GUI tried to display the dummy-steel-axe item (https://todo.sr.ht/~raiguard/factorio-mods/28)
 ---------------------------------------------------------------------------------------------------
 Version: 3.4.3
