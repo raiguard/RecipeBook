@@ -23,7 +23,7 @@ function remote_interface.get_object_data(class, name)
 end
 
 --- Opens the given info page in a Recipe Book window.
---- @param player_index number
+--- @param player_index uint
 --- @param class string One of `crafter`, `entity`, `equipment_category`, `equipment`, `fluid`, `fuel_category`, `group`, `item`, `lab`, `mining_drill`, `offshore_pump`, `recipe_category`, `recipe`, `resource_category`, `resource`, or `technology`.
 --- @param name string The name of the object to open.
 --- @return boolean did_open Whether or not the page was opened.

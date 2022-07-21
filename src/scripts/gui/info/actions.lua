@@ -163,7 +163,7 @@ function actions.toggle_quick_ref(Gui, _, _)
   local player = Gui.player
   -- Toggle quick ref GUI
   local name = Gui:get_context().name
-  --- @type QuickRefGui
+  --- @type QuickRefGui?
   local QuickRefGui = util.get_gui(player.index, "quick_ref", name)
   local to_state = false
   if QuickRefGui then

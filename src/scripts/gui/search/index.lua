@@ -100,12 +100,10 @@ function Gui:update_visual_contents()
   local show_fluid_temperatures = player_data.settings.general.search.show_fluid_temperatures
   local groups = {}
 
-  for _, objects in
-    pairs(
-      { database.item, database.fluid }
-      -- { database.recipe }
-    )
-  do
+  for _, objects in pairs(
+    { database.item, database.fluid }
+    -- { database.recipe }
+  ) do
     for name, object in pairs(objects) do
       -- Create / retrieve group and subgroup
       local group = object.group
@@ -482,7 +480,7 @@ function index.build(player, player_table)
     refs.window.force_auto_center()
   end
 
-  --- @type SearchGui
+  --- @class SearchGui
   local self = {
     player = player,
     player_table = player_table,

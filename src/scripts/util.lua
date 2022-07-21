@@ -183,7 +183,7 @@ end
 --- Safely retrive the given GUI, checking for validity.
 --- @param player_index number
 --- @param gui_name string
---- @param gui_key number|string
+--- @param gui_key number|string?
 function util.get_gui(player_index, gui_name, gui_key)
   local player_table = global.players[player_index]
   if not player_table then
@@ -204,7 +204,7 @@ end
 --- Dispatch the given action on all GUIs of the given name.
 --- @param player_index number
 --- @param gui_name string
---- @param msg table
+--- @param msg string|table
 function util.dispatch_all(player_index, gui_name, msg)
   local player_table = global.players[player_index]
   if not player_table then

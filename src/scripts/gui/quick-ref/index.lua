@@ -211,7 +211,7 @@ function index.build(player, player_table, recipe_name)
 
   refs.titlebar_flow.drag_target = refs.window
 
-  --- @type QuickRefGui
+  --- @class QuickRefGui
   local self = {
     player = player,
     player_table = player_table,

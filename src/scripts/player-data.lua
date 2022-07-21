@@ -158,12 +158,12 @@ function player_data.refresh(player, player_table)
   -- Destroy GUIs
   util.dispatch_all(player.index, "info", "close")
   util.dispatch_all(player.index, "quick_ref", "close")
-  --- @type SearchGui
+  --- @type SearchGui?
   local SearchGui = util.get_gui(player.index, "search")
   if SearchGui then
     SearchGui:destroy()
   end
-  --- @type SettingsGui
+  --- @type SettingsGui?
   local SettingsGui = util.get_gui(player.index, "settings")
   if SettingsGui then
     SettingsGui:destroy()

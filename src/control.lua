@@ -26,7 +26,7 @@ SETTINGS_GUI = require("scripts.gui.settings.index")
 --- @param player LuaPlayer
 --- @param player_table PlayerTable
 --- @param context Context
---- @param options table
+--- @param options table?
 function OPEN_PAGE(player, player_table, context, options)
   options = options or {}
 
@@ -48,7 +48,7 @@ end
 --- Refresh the contents of all Recipe Book GUIs.
 --- @param player LuaPlayer
 --- @param player_table PlayerTable
---- @param skip_memoizer_purge boolean
+--- @param skip_memoizer_purge boolean?
 function REFRESH_CONTENTS(player, player_table, skip_memoizer_purge)
   if not skip_memoizer_purge then
     formatter.create_cache(player.index)
@@ -293,7 +293,7 @@ event.on_gui_click(function(e)
     if player_table.flags.can_open_gui then
       util.dispatch_all(e.player_index, "info", "bring_to_front")
       util.dispatch_all(e.player_index, "quick_ref", "bring_to_front")
-      --- @type SearchGui
+      --- @type SearchGui?
       local SearchGui = util.get_gui(e.player_index, "search")
       if SearchGui and SearchGui.refs.window.visible then
         SearchGui:bring_to_front()
@@ -313,7 +313,7 @@ event.on_gui_closed(function(e)
         player.opened = gui_data.refs.window
       end
     elseif player_table.guis.info._relative_id then
-      --- @type InfoGui
+      --- @type InfoGui?
       local InfoGui = util.get_gui(e.player_index, "info", player_table.guis.info._relative_id)
       if InfoGui then
         InfoGui:dispatch("close")
@@ -346,7 +346,7 @@ event.on_lua_shortcut(function(e)
     end
 
     -- Open search GUI
-    --- @type SearchGui
+    --- @type SearchGui?
     local SearchGui = util.get_gui(e.player_index, "search")
     if SearchGui then
       SearchGui:toggle()
@@ -445,7 +445,7 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
         return
       end
     else
-      --- @type SearchGui
+      --- @type SearchGui?
       local SearchGui = util.get_gui(e.player_index, "search")
       if SearchGui then
         SearchGui:toggle()
@@ -470,7 +470,7 @@ event.register(
     then
       local active_id = player_table.guis.info._active_id
       if active_id then
-        --- @type InfoGui
+        --- @type InfoGui?
         local InfoGui = util.get_gui(e.player_index, "info", active_id)
         if InfoGui then
           if e.input_name == "rb-linked-focus-search" then

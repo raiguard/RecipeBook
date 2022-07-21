@@ -324,14 +324,8 @@ function Gui:update_contents(options)
     component_variables.component_index = i
     component_variables.component_state = state.components[i]
 
-    local comp_visible = component.update(
-      component_ident,
-      component_refs,
-      obj_data,
-      player_data,
-      component_settings,
-      component_variables
-    )
+    local comp_visible =
+      component.update(component_ident, component_refs, obj_data, player_data, component_settings, component_variables)
 
     visible = visible or comp_visible
   end
@@ -367,7 +361,7 @@ local index = {}
 --- @param player LuaPlayer
 --- @param player_table PlayerTable
 --- @param context Context
---- @param options table
+--- @param options table?
 function index.build(player, player_table, context, options)
   options = options or {}
 
@@ -583,7 +577,7 @@ function index.build(player, player_table, context, options)
 
   refs.page_components = {}
 
-  --- @type InfoGui
+  --- @class InfoGui
   local self = {
     id = id,
     player = player,
