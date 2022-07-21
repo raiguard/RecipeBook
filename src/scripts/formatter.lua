@@ -130,6 +130,7 @@ local function get_amount_string(amount_ident, player_data, options)
     amount_ident.amount,
     amount_ident.amount_min,
     amount_ident.amount_max,
+    amount_ident.catalyst_amount,
     amount_ident.probability,
     amount_ident.format,
     options.amount_only,
@@ -154,6 +155,12 @@ local function get_amount_string(amount_ident, player_data, options)
       output = expand_string(format_string, number(amount))
     else
       output = expand_string(format_string, number(amount_ident.amount_min) .. " - " .. number(amount_ident.amount_max))
+    end
+
+    -- Catalyst amount
+    local catalyst = amount_ident.catalyst_amount
+    if catalyst then
+      output = gui_translations.catalyst_abbrev .. "  " .. output
     end
 
     -- Probability
@@ -181,14 +188,8 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   local name = obj_data.name or prototype_name
 
   local cache = caches[player_data.player_index]
-  local cache_key = build_cache_key(
-    "caption",
-    obj_data.class,
-    name,
-    obj_properties.enabled,
-    obj_properties.hidden,
-    options.hide_glyph
-  )
+  local cache_key =
+    build_cache_key("caption", obj_data.class, name, obj_properties.enabled, obj_properties.hidden, options.hide_glyph)
   local cached = cache[cache_key]
   if cached then
     return cached
@@ -229,7 +230,9 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   return output
 end
 
-local function get_base_tooltip(obj_data, obj_properties, player_data)
+local function get_base_tooltip(obj_data, obj_properties, player_data, options)
+  options = options or {}
+
   local settings = player_data.settings
   local gui_translations = player_data.translations.gui
 
@@ -240,6 +243,8 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
   local class = obj_data.class
   local type = constants.class_to_type[class]
 
+  local catalyst_amount = options.amount_ident and options.amount_ident.catalyst_amount or false
+
   local cache = caches[player_data.player_index]
   local cache_key = build_cache_key(
     "base_tooltip",
@@ -247,7 +252,8 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
     name,
     obj_properties.enabled,
     obj_properties.hidden,
-    obj_properties.researched
+    obj_properties.researched,
+    catalyst_amount
   )
   local cached = cache[cache_key]
   if cached then
@@ -278,6 +284,14 @@ local function get_base_tooltip(obj_data, obj_properties, player_data)
       alternate_name = name
     end
     after = after .. rich_text("color", "green", alternate_name) .. "\n"
+  end
+
+  if catalyst_amount then
+    after = after
+      .. rich_text("font", "default-semibold", gui_translations.catalyst_amount .. ":")
+      .. "  "
+      .. number(catalyst_amount)
+      .. "\n"
   end
 
   if settings.general.tooltips.show_descriptions then
@@ -510,9 +524,9 @@ local available_options = {
   base_tooltip_only = false,
   label_only = true,
   is_label = false,
-  --- @type AmountIdent?
+  --- @type AmountIdent|boolean
   amount_ident = false,
-  --- @type number?
+  --- @type number|boolean
   rocket_parts_required = false,
   amount_only = false,
 }
@@ -550,7 +564,7 @@ function formatter.format(obj_data, player_data, options)
   end
 
   -- Tooltip
-  local base_tooltip = get_base_tooltip(obj_data, obj_properties, player_data)
+  local base_tooltip = get_base_tooltip(obj_data, obj_properties, player_data, options)
   local tooltip_output
   if amount_ident and options.amount_only then
     tooltip_output = base_tooltip.before

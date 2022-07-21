@@ -16,6 +16,7 @@ function util.build_amount_ident(input)
     amount = input.amount or false,
     amount_min = input.amount_min or false,
     amount_max = input.amount_max or false,
+    catalyst_amount = input.catalyst_amount or false,
     probability = input.probability or false,
     format = input.format or "format_amount",
   }
