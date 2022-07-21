@@ -18,6 +18,10 @@ function mining_drill_proc.build(database, dictionaries)
       fuel_categories = util.process_energy_source(prototype),
       mining_area = math.ceil(prototype.mining_drill_radius * 2),
       mining_speed = prototype.mining_speed,
+      module_slots = prototype.module_inventory_size
+          and prototype.module_inventory_size > 0
+          and prototype.module_inventory_size
+        or nil,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       resource_categories_lookup = prototype.resource_categories,

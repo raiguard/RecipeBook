@@ -16,7 +16,10 @@ return function(database, dictionaries, metadata)
       effect_area = { height = effect_area:height(), width = effect_area:width() },
       energy_usage = prototype.energy_usage,
       entity_type = { class = "entity_type", name = prototype.type },
-      module_slots = prototype.module_inventory_size,
+      module_slots = prototype.module_inventory_size
+          and prototype.module_inventory_size > 0
+          and prototype.module_inventory_size
+        or nil,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       science_packs = {},

@@ -22,6 +22,10 @@ return function(database, dictionaries)
       inputs = table.map(prototype.lab_inputs, function(v)
         return { class = "item", name = v }
       end),
+      module_slots = prototype.module_inventory_size
+          and prototype.module_inventory_size > 0
+          and prototype.module_inventory_size
+        or nil,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       researching_speed = prototype.researching_speed,

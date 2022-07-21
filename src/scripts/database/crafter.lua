@@ -85,6 +85,10 @@ return function(database, dictionaries, metadata)
       fuel_categories = util.process_energy_source(prototype),
       hidden = is_hidden,
       ingredient_limit = ingredient_limit,
+      module_slots = prototype.module_inventory_size
+          and prototype.module_inventory_size > 0
+          and prototype.module_inventory_size
+        or nil,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       recipe_categories_lookup = prototype.crafting_categories or {},

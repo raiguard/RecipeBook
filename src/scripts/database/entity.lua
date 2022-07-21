@@ -53,6 +53,10 @@ return function(database, dictionaries, metadata)
       equipment_categories = equipment_categories,
       expected_resources = expected_resources,
       fuel_categories = fuel_categories,
+      module_slots = prototype.module_inventory_size
+          and prototype.module_inventory_size > 0
+          and prototype.module_inventory_size
+        or nil,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
       science_packs = {},
