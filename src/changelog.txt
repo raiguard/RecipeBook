@@ -5,6 +5,8 @@ Date: ????
     - Added new page contents:
       - Number of module slots will be shown on all entities that support modules (https://todo.sr.ht/~raiguard/factorio-mods/57)
       - [Recipe] Catalyst amounts are shown in ingredient and product tooltips (https://todo.sr.ht/~raiguard/factorio-mods/59)
+  Bugfixes:
+    - [Resource] Fixed that fluid resource products would not show temperature (https://todo.sr.ht/~raiguard/factorio-mods/60)
 ---------------------------------------------------------------------------------------------------
 Version: 3.4.5
 Date: 2022-06-12

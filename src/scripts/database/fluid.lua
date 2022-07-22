@@ -65,6 +65,7 @@ function fluid_proc.add_temperature(fluid_data, temperature_ident)
       group = fluid_data.group,
       hidden = fluid_data.hidden,
       ingredient_in = {},
+      mined_from = {},
       name = fluid_data.prototype_name .. "." .. temperature_string,
       product_of = {},
       prototype_name = fluid_data.prototype_name,
@@ -136,14 +137,19 @@ function fluid_proc.process_temperatures(database, dictionaries, metadata)
       end
 
       -- Step 4: Add properties from base fluid to temperature variants
-      for recipe_tbl_name, fluid_tbl_name in pairs({ ingredients = "ingredient_in", products = "product_of" }) do
-        for _, recipe_ident in pairs(fluid_data[fluid_tbl_name]) do
-          local recipe_data = database.recipe[recipe_ident.name]
+      -- TODO: This is an idiotic way to do this
+      for fluid_tbl_name, obj_table_name in pairs({
+        ingredient_in = "ingredients",
+        product_of = "products",
+        mined_from = "products",
+      }) do
+        for _, obj_ident in pairs(fluid_data[fluid_tbl_name]) do
+          local obj_data = database[obj_ident.class][obj_ident.name]
 
           -- Get the matching fluid
           local fluid_ident
           -- This is kind of a slow way to do it, but I don't really care
-          for _, material_ident in pairs(recipe_data[recipe_tbl_name]) do
+          for _, material_ident in pairs(obj_data[obj_table_name]) do
             if material_ident.name == fluid_name then
               fluid_ident = material_ident
               break
@@ -156,7 +162,7 @@ function fluid_proc.process_temperatures(database, dictionaries, metadata)
             -- Change the name of the material and remove the identifier
             fluid_ident.name = fluid_ident.name .. "." .. temperature_ident.string
             fluid_ident.temperature_ident = nil
-          elseif recipe_tbl_name == "products" then
+          elseif obj_table_name == "products" then
             -- Change the name of the material to the default temperature
             fluid_ident.name = fluid_ident.name .. "." .. default_temperature_ident.string
             fluid_ident.temperature_ident = nil
@@ -175,24 +181,27 @@ function fluid_proc.process_temperatures(database, dictionaries, metadata)
               )
             then
               -- Add to recipes table
-              temperature_data[fluid_tbl_name][#temperature_data[fluid_tbl_name] + 1] = recipe_ident
-              -- Add recipe category
-              local recipe_categories = temperature_data.recipe_categories
-              recipe_categories[#recipe_categories + 1] = table.shallow_copy(recipe_data.recipe_category)
-              -- If in product_of, append to unlocked_by
-              -- Also add this fluid to that tech's `unlocks fluids` table
-              -- This is to avoid variants being "unlocked" when you can't actually get them
-              -- If this is an "empty X barrel" recipe, ignore it
-              if fluid_tbl_name == "product_of" and not string.find(recipe_ident.name, "^empty%-.+%-barrel$") then
-                local temp_unlocked_by = temperature_data.unlocked_by
-                for _, technology_ident in pairs(recipe_data.unlocked_by) do
-                  temp_unlocked_by[#temp_unlocked_by + 1] = technology_ident
-                  local technology_data = database.technology[technology_ident.name]
-                  -- Don't use fluid_ident becuase it has an amount
-                  technology_data.unlocks_fluids[#technology_data.unlocks_fluids + 1] = {
-                    class = "fluid",
-                    name = temperature_data.name,
-                  }
+              temperature_data[fluid_tbl_name][#temperature_data[fluid_tbl_name] + 1] = obj_ident
+              -- Recipe-specific logic
+              if obj_ident.class == "recipe" then
+                -- Add recipe category
+                local recipe_categories = temperature_data.recipe_categories
+                recipe_categories[#recipe_categories + 1] = table.shallow_copy(obj_data.recipe_category)
+                -- If in product_of, append to unlocked_by
+                -- Also add this fluid to that tech's `unlocks fluids` table
+                -- This is to avoid variants being "unlocked" when you can't actually get them
+                -- If this is an "empty X barrel" recipe, ignore it
+                if fluid_tbl_name == "product_of" and not string.find(obj_ident.name, "^empty%-.+%-barrel$") then
+                  local temp_unlocked_by = temperature_data.unlocked_by
+                  for _, technology_ident in pairs(obj_data.unlocked_by) do
+                    temp_unlocked_by[#temp_unlocked_by + 1] = technology_ident
+                    local technology_data = database.technology[technology_ident.name]
+                    -- Don't use fluid_ident becuase it has an amount
+                    technology_data.unlocks_fluids[#technology_data.unlocks_fluids + 1] = {
+                      class = "fluid",
+                      name = temperature_data.name,
+                    }
+                  end
                 end
               end
             end

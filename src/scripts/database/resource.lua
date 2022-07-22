@@ -1,7 +1,10 @@
+local fluid_proc = require("scripts.database.fluid")
 local util = require("scripts.util")
 
 return function(database, dictionaries)
-  for name, prototype in pairs(global.prototypes.resource) do
+  --- @type LuaCustomTable<string, LuaEntityPrototype>
+  local prototypes = global.prototypes.resource
+  for name, prototype in pairs(prototypes) do
     local products = prototype.mineable_properties.products
     if products then
       for _, product in ipairs(products) do
@@ -38,6 +41,12 @@ return function(database, dictionaries)
         name = product.name,
         amount_ident = util.build_amount_ident(product),
       }
+      -- Fluid temperatures
+      local temperature_ident = product.type == "fluid" and util.build_temperature_ident(product) or nil
+      if temperature_ident then
+        products[i].temperature_ident = temperature_ident
+        fluid_proc.add_temperature(database.fluid[product.name], temperature_ident)
+      end
     end
 
     local mined_by = {}
