@@ -217,10 +217,6 @@ function fluid_proc.process_temperatures(database, dictionaries, metadata)
     end
   end
   database.fluid = new_fluid_table
-
-  for key in pairs(new_fluid_table) do
-    log(key)
-  end
 end
 
 -- When calling the module directly, call fluid_proc.build
