@@ -1,6 +1,7 @@
 local event = require("__flib__.event")
 local libgui = require("__flib__.gui")
 
+local database = require("__RecipeBook__.database")
 local gui = require("__RecipeBook__.gui.index")
 
 --- @param player LuaPlayer
@@ -19,6 +20,7 @@ end
 
 event.on_init(function()
   global.players = {}
+  database.build()
 end)
 
 event.on_player_created(function(e)

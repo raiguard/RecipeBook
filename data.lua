@@ -1,3 +1,11 @@
+-- data:extend({
+--   {
+--     type = "custom-input",
+--     name = "rb-toggle",
+--     setting_type = "",
+--   },
+-- })
+
 local styles = data.raw["gui-style"]["default"]
 
 styles.rb_filter_group_button_tab = {

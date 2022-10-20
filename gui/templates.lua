@@ -156,10 +156,17 @@ function templates.list_box(caption, objects)
         type = "sprite-button",
         name = object.name,
         style = "rb_list_box_row_" .. (i % 2 == 0 and "even" or "odd"),
+        -- TODO: Add icon_horizontal_align support to sprite-buttons
+        -- sprite = object.type .. "/" .. object.name,
         -- TODO: Consistent spacing
-        sprite = object.type .. "/" .. object.name,
         caption = { "", "            ", game[object.type .. "_prototypes"][object.name].localised_name },
         actions = { on_click = "show_recipe" },
+        {
+          type = "sprite-button",
+          style = "rb_small_transparent_slot",
+          sprite = object.type .. "/" .. object.name,
+          ignored_by_interaction = true,
+        },
         right,
       })
     end

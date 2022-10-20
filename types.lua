@@ -4,6 +4,8 @@
 --- @field type string
 --- @field name string
 
+--- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype
+
 --- @class GuiRefs
 --- @field window LuaGuiElement
 --- @field titlebar_flow LuaGuiElement

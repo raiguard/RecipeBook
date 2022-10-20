@@ -5,56 +5,52 @@ local table = require("__flib__.table")
 local handlers = require("__RecipeBook__.gui.handlers")
 local templates = require("__RecipeBook__.gui.templates")
 
+local sprite_path = {
+  ["LuaEntityPrototype"] = "entity",
+  ["LuaFluidPrototype"] = "fluid",
+  ["LuaItemPrototype"] = "item",
+  ["LuaRecipePrototype"] = "recipe",
+}
+
 --- @class Gui
 local gui = {}
 
 function gui:build_filters()
-  local first_group
-  local populated_groups = {}
-  local member_flows = {}
-  local group, group_name, subgroup, subgroup_name
-  -- Items are iterated in order
-  for _, item in pairs(game.item_prototypes) do
-    if item.group.name ~= group_name then
-      group_name = item.group.name --[[@as string]]
-      first_group = first_group or group_name
-      populated_groups[group_name] = true
-      group = {
-        type = "flow",
-        name = group_name,
-        style = "rb_filter_group_flow",
-        direction = "vertical",
-        visible = group_name == first_group,
-      }
-      table.insert(member_flows, group)
-    end
-    if item.subgroup.name ~= subgroup_name then
-      subgroup_name = item.subgroup.name
-      subgroup = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
-      table.insert(group, subgroup)
-    end
-    table.insert(subgroup, {
-      type = "sprite-button",
-      name = item.name,
-      style = "slot_button",
-      sprite = "item/" .. item.name,
-      tooltip = item.localised_name,
-      actions = { on_click = "show_recipe" },
-    })
-  end
-
+  local first_group = next(global.object_groups)
   local group_tabs = {}
-  for _, item_group in pairs(game.item_group_prototypes) do
-    if populated_groups[item_group.name] then
-      table.insert(group_tabs, {
-        type = "sprite-button",
-        name = item_group.name,
-        style = "rb_filter_group_button_tab",
-        sprite = "item-group/" .. item_group.name,
-        tooltip = item_group.localised_name,
-        enabled = item_group.name ~= first_group,
-        actions = { on_click = "select_filter_group" },
-      })
+  local member_flows = {}
+  -- Items are iterated in order
+  for group_name, group_members in pairs(global.object_groups) do
+    table.insert(group_tabs, {
+      type = "sprite-button",
+      name = group_name,
+      style = "rb_filter_group_button_tab",
+      sprite = "item-group/" .. group_name,
+      tooltip = game.item_group_prototypes[group_name].localised_name,
+      enabled = group_name ~= first_group,
+      actions = { on_click = "select_filter_group" },
+    })
+    local group = {
+      type = "flow",
+      name = group_name,
+      style = "rb_filter_group_flow",
+      direction = "vertical",
+      visible = group_name == first_group,
+    }
+    table.insert(member_flows, group)
+    for subgroup_name, subgroup_members in pairs(group_members) do
+      local subgroup = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
+      table.insert(group, subgroup)
+      for _, prototype in pairs(subgroup_members) do
+        table.insert(subgroup, {
+          type = "sprite-button",
+          name = prototype.name,
+          style = "slot_button",
+          sprite = sprite_path[prototype.object_name] .. "/" .. prototype.name,
+          tooltip = prototype.localised_name,
+          actions = { on_click = "show_recipe" },
+        })
+      end
     end
   end
 
