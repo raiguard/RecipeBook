@@ -68,22 +68,18 @@ styles.rb_list_box_row_even = {
   type = "button_style",
   font = "default",
   height = 36,
+  -- height = 40,
   bottom_padding = 4,
   top_padding = 4,
-  -- height = 40,
-  -- bottom_padding = 4,
-  -- top_padding = 4,
   horizontally_stretchable = "on",
   horizontal_align = "left",
   default_font_color = default_font_color,
   default_graphical_set = { position = { 472, 25 }, size = { 1, 1 } },
-  -- hovered_graphical_set = {
-  -- 	base = { position = { 34, 17 }, corner_size = 8 },
-  -- 	shadow = default_dirt,
-  -- },
   hovered_graphical_set = { position = { 42, 25 }, size = { 1, 1 } },
   clicked_graphical_set = { position = { 59, 25 }, size = { 1, 1 } },
   clicked_vertical_offset = 0,
+  draw_shadow_under_picture = true,
+  icon_horizontal_align = "left",
 }
 
 styles.rb_list_box_row_odd = {

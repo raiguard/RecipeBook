@@ -5,15 +5,6 @@ local table = require("__flib__.table")
 local handlers = require("__RecipeBook__.gui.handlers")
 local templates = require("__RecipeBook__.gui.templates")
 
---- @class GuiRefs
---- @field window LuaGuiElement
---- @field titlebar_flow LuaGuiElement
---- @field filter_group_table LuaGuiElement
---- @field filter_scroll_pane LuaGuiElement
---- @field page_scroll LuaGuiElement
---- @field page_header_icon LuaGuiElement
---- @field page_header_label LuaGuiElement
-
 --- @class Gui
 local gui = {}
 
