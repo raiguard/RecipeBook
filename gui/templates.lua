@@ -130,7 +130,8 @@ end
 
 --- @param caption LocalisedString
 --- @param objects Ingredient[]
-function templates.list_box(caption, objects)
+--- @param right_caption LocalisedString?
+function templates.list_box(caption, objects, right_caption)
   local num_objects = #objects
   local rows = {}
   for i, object in pairs(objects) do
@@ -178,7 +179,13 @@ function templates.list_box(caption, objects)
     type = "flow",
     style_mods = { bottom_margin = 4 },
     direction = "vertical",
-    { type = "label", style = "bold_label", caption = { "", caption, " (", num_objects, ")" } },
+    {
+      type = "flow",
+      style = "centering_horizontal_flow",
+      { type = "label", style = "bold_label", caption = { "", caption, " (", num_objects, ")" } },
+      { type = "empty-widget", style = "flib_horizontal_pusher" },
+      { type = "label", caption = right_caption },
+    },
     {
       type = "frame",
       style = "deep_frame_in_shallow_frame",

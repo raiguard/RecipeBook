@@ -2,6 +2,8 @@ local libgui = require("__flib__.gui")
 local math = require("__flib__.math")
 local table = require("__flib__.table")
 
+-- local util = require("__RecipeBook__.util")
+
 local handlers = require("__RecipeBook__.gui.handlers")
 local templates = require("__RecipeBook__.gui.templates")
 
@@ -16,43 +18,98 @@ local sprite_path = {
 local gui = {}
 
 function gui:build_filters()
-  local first_group = next(global.object_groups)
+  local first_group
   local group_tabs = {}
   local member_flows = {}
-  -- Items are iterated in order
-  for group_name, group_members in pairs(global.object_groups) do
-    table.insert(group_tabs, {
-      type = "sprite-button",
-      name = group_name,
-      style = "rb_filter_group_button_tab",
-      sprite = "item-group/" .. group_name,
-      tooltip = game.item_group_prototypes[group_name].localised_name,
-      enabled = group_name ~= first_group,
-      actions = { on_click = "select_filter_group" },
-    })
-    local group = {
-      type = "flow",
-      name = group_name,
-      style = "rb_filter_group_flow",
-      direction = "vertical",
-      visible = group_name == first_group,
-    }
-    table.insert(member_flows, group)
-    for subgroup_name, subgroup_members in pairs(group_members) do
-      local subgroup = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
-      table.insert(group, subgroup)
-      for _, prototype in pairs(subgroup_members) do
-        table.insert(subgroup, {
-          type = "sprite-button",
-          name = prototype.name,
-          style = "slot_button",
-          sprite = sprite_path[prototype.object_name] .. "/" .. prototype.name,
-          tooltip = prototype.localised_name,
-          actions = { on_click = "show_recipe" },
-        })
+  for group_name, group_members in pairs(global.group_members) do
+    if #group_members > 0 then
+      first_group = first_group or group_name
+      table.insert(group_tabs, {
+        type = "sprite-button",
+        name = group_name,
+        style = "rb_filter_group_button_tab",
+        sprite = "item-group/" .. group_name,
+        tooltip = game.item_group_prototypes[group_name].localised_name,
+        enabled = group_name ~= first_group,
+        actions = { on_click = "select_filter_group" },
+      })
+      local group = {
+        type = "flow",
+        name = group_name,
+        style = "rb_filter_group_flow",
+        direction = "vertical",
+        visible = group_name == first_group,
+      }
+      table.insert(member_flows, group)
+      for _, subgroup in pairs(global.subgroups[group_name]) do
+        local subgroup_members = global.subgroup_members[subgroup.name]
+        if #subgroup_members > 0 then
+          local subgroup = { type = "table", name = subgroup.name, style = "slot_table", column_count = 10 }
+          table.insert(group, subgroup)
+          for _, prototype in pairs(subgroup_members) do
+            local sprite = sprite_path[prototype.object_name] .. "/" .. prototype.name
+            if not self.player.gui.is_valid_sprite_path(sprite) then
+              sprite = "item/item-unknown"
+            end
+            table.insert(subgroup, {
+              type = "sprite-button",
+              name = prototype.name,
+              style = "slot_button",
+              sprite = sprite,
+              tooltip = { "", prototype.localised_name, "\n", sprite_path[prototype.object_name], "/", prototype.name },
+              actions = { on_click = "show_recipe" },
+            })
+          end
+        end
       end
     end
   end
+
+  -- for _, prototype in pairs(global.sorted_objects) do
+  --   -- Group
+  --   local group = prototype.group
+  --   first_group = first_group or group
+  --   if group.name ~= current_group then
+  --     current_group = group.name
+  --     table.insert(group_tabs, {
+  --       type = "sprite-button",
+  --       name = group.name,
+  --       style = "rb_filter_group_button_tab",
+  --       sprite = "item-group/" .. group.name,
+  --       tooltip = game.item_group_prototypes[group.name].localised_name,
+  --       enabled = group.name ~= first_group,
+  --       actions = { on_click = "select_filter_group" },
+  --     })
+  --     group_flow = {
+  --       type = "flow",
+  --       name = group.name,
+  --       style = "rb_filter_group_flow",
+  --       direction = "vertical",
+  --       visible = group.name == first_group,
+  --     }
+  --     table.insert(member_flows, group_flow)
+  --   end
+  --   -- Subgroup
+  --   local subgroup = prototype.subgroup
+  --   if subgroup.name ~= current_subgroup then
+  --     current_subgroup = subgroup.name
+  --     subgroup_table = { type = "table", name = subgroup.name, style = "slot_table", column_count = 10 }
+  --     table.insert(group_flow, subgroup_table)
+  --   end
+  --   -- Button
+  --   local sprite = sprite_path[prototype.object_name] .. "/" .. prototype.name
+  --   if not self.player.gui.is_valid_sprite_path(sprite) then
+  --     sprite = "item/item-unknown"
+  --   end
+  --   table.insert(subgroup, {
+  --     type = "sprite-button",
+  --     name = prototype.name,
+  --     style = "slot_button",
+  --     sprite = sprite,
+  --     tooltip = { "", prototype.localised_name, "\n", sprite_path[prototype.object_name], "/", prototype.name },
+  --     actions = { on_click = "show_recipe" },
+  --   })
+  -- end
 
   local group_table = self.refs.filter_group_table
   group_table.clear()
@@ -99,15 +156,21 @@ function gui:show_recipe(recipe_name)
   end
 
   local made_in = {}
-  for _, crafter in pairs(game.get_filtered_entity_prototypes({ { filter = "crafting-machine" } })) do
-    if
-      crafter.crafting_categories[recipe.category]
-      and (crafter.ingredient_count == 0 or crafter.ingredient_count >= #recipe.ingredients)
-    then
+  for _, crafter in
+    pairs(game.get_filtered_entity_prototypes({
+      -- { filter = "crafting-machine" },
+      { mode = "and", filter = "crafting-category", crafting_category = recipe.category },
+    }))
+  do
+    if crafter.ingredient_count == 0 or crafter.ingredient_count >= #recipe.ingredients then
       table.insert(made_in, {
         type = "entity",
         name = crafter.name,
-        amount = { "time-symbol-seconds", math.round(recipe.energy / crafter.crafting_speed, 0.01) },
+        amount = {
+          "",
+          "[img=quantity-time] ",
+          { "time-symbol-seconds", math.round(recipe.energy / crafter.crafting_speed, 0.01) },
+        },
       })
     end
   end
@@ -134,7 +197,14 @@ function gui:show_recipe(recipe_name)
       table.map(recipe.ingredients, function(v)
         v.amount = { "", "× ", v.amount }
         return v
-      end)
+      end),
+      {
+        "",
+        "[img=quantity-time] [font=default-semibold]",
+        { "time-symbol-seconds", math.round(recipe.energy, 0.1) },
+        "[/font] ",
+        { "description.crafting-time" },
+      }
     ),
     templates.list_box(
       "Products",
@@ -163,6 +233,8 @@ function gui.new(player, player_table)
 
   --- @class Gui
   local self = {
+    player = player,
+    player_table = player_table,
     refs = refs,
     state = {
       --- @type string?

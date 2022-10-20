@@ -1,5 +1,7 @@
 local util = {}
 
+-- local coreutil = require("__core__.lualib.util")
+
 --- @param prototype ObjectPrototype
 --- @return boolean
 function util.is_hidden(prototype)
