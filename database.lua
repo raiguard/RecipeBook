@@ -1,5 +1,3 @@
-local table = require("__flib__.table")
-
 -- DESIGN GOALS:
 -- Find a balance between caching information and generating it on the fly
 -- Reduce complexity as much as possible
@@ -14,6 +12,7 @@ local database = {}
 
 function database.build()
   log("Starting database generation")
+
   -- Assemble arrays of groups, subgroups, and members based on prototype order
   --- @type table<string, SubgroupData>
   local subgroups = {}
@@ -30,12 +29,15 @@ function database.build()
   for type, prototypes in pairs({
     recipe = game.get_filtered_recipe_prototypes({
       { filter = "hidden", invert = true },
-      { filter = "hidden-from-player-crafting", invert = true },
+      { mode = "and", filter = "hidden-from-player-crafting", invert = true },
+      { mode = "and", filter = "has-ingredients" },
     }),
     item = game.get_filtered_item_prototypes({
       { filter = "flag", flag = "hidden", invert = true },
+      { mode = "and", filter = "flag", flag = "spawnable", invert = true },
     }),
-    fluid = game.fluid_prototypes,
+    fluid = game.get_filtered_fluid_prototypes({ { filter = "hidden", invert = true } }),
+    -- fluid = game.fluid_prototypes,
     entity = game.get_filtered_entity_prototypes({
       { filter = "crafting-machine" },
       { mode = "and", filter = "flag", flag = "player-creation" },
@@ -65,9 +67,10 @@ function database.build()
       end
     end
   end
-  log("Database generation finished")
 
   global.subgroups = subgroups
+
+  log("Database generation finished")
 end
 
 return database

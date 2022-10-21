@@ -9,15 +9,26 @@ function templates.base()
     direction = "vertical",
     visible = false,
     ref = { "window" },
-    actions = { on_closed = "close" },
+    actions = { on_closed = "window_closed" },
     {
       type = "flow",
       style = "flib_titlebar_flow",
       ref = { "titlebar_flow" },
       { type = "label", style = "frame_title", caption = { "mod-name.RecipeBook" }, ignored_by_interaction = true },
       { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
-      templates.frame_action_button("utility/search", { "gui.search-instruction" }, "toggle_search"),
-      templates.frame_action_button("utility/close", { "gui.close-instruction" }, "close"),
+      {
+        type = "textfield",
+        style = "long_number_textfield",
+        style_mods = { top_margin = -3 },
+        visible = false,
+        ref = { "search_textfield" },
+        actions = {
+          on_text_changed = "search_textfield_updated",
+        },
+      },
+      templates.frame_action_button("utility/search", { "gui.rb-search-instruction" }, "search_button"),
+      templates.frame_action_button("rb_pin", { "gui.rb-pin-instruction" }, "pin_button"),
+      templates.frame_action_button("utility/close", { "gui.close-instruction" }, "close_button"),
     },
     {
       type = "flow",
@@ -41,6 +52,7 @@ function templates.base()
             {
               type = "scroll-pane",
               style = "rb_filter_scroll_pane",
+              vertical_scroll_policy = "always",
               ref = { "filter_scroll_pane" },
             },
           },
@@ -92,6 +104,7 @@ function templates.frame_action_button(sprite, tooltip, action)
     hovered_sprite = sprite .. "_black",
     clicked_sprite = sprite .. "_black",
     tooltip = tooltip,
+    ref = { action },
     actions = {
       on_click = action,
     },
@@ -113,9 +126,9 @@ function templates.list_box(caption, objects, right_caption)
       table.insert(
         rows,
         templates.prototype_button(
+          object.type,
           object.name,
           "rb_list_box_row_" .. (i % 2 == 0 and "even" or "odd"),
-          object.type .. "/" .. object.name,
           { "", object.amount or "", game[object.type .. "_prototypes"][object.name].localised_name },
           object.remark
         )
@@ -132,12 +145,21 @@ function templates.list_box(caption, objects, right_caption)
     {
       type = "flow",
       style = "centering_horizontal_flow",
-      { type = "label", style = "bold_label", caption = { "", caption, " (", num_objects, ")" } },
+      {
+        type = "checkbox",
+        style_mods = { font = "default-bold" },
+        caption = { "", caption, " (", num_objects, ")" },
+        state = false,
+        actions = {
+          on_checked_state_changed = "collapse_list_box",
+        },
+      },
       { type = "empty-widget", style = "flib_horizontal_pusher" },
       { type = "label", caption = right_caption },
     },
     {
       type = "frame",
+      name = "list_frame",
       style = "deep_frame_in_shallow_frame",
       {
         type = "flow",
@@ -149,12 +171,13 @@ function templates.list_box(caption, objects, right_caption)
   }
 end
 
+--- @param type string
 --- @param name string
 --- @param style string
---- @param sprite SpritePath
 --- @param caption LocalisedString
 --- @param remark_caption LocalisedString?
-function templates.prototype_button(name, style, sprite, caption, remark_caption)
+function templates.prototype_button(type, name, style, caption, remark_caption)
+  local path = type .. "/" .. name
   local remark = {}
   if remark_caption then
     -- TODO: Add "remark" capability to API to eliminate this hack
@@ -172,17 +195,17 @@ function templates.prototype_button(name, style, sprite, caption, remark_caption
   end
   return {
     type = "sprite-button",
-    name = name,
+    name = path,
     style = style,
     -- TODO: Add icon_horizontal_align support to sprite-buttons
     -- sprite = object.type .. "/" .. object.name,
     -- TODO: Consistent spacing
     caption = { "", "            ", caption },
-    actions = { on_click = "show_page" },
+    actions = { on_click = "prototype_button" },
     {
       type = "sprite-button",
       style = "rb_small_transparent_slot",
-      sprite = sprite,
+      sprite = path,
       ignored_by_interaction = true,
     },
     remark,

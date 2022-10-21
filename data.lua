@@ -10,6 +10,28 @@ data:extend({
     key_sequence = "ALT + mouse-button-1",
     include_selected_prototype = true,
   },
+  {
+    type = "custom-input",
+    name = "rb-linked-focus-search",
+    key_sequence = "",
+    linked_game_control = "focus-search",
+  },
+  {
+    type = "sprite",
+    name = "rb_pin_black",
+    filename = "__RecipeBook__/graphics/frame-action-icons.png",
+    size = 32,
+    position = { 0, 64 },
+    flags = { "gui-icon" },
+  },
+  {
+    type = "sprite",
+    name = "rb_pin_white",
+    filename = "__RecipeBook__/graphics/frame-action-icons.png",
+    size = 32,
+    position = { 32, 64 },
+    flags = { "gui-icon" },
+  },
 })
 
 local styles = data.raw["gui-style"]["default"]

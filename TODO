@@ -1,0 +1,17 @@
+API additions:
+- LuaPrototype::icons
+- LuaStyle::icon_horizontal_align
+- LuaGuiElement::remark
+- on_gui_hover_in, on_gui_hover_out
+- LuaGui::cursor
+
+Todo:
+- Overhaul object grouping
+    - Group by place_result and main_product
+    - Only group if the icons match (requires LuaPrototype::icons)
+    - Keep a table of object type+name to grouped name
+- Implement search and pin functionality
+- Show active page in filter panel
+- History navigation
+- Create info panel component for info pages
+    - Follow a similar style to vanilla tooltips
