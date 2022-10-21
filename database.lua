@@ -13,6 +13,7 @@ local database = {}
 --- @field parent_name string
 
 function database.build()
+  log("Starting database generation")
   -- Assemble arrays of groups, subgroups, and members based on prototype order
   --- @type table<string, SubgroupData>
   local subgroups = {}
@@ -26,21 +27,22 @@ function database.build()
   local added = {}
 
   -- Items are iterated in the correct order
-  for _, prototypes in pairs({
-    game.get_filtered_recipe_prototypes({
+  for type, prototypes in pairs({
+    recipe = game.get_filtered_recipe_prototypes({
       { filter = "hidden", invert = true },
       { filter = "hidden-from-player-crafting", invert = true },
     }),
-    game.get_filtered_item_prototypes({
+    item = game.get_filtered_item_prototypes({
       { filter = "flag", flag = "hidden", invert = true },
     }),
-    game.fluid_prototypes,
-    game.get_filtered_entity_prototypes({
+    fluid = game.fluid_prototypes,
+    entity = game.get_filtered_entity_prototypes({
       { filter = "crafting-machine" },
       { mode = "and", filter = "flag", flag = "player-creation" },
       { mode = "and", filter = "flag", flag = "hidden", invert = true },
     }),
   }) do
+    log("Compiling " .. type .. " list")
     for name, prototype in pairs(prototypes) do
       -- Only insert a prototype with the given name once - they will be grouped together
       -- TODO: Group by icon instead of by name
@@ -63,6 +65,7 @@ function database.build()
       end
     end
   end
+  log("Database generation finished")
 
   global.subgroups = subgroups
 end

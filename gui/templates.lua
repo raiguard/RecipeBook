@@ -7,7 +7,9 @@ function templates.base()
     type = "frame",
     name = "rb_window",
     direction = "vertical",
+    visible = false,
     ref = { "window" },
+    actions = { on_closed = "close" },
     {
       type = "flow",
       style = "flib_titlebar_flow",
@@ -43,18 +45,11 @@ function templates.base()
             },
           },
         },
-        {
-          type = "scroll-pane",
-          style = "flib_naked_scroll_pane_no_padding",
-          style_mods = { width = 450, height = 800 },
-          ref = { "results_scroll_pane" },
-          visible = false,
-        },
       },
       {
         type = "frame",
         style = "inside_shallow_frame",
-        style_mods = { width = 470 },
+        style_mods = { width = 500 },
         direction = "vertical",
         {
           type = "frame",
@@ -109,18 +104,20 @@ end
 function templates.list_box(caption, objects, right_caption)
   local num_objects = #objects
   local rows = {}
-  for i, object in pairs(objects) do
+  local i = 0
+  for _, object in pairs(objects) do
     if util.is_hidden(game[object.type .. "_prototypes"][object.name]) then
       num_objects = num_objects - 1
     else
+      i = i + 1
       table.insert(
         rows,
         templates.prototype_button(
           object.name,
           "rb_list_box_row_" .. (i % 2 == 0 and "even" or "odd"),
           object.type .. "/" .. object.name,
-          game[object.type .. "_prototypes"][object.name].localised_name,
-          object.amount
+          { "", object.amount or "", game[object.type .. "_prototypes"][object.name].localised_name },
+          object.remark
         )
       )
     end
@@ -164,7 +161,7 @@ function templates.prototype_button(name, style, sprite, caption, remark_caption
     remark = {
       type = "label",
       style_mods = {
-        width = 434 - 16,
+        width = 464 - 16,
         height = 36 - 8,
         horizontal_align = "right",
         vertical_align = "center",

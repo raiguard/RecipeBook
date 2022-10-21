@@ -19,14 +19,47 @@ local function get_gui(player)
 end
 
 event.on_init(function()
+  --- @type table<uint, PlayerTable>
   global.players = {}
   database.build()
 end)
+
+-- event.on_configuration_changed(function(e)
+--   database.build()
+--   for player_index, player_table in pairs(global.players) do
+--     if player_table.gui then
+--       player_table.gui:destroy()
+--     end
+--     local player = game.get_player(player_index) --[[@as LuaPlayer]]
+--     gui.new(player, player_table)
+--   end
+-- end)
 
 event.on_player_created(function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   global.players[e.player_index] = {}
   gui.new(player, global.players[e.player_index])
+end)
+
+event.register("rb-toggle", function(e)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  local gui = get_gui(player)
+  if gui then
+    gui:toggle()
+  end
+end)
+
+event.register("rb-open-selected", function(e)
+  local selected_prototype = e.selected_prototype
+  if not selected_prototype then
+    return
+  end
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  local gui = get_gui(player)
+  if gui then
+    gui:show_page(selected_prototype.name)
+    gui:show()
+  end
 end)
 
 libgui.hook_events(function(e)

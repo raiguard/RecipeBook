@@ -95,6 +95,11 @@ function gui:build_filters()
   self.state.selected_filter_group = first_group
 end
 
+function gui:destroy()
+  self.refs.window.destroy()
+  self.player_table.gui = nil
+end
+
 --- @param e EventData
 --- @param action string
 function gui:dispatch(e, action)
@@ -103,6 +108,13 @@ function gui:dispatch(e, action)
     handler(self, e)
   else
     log("Attempted to call nonexistent GUI handler " .. action)
+  end
+end
+
+function gui:hide()
+  self.refs.window.visible = false
+  if self.player.opened == self.refs.window then
+    self.player.opened = nil
   end
 end
 
@@ -118,6 +130,11 @@ function gui:select_filter_group(group_name)
   tabs[group_name].enabled = false
   members[group_name].visible = true
   self.state.selected_filter_group = group_name
+end
+
+function gui:show()
+  self.refs.window.visible = true
+  self.player.opened = self.refs.window
 end
 
 --- @param object_name string
@@ -143,7 +160,7 @@ function gui:show_page(object_name)
       templates.list_box(
         "Ingredients",
         table.map(recipe.ingredients, function(v)
-          v.amount = { "", "× ", v.amount }
+          v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
           return v
         end),
         {
@@ -160,7 +177,7 @@ function gui:show_page(object_name)
       templates.list_box(
         "Products",
         table.map(recipe.products, function(v)
-          v.amount = { "", "× ", v.amount }
+          v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
           return v
         end)
       )
@@ -176,10 +193,11 @@ function gui:show_page(object_name)
         table.insert(made_in, {
           type = "entity",
           name = crafter.name,
-          amount = {
+          remark = {
             "",
             "[img=quantity-time] ",
             { "time-symbol-seconds", math.round(recipe.energy / crafter.crafting_speed, 0.01) },
+            " ",
           },
         })
       end
@@ -267,9 +285,30 @@ function gui:show_page(object_name)
       end
       local can_craft = {}
       for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
-        table.insert(can_craft, { type = "recipe", name = recipe.name })
+        if entity.ingredient_count == 0 or entity.ingredient_count >= #recipe.ingredients then
+          table.insert(can_craft, { type = "recipe", name = recipe.name })
+        end
       end
       table.insert(components, templates.list_box("Can craft", can_craft))
+    elseif entity.type == "resource" then
+      local required_fluid_str
+      local required_fluid = entity.mineable_properties.required_fluid
+      if required_fluid then
+        required_fluid_str = {
+          "",
+          "Requires:  ",
+          "[img=fluid/" .. required_fluid .. "] ",
+          game.fluid_prototypes[required_fluid].localised_name,
+        }
+      end
+      local resource_category = entity.resource_category
+      local mined_by = {}
+      for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
+        if entity.resource_categories[resource_category] and (not required_fluid or entity.fluidbox_prototypes[1]) then
+          table.insert(mined_by, { type = "entity", name = entity.name })
+        end
+      end
+      table.insert(components, templates.list_box("Mined by", mined_by, required_fluid_str))
     end
   end
 
@@ -287,6 +326,14 @@ function gui:show_page(object_name)
 
   profiler.stop()
   game.print(profiler)
+end
+
+function gui:toggle()
+  if self.refs.window.visible then
+    self:hide()
+  else
+    self:show()
+  end
 end
 
 --- @param player LuaPlayer

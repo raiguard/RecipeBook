@@ -1,10 +1,16 @@
--- data:extend({
---   {
---     type = "custom-input",
---     name = "rb-toggle",
---     setting_type = "",
---   },
--- })
+data:extend({
+  {
+    type = "custom-input",
+    name = "rb-toggle",
+    key_sequence = "CONTROL + B",
+  },
+  {
+    type = "custom-input",
+    name = "rb-open-selected",
+    key_sequence = "ALT + mouse-button-1",
+    include_selected_prototype = true,
+  },
+})
 
 local styles = data.raw["gui-style"]["default"]
 
