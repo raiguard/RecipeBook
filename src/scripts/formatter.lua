@@ -11,7 +11,7 @@
     - Perhaps the final outputs should be cached as well?
     - The idea here is to avoid re-generating the entire caption and tooltip when just the amount or control hints are
       different
-  - Consider moving the show / don't show logic to `util` instead of `formatter`, so it can be used elsewhere
+  - Consider moving the should show logic to `util` instead of `formatter`, so it can be used elsewhere
   - Per-instance settings:
     - show_glyphs
     - show_tooltip_details

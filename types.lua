@@ -1,8 +1,6 @@
 -- This file is not required in the mod itself, but is read by the language server for type smarts
 
---- @class GenericObject
---- @field type string
---- @field name string
+--- @alias GenericObject Ingredient|Product
 
 --- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype
 
@@ -11,9 +9,11 @@
 --- @field titlebar_flow LuaGuiElement
 --- @field filter_group_table LuaGuiElement
 --- @field filter_scroll_pane LuaGuiElement
+--- @field results_scroll_pane LuaGuiElement
 --- @field page_scroll LuaGuiElement
 --- @field page_header_icon LuaGuiElement
 --- @field page_header_label LuaGuiElement
+--- @field page_header_type_label LuaGuiElement
 
 --- @alias Object GenericObject|Ingredient|Product
 --- @alias ObjectPrototype LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype

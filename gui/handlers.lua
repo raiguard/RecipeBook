@@ -8,8 +8,8 @@ end
 
 --- @param self Gui
 --- @param e on_gui_click
-function handlers.show_recipe(self, e)
-  self:show_recipe(e.element.name)
+function handlers.show_page(self, e)
+  self:show_page(e.element.name)
 end
 
 return handlers
