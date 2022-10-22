@@ -10,14 +10,6 @@ local crafting_machine = {
   ["rocket-silo"] = true,
 }
 
-local function profile_call(method, filters)
-  local profiler = game.create_profiler()
-  local res = game[method](filters)
-  profiler.stop()
-  log({ "", method, " ", profiler })
-  return res
-end
-
 local page = {}
 
 --- @param self Gui
@@ -28,7 +20,7 @@ function page.update(self, prototype_path)
     return
   end
 
-  log("UPDATING PAGE: " .. prototype_path)
+  log("Updating page to " .. prototype_path)
   local group = global.database[prototype_path]
   if not group then
     log("Page was not found")
@@ -82,7 +74,7 @@ function page.update(self, prototype_path)
 
     local made_in = {}
     for _, crafter in
-      pairs(profile_call("get_filtered_entity_prototypes", {
+      pairs(game.get_filtered_entity_prototypes({
         { filter = "crafting-category", crafting_category = recipe.category },
       }))
     do
@@ -102,7 +94,7 @@ function page.update(self, prototype_path)
     table.insert(components, templates.list_box("Made in", made_in))
 
     for _, technology in
-      pairs(profile_call("get_filtered_technology_prototypes", { { filter = "enabled" }, { filter = "has-effects" } }))
+      pairs(game.get_filtered_technology_prototypes({ { filter = "enabled" }, { filter = "has-effects" } }))
     do
       for _, effect in pairs(technology.effects) do
         if effect.type == "unlock-recipe" and effect.recipe == recipe.name then
@@ -120,7 +112,7 @@ function page.update(self, prototype_path)
 
     local ingredient_in = {}
     for _, recipe in
-      pairs(profile_call("get_filtered_recipe_prototypes", {
+      pairs(game.get_filtered_recipe_prototypes({
         { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
       }))
     do
@@ -130,7 +122,7 @@ function page.update(self, prototype_path)
 
     local product_of = {}
     for _, recipe in
-      pairs(profile_call("get_filtered_recipe_prototypes", {
+      pairs(game.get_filtered_recipe_prototypes({
         { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
       }))
     do
@@ -147,7 +139,7 @@ function page.update(self, prototype_path)
 
     local ingredient_in = {}
     for _, recipe in
-      pairs(profile_call("get_filtered_recipe_prototypes", {
+      pairs(game.get_filtered_recipe_prototypes({
         { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = item.name } } },
       }))
     do
@@ -157,7 +149,7 @@ function page.update(self, prototype_path)
 
     local product_of = {}
     for _, recipe in
-      pairs(profile_call("get_filtered_recipe_prototypes", {
+      pairs(game.get_filtered_recipe_prototypes({
         { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
       }))
     do
@@ -181,7 +173,7 @@ function page.update(self, prototype_path)
         libtable.insert(filters, { mode = "and", filter = "hidden-from-player-crafting", invert = true })
       end
       local can_craft = {}
-      for _, recipe in pairs(profile_call("get_filtered_recipe_prototypes", filters)) do
+      for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
         if entity.ingredient_count == 0 or entity.ingredient_count >= #recipe.ingredients then
           libtable.insert(can_craft, { type = "recipe", name = recipe.name })
         end
@@ -200,9 +192,7 @@ function page.update(self, prototype_path)
       end
       local resource_category = entity.resource_category
       local mined_by = {}
-      for _, entity in
-        pairs(profile_call("get_filtered_entity_prototypes", { { filter = "type", type = "mining-drill" } }))
-      do
+      for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
         if entity.resource_categories[resource_category] and (not required_fluid or entity.fluidbox_prototypes[1]) then
           libtable.insert(mined_by, { type = "entity", name = entity.name })
         end
@@ -213,9 +203,7 @@ function page.update(self, prototype_path)
       -- TODO: Fluid filters?
       local supports_fluid = entity.fluidbox_prototypes[1] and true or false
       local can_mine = {}
-      for _, resource in
-        pairs(profile_call("get_filtered_entity_prototypes", { { filter = "type", type = "resource" } }))
-      do
+      for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
         if
           categories[resource.resource_category] and (supports_fluid or not resource.mineable_properties.required_fluid)
         then
@@ -231,7 +219,7 @@ function page.update(self, prototype_path)
   end
 
   profiler.stop()
-  log({ "", "Build info ", profiler })
+  log({ "", "Build Info ", profiler })
   profiler.reset()
 
   self.refs.page_header_icon.sprite = sprite

@@ -173,6 +173,10 @@ function gui.new(player, player_table)
   refs.titlebar_flow.drag_target = refs.window
   refs.window.force_auto_center()
 
+  -- TODO:
+  refs.show_unresearched_button.sprite = "rb_show_unresearched_black"
+  refs.show_unresearched_button.style = "flib_selected_frame_action_button"
+
   --- @class Gui
   local self = {
     player = player,
@@ -186,6 +190,8 @@ function gui.new(player, player_table)
       search_query = "",
       --- @type string?
       selected_filter_group = nil,
+      show_hidden = false,
+      show_unresearched = true,
     },
   }
   gui.load(self)

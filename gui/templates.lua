@@ -14,6 +14,8 @@ function templates.base()
       type = "flow",
       style = "flib_titlebar_flow",
       ref = { "titlebar_flow" },
+      templates.frame_action_button("rb_nav_backward", { "gui.rb-nav-backward-instruction" }, "nav_backward_button"),
+      templates.frame_action_button("rb_nav_forward", { "gui.rb-nav-forward-instruction" }, "nav_forward_button"),
       { type = "label", style = "frame_title", caption = { "mod-name.RecipeBook" }, ignored_by_interaction = true },
       { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
       {
@@ -27,6 +29,13 @@ function templates.base()
         },
       },
       templates.frame_action_button("utility/search", { "gui.rb-search-instruction" }, "search_button"),
+      templates.frame_action_button(
+        "rb_show_unresearched",
+        { "gui.rb-show-unresearched-instruction" },
+        "show_unresearched_button"
+      ),
+      templates.frame_action_button("rb_show_hidden", { "gui.rb-show-hidden-instruction" }, "show_hidden_button"),
+      { type = "line", style_mods = { top_margin = -2, bottom_margin = 2 }, direction = "vertical" },
       templates.frame_action_button("rb_pin", { "gui.rb-pin-instruction" }, "pin_button"),
       templates.frame_action_button("utility/close", { "gui.close-instruction" }, "close_button"),
     },

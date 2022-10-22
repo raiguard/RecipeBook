@@ -51,6 +51,32 @@ function handlers.search_button(self)
 end
 
 --- @param self Gui
+--- @param e on_gui_click
+function handlers.show_hidden_button(self, e)
+  self.state.show_hidden = not self.state.show_hidden
+  if self.state.show_hidden then
+    e.element.style = "flib_selected_frame_action_button"
+    e.element.sprite = "rb_show_hidden_black"
+  else
+    e.element.style = "frame_action_button"
+    e.element.sprite = "rb_show_hidden_white"
+  end
+end
+
+--- @param self Gui
+--- @param e on_gui_click
+function handlers.show_unresearched_button(self, e)
+  self.state.show_unresearched = not self.state.show_unresearched
+  if self.state.show_unresearched then
+    e.element.style = "flib_selected_frame_action_button"
+    e.element.sprite = "rb_show_unresearched_black"
+  else
+    e.element.style = "frame_action_button"
+    e.element.sprite = "rb_show_unresearched_white"
+  end
+end
+
+--- @param self Gui
 function handlers.window_closed(self)
   if not self.state.pinned then
     if self.state.search_open then

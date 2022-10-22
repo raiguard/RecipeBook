@@ -11,8 +11,12 @@
 --- @class GuiRefs
 --- @field window LuaGuiElement
 --- @field titlebar_flow LuaGuiElement
+--- @field nav_backward_button LuaGuiElement
+--- @field nav_forward_button LuaGuiElement
 --- @field search_textfield LuaGuiElement
 --- @field search_button LuaGuiElement
+--- @field show_hidden_button LuaGuiElement
+--- @field show_unresearched_button LuaGuiElement
 --- @field pin_button LuaGuiElement
 --- @field close_button LuaGuiElement
 --- @field filter_group_table LuaGuiElement
