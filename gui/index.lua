@@ -17,6 +17,7 @@ local sprite_path = {
 local gui = {}
 
 function gui:build_filters()
+  local researched = global.researched[self.player.force.index]
   -- Create tables for each subgroup
   local subgroup_tables = {}
   for subgroup_name, subgroup in pairs(global.subgroups) do
@@ -32,7 +33,7 @@ function gui:build_filters()
         table.insert(subgroup_table, {
           type = "sprite-button",
           name = path,
-          style = "slot_button",
+          style = researched[path] and "slot_button" or "flib_slot_button_red",
           sprite = path,
           tooltip = { "", prototype.localised_name, "\n", sprite_path[prototype.object_name], "/", prototype.name },
           actions = { on_click = "prototype_button" },
@@ -89,7 +90,9 @@ function gui:build_filters()
 end
 
 function gui:destroy()
-  self.refs.window.destroy()
+  if self.refs.window.valid then
+    self.refs.window.destroy()
+  end
   self.player_table.gui = nil
 end
 

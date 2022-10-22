@@ -2,6 +2,7 @@ local libevent = require("__flib__.event")
 local libgui = require("__flib__.gui")
 local libmigration = require("__flib__.migration")
 
+local database = require("__RecipeBook__.database")
 local migration = require("__RecipeBook__.migration")
 local util = require("__RecipeBook__.util")
 
@@ -71,4 +72,11 @@ libgui.hook_events(function(e)
       gui:dispatch(e, action)
     end
   end
+end)
+
+libevent.on_research_finished(function(e)
+  local profiler = game.create_profiler()
+  database.on_technology_researched(e.research)
+  profiler.stop()
+  log({ "", "Unlock Tech ", profiler })
 end)

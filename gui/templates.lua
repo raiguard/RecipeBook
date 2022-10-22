@@ -5,7 +5,7 @@ local util = require("__RecipeBook__.util")
 function templates.base()
   return {
     type = "frame",
-    name = "rb_window",
+    name = "RecipeBook",
     direction = "vertical",
     visible = false,
     ref = { "window" },

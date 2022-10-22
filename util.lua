@@ -10,8 +10,11 @@ function util.get_gui(player)
     local gui = player_table.gui
     if gui and gui.refs.window.valid then
       return gui
-    else
-      -- TODO: Recreate GUI
+    elseif gui then
+      gui:destroy()
+      gui = gui.new(player, player_table)
+      player.print({ "message.rb-recreated-gui" })
+      return gui
     end
   end
 end

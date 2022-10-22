@@ -71,6 +71,79 @@ function database.build()
   global.subgroups = subgroups
 
   log("Database generation finished")
+
+  database.refresh_researched()
+end
+
+--- @param technology LuaTechnology
+function database.on_technology_researched(technology)
+  local force = technology.force
+  local researched = global.researched[force.index]
+  local technology_name = technology.name
+  researched["technology/" .. technology_name] = true
+  for _, effect in pairs(technology.effects) do
+    if effect.type == "unlock-recipe" then
+      local recipe_name = effect.recipe
+      researched["recipe/" .. recipe_name] = true
+      local recipe = force.recipes[recipe_name]
+      -- TODO: Exclude barreling recipes
+      if recipe.prototype.unlock_results then
+        for _, product in pairs(recipe.products) do
+          researched[product.type .. "/" .. product.name] = true
+          if product.type == "item" then
+            local item = game.item_prototypes[product.name]
+            -- Rocket launch products
+            local rocket_launch_products = item.rocket_launch_products
+            if rocket_launch_products then
+              for _, product in pairs(rocket_launch_products) do
+                researched["item/" .. product.name] = true
+              end
+            end
+            -- TODO: Group these
+            -- Entity
+            local entity = item.place_result
+            if entity then
+              researched["entity/" .. entity.name] = true
+            end
+            -- Equipment
+            local equipment = item.place_as_equipment_result
+            if equipment then
+              researched["equipment/" .. equipment.name] = true
+            end
+            -- Tile
+            local tile = item.place_as_tile_result
+            if tile then
+              researched["tile/" .. tile.result.name] = true
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+function database.refresh_researched()
+  --- @type table<uint, table<string, boolean>>
+  global.researched = {}
+
+  log("Refreshing researched prototypes")
+
+  for _, force in pairs(game.forces) do
+    global.researched[force.index] = {}
+    local researched = global.researched[force.index]
+    for _, recipe in pairs(force.recipes) do
+      if recipe.enabled then
+        researched["recipe/" .. recipe.name] = true
+      end
+    end
+    for _, technology in pairs(force.technologies) do
+      if technology.researched then
+        database.on_technology_researched(technology)
+      end
+    end
+  end
+
+  log("Finished refreshing researched prototypes")
 end
 
 return database
