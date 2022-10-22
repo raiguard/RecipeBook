@@ -1,12 +1,11 @@
 -- This file is not required in the mod itself, but is read by the language server for type smarts
 
---- @alias GenericObject Ingredient|Product|CustomObject
-
 --- @class CustomObject
 --- @field type string
 --- @field name string
 --- @field remark LocalisedString?
 
+--- @alias GenericObject Ingredient|Product|CustomObject
 --- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype
 
 --- @class GuiRefs
@@ -28,6 +27,12 @@
 
 --- @class PlayerTable
 --- @field gui Gui?
+
+--- @class PrototypeGroup
+--- @field recipe LuaRecipePrototype?
+--- @field item LuaItemPrototype?
+--- @field fluid LuaFluidPrototype?
+--- @field entity LuaEntityPrototype?
 
 --- Every searchable object sorted by order of appearance.
 --- Keyed by object name, using Factorio Lua's insertion order preservation to retain order

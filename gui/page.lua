@@ -27,7 +27,14 @@ function page.update(self, prototype_path)
   if self.state.current_page == prototype_path then
     return
   end
+
   log("UPDATING PAGE: " .. prototype_path)
+  local group = global.database[prototype_path]
+  if not group then
+    log("Page was not found")
+    return
+  end
+
   local profiler = game.create_profiler()
 
   local sprite, localised_name
@@ -39,11 +46,9 @@ function page.update(self, prototype_path)
 
   local types = {}
 
-  local prototype_name = string.gsub(prototype_path, "^.-/", "")
-
-  local recipe = game.recipe_prototypes[prototype_name]
+  local recipe = group.recipe
   if recipe then
-    sprite = "recipe/" .. prototype_name
+    sprite = "recipe/" .. recipe.name
     localised_name = recipe.localised_name
     table.insert(types, "Recipe")
 
@@ -100,23 +105,23 @@ function page.update(self, prototype_path)
       pairs(profile_call("get_filtered_technology_prototypes", { { filter = "enabled" }, { filter = "has-effects" } }))
     do
       for _, effect in pairs(technology.effects) do
-        if effect.type == "unlock-recipe" and effect.recipe == prototype_name then
+        if effect.type == "unlock-recipe" and effect.recipe == recipe.name then
           table.insert(unlocked_by, { type = "technology", name = technology.name })
         end
       end
     end
   end
 
-  local fluid = game.fluid_prototypes[prototype_name]
+  local fluid = group.fluid
   if fluid then
-    sprite = sprite or ("fluid/" .. prototype_name)
+    sprite = sprite or ("fluid/" .. fluid.name)
     localised_name = localised_name or fluid.localised_name
     libtable.insert(types, "Fluid")
 
     local ingredient_in = {}
     for _, recipe in
       pairs(profile_call("get_filtered_recipe_prototypes", {
-        { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = prototype_name } } },
+        { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
       }))
     do
       libtable.insert(ingredient_in, { type = "recipe", name = recipe.name })
@@ -126,7 +131,7 @@ function page.update(self, prototype_path)
     local product_of = {}
     for _, recipe in
       pairs(profile_call("get_filtered_recipe_prototypes", {
-        { filter = "has-product-fluid", elem_filters = { { filter = "name", name = prototype_name } } },
+        { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
       }))
     do
       libtable.insert(product_of, { type = "recipe", name = recipe.name })
@@ -134,16 +139,16 @@ function page.update(self, prototype_path)
     libtable.insert(components, templates.list_box("Product of", product_of))
   end
 
-  local item = game.item_prototypes[prototype_name]
+  local item = group.item
   if item then
-    sprite = sprite or ("item/" .. prototype_name)
+    sprite = sprite or ("item/" .. item.name)
     localised_name = localised_name or item.localised_name
     libtable.insert(types, "Item")
 
     local ingredient_in = {}
     for _, recipe in
       pairs(profile_call("get_filtered_recipe_prototypes", {
-        { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = prototype_name } } },
+        { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = item.name } } },
       }))
     do
       libtable.insert(ingredient_in, { type = "recipe", name = recipe.name })
@@ -153,7 +158,7 @@ function page.update(self, prototype_path)
     local product_of = {}
     for _, recipe in
       pairs(profile_call("get_filtered_recipe_prototypes", {
-        { filter = "has-product-item", elem_filters = { { filter = "name", name = prototype_name } } },
+        { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
       }))
     do
       libtable.insert(product_of, { type = "recipe", name = recipe.name })
@@ -163,9 +168,9 @@ function page.update(self, prototype_path)
     end
   end
 
-  local entity = game.entity_prototypes[prototype_name]
+  local entity = group.entity
   if entity then
-    sprite = sprite or ("entity/" .. prototype_name)
+    sprite = sprite or ("entity/" .. entity.name)
     localised_name = localised_name or entity.localised_name
     libtable.insert(types, "Entity")
 

@@ -50,7 +50,7 @@ libevent.register("rb-open-selected", function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local gui = util.get_gui(player)
   if gui then
-    gui:show_page(selected_prototype.name)
+    gui:show_page(selected_prototype.base_type .. "/" .. selected_prototype.name)
     gui:show()
   end
 end)

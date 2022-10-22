@@ -18,13 +18,24 @@ local gui = {}
 
 function gui:build_filters()
   local researched = global.researched[self.player.force.index]
+  local groups = global.search_groups
+  local group_prototypes = game.item_group_prototypes
   -- Create tables for each subgroup
-  local subgroup_tables = {}
-  for subgroup_name, subgroup in pairs(global.subgroups) do
-    local prototypes = subgroup.members
-    if #prototypes > 0 then
+  local group_tabs = {}
+  local group_flows = {}
+  local first_group = next(groups)
+  for group_name, subgroups in pairs(groups) do
+    -- Base flow
+    local group_flow = {
+      type = "flow",
+      name = group_name,
+      style = "rb_filter_group_flow",
+      direction = "vertical",
+      visible = group_name == first_group,
+    }
+    -- Assemble subgroups
+    for subgroup_name, prototypes in pairs(subgroups) do
       local subgroup_table = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
-      subgroup_tables[subgroup_name] = subgroup_table
       for _, prototype in pairs(prototypes) do
         local path = sprite_path[prototype.object_name] .. "/" .. prototype.name
         if not self.player.gui.is_valid_sprite_path(path) then
@@ -39,40 +50,20 @@ function gui:build_filters()
           actions = { on_click = "prototype_button" },
         })
       end
-    end
-  end
-
-  -- Assign subgroup tables in order and determine groups to show
-  local group_tabs = {}
-  local group_flows = {}
-  local first_group
-  for name, group in pairs(game.item_group_prototypes) do
-    local group_flow = {
-      type = "flow",
-      name = name,
-      style = "rb_filter_group_flow",
-      direction = "vertical",
-    }
-    for _, subgroup in pairs(group.subgroups) do
-      local subgroup_table = subgroup_tables[subgroup.name]
-      if subgroup_table and #subgroup_table > 0 then
+      if #subgroup_table > 0 then
         table.insert(group_flow, subgroup_table)
       end
     end
+    -- Add flow and button
     if #group_flow > 0 then
-      if first_group then
-        group_flow.visible = false
-      else
-        first_group = name
-      end
       table.insert(group_flows, group_flow)
       table.insert(group_tabs, {
         type = "sprite-button",
-        name = name,
+        name = group_name,
         style = "rb_filter_group_button_tab",
-        sprite = "item-group/" .. name,
-        tooltip = group.localised_name,
-        enabled = name ~= first_group,
+        sprite = "item-group/" .. group_name,
+        tooltip = group_prototypes[group_name].localised_name,
+        enabled = group_name ~= first_group,
         actions = { on_click = "filter_group_button" },
       })
     end
