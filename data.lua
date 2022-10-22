@@ -104,6 +104,9 @@ data:extend({
 
 local styles = data.raw["gui-style"]["default"]
 
+styles.rb_slot_button_hidden = table.deepcopy(styles.flib_slot_button_grey)
+styles.rb_slot_button_hidden.draw_grayscale_picture = true
+
 styles.rb_filter_group_button_tab = {
   type = "button_style",
   parent = "filter_group_button_tab",

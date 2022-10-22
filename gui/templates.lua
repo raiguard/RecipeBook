@@ -16,7 +16,13 @@ function templates.base()
       ref = { "titlebar_flow" },
       templates.frame_action_button("rb_nav_backward", { "gui.rb-nav-backward-instruction" }, "nav_backward_button"),
       templates.frame_action_button("rb_nav_forward", { "gui.rb-nav-forward-instruction" }, "nav_forward_button"),
-      { type = "label", style = "frame_title", caption = { "mod-name.RecipeBook" }, ignored_by_interaction = true },
+      {
+        type = "label",
+        style = "frame_title",
+        style_mods = { bottom_padding = 2, top_padding = -2 },
+        caption = { "mod-name.RecipeBook" },
+        ignored_by_interaction = true,
+      },
       { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
       {
         type = "textfield",

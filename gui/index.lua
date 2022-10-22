@@ -5,6 +5,7 @@ local libgui = require("__flib__.gui")
 local handlers = require("__RecipeBook__.gui.handlers")
 local page = require("__RecipeBook__.gui.page")
 local templates = require("__RecipeBook__.gui.templates")
+local util = require("__RecipeBook__.util")
 
 local sprite_path = {
   ["LuaEntityPrototype"] = "entity",
@@ -23,7 +24,7 @@ function gui:build_filters()
   -- Create tables for each subgroup
   local group_tabs = {}
   local group_flows = {}
-  local first_group = next(groups)
+  local first_group
   for group_name, subgroups in pairs(groups) do
     -- Base flow
     local group_flow = {
@@ -31,7 +32,7 @@ function gui:build_filters()
       name = group_name,
       style = "rb_filter_group_flow",
       direction = "vertical",
-      visible = group_name == first_group,
+      visible = not first_group,
     }
     -- Assemble subgroups
     for subgroup_name, prototypes in pairs(subgroups) do
@@ -41,14 +42,24 @@ function gui:build_filters()
         if not self.player.gui.is_valid_sprite_path(path) then
           path = "item/item-unknown"
         end
-        table.insert(subgroup_table, {
-          type = "sprite-button",
-          name = path,
-          style = researched[path] and "slot_button" or "flib_slot_button_red",
-          sprite = path,
-          tooltip = { "", prototype.localised_name, "\n", sprite_path[prototype.object_name], "/", prototype.name },
-          actions = { on_click = "prototype_button" },
-        })
+        local researched = researched[path]
+        local hidden = util.is_hidden(prototype, true)
+        if (self.state.show_hidden or not hidden) and (self.state.show_unresearched or researched) then
+          local style = "slot_button"
+          if hidden then
+            style = "flib_slot_button_grey"
+          elseif not researched then
+            style = "flib_slot_button_red"
+          end
+          table.insert(subgroup_table, {
+            type = "sprite-button",
+            name = path,
+            style = style,
+            sprite = path,
+            tooltip = { "", prototype.localised_name, "\n", sprite_path[prototype.object_name], "/", prototype.name },
+            actions = { on_click = "prototype_button" },
+          })
+        end
       end
       if #subgroup_table > 0 then
         table.insert(group_flow, subgroup_table)
@@ -63,9 +74,10 @@ function gui:build_filters()
         style = "rb_filter_group_button_tab",
         sprite = "item-group/" .. group_name,
         tooltip = group_prototypes[group_name].localised_name,
-        enabled = group_name ~= first_group,
+        enabled = not not first_group,
         actions = { on_click = "filter_group_button" },
       })
+      first_group = first_group or group_name
     end
   end
 

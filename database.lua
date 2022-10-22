@@ -50,53 +50,47 @@ function database.build()
     table.insert(prototypes, prototype)
   end
 
-  local recipes = game.get_filtered_recipe_prototypes({
-    { filter = "hidden", invert = true },
-  })
-  local items = game.get_filtered_item_prototypes({
-    { filter = "flag", flag = "hidden", invert = true },
-    { mode = "and", filter = "flag", flag = "spawnable", invert = true },
-  })
-  local fluids = game.get_filtered_fluid_prototypes({
-    { filter = "hidden", invert = true },
-  })
-  local entities = game.get_filtered_entity_prototypes({
-    { filter = "flag", flag = "player-creation" },
-    { mode = "and", filter = "flag", flag = "hidden", invert = true },
-    { filter = "type", type = "resource" },
-  })
+  local recipes = game.recipe_prototypes
+  local items = game.item_prototypes
+  local fluids = game.fluid_prototypes
+  local entities = game.entity_prototypes
 
   -- Start from recipes
+  log("Phase 1: Recipes")
   for recipe_name, recipe_prototype in pairs(recipes) do
     add_to_subgroup(recipe_prototype)
     local path = "recipe/" .. recipe_name
     lookup[path] = { recipe = recipe_prototype }
     -- If there is exactly one product, and its icon is the same, then group them
-    local products = recipe_prototype.products
-    if #products == 1 then
-      local product = products[1]
+    local main_product = recipe_prototype.main_product
+    if not main_product then
+      local products = recipe_prototype.products
+      if #products == 1 then
+        main_product = products[1]
+      end
+    end
+    if main_product then
       local product_prototype
-      if product.type == "item" then
-        product_prototype = items[product.name]
+      if main_product.type == "item" then
+        product_prototype = items[main_product.name]
       else
-        product_prototype = fluids[product.name]
+        product_prototype = fluids[main_product.name]
       end
 
       if
         product_prototype
-        and not lookup[product.type .. "/" .. product.name]
+        and not lookup[main_product.type .. "/" .. main_product.name]
         and compare_icons(recipe_prototype, product_prototype)
       then
-        -- Associate this product with the recipe entry, and sync the two entries to the same set of prototypes
-        lookup[path][product.type] = product_prototype
-        lookup[product.type .. "/" .. product.name] = lookup[path]
+        -- Associate this main_product with the recipe entry, and sync the two entries to the same set of prototypes
+        lookup[path][main_product.type] = product_prototype
+        lookup[main_product.type .. "/" .. main_product.name] = lookup[path]
 
-        if product.type == "item" then
+        if main_product.type == "item" then
           local place_result = product_prototype.place_result
           if
             place_result
             and not lookup["entity/" .. place_result.name]
-            and entities[place_result.name]
             and compare_icons(recipe_prototype, place_result)
           then
             lookup[path].entity = product_prototype.place_result
@@ -108,6 +102,7 @@ function database.build()
   end
 
   -- Add missing items and fluids
+  log("Phase 2: Missing materials")
   for type, prototypes in pairs({ item = items, fluid = fluids }) do
     for name, prototype in pairs(prototypes) do
       local path = type .. "/" .. name
@@ -118,22 +113,45 @@ function database.build()
     end
   end
 
-  -- Add missing entities
-  for name, prototype in pairs(entities) do
-    local path = "entity/" .. name
-    if not lookup[path] then
-      local products = prototype.mineable_properties.products
-      if products and #products == 1 then
-        local product = products[1]
-        local product_path = product.type .. "/" .. product.name
-        local product_group = lookup[product_path]
-        if product_group and not product_group.entity then
-          product_group.entity = prototype
-          lookup[path] = product_group
-        end
-      end
-    end
-  end
+  -- -- Add missing entities
+  -- log("Phase 3: Missing entities")
+  -- for name, prototype in pairs(entities) do
+  --   local path = "entity/" .. name
+  --   if not lookup[path] then
+  --     local products = prototype.mineable_properties.products
+  --     if products then
+  --       -- local added = false
+  --       -- Group with entity
+  --       if #products == 1 then
+  --         local product = products[1]
+  --         local product_path = product.type .. "/" .. product.name
+  --         local product_group = lookup[product_path]
+  --         if product_group and not product_group.entity then
+  --           product_group.entity = prototype
+  --           lookup[path] = product_group
+  --           -- added = true
+  --         end
+  --       end
+  --       -- TODO: This isn't very great
+  --       -- -- Trees and rocks
+  --       -- if not added and (prototype.type == "tree" or prototype.count_as_rock_for_filtered_deconstruction) then
+  --       --   -- Only add if all of the results are valid in the database
+  --       --   for _, product in pairs(products) do
+  --       --     local product_path = product.type .. "/" .. product.name
+  --       --     local product_group = lookup[product_path]
+  --       --     if not product_group then
+  --       --       added = true
+  --       --       break
+  --       --     end
+  --       --   end
+  --       --   if not added then
+  --       --     add_to_subgroup(prototype)
+  --       --     lookup[path] = { entity = prototype }
+  --       --   end
+  --       -- end
+  --     end
+  --   end
+  -- end
 
   -- Remove empty groups and subgroups
   for group_name, group in pairs(groups) do
@@ -200,6 +218,9 @@ end
 function database.on_technology_researched(technology)
   local force = technology.force
   local researched = global.researched[force.index]
+  if not researched then
+    return
+  end
   local technology_name = technology.name
   -- TODO: Do we really need this? Let's just use the prototype
   researched["technology/" .. technology_name] = true

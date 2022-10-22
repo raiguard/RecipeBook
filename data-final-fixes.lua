@@ -6,3 +6,4 @@ for _, recipe in pairs(data.raw["recipe"]) do
 end
 data.raw["recipe"]["rocket-part"].hidden = false
 data.raw["recipe"]["rocket-part"].hidden_from_player_crafting = true
+data.raw["recipe"]["electric-energy-interface"].hidden = true

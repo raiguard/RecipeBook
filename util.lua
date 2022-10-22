@@ -19,13 +19,37 @@ function util.get_gui(player)
   end
 end
 
+--- @param group PrototypeGroup
+--- @param player_crafting boolean?
+function util.group_is_hidden(group, player_crafting)
+  local key, prototype = next(group)
+  if key == "recipe" then
+    local hidden = prototype.hidden
+    if not hidden and player_crafting then
+      return prototype.hidden_from_player_crafting
+    end
+  elseif key == "item" or key == "entity" then
+    return prototype.has_flag("hidden")
+  elseif key == "fluid" then
+    return prototype.hidden
+  end
+end
+
 --- @param prototype ObjectPrototype
+--- @param player_crafting boolean?
 --- @return boolean
-function util.is_hidden(prototype)
-  if prototype.object_name == "LuaFluidPrototype" or prototype.object_name == "LuaRecipePrototype" then
+function util.is_hidden(prototype, player_crafting)
+  if prototype.object_name == "LuaFluidPrototype" then
     return prototype.hidden
   elseif prototype.object_name == "LuaItemPrototype" then
     return prototype.has_flag("hidden")
+  elseif prototype.object_name == "LuaRecipePrototype" then
+    local hidden = prototype.hidden
+    -- TODO: This has inconsistent results
+    if not hidden and player_crafting then
+      return prototype.hidden_from_player_crafting
+    end
+    return prototype.hidden
   end
   return false
 end

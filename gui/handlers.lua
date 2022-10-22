@@ -61,6 +61,8 @@ function handlers.show_hidden_button(self, e)
     e.element.style = "frame_action_button"
     e.element.sprite = "rb_show_hidden_white"
   end
+  -- TODO: Don't rebuild from scratch
+  self:build_filters()
 end
 
 --- @param self Gui
@@ -74,6 +76,8 @@ function handlers.show_unresearched_button(self, e)
     e.element.style = "frame_action_button"
     e.element.sprite = "rb_show_unresearched_white"
   end
+  -- TODO: Don't rebuild from scratch
+  self:build_filters()
 end
 
 --- @param self Gui

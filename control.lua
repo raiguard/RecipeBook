@@ -3,6 +3,7 @@ local libgui = require("__flib__.gui")
 local libmigration = require("__flib__.migration")
 
 local database = require("__RecipeBook__.database")
+local gui = require("__RecipeBook__.gui.index")
 local migration = require("__RecipeBook__.migration")
 local util = require("__RecipeBook__.util")
 
@@ -13,6 +14,14 @@ libevent.on_init(function()
   migration.generic()
   for _, player in pairs(game.players) do
     migration.init_player(player)
+  end
+end)
+
+libevent.on_load(function()
+  for _, player_table in pairs(global.players) do
+    if player_table.gui then
+      gui.load(player_table.gui)
+    end
   end
 end)
 
