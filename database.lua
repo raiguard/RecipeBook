@@ -9,15 +9,15 @@ local database = {}
 --- @param a GenericPrototype
 --- @param b GenericPrototype
 local function compare_icons(a, b)
-  -- TODO:
-  return true
+  -- TODO: Actually compare icons - requires API addition
+  return a.name == b.name
 end
 
 --- @class SubgroupData
 --- @field members GenericPrototype[]
 --- @field parent_name string
 
-function database.build()
+function database.build_groups()
   log("Starting database generation")
   local profiler = game.create_profiler()
 
@@ -113,45 +113,45 @@ function database.build()
     end
   end
 
-  -- -- Add missing entities
-  -- log("Phase 3: Missing entities")
-  -- for name, prototype in pairs(entities) do
-  --   local path = "entity/" .. name
-  --   if not lookup[path] then
-  --     local products = prototype.mineable_properties.products
-  --     if products then
-  --       -- local added = false
-  --       -- Group with entity
-  --       if #products == 1 then
-  --         local product = products[1]
-  --         local product_path = product.type .. "/" .. product.name
-  --         local product_group = lookup[product_path]
-  --         if product_group and not product_group.entity then
-  --           product_group.entity = prototype
-  --           lookup[path] = product_group
-  --           -- added = true
-  --         end
-  --       end
-  --       -- TODO: This isn't very great
-  --       -- -- Trees and rocks
-  --       -- if not added and (prototype.type == "tree" or prototype.count_as_rock_for_filtered_deconstruction) then
-  --       --   -- Only add if all of the results are valid in the database
-  --       --   for _, product in pairs(products) do
-  --       --     local product_path = product.type .. "/" .. product.name
-  --       --     local product_group = lookup[product_path]
-  --       --     if not product_group then
-  --       --       added = true
-  --       --       break
-  --       --     end
-  --       --   end
-  --       --   if not added then
-  --       --     add_to_subgroup(prototype)
-  --       --     lookup[path] = { entity = prototype }
-  --       --   end
-  --       -- end
-  --     end
-  --   end
-  -- end
+  -- Add missing entities
+  log("Phase 3: Missing entities")
+  for name, prototype in pairs(entities) do
+    local path = "entity/" .. name
+    if not lookup[path] then
+      local products = prototype.mineable_properties.products
+      if products then
+        -- local added = false
+        -- Group with entity
+        if #products == 1 then
+          local product = products[1]
+          local product_path = product.type .. "/" .. product.name
+          local product_group = lookup[product_path]
+          if product_group and not product_group.entity then
+            product_group.entity = prototype
+            lookup[path] = product_group
+            -- added = true
+          end
+        end
+        -- TODO: This isn't very great
+        -- -- Trees and rocks
+        -- if not added and (prototype.type == "tree" or prototype.count_as_rock_for_filtered_deconstruction) then
+        --   -- Only add if all of the results are valid in the database
+        --   for _, product in pairs(products) do
+        --     local product_path = product.type .. "/" .. product.name
+        --     local product_group = lookup[product_path]
+        --     if not product_group then
+        --       added = true
+        --       break
+        --     end
+        --   end
+        --   if not added then
+        --     add_to_subgroup(prototype)
+        --     lookup[path] = { entity = prototype }
+        --   end
+        -- end
+      end
+    end
+  end
 
   -- Remove empty groups and subgroups
   for group_name, group in pairs(groups) do

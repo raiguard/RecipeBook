@@ -46,9 +46,9 @@ function util.is_hidden(prototype, player_crafting)
   elseif prototype.object_name == "LuaRecipePrototype" then
     local hidden = prototype.hidden
     -- TODO: This has inconsistent results
-    if not hidden and player_crafting then
-      return prototype.hidden_from_player_crafting
-    end
+    -- if not hidden and player_crafting then
+    --   return prototype.hidden_from_player_crafting
+    -- end
     return prototype.hidden
   end
   return false

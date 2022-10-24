@@ -6,7 +6,7 @@ local util = require("__RecipeBook__.util")
 local migration = {}
 
 function migration.generic()
-  database.build()
+  database.build_groups()
 end
 
 --- @param player LuaPlayer

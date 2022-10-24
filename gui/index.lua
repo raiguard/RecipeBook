@@ -53,11 +53,11 @@ function gui:build_filters()
           end
           table.insert(subgroup_table, {
             type = "sprite-button",
-            name = path,
             style = style,
             sprite = path,
             tooltip = { "", prototype.localised_name, "\n", sprite_path[prototype.object_name], "/", prototype.name },
             actions = { on_click = "prototype_button" },
+            tags = { prototype = path },
           })
         end
       end

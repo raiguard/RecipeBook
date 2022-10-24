@@ -133,8 +133,12 @@ function templates.list_box(caption, objects, right_caption)
   local num_objects = #objects
   local rows = {}
   local i = 0
+  local database = global.database
   for _, object in pairs(objects) do
-    if util.is_hidden(game[object.type .. "_prototypes"][object.name]) then
+    if
+      not database[object.type .. "/" .. object.name]
+      or util.is_hidden(game[object.type .. "_prototypes"][object.name])
+    then
       num_objects = num_objects - 1
     else
       i = i + 1
@@ -210,13 +214,13 @@ function templates.prototype_button(type, name, style, caption, remark_caption)
   end
   return {
     type = "sprite-button",
-    name = path,
     style = style,
     -- TODO: Add icon_horizontal_align support to sprite-buttons
     -- sprite = object.type .. "/" .. object.name,
     -- TODO: Consistent spacing
     caption = { "", "            ", caption },
     actions = { on_click = "prototype_button" },
+    tags = { prototype = path },
     {
       type = "sprite-button",
       style = "rb_small_transparent_slot",

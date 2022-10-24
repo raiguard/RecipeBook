@@ -1,3 +1,5 @@
+local libgui = require("__flib__.gui")
+
 local handlers = {}
 
 --- @param self Gui
@@ -42,7 +44,10 @@ end
 --- @param self Gui
 --- @param e on_gui_click
 function handlers.prototype_button(self, e)
-  self:show_page(e.element.name)
+  local tags = libgui.get_tags(e.element)
+  if tags.prototype then
+    self:show_page(tags.prototype)
+  end
 end
 
 --- @param self Gui
