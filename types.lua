@@ -32,11 +32,12 @@
 --- @class PlayerTable
 --- @field gui Gui?
 
---- @class PrototypeGroup
+--- @class PrototypeEntry
 --- @field recipe LuaRecipePrototype?
 --- @field item LuaItemPrototype?
 --- @field fluid LuaFluidPrototype?
 --- @field entity LuaEntityPrototype?
+--- @field researched table<uint, boolean>?
 
 --- Every searchable object sorted by order of appearance.
 --- Keyed by object name, using Factorio Lua's insertion order preservation to retain order

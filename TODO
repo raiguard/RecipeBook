@@ -15,3 +15,50 @@ Todo:
 - History navigation
 - Create info panel component for info pages
     - Follow a similar style to vanilla tooltips
+
+All list boxes from 3.0 - not all will be re-added:
+accepted_equipment
+accepted_modules
+affects_recipes
+burned_in
+burnt_result_of
+can_burn
+can_craft
+can_mine
+entities
+equipment
+equipment_categories
+expected_resources
+fluids
+fuel_categories
+gathered_from
+ingredient_in
+ingredients
+inputs
+items
+made_in
+mined_by
+mined_from
+mining_drills
+placed_by
+placed_in
+prerequisite_of
+prerequisites
+product_of
+products
+pumped_by
+recipe_categories
+recipes
+research_ingredients_per_unit
+researched_in
+resource_categories
+resources
+rocket_launch_product_of
+rocket_launch_products
+temperatures
+unlocked_by
+unlocks_entities
+unlocks_equipment
+unlocks_fluids
+unlocks_items
+unlocks_recipes

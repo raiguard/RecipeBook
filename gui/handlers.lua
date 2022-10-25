@@ -56,6 +56,14 @@ function handlers.search_button(self)
 end
 
 --- @param self Gui
+--- @param e on_gui_text_changed
+function handlers.search_textfield(self, e)
+  -- TODO: Fuzzy search
+  self.state.search_query = e.element.text
+  self:update_filter_search()
+end
+
+--- @param self Gui
 --- @param e on_gui_click
 function handlers.show_hidden_button(self, e)
   self.state.show_hidden = not self.state.show_hidden
@@ -66,8 +74,7 @@ function handlers.show_hidden_button(self, e)
     e.element.style = "frame_action_button"
     e.element.sprite = "rb_show_hidden_white"
   end
-  -- TODO: Don't rebuild from scratch
-  self:build_filters()
+  self:update_filter_visibility()
 end
 
 --- @param self Gui
@@ -81,8 +88,7 @@ function handlers.show_unresearched_button(self, e)
     e.element.style = "frame_action_button"
     e.element.sprite = "rb_show_unresearched_white"
   end
-  -- TODO: Don't rebuild from scratch
-  self:build_filters()
+  self:update_filter_visibility()
 end
 
 --- @param self Gui

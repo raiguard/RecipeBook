@@ -19,7 +19,7 @@ function util.get_gui(player)
   end
 end
 
---- @param group PrototypeGroup
+--- @param group PrototypeEntry
 --- @param player_crafting boolean?
 function util.group_is_hidden(group, player_crafting)
   local key, prototype = next(group)
@@ -53,5 +53,12 @@ function util.is_hidden(prototype, player_crafting)
   end
   return false
 end
+
+util.sprite_path = {
+  ["LuaEntityPrototype"] = "entity",
+  ["LuaFluidPrototype"] = "fluid",
+  ["LuaItemPrototype"] = "item",
+  ["LuaRecipePrototype"] = "recipe",
+}
 
 return util

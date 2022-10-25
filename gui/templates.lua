@@ -2,7 +2,10 @@ local templates = {}
 
 local util = require("__RecipeBook__.util")
 
-function templates.base()
+--- @param force LuaForce
+function templates.base(force)
+  local group_tabs, group_flows = templates.filter_pane(force)
+
   return {
     type = "frame",
     name = "RecipeBook",
@@ -57,6 +60,7 @@ function templates.base()
           style = "filter_group_table",
           column_count = 6,
           ref = { "filter_group_table" },
+          children = group_tabs,
         },
         {
           type = "frame",
@@ -69,6 +73,7 @@ function templates.base()
               style = "rb_filter_scroll_pane",
               vertical_scroll_policy = "always",
               ref = { "filter_scroll_pane" },
+              children = group_flows,
             },
           },
         },
@@ -109,6 +114,62 @@ function templates.base()
       },
     },
   }
+end
+
+--- @param force LuaForce
+--- @return GuiBuildStructure[] group_tabs
+--- @return GuiBuildStructure[] group_flows
+function templates.filter_pane(force)
+  -- Create tables for each subgroup
+  local group_tabs = {}
+  local group_flows = {}
+  for group_name, subgroups in pairs(global.search_tree) do
+    -- Tab button
+    table.insert(group_tabs, {
+      type = "sprite-button",
+      name = group_name,
+      style = "rb_filter_group_button_tab",
+      sprite = "item-group/" .. group_name,
+      tooltip = game.item_group_prototypes[group_name].localised_name,
+      actions = { on_click = "filter_group_button" },
+    })
+    -- Base flow
+    local group_flow = {
+      type = "flow",
+      name = group_name,
+      style = "rb_filter_group_flow",
+      direction = "vertical",
+      visible = false,
+    }
+    table.insert(group_flows, group_flow)
+    -- Assemble subgroups
+    for subgroup_name, prototypes in pairs(subgroups) do
+      local subgroup_table = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
+      table.insert(group_flow, subgroup_table)
+      for _, prototype in pairs(prototypes) do
+        local path = util.sprite_path[prototype.object_name] .. "/" .. prototype.name
+        local entry = global.database[path]
+        local hidden = util.is_hidden(prototype, true)
+        local researched = entry.researched and entry.researched[force.index] or false
+        local style = "slot_button"
+        if hidden then
+          style = "flib_slot_button_grey"
+        elseif not researched then
+          style = "flib_slot_button_red"
+        end
+        table.insert(subgroup_table, {
+          type = "sprite-button",
+          style = style,
+          sprite = path,
+          tooltip = { "", prototype.localised_name, "\n", path },
+          actions = { on_click = "prototype_button" },
+          tags = { prototype = path },
+        })
+      end
+    end
+  end
+
+  return group_tabs, group_flows
 end
 
 function templates.frame_action_button(sprite, tooltip, action)

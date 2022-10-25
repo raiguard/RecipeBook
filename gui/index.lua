@@ -1,96 +1,12 @@
 local libgui = require("__flib__.gui")
 
--- local util = require("__RecipeBook__.util")
-
 local handlers = require("__RecipeBook__.gui.handlers")
 local page = require("__RecipeBook__.gui.page")
 local templates = require("__RecipeBook__.gui.templates")
 local util = require("__RecipeBook__.util")
 
-local sprite_path = {
-  ["LuaEntityPrototype"] = "entity",
-  ["LuaFluidPrototype"] = "fluid",
-  ["LuaItemPrototype"] = "item",
-  ["LuaRecipePrototype"] = "recipe",
-}
-
 --- @class Gui
 local gui = {}
-
-function gui:build_filters()
-  local researched = global.researched[self.player.force.index]
-  local groups = global.search_groups
-  local group_prototypes = game.item_group_prototypes
-  -- Create tables for each subgroup
-  local group_tabs = {}
-  local group_flows = {}
-  local first_group
-  for group_name, subgroups in pairs(groups) do
-    -- Base flow
-    local group_flow = {
-      type = "flow",
-      name = group_name,
-      style = "rb_filter_group_flow",
-      direction = "vertical",
-      visible = not first_group,
-    }
-    -- Assemble subgroups
-    for subgroup_name, prototypes in pairs(subgroups) do
-      local subgroup_table = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
-      for _, prototype in pairs(prototypes) do
-        local path = sprite_path[prototype.object_name] .. "/" .. prototype.name
-        if not self.player.gui.is_valid_sprite_path(path) then
-          path = "item/item-unknown"
-        end
-        local researched = researched[path]
-        local hidden = util.is_hidden(prototype, true)
-        if (self.state.show_hidden or not hidden) and (self.state.show_unresearched or researched) then
-          local style = "slot_button"
-          if hidden then
-            style = "flib_slot_button_grey"
-          elseif not researched then
-            style = "flib_slot_button_red"
-          end
-          table.insert(subgroup_table, {
-            type = "sprite-button",
-            style = style,
-            sprite = path,
-            tooltip = { "", prototype.localised_name, "\n", sprite_path[prototype.object_name], "/", prototype.name },
-            actions = { on_click = "prototype_button" },
-            tags = { prototype = path },
-          })
-        end
-      end
-      if #subgroup_table > 0 then
-        table.insert(group_flow, subgroup_table)
-      end
-    end
-    -- Add flow and button
-    if #group_flow > 0 then
-      table.insert(group_flows, group_flow)
-      table.insert(group_tabs, {
-        type = "sprite-button",
-        name = group_name,
-        style = "rb_filter_group_button_tab",
-        sprite = "item-group/" .. group_name,
-        tooltip = group_prototypes[group_name].localised_name,
-        enabled = not not first_group,
-        actions = { on_click = "filter_group_button" },
-      })
-      first_group = first_group or group_name
-    end
-  end
-
-  local filter_group_table = self.refs.filter_group_table
-  filter_group_table.clear()
-  libgui.build(filter_group_table, group_tabs)
-
-  local filter_scroll_pane = self.refs.filter_scroll_pane
-  filter_scroll_pane.clear()
-  libgui.build(filter_scroll_pane, group_flows)
-
-  self.state.selected_filter_group = first_group
-end
 
 function gui:destroy()
   if self.refs.window.valid then
@@ -175,12 +91,57 @@ function gui:toggle_search()
   end
 end
 
+-- Update the filter panel based on the current search query
+function gui:update_filter_search() end
+
+-- Update filter panel contents based on active visibility settings
+function gui:update_filter_visibility()
+  local show_hidden = self.state.show_hidden
+  local show_unresearched = self.state.show_unresearched
+  local db = global.database
+  local force_index = self.player.force.index
+  local tabs_table = self.refs.filter_group_table
+  local groups_scroll = self.refs.filter_scroll_pane
+  local first_visible
+
+  for _, group in pairs(groups_scroll.children) do
+    local i = 0
+    for _, subgroup in pairs(group.children) do
+      for _, button in pairs(subgroup.children) do
+        local entry = db[button.sprite]
+        local _, base_prototype = next(entry)
+        local is_hidden = util.is_hidden(base_prototype, true)
+        local is_researched = entry.researched and entry.researched[force_index] or false
+        local is_visible = (show_hidden or not is_hidden) and (show_unresearched or is_researched)
+        button.visible = is_visible
+        if is_visible then
+          i = i + 1
+        end
+      end
+    end
+    local is_visible = i > 0
+    tabs_table[group.name].visible = is_visible
+    -- group.visible = is_visible
+    if is_visible then
+      first_visible = first_visible or group.name
+    end
+  end
+
+  if first_visible and groups_scroll[self.state.selected_filter_group].visible == false then
+    self:select_filter_group(first_visible)
+  else
+    -- TODO:
+  end
+end
+
 --- @param player LuaPlayer
 --- @param player_table PlayerTable
 --- @return Gui
 function gui.new(player, player_table)
   --- @type GuiRefs
-  local refs = libgui.build(player.gui.screen, { templates.base() })
+  local refs = libgui.build(player.gui.screen, {
+    templates.base(player.force --[[@as LuaForce]]),
+  })
 
   refs.titlebar_flow.drag_target = refs.window
   refs.window.force_auto_center()
@@ -201,7 +162,7 @@ function gui.new(player, player_table)
       search_open = false,
       search_query = "",
       --- @type string?
-      selected_filter_group = nil,
+      selected_filter_group = next(global.search_tree),
       show_hidden = false,
       show_unresearched = true,
     },
@@ -209,7 +170,7 @@ function gui.new(player, player_table)
   gui.load(self)
   player_table.gui = self
 
-  self:build_filters()
+  self:update_filter_visibility()
 
   return self
 end
