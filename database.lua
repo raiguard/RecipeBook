@@ -1,3 +1,5 @@
+local table = require("__flib__.table")
+
 -- DESIGN GOALS:
 -- Find a balance between caching information and generating it on the fly
 -- Reduce complexity as much as possible
@@ -9,8 +11,12 @@ local database = {}
 --- @param a GenericPrototype
 --- @param b GenericPrototype
 local function compare_icons(a, b)
-  -- TODO: Actually compare icons - requires API addition
-  return a.name == b.name
+  if game.active_mods.base == "1.1.71" then
+    return table.deep_compare(a.icons, b.icons)
+  else
+    -- TEMPORARY:
+    return a.name == b.name
+  end
 end
 
 --- @param entry PrototypeEntry
@@ -144,6 +150,9 @@ function database.build_groups()
           then
             product_group.entity = prototype
             db[path] = product_group
+          elseif prototype.type == "resource" then
+            add_to_subgroup(prototype)
+            db[path] = { entity = prototype }
           end
         end
       end
@@ -178,83 +187,96 @@ function database.build_groups()
   log({ "", "Database generation finished, ", profiler })
 end
 
---- @param recipe LuaRecipe
-function database.on_recipe_unlocked(recipe)
+--- @param product Product
+--- @param force_index uint
+function database.on_product_unlocked(product, force_index)
   local db = global.database
-  local entry = db["recipe/" .. recipe.name]
+  local entry = db[product.type .. "/" .. product.name]
   if not entry then
     return
   end
-  local force = recipe.force
-  local force_index = force.index
   add_researched(entry, force_index)
-  if recipe.prototype.unlock_results then
-    for _, product in pairs(recipe.products) do
-      local product_entry = db[product.type .. "/" .. product.name]
-      if product_entry then
-        add_researched(product_entry, force_index)
-        if product.type == "item" then
-          local item = game.item_prototypes[product.name]
-          -- Rocket launch products
-          local rocket_launch_products = item.rocket_launch_products
-          if rocket_launch_products then
-            for _, product in pairs(rocket_launch_products) do
-              local product_entry = db["item/" .. product.name]
-              if product_entry then
-                add_researched(product_entry, force_index)
-              end
+  local prototype
+  if product.type == "fluid" then
+    prototype = game.fluid_prototypes[product.name]
+  else
+    prototype = game.item_prototypes[product.name]
+  end
+  if product.type == "item" then
+    -- Rocket launch products
+    local rocket_launch_products = prototype.rocket_launch_products
+    if rocket_launch_products then
+      for _, product in pairs(rocket_launch_products) do
+        database.on_product_unlocked(product, force_index)
+      end
+    end
+    local place_result = prototype.place_result
+    if place_result then
+      if place_result.type == "mining-drill" then
+        -- Resources
+        local categories = place_result.resource_categories --[[@as table<string, _>]]
+        -- TODO: Fluid filters?
+        local supports_fluid = place_result.fluidbox_prototypes[1] and true or false
+        for resource_name, resource in
+          pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } }))
+        do
+          local mineable = resource.mineable_properties
+          if categories[resource.resource_category] and (supports_fluid or not mineable.required_fluid) then
+            local resource_entry = db["entity/" .. resource_name]
+            if resource_entry then
+              add_researched(resource_entry, force_index)
             end
-          end
-          local place_result = item.place_result
-          if place_result then
-            if place_result.type == "mining-drill" then
-              -- Resources
-              local categories = place_result.resource_categories --[[@as table<string, _>]]
-              -- TODO: Fluid filters?
-              local supports_fluid = place_result.fluidbox_prototypes[1] and true or false
-              for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
-                local mineable = resource.mineable_properties
-                if categories[resource.resource_category] and (supports_fluid or not mineable.required_fluid) then
-                  for _, product in pairs(mineable.products) do
-                    local resource_entry = db[product.type .. "/" .. product.name]
-                    if resource_entry then
-                      add_researched(resource_entry, force_index)
-                    end
-                  end
-                end
-              end
-            elseif place_result.type == "offshore-pump" then
-              -- Pumped fluid
-              local fluid = place_result.fluid
-              if fluid then
-                local fluid_entry = db["fluid/" .. fluid.name]
-                if fluid_entry then
-                  add_researched(fluid_entry, force_index)
-                end
-              end
-            elseif place_result.type == "boiler" then
-              -- TODO:
+            for _, product in pairs(mineable.products) do
+              database.on_product_unlocked(product, force_index)
             end
           end
         end
+      elseif place_result.type == "offshore-pump" then
+        -- Pumped fluid
+        local fluid = place_result.fluid
+        if fluid then
+          local fluid_entry = db["fluid/" .. fluid.name]
+          if fluid_entry then
+            add_researched(fluid_entry, force_index)
+          end
+        end
+      elseif place_result.type == "boiler" then
+        -- TODO:
       end
     end
   end
 end
 
+--- @param recipe LuaRecipe
+--- @param force_index uint
+function database.on_recipe_unlocked(recipe, force_index)
+  local db = global.database
+  local entry = db["recipe/" .. recipe.name]
+  if not entry then
+    return
+  end
+  add_researched(entry, force_index)
+  if recipe.prototype.unlock_results then
+    for _, product in pairs(recipe.products) do
+      database.on_product_unlocked(product, force_index)
+    end
+  end
+end
+
 --- @param technology LuaTechnology
-function database.on_technology_researched(technology)
+--- @param force_index uint
+function database.on_technology_researched(technology, force_index)
   local technology_name = technology.name
   local db = global.database
   local technology_path = "technology/" .. technology_name
   if not db[technology_path] then
     db[technology_path] = { researched = {} }
   end
-  add_researched(db[technology_path], technology.force.index)
+  add_researched(db[technology_path], force_index)
   for _, effect in pairs(technology.effects) do
     if effect.type == "unlock-recipe" then
       local recipe = technology.force.recipes[effect.recipe]
-      database.on_recipe_unlocked(recipe)
+      database.on_recipe_unlocked(recipe, force_index)
     end
   end
 end
@@ -263,19 +285,20 @@ end
 function database.refresh_researched(force)
   local db = global.database
 
+  local force_index = force.index
   for _, recipe in pairs(force.recipes) do
     if recipe.enabled then
       local entry = db["recipe/" .. recipe.name]
       if entry then
         entry.researched = entry.researched or {}
         entry.researched[force.index] = true
-        database.on_recipe_unlocked(recipe)
+        database.on_recipe_unlocked(recipe, force_index)
       end
     end
   end
   for _, technology in pairs(force.technologies) do
     if technology.researched then
-      database.on_technology_researched(technology)
+      database.on_technology_researched(technology, force_index)
     end
   end
 end

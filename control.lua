@@ -89,7 +89,8 @@ end)
 
 libevent.on_research_finished(function(e)
   local profiler = game.create_profiler()
-  database.on_technology_researched(e.research)
+  local technology = e.research
+  database.on_technology_researched(technology, technology.force.index)
   profiler.stop()
   log({ "", "Unlock Tech ", profiler })
 end)
