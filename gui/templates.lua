@@ -136,7 +136,11 @@ function templates.base()
           {
             type = "label",
             style_mods = { horizontally_stretchable = true, single_line = false },
-            caption = { "gui.rb-welcome-text", table_size(global.database) },
+            caption = {
+              "gui.rb-welcome-text",
+              table_size(global.database),
+              global.__flib.dictionary.raw._total_strings,
+            },
           },
         },
       },

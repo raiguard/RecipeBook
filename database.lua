@@ -1,4 +1,7 @@
+local dictionary = require("__flib__.dictionary")
 local table = require("__flib__.table")
+
+local util = require("__RecipeBook__.util")
 
 -- DESIGN GOALS:
 -- Find a balance between caching information and generating it on the fly
@@ -37,6 +40,8 @@ function database.build_groups()
   log("Starting database generation")
   local profiler = game.create_profiler()
 
+  local search_strings = dictionary.new("search")
+
   --- Each top-level prototype sorted into groups and subgroups for the search_interface
   --- @type table<string, table<string, GenericPrototype>>
   local search_tree = {}
@@ -66,6 +71,7 @@ function database.build_groups()
       end
     end
     table.insert(prototypes, prototype)
+    search_strings:add(util.sprite_path[prototype.object_name] .. "/" .. prototype.name, prototype.localised_name)
   end
 
   local recipes = game.recipe_prototypes

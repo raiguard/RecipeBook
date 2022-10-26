@@ -1,3 +1,5 @@
+local dictionary = require("__flib__.dictionary")
+
 local gui = require("__RecipeBook__.gui.index")
 
 local database = require("__RecipeBook__.database")
@@ -21,6 +23,11 @@ function migration.migrate_player(player)
   local player_table = global.players[player.index]
   if not player_table then
     return
+  end
+
+  player_table.search_strings = nil
+  if player.connected then
+    dictionary.translate(player)
   end
 
   local existing_gui = util.get_gui(player)

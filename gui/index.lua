@@ -101,20 +101,21 @@ function gui:update_filter_panel()
   local profiler = game.create_profiler()
   local show_hidden = self.state.show_hidden
   local show_unresearched = self.state.show_unresearched
-  local search_query = self.state.search_query
-  local current_page = self.state.current_page
+  local search_query = string.lower(self.state.search_query)
   local db = global.database
   local force_index = self.player.force.index
   local tabs_table = self.refs.filter_group_table
   local groups_scroll = self.refs.filter_scroll_pane
   local first_valid
+  local search_strings = self.player_table.search_strings or {}
 
   for _, group in pairs(groups_scroll.children) do
     local filtered_count = 0
     local searched_count = 0
     for _, subgroup in pairs(group.children) do
       for _, button in pairs(subgroup.children) do
-        local entry = db[button.sprite]
+        local path = button.sprite
+        local entry = db[path]
         local _, base_prototype = next(entry)
         local is_hidden = util.is_hidden(base_prototype)
         local is_researched = entry.researched and entry.researched[force_index] or false
@@ -122,7 +123,10 @@ function gui:update_filter_panel()
         if filters_match then
           filtered_count = filtered_count + 1
           local query_match = #search_query == 0
-            or string.find(string.gsub(button.sprite, "-", " "), search_query, 1, true) --[[@as boolean]]
+          if not query_match then
+            local comp = search_strings[path] or string.gsub(path, "-", " ")
+            query_match = string.find(string.lower(comp), search_query, 1, true) --[[@as boolean]]
+          end
           button.visible = query_match
           if query_match then
             searched_count = searched_count + 1

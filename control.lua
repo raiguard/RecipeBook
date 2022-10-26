@@ -1,7 +1,7 @@
 local libevent = require("__flib__.event")
+local libdictionary = require("__flib__.dictionary")
 local libgui = require("__flib__.gui")
 local libmigration = require("__flib__.migration")
-local mod_gui = require("__core__.lualib.mod-gui")
 
 local database = require("__RecipeBook__.database")
 local gui = require("__RecipeBook__.gui.index")
@@ -9,6 +9,8 @@ local migration = require("__RecipeBook__.migration")
 local util = require("__RecipeBook__.util")
 
 libevent.on_init(function()
+  libdictionary.init()
+
   --- @type table<uint, PlayerTable>
   global.players = {}
   --- @type table<uint, boolean>
@@ -21,6 +23,7 @@ libevent.on_init(function()
 end)
 
 libevent.on_load(function()
+  libdictionary.load()
   for _, player_table in pairs(global.players) do
     if player_table.gui then
       gui.load(player_table.gui)
@@ -40,6 +43,15 @@ end)
 libevent.on_player_created(function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   migration.init_player(player)
+end)
+
+libevent.on_player_joined_game(function(e)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  libdictionary.translate(player)
+end)
+
+libevent.on_player_left_game(function(e)
+  libdictionary.cancel_translation(e.player_index)
 end)
 
 libevent.register("rb-linked-focus-search", function(e)
@@ -131,5 +143,17 @@ libevent.on_runtime_mod_setting_changed(function(e)
   if e.setting == "rb-show-overhead-button" then
     local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
     gui.refresh_overhead_button(player)
+  end
+end)
+
+libevent.on_string_translated(function(e)
+  local result = libdictionary.process_translation(e)
+  if result then
+    for _, player_index in pairs(result.players) do
+      local player_table = global.players[player_index]
+      if player_table then
+        player_table.search_strings = result.dictionaries.search
+      end
+    end
   end
 end)
