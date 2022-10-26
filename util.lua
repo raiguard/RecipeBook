@@ -36,19 +36,13 @@ function util.group_is_hidden(group, player_crafting)
 end
 
 --- @param prototype ObjectPrototype
---- @param player_crafting boolean?
 --- @return boolean
-function util.is_hidden(prototype, player_crafting)
+function util.is_hidden(prototype)
   if prototype.object_name == "LuaFluidPrototype" then
     return prototype.hidden
   elseif prototype.object_name == "LuaItemPrototype" then
     return prototype.has_flag("hidden")
   elseif prototype.object_name == "LuaRecipePrototype" then
-    local hidden = prototype.hidden
-    -- TODO: This has inconsistent results
-    -- if not hidden and player_crafting then
-    --   return prototype.hidden_from_player_crafting
-    -- end
     return prototype.hidden
   end
   return false

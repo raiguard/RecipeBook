@@ -21,6 +21,7 @@
 --- @field close_button LuaGuiElement
 --- @field filter_group_table LuaGuiElement
 --- @field filter_scroll_pane LuaGuiElement
+--- @field filter_no_results_label LuaGuiElement
 --- @field page_scroll LuaGuiElement
 --- @field page_header_icon LuaGuiElement
 --- @field page_header_label LuaGuiElement

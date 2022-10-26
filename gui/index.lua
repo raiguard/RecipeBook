@@ -36,6 +36,7 @@ function gui:hide()
   if self.player.opened == self.refs.window then
     self.player.opened = nil
   end
+  self.player.set_shortcut_toggled("RecipeBook", false)
 end
 
 --- @param group_name string
@@ -59,6 +60,7 @@ function gui:show()
     self.player.opened = self.refs.window
     self.refs.window.force_auto_center()
   end
+  self.player.set_shortcut_toggled("RecipeBook", true)
 end
 
 --- @param object_name string
@@ -82,56 +84,89 @@ function gui:toggle_search()
     self.refs.search_textfield.visible = true
     self.refs.search_textfield.focus()
   else
-    self.state.search_query = ""
-
     self.refs.search_button.style = "frame_action_button"
     self.refs.search_button.sprite = "utility/search_white"
     self.refs.search_textfield.visible = false
-    self.refs.search_textfield.text = ""
+    if #self.state.search_query > 0 then
+      self.refs.search_textfield.text = ""
+      self.state.search_query = ""
+      self:update_filter_panel()
+    end
   end
 end
 
--- Update the filter panel based on the current search query
-function gui:update_filter_search() end
-
--- Update filter panel contents based on active visibility settings
-function gui:update_filter_visibility()
+-- Update filter panel contents based on filters and search query
+function gui:update_filter_panel()
+  local profiler = game.create_profiler()
   local show_hidden = self.state.show_hidden
   local show_unresearched = self.state.show_unresearched
+  local search_query = self.state.search_query
+  local current_page = self.state.current_page
   local db = global.database
   local force_index = self.player.force.index
   local tabs_table = self.refs.filter_group_table
   local groups_scroll = self.refs.filter_scroll_pane
-  local first_visible
+  local first_valid
 
   for _, group in pairs(groups_scroll.children) do
-    local i = 0
+    local filtered_count = 0
+    local searched_count = 0
     for _, subgroup in pairs(group.children) do
       for _, button in pairs(subgroup.children) do
         local entry = db[button.sprite]
         local _, base_prototype = next(entry)
-        local is_hidden = util.is_hidden(base_prototype, true)
+        local is_hidden = util.is_hidden(base_prototype)
         local is_researched = entry.researched and entry.researched[force_index] or false
-        local is_visible = (show_hidden or not is_hidden) and (show_unresearched or is_researched)
-        button.visible = is_visible
-        if is_visible then
-          i = i + 1
+        local filters_match = (show_hidden or not is_hidden) and (show_unresearched or is_researched)
+        if filters_match then
+          filtered_count = filtered_count + 1
+          local query_match = #search_query == 0
+            or string.find(string.gsub(button.sprite, "-", " "), search_query, 1, true) --[[@as boolean]]
+          button.visible = query_match
+          if query_match then
+            searched_count = searched_count + 1
+            local style = "flib_slot_button_default"
+            if is_hidden then
+              style = "flib_slot_button_grey"
+            elseif not is_researched then
+              style = "flib_slot_button_red"
+            end
+            button.style = style
+          end
+        else
+          button.visible = false
         end
       end
     end
-    local is_visible = i > 0
+    local is_visible = filtered_count > 0
+    local has_search_matches = searched_count > 0
+    local group_tab = tabs_table[group.name]
     tabs_table[group.name].visible = is_visible
-    -- group.visible = is_visible
-    if is_visible then
-      first_visible = first_visible or group.name
+    if is_visible and not has_search_matches then
+      group_tab.style = "rb_disabled_filter_group_button_tab"
+      group_tab.enabled = false
+    else
+      group_tab.style = "rb_filter_group_button_tab"
+      group_tab.enabled = group.name ~= self.state.selected_filter_group
+    end
+    if is_visible and has_search_matches then
+      first_valid = first_valid or group.name
     end
   end
 
-  if first_visible and groups_scroll[self.state.selected_filter_group].visible == false then
-    self:select_filter_group(first_visible)
+  if first_valid then
+    groups_scroll.visible = true
+    self.refs.filter_no_results_label.visible = false
+    local current_tab = tabs_table[self.state.selected_filter_group] --[[@as LuaGuiElement]]
+    if current_tab.visible == false or current_tab.style.name == "rb_disabled_filter_group_button_tab" then
+      self:select_filter_group(first_valid)
+    end
   else
-    -- TODO:
+    groups_scroll.visible = false
+    self.refs.filter_no_results_label.visible = true
   end
+  profiler.stop()
+  log({ "", "Update Filter Panel ", profiler })
 end
 
 --- @param player LuaPlayer
@@ -139,9 +174,7 @@ end
 --- @return Gui
 function gui.new(player, player_table)
   --- @type GuiRefs
-  local refs = libgui.build(player.gui.screen, {
-    templates.base(player.force --[[@as LuaForce]]),
-  })
+  local refs = libgui.build(player.gui.screen, { templates.base() })
 
   refs.titlebar_flow.drag_target = refs.window
   refs.window.force_auto_center()
@@ -170,7 +203,8 @@ function gui.new(player, player_table)
   gui.load(self)
   player_table.gui = self
 
-  self:update_filter_visibility()
+  self:select_filter_group(self.state.selected_filter_group)
+  self:update_filter_panel()
 
   return self
 end

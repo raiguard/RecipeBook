@@ -10,6 +10,8 @@ local util = require("__RecipeBook__.util")
 libevent.on_init(function()
   --- @type table<uint, PlayerTable>
   global.players = {}
+  --- @type table<uint, boolean>
+  global.update_force_guis = {} --
 
   migration.generic()
   for _, player in pairs(game.players) do
@@ -93,4 +95,33 @@ libevent.on_research_finished(function(e)
   database.on_technology_researched(technology, technology.force.index)
   profiler.stop()
   log({ "", "Unlock Tech ", profiler })
+  -- Update on the next tick in case multiple researches are done at once
+  global.update_force_guis[technology.force.index] = true
+end)
+
+libevent.on_tick(function()
+  if next(global.update_force_guis) then
+    for force_index in pairs(global.update_force_guis) do
+      local force = game.forces[force_index]
+      if force then
+        for _, player in pairs(force.players) do
+          local gui = util.get_gui(player)
+          if gui then
+            gui:update_filter_panel()
+          end
+        end
+      end
+    end
+    global.update_force_guis = {}
+  end
+end)
+
+libevent.on_lua_shortcut(function(e)
+  if e.prototype_name == "RecipeBook" then
+    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+    local gui = util.get_gui(player)
+    if gui then
+      gui:toggle()
+    end
+  end
 end)

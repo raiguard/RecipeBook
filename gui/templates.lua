@@ -2,9 +2,8 @@ local templates = {}
 
 local util = require("__RecipeBook__.util")
 
---- @param force LuaForce
-function templates.base(force)
-  local group_tabs, group_flows = templates.filter_pane(force)
+function templates.base()
+  local group_tabs, group_flows = templates.filter_pane()
 
   return {
     type = "frame",
@@ -17,24 +16,28 @@ function templates.base(force)
       type = "flow",
       style = "flib_titlebar_flow",
       ref = { "titlebar_flow" },
+      actions = {
+        on_click = "titlebar_flow",
+      },
       templates.frame_action_button("rb_nav_backward", { "gui.rb-nav-backward-instruction" }, "nav_backward_button"),
       templates.frame_action_button("rb_nav_forward", { "gui.rb-nav-forward-instruction" }, "nav_forward_button"),
       {
         type = "label",
         style = "frame_title",
-        style_mods = { bottom_padding = 2, top_padding = -2 },
         caption = { "mod-name.RecipeBook" },
         ignored_by_interaction = true,
       },
-      { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
+      { type = "empty-widget", style = "flib_titlebar_drag_handle" },
       {
         type = "textfield",
         style = "long_number_textfield",
         style_mods = { top_margin = -3 },
+        lose_focus_on_confirm = true,
+        clear_and_focus_on_right_click = true,
         visible = false,
         ref = { "search_textfield" },
         actions = {
-          on_text_changed = "search_textfield_updated",
+          on_text_changed = "search_textfield",
         },
       },
       templates.frame_action_button("utility/search", { "gui.rb-search-instruction" }, "search_button"),
@@ -44,7 +47,12 @@ function templates.base(force)
         "show_unresearched_button"
       ),
       templates.frame_action_button("rb_show_hidden", { "gui.rb-show-hidden-instruction" }, "show_hidden_button"),
-      { type = "line", style_mods = { top_margin = -2, bottom_margin = 2 }, direction = "vertical" },
+      {
+        type = "line",
+        style_mods = { top_margin = -2, bottom_margin = 2 },
+        direction = "vertical",
+        ignored_by_interaction = true,
+      },
       templates.frame_action_button("rb_pin", { "gui.rb-pin-instruction" }, "pin_button"),
       templates.frame_action_button("utility/close", { "gui.close-instruction" }, "close_button"),
     },
@@ -74,6 +82,19 @@ function templates.base(force)
               vertical_scroll_policy = "always",
               ref = { "filter_scroll_pane" },
               children = group_flows,
+            },
+            {
+              type = "label",
+              style_mods = {
+                width = 40 * 10,
+                height = 40 * 14,
+                vertically_stretchable = true,
+                horizontal_align = "center",
+                vertical_align = "center",
+              },
+              caption = { "gui.no-recipes-found" },
+              ref = { "filter_no_results_label" },
+              visible = false,
             },
           },
         },
@@ -116,10 +137,9 @@ function templates.base(force)
   }
 end
 
---- @param force LuaForce
 --- @return GuiBuildStructure[] group_tabs
 --- @return GuiBuildStructure[] group_flows
-function templates.filter_pane(force)
+function templates.filter_pane()
   -- Create tables for each subgroup
   local group_tabs = {}
   local group_flows = {}
@@ -148,18 +168,9 @@ function templates.filter_pane(force)
       table.insert(group_flow, subgroup_table)
       for _, prototype in pairs(prototypes) do
         local path = util.sprite_path[prototype.object_name] .. "/" .. prototype.name
-        local entry = global.database[path]
-        local hidden = util.is_hidden(prototype, true)
-        local researched = entry.researched and entry.researched[force.index] or false
-        local style = "slot_button"
-        if hidden then
-          style = "flib_slot_button_grey"
-        elseif not researched then
-          style = "flib_slot_button_red"
-        end
         table.insert(subgroup_table, {
           type = "sprite-button",
-          style = style,
+          style = "flib_slot_button_default",
           sprite = path,
           tooltip = { "", prototype.localised_name, "\n", path },
           actions = { on_click = "prototype_button" },

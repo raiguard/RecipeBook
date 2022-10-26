@@ -17,6 +17,22 @@ data:extend({
     linked_game_control = "focus-search",
   },
   {
+    type = "shortcut",
+    name = "RecipeBook",
+    localised_name = { "mod-name.RecipeBook" },
+    action = "lua",
+    icon = { filename = "__RecipeBook__/graphics/shortcut-x32-black.png", size = 32, flags = { "gui-icon" } },
+    disabled_icon = { filename = "__RecipeBook__/graphics/shortcut-x32-white.png", size = 32, flags = { "gui-icon" } },
+    small_icon = { filename = "__RecipeBook__/graphics/shortcut-x24-black.png", size = 24, flags = { "gui-icon" } },
+    small_disabled_icon = {
+      filename = "__RecipeBook__/graphics/shortcut-x24-white.png",
+      size = 24,
+      flags = { "gui-icon" },
+    },
+    toggleable = true,
+    associated_control_input = "rb-toggle",
+  },
+  {
     type = "sprite",
     name = "rb_nav_backward_black",
     filename = "__RecipeBook__/graphics/nav-backward-black.png",
@@ -103,9 +119,6 @@ data:extend({
 })
 
 local styles = data.raw["gui-style"]["default"]
-
-styles.rb_slot_button_hidden = table.deepcopy(styles.flib_slot_button_grey)
-styles.rb_slot_button_hidden.draw_grayscale_picture = true
 
 styles.rb_filter_group_button_tab = {
   type = "button_style",

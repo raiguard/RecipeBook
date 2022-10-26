@@ -121,13 +121,22 @@ function database.build_groups()
 
   -- Add missing items and fluids
   log("Phase 2: Missing materials")
-  for type, prototypes in pairs({ item = items, fluid = fluids }) do
-    for name, prototype in pairs(prototypes) do
-      local path = type .. "/" .. name
+  for name, prototype in pairs(items) do
+    -- If the item is "spawnable", then it is a utility on the shortcut bar
+    if not prototype.has_flag("spawnable") then
+      local path = "item/" .. name
       if not db[path] then
         add_to_subgroup(prototype)
-        db[path] = { [type] = prototype }
+        db[path] = { item = prototype }
       end
+    end
+  end
+  for name, prototype in pairs(fluids) do
+    -- If the item is "spawnable", then it is a utility on the shortcut bar
+    local path = "fluid/" .. name
+    if not db[path] then
+      add_to_subgroup(prototype)
+      db[path] = { fluid = prototype }
     end
   end
 
@@ -187,6 +196,57 @@ function database.build_groups()
   log({ "", "Database generation finished, ", profiler })
 end
 
+--- @param entity LuaEntityPrototype
+--- @param force_index uint
+function database.on_entity_unlocked(entity, force_index)
+  local db = global.database
+  local entry = db["entity/" .. entity.name]
+  if entry then
+    add_researched(entry, force_index)
+  end
+  if entity.type == "mining-drill" then
+    -- Resources
+    local categories = entity.resource_categories --[[@as table<string, _>]]
+    local fluidbox = entity.fluidbox_prototypes[1]
+    local fluidbox_filter = fluidbox and fluidbox.filter or nil
+    for resource_name, resource in
+      pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } }))
+    do
+      local mineable = resource.mineable_properties
+      if categories[resource.resource_category] then
+        -- Check fluid compatibility
+        local required_fluid = mineable.required_fluid
+        if not required_fluid or (fluidbox and (not fluidbox_filter or fluidbox_filter == required_fluid)) then
+          -- Add resource entry
+          local resource_entry = db["entity/" .. resource_name]
+          if resource_entry then
+            add_researched(resource_entry, force_index)
+          end
+          for _, product in pairs(mineable.products) do
+            database.on_product_unlocked(product, force_index)
+          end
+        end
+      end
+    end
+  elseif entity.type == "offshore-pump" then
+    -- Pumped fluid
+    local fluid = entity.fluid
+    if fluid then
+      local fluid_entry = db["fluid/" .. fluid.name]
+      if fluid_entry then
+        add_researched(fluid_entry, force_index)
+      end
+    end
+  elseif entity.type == "boiler" then
+    -- Produced fluid
+    for _, fluidbox in pairs(entity.fluidbox_prototypes) do
+      if fluidbox.production_type == "output" and fluidbox.filter then
+        database.on_product_unlocked({ type = "fluid", name = fluidbox.filter.name }, force_index)
+      end
+    end
+  end
+end
+
 --- @param product Product
 --- @param force_index uint
 function database.on_product_unlocked(product, force_index)
@@ -210,39 +270,15 @@ function database.on_product_unlocked(product, force_index)
         database.on_product_unlocked(product, force_index)
       end
     end
+    -- Burnt results
+    local burnt_result = prototype.burnt_result
+    if burnt_result then
+      database.on_product_unlocked({ type = "item", name = burnt_result.name }, force_index)
+    end
+    -- Place result
     local place_result = prototype.place_result
     if place_result then
-      if place_result.type == "mining-drill" then
-        -- Resources
-        local categories = place_result.resource_categories --[[@as table<string, _>]]
-        -- TODO: Fluid filters?
-        local supports_fluid = place_result.fluidbox_prototypes[1] and true or false
-        for resource_name, resource in
-          pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } }))
-        do
-          local mineable = resource.mineable_properties
-          if categories[resource.resource_category] and (supports_fluid or not mineable.required_fluid) then
-            local resource_entry = db["entity/" .. resource_name]
-            if resource_entry then
-              add_researched(resource_entry, force_index)
-            end
-            for _, product in pairs(mineable.products) do
-              database.on_product_unlocked(product, force_index)
-            end
-          end
-        end
-      elseif place_result.type == "offshore-pump" then
-        -- Pumped fluid
-        local fluid = place_result.fluid
-        if fluid then
-          local fluid_entry = db["fluid/" .. fluid.name]
-          if fluid_entry then
-            add_researched(fluid_entry, force_index)
-          end
-        end
-      elseif place_result.type == "boiler" then
-        -- TODO:
-      end
+      database.on_entity_unlocked(place_result, force_index)
     end
   end
 end
@@ -283,22 +319,39 @@ end
 
 --- @param force LuaForce
 function database.refresh_researched(force)
-  local db = global.database
-
   local force_index = force.index
-  for _, recipe in pairs(force.recipes) do
-    if recipe.enabled then
-      local entry = db["recipe/" .. recipe.name]
-      if entry then
-        entry.researched = entry.researched or {}
-        entry.researched[force.index] = true
-        database.on_recipe_unlocked(recipe, force_index)
+  -- Gather-able items
+  for _, entity in
+    pairs(game.get_filtered_entity_prototypes({
+      { filter = "type", type = "simple-entity" },
+      { filter = "type", type = "tree" },
+    }))
+  do
+    if entity.type == "tree" or entity.count_as_rock_for_filtered_deconstruction then
+      local mineable = entity.mineable_properties
+      if mineable.minable and mineable.products then
+        for _, product in pairs(mineable.products) do
+          database.on_product_unlocked(product, force_index)
+        end
       end
     end
   end
+  -- Technologies
   for _, technology in pairs(force.technologies) do
     if technology.researched then
       database.on_technology_researched(technology, force_index)
+    end
+  end
+  -- Recipes (some may be enabled without technologies)
+  local db = global.database
+  for _, recipe in pairs(force.recipes) do
+    -- Some recipes will be enabled from the start, but will only be craftable in machines
+    if recipe.enabled and not (recipe.prototype.enabled and recipe.prototype.hidden_from_player_crafting) then
+      local entry = db["recipe/" .. recipe.name]
+      if entry and not (entry.researched or {})[force_index] then
+        add_researched(entry, force_index)
+        database.on_recipe_unlocked(recipe, force_index)
+      end
     end
   end
 end
