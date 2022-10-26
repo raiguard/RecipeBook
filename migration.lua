@@ -28,6 +28,7 @@ function migration.migrate_player(player)
     existing_gui:destroy()
   end
   gui.new(player, player_table)
+  gui.refresh_overhead_button(player)
 end
 
 return migration

@@ -1,6 +1,7 @@
 local libevent = require("__flib__.event")
 local libgui = require("__flib__.gui")
 local libmigration = require("__flib__.migration")
+local mod_gui = require("__core__.lualib.mod-gui")
 
 local database = require("__RecipeBook__.database")
 local gui = require("__RecipeBook__.gui.index")
@@ -123,5 +124,12 @@ libevent.on_lua_shortcut(function(e)
     if gui then
       gui:toggle()
     end
+  end
+end)
+
+libevent.on_runtime_mod_setting_changed(function(e)
+  if e.setting == "rb-show-overhead-button" then
+    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+    gui.refresh_overhead_button(player)
   end
 end)

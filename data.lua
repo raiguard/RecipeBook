@@ -34,6 +34,13 @@ data:extend({
   },
   {
     type = "sprite",
+    name = "rb_logo",
+    filename = "__RecipeBook__/graphics/shortcut-x32-black.png",
+    size = 32,
+    flags = { "gui-icon" },
+  },
+  {
+    type = "sprite",
     name = "rb_nav_backward_black",
     filename = "__RecipeBook__/graphics/nav-backward-black.png",
     size = 32,

@@ -1,4 +1,5 @@
 local libgui = require("__flib__.gui")
+local mod_gui = require("__core__.lualib.mod-gui")
 
 local handlers = require("__RecipeBook__.gui.handlers")
 local page = require("__RecipeBook__.gui.page")
@@ -211,6 +212,27 @@ end
 
 function gui.load(self)
   setmetatable(self, { __index = gui })
+end
+
+--- @param player LuaPlayer
+function gui.refresh_overhead_button(player)
+  local button_flow = mod_gui.get_button_flow(player)
+  if button_flow.RecipeBook then
+    button_flow.RecipeBook.destroy()
+  end
+  if player.mod_settings["rb-show-overhead-button"].value then
+    libgui.add(mod_gui.get_button_flow(player), {
+      type = "sprite-button",
+      name = "RecipeBook",
+      style = mod_gui.button_style,
+      style_mods = { padding = 8 },
+      tooltip = { "mod-name.RecipeBook" },
+      sprite = "rb_logo",
+      actions = {
+        on_click = "overhead_button",
+      },
+    })
+  end
 end
 
 return gui

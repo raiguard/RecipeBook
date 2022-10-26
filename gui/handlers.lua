@@ -22,6 +22,11 @@ function handlers.filter_group_button(self, e)
 end
 
 --- @param self Gui
+function handlers.overhead_button(self)
+  self:toggle()
+end
+
+--- @param self Gui
 --- @param e on_gui_click
 function handlers.pin_button(self, e)
   self.state.pinned = not self.state.pinned
