@@ -211,9 +211,6 @@ styles.rb_list_box_row_odd = {
 styles.rb_small_transparent_slot = {
   type = "button_style",
   parent = "transparent_slot",
-  bottom_margin = 0,
   left_margin = 4,
-  right_margin = 4,
-  top_margin = 0,
   size = 28,
 }

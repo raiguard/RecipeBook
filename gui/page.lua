@@ -223,6 +223,7 @@ function page.update(self, prototype_path)
   profiler.reset()
 
   self.refs.page_header_icon.sprite = sprite
+  self.refs.page_header_icon.visible = true
   self.refs.page_header_label.caption = localised_name
   self.refs.page_header_type_label.caption = libtable.concat(types, "/")
 

@@ -27,7 +27,7 @@ function templates.base()
         caption = { "mod-name.RecipeBook" },
         ignored_by_interaction = true,
       },
-      { type = "empty-widget", style = "flib_titlebar_drag_handle" },
+      { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
       {
         type = "textfield",
         style = "long_number_textfield",
@@ -59,6 +59,47 @@ function templates.base()
     {
       type = "flow",
       style_mods = { horizontal_spacing = 12 },
+      {
+        type = "frame",
+        style = "inside_shallow_frame",
+        style_mods = { width = 500 },
+        direction = "vertical",
+        {
+          type = "frame",
+          style = "subheader_frame",
+          {
+            type = "sprite-button",
+            style = "rb_small_transparent_slot",
+            ref = { "page_header_icon" },
+            visible = false,
+          },
+          {
+            type = "label",
+            style = "subheader_caption_label",
+            caption = { "gui.rb-welcome-title" },
+            ref = { "page_header_label" },
+          },
+          { type = "empty-widget", style = "flib_horizontal_pusher" },
+          {
+            type = "label",
+            style = "info_label",
+            style_mods = { font = "default-semibold", right_margin = 8 },
+            ref = { "page_header_type_label" },
+          },
+        },
+        {
+          type = "scroll-pane",
+          style = "flib_naked_scroll_pane",
+          style_mods = { horizontally_stretchable = true, vertically_stretchable = true },
+          vertical_scroll_policy = "always",
+          ref = { "page_scroll" },
+          {
+            type = "label",
+            style_mods = { horizontally_stretchable = true, single_line = false },
+            caption = { "gui.rb-welcome-text", table_size(global.database) },
+          },
+        },
+      },
       {
         type = "frame",
         style = "inside_deep_frame",
@@ -97,40 +138,6 @@ function templates.base()
               visible = false,
             },
           },
-        },
-      },
-      {
-        type = "frame",
-        style = "inside_shallow_frame",
-        style_mods = { width = 500 },
-        direction = "vertical",
-        {
-          type = "frame",
-          style = "subheader_frame",
-          {
-            type = "sprite-button",
-            style = "rb_small_transparent_slot",
-            ref = { "page_header_icon" },
-          },
-          {
-            type = "label",
-            style = "caption_label",
-            ref = { "page_header_label" },
-          },
-          { type = "empty-widget", style = "flib_horizontal_pusher" },
-          {
-            type = "label",
-            style = "info_label",
-            style_mods = { font = "default-semibold", right_margin = 8 },
-            ref = { "page_header_type_label" },
-          },
-        },
-        {
-          type = "scroll-pane",
-          style = "flib_naked_scroll_pane",
-          style_mods = { horizontally_stretchable = true, vertically_stretchable = true },
-          vertical_scroll_policy = "always",
-          ref = { "page_scroll" },
         },
       },
     },
