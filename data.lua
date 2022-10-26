@@ -191,6 +191,50 @@ styles.rb_filter_group_flow = {
   vertical_spacing = 0,
 }
 
+styles.rb_list_box_caption = {
+  type = "checkbox_style",
+  font = "default-bold",
+  default_graphical_set = {
+    filename = "__RecipeBook__/graphics/list-expanded-white.png",
+    size = 16,
+  },
+  hovered_graphical_set = {
+    filename = "__RecipeBook__/graphics/list-expanded-orange.png",
+    size = 16,
+  },
+  clicked_graphical_set = {
+    filename = "__RecipeBook__/graphics/list-expanded-orange.png",
+    size = 16,
+  },
+  selected_graphical_set = {
+    filename = "__RecipeBook__/graphics/list-collapsed-white.png",
+    size = 16,
+  },
+  selected_hovered_graphical_set = {
+    filename = "__RecipeBook__/graphics/list-collapsed-orange.png",
+    size = 16,
+    scale = 0.5,
+  },
+  selected_clicked_graphical_set = {
+    filename = "__RecipeBook__/graphics/list-collapsed-orange.png",
+    size = 16,
+    scale = 0.5,
+  },
+  checkmark = {
+    filename = "__core__/graphics/empty.png",
+    size = 1,
+    scale = 8,
+    priority = "very-low",
+  },
+  disabled_checkmark = {
+    filename = "__core__/graphics/empty.png",
+    size = 1,
+    scale = 8,
+    priority = "very-low",
+  },
+  text_padding = 5,
+}
+
 styles.rb_list_box_row_even = {
   type = "button_style",
   font = "default",

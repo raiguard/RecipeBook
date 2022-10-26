@@ -64,6 +64,19 @@ function templates.base()
         style = "inside_deep_frame",
         direction = "vertical",
         {
+          type = "frame",
+          style = "negative_subheader_frame",
+          style_mods = { horizontally_stretchable = true },
+          ref = { "filter_warning_frame" },
+          visible = false,
+          {
+            type = "label",
+            style = "bold_label",
+            style_mods = { left_padding = 8 },
+            caption = { "gui.rb-localised-search-unavailable" },
+          },
+        },
+        {
           type = "table",
           style = "filter_group_table",
           column_count = 6,
@@ -178,12 +191,13 @@ function templates.filter_pane()
       local subgroup_table = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
       table.insert(group_flow, subgroup_table)
       for _, prototype in pairs(prototypes) do
+        --- @cast prototype GenericPrototype
         local path = util.sprite_path[prototype.object_name] .. "/" .. prototype.name
         table.insert(subgroup_table, {
           type = "sprite-button",
           style = "flib_slot_button_default",
           sprite = path,
-          tooltip = { "", prototype.localised_name, "\n", path },
+          tooltip = { "gui.rb-prototype-tooltip", prototype.localised_name, path, prototype.localised_description },
           actions = { on_click = "prototype_button" },
           tags = { prototype = path },
         })
@@ -228,10 +242,9 @@ function templates.list_box(caption, objects, right_caption)
       table.insert(
         rows,
         templates.prototype_button(
-          object.type,
-          object.name,
+          game[object.type .. "_prototypes"][object.name],
           "rb_list_box_row_" .. (i % 2 == 0 and "even" or "odd"),
-          { "", object.amount or "", game[object.type .. "_prototypes"][object.name].localised_name },
+          object.amount or "",
           object.remark
         )
       )
@@ -249,7 +262,7 @@ function templates.list_box(caption, objects, right_caption)
       style = "centering_horizontal_flow",
       {
         type = "checkbox",
-        style_mods = { font = "default-bold" },
+        style = "rb_list_box_caption",
         caption = { "", caption, " (", num_objects, ")" },
         state = false,
         actions = {
@@ -273,13 +286,13 @@ function templates.list_box(caption, objects, right_caption)
   }
 end
 
---- @param type string
---- @param name string
+--- @param prototype GenericPrototype
 --- @param style string
---- @param caption LocalisedString
+--- @param amount_caption LocalisedString?
 --- @param remark_caption LocalisedString?
-function templates.prototype_button(type, name, style, caption, remark_caption)
-  local path = type .. "/" .. name
+function templates.prototype_button(prototype, style, amount_caption, remark_caption)
+  -- TODO: We actually need to get the group so we can show all the tooltips
+  local path = util.sprite_path[prototype.object_name] .. "/" .. prototype.name
   local remark = {}
   if remark_caption then
     -- TODO: Add "remark" capability to API to eliminate this hack
@@ -301,7 +314,8 @@ function templates.prototype_button(type, name, style, caption, remark_caption)
     -- TODO: Add icon_horizontal_align support to sprite-buttons
     -- sprite = object.type .. "/" .. object.name,
     -- TODO: Consistent spacing
-    caption = { "", "            ", caption },
+    caption = { "", "            ", amount_caption or "", prototype.localised_name },
+    tooltip = { "gui.rb-prototype-tooltip", prototype.localised_name, path, prototype.localised_description },
     actions = { on_click = "prototype_button" },
     tags = { prototype = path },
     {

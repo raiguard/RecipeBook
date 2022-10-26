@@ -174,6 +174,10 @@ function gui:update_filter_panel()
   log({ "", "Update Filter Panel ", profiler })
 end
 
+function gui:update_translation_warning()
+  self.refs.filter_warning_frame.visible = not self.player_table.search_strings
+end
+
 --- @param player LuaPlayer
 --- @param player_table PlayerTable
 --- @return Gui
@@ -210,6 +214,7 @@ function gui.new(player, player_table)
 
   self:select_filter_group(self.state.selected_filter_group)
   self:update_filter_panel()
+  self:update_translation_warning()
 
   return self
 end

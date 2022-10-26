@@ -19,6 +19,7 @@
 --- @field show_unresearched_button LuaGuiElement
 --- @field pin_button LuaGuiElement
 --- @field close_button LuaGuiElement
+--- @field filter_warning_frame LuaGuiElement
 --- @field filter_group_table LuaGuiElement
 --- @field filter_scroll_pane LuaGuiElement
 --- @field filter_no_results_label LuaGuiElement

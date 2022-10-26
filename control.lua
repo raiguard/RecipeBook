@@ -153,6 +153,9 @@ libevent.on_string_translated(function(e)
       local player_table = global.players[player_index]
       if player_table then
         player_table.search_strings = result.dictionaries.search
+        if player_table.gui and player_table.gui.refs.window.valid then
+          player_table.gui:update_translation_warning()
+        end
       end
     end
   end

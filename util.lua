@@ -53,6 +53,7 @@ util.sprite_path = {
   ["LuaFluidPrototype"] = "fluid",
   ["LuaItemPrototype"] = "item",
   ["LuaRecipePrototype"] = "recipe",
+  ["LuaTechnologyPrototype"] = "technology",
 }
 
 return util
