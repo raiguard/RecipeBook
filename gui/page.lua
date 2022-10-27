@@ -13,11 +13,12 @@ local crafting_machine = {
 local page = {}
 
 --- @param self Gui
+--- @return boolean?
 function page.update(self, prototype_path)
   -- TODO: This currently redraws a page if you click a grouped item, then its recipe, etc
   -- Proper grouping of prototypes will fix this
   if self.state.current_page == prototype_path then
-    return
+    return true
   end
 
   log("Updating page to " .. prototype_path)
@@ -48,8 +49,11 @@ function page.update(self, prototype_path)
       components,
       templates.list_box(
         "Ingredients",
+        -- TODO: Handle amount ranges and probabilities
         libtable.map(recipe.ingredients, function(v)
-          v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
+          if v.amount then
+            v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
+          end
           return v
         end),
         {
@@ -66,7 +70,9 @@ function page.update(self, prototype_path)
       templates.list_box(
         "Products",
         libtable.map(recipe.products, function(v)
-          v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
+          if v.amount then
+            v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
+          end
           return v
         end)
       )
@@ -235,6 +241,8 @@ function page.update(self, prototype_path)
   log({ "", "Build GUI ", profiler })
 
   self.state.current_page = prototype_path
+
+  return true
 end
 
 return page

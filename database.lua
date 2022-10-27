@@ -9,6 +9,17 @@ local util = require("__RecipeBook__.util")
 -- Don't rely on translated strings at all
 -- Type annotations!!!
 
+-- TODO: Use data-stage properties instead of hardcoding
+local excluded_categories = {
+  ["ee-testing-tool"] = true,
+  ["big-turbine"] = true,
+  ["condenser-turbine"] = true,
+  ["delivery-cannon"] = true,
+  ["spaceship-antimatter-engine"] = true,
+  ["spaceship-ion-engine"] = true,
+  ["spaceship-rocket-engine"] = true,
+}
+
 local database = {}
 
 --- @param a GenericPrototype
@@ -82,43 +93,45 @@ function database.build_groups()
   -- Start from recipes
   log("Phase 1: Recipes")
   for recipe_name, recipe_prototype in pairs(recipes) do
-    add_to_subgroup(recipe_prototype)
-    local path = "recipe/" .. recipe_name
-    db[path] = { recipe = recipe_prototype }
-    -- If there is exactly one product, and its icon is the same, then group them
-    local main_product = recipe_prototype.main_product
-    if not main_product then
-      local products = recipe_prototype.products
-      if #products == 1 then
-        main_product = products[1]
+    if not excluded_categories[recipe_prototype.category] then
+      add_to_subgroup(recipe_prototype)
+      local path = "recipe/" .. recipe_name
+      db[path] = { recipe = recipe_prototype }
+      -- If there is exactly one product, and its icon is the same, then group them
+      local main_product = recipe_prototype.main_product
+      if not main_product then
+        local products = recipe_prototype.products
+        if #products == 1 then
+          main_product = products[1]
+        end
       end
-    end
-    if main_product then
-      local product_prototype
-      if main_product.type == "item" then
-        product_prototype = items[main_product.name]
-      else
-        product_prototype = fluids[main_product.name]
-      end
-
-      if
-        product_prototype
-        and not db[main_product.type .. "/" .. main_product.name]
-        and compare_icons(recipe_prototype, product_prototype)
-      then
-        -- Associate this main_product with the recipe entry, and sync the two entries to the same set of prototypes
-        db[path][main_product.type] = product_prototype
-        db[main_product.type .. "/" .. main_product.name] = db[path]
-
+      if main_product then
+        local product_prototype
         if main_product.type == "item" then
-          local place_result = product_prototype.place_result
-          if
-            place_result
-            and not db["entity/" .. place_result.name]
-            and compare_icons(recipe_prototype, place_result)
-          then
-            db[path].entity = product_prototype.place_result
-            db["entity/" .. place_result.name] = db[path]
+          product_prototype = items[main_product.name]
+        else
+          product_prototype = fluids[main_product.name]
+        end
+
+        if
+          product_prototype
+          and not db[main_product.type .. "/" .. main_product.name]
+          and compare_icons(recipe_prototype, product_prototype)
+        then
+          -- Associate this main_product with the recipe entry, and sync the two entries to the same set of prototypes
+          db[path][main_product.type] = product_prototype
+          db[main_product.type .. "/" .. main_product.name] = db[path]
+
+          if main_product.type == "item" then
+            local place_result = product_prototype.place_result
+            if
+              place_result
+              and not db["entity/" .. place_result.name]
+              and compare_icons(recipe_prototype, place_result)
+            then
+              db[path].entity = product_prototype.place_result
+              db["entity/" .. place_result.name] = db[path]
+            end
           end
         end
       end

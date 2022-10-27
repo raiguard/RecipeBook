@@ -33,6 +33,7 @@ end)
 
 libevent.on_configuration_changed(function(e)
   if libmigration.on_config_changed(e, {}) then
+    libdictionary.init()
     migration.generic()
     for _, player in pairs(game.players) do
       migration.migrate_player(player)
@@ -46,8 +47,11 @@ libevent.on_player_created(function(e)
 end)
 
 libevent.on_player_joined_game(function(e)
-  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
-  libdictionary.translate(player)
+  local player_table = global.players[e.player_index]
+  if player_table and not player_table.search_strings then
+    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+    libdictionary.translate(player)
+  end
 end)
 
 libevent.on_player_left_game(function(e)
@@ -67,20 +71,23 @@ libevent.register("rb-linked-focus-search", function(e)
 end)
 
 libevent.register("rb-open-selected", function(e)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local selected_prototype = e.selected_prototype
   if not selected_prototype then
     return
   end
   local path = selected_prototype.base_type .. "/" .. selected_prototype.name
-  if not global.database[path] then
-    return
+  if global.database[path] then
+    local gui = util.get_gui(player)
+    if gui and gui:show_page(path) then
+      return
+    end
   end
-  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
-  local gui = util.get_gui(player)
-  if gui then
-    gui:show_page(path)
-    gui:show()
-  end
+  player.create_local_flying_text({
+    text = { "message.rb-no-info" },
+    create_at_cursor = true,
+  })
+  player.play_sound({ path = "utility/cannot_build" })
 end)
 
 libevent.register("rb-toggle", function(e)
@@ -113,6 +120,7 @@ libevent.on_research_finished(function(e)
 end)
 
 libevent.on_tick(function()
+  libdictionary.check_skipped()
   if next(global.update_force_guis) then
     for force_index in pairs(global.update_force_guis) do
       local force = game.forces[force_index]

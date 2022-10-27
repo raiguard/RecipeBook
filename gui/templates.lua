@@ -105,7 +105,7 @@ function templates.base()
                 horizontal_align = "center",
                 vertical_align = "center",
               },
-              caption = { "gui.no-recipes-found" },
+              caption = { "gui.nothing-found" },
               ref = { "filter_no_results_label" },
               visible = false,
             },
@@ -149,11 +149,7 @@ function templates.base()
           {
             type = "label",
             style_mods = { horizontally_stretchable = true, single_line = false },
-            caption = {
-              "gui.rb-welcome-text",
-              table_size(global.database),
-              global.__flib.dictionary.raw._total_strings,
-            },
+            caption = { "gui.rb-welcome-text" },
           },
         },
       },

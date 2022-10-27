@@ -65,8 +65,15 @@ function gui:show()
 end
 
 --- @param object_name string
+--- @return boolean?
 function gui:show_page(object_name)
-  page.update(self, object_name)
+  if page.update(self, object_name) then
+    self.refs.page_scroll.scroll_to_top()
+    if not self.refs.window.visible then
+      self:show()
+    end
+    return true
+  end
 end
 
 function gui:toggle()
