@@ -309,7 +309,6 @@ function templates.prototype_button(prototype, style, amount_caption, remark_cap
     style = style,
     -- TODO: Add icon_horizontal_align support to sprite-buttons
     -- sprite = object.type .. "/" .. object.name,
-    -- TODO: Consistent spacing
     caption = { "", "            ", amount_caption or "", prototype.localised_name },
     tooltip = { "gui.rb-prototype-tooltip", prototype.localised_name, path, prototype.localised_description },
     actions = { on_click = "prototype_button" },

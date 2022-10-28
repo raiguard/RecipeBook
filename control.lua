@@ -9,17 +9,7 @@ local migration = require("__RecipeBook__.migration")
 local util = require("__RecipeBook__.util")
 
 libevent.on_init(function()
-  libdictionary.init()
-
-  --- @type table<uint, PlayerTable>
-  global.players = {}
-  --- @type table<uint, boolean>
-  global.update_force_guis = {} --
-
-  migration.generic()
-  for _, player in pairs(game.players) do
-    migration.init_player(player)
-  end
+  migration.init()
 end)
 
 libevent.on_load(function()
@@ -32,7 +22,7 @@ libevent.on_load(function()
 end)
 
 libevent.on_configuration_changed(function(e)
-  if libmigration.on_config_changed(e, {}) then
+  if libmigration.on_config_changed(e, migration.by_version) then
     libdictionary.init()
     migration.generic()
     for _, player in pairs(game.players) do

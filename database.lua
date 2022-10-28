@@ -232,7 +232,7 @@ function database.on_entity_unlocked(entity, force_index)
       pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } }))
     do
       local mineable = resource.mineable_properties
-      if categories[resource.resource_category] then
+      if mineable.products and categories[resource.resource_category] then
         -- Check fluid compatibility
         local required_fluid = mineable.required_fluid
         if not required_fluid or (fluidbox and (not fluidbox_filter or fluidbox_filter == required_fluid)) then
