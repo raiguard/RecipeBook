@@ -84,12 +84,17 @@ return function(database, dictionaries, metadata)
     end
 
     -- Made in
-    local num_ingredients = #data.ingredients
+    local num_item_ingredients = 0
+    for _, ingredient in pairs(prototype.ingredients) do
+      if ingredient.type == "item" then
+        num_item_ingredients = num_item_ingredients + 1
+      end
+    end
     for crafter_name in pairs(global.prototypes.crafter) do
       local crafter_data = database.entity[crafter_name]
       local fluidbox_counts = metadata.crafter_fluidbox_counts[crafter_name] or { inputs = 0, outputs = 0 }
       if
-        (crafter_data.ingredient_limit or 255) >= num_ingredients
+        (crafter_data.ingredient_limit or 255) >= num_item_ingredients
         and crafter_data.recipe_categories_lookup[category]
         and fluidbox_counts.inputs >= fluids.ingredients
         and fluidbox_counts.outputs >= fluids.products
