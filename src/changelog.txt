@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.0
-Date: ????
+Date: 2022-10-30
   Features:
     - Added new page contents:
       - Number of module slots will be shown on all entities that support modules (https://todo.sr.ht/~raiguard/factorio-mods/57)
