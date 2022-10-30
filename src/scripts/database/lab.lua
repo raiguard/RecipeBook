@@ -12,12 +12,14 @@ return function(database, dictionaries)
       end
     end
 
+    local fuel_categories, fuel_filter = util.process_energy_source(prototype)
     database.entity[name] = {
       blueprintable = util.is_blueprintable(prototype),
       can_burn = {},
       class = "entity",
       entity_type = { class = "entity_type", name = prototype.type },
-      fuel_categories = util.process_energy_source(prototype),
+      fuel_categories = fuel_categories,
+      fuel_filter = fuel_filter,
       hidden = prototype.has_flag("hidden"),
       inputs = table.map(prototype.lab_inputs, function(v)
         return { class = "item", name = v }

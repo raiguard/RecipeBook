@@ -171,14 +171,20 @@ function util.get_size(prototype)
   end
 end
 
+--- @param prototype LuaEntityPrototype
 function util.process_energy_source(prototype)
   local burner = prototype.burner_prototype
   local fluid_energy_source = prototype.fluid_energy_source_prototype
   if burner then
     return util.convert_categories(burner.fuel_categories, "fuel_category")
   elseif fluid_energy_source then
+    local filter = fluid_energy_source.fluid_box.filter
+    if filter then
+      return {}, { class = "fluid", name = filter.name }
+    end
     return { { class = "fuel_category", name = "burnable-fluid" } }
   end
+  return {}
 end
 
 --- Safely retrive the given GUI, checking for validity.

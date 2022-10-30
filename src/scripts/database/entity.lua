@@ -23,7 +23,7 @@ return function(database, dictionaries, metadata)
       end
     end
 
-    local fuel_categories = util.process_energy_source(prototype) or {}
+    local fuel_categories, fuel_filter = util.process_energy_source(prototype)
 
     local expected_resources
     local mineable = prototype.mineable_properties
@@ -53,6 +53,7 @@ return function(database, dictionaries, metadata)
       equipment_categories = equipment_categories,
       expected_resources = expected_resources,
       fuel_categories = fuel_categories,
+      fuel_filter = fuel_filter,
       module_slots = prototype.module_inventory_size
           and prototype.module_inventory_size > 0
           and prototype.module_inventory_size

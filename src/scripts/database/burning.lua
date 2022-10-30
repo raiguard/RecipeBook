@@ -13,6 +13,13 @@ return function(database)
           local fuel_data = database[fuel_ident.class][fuel_ident.name]
           fuel_data.burned_in[#fuel_data.burned_in + 1] = { class = class, name = name }
         end
+        local fuel_filter = data.fuel_filter
+        if fuel_filter then
+          data.can_burn = { fuel_filter }
+          data.fuel_filter = nil
+          local fuel_data = database[fuel_filter.class][fuel_filter.name]
+          fuel_data.burned_in[#fuel_data.burned_in + 1] = { class = class, name = name }
+        end
         for i, category_ident in pairs(data.fuel_categories or {}) do
           local category_data = database.fuel_category[category_ident.name]
           if category_data then

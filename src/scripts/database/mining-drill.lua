@@ -9,13 +9,15 @@ function mining_drill_proc.build(database, dictionaries)
       category_data.mining_drills[#category_data.mining_drills + 1] = { class = "entity", name = name }
     end
 
+    local fuel_categories, fuel_filter = util.process_energy_source(prototype)
     database.entity[name] = {
       blueprintable = util.is_blueprintable(prototype),
       can_burn = {},
       class = "entity",
       enabled = true,
       entity_type = { class = "entity_type", name = prototype.type },
-      fuel_categories = util.process_energy_source(prototype),
+      fuel_categories = fuel_categories,
+      fuel_filter = fuel_filter,
       mining_area = math.ceil(prototype.mining_drill_radius * 2),
       mining_speed = prototype.mining_speed,
       module_slots = prototype.module_inventory_size

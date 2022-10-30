@@ -73,6 +73,7 @@ return function(database, dictionaries, metadata)
     end
 
     local is_hidden = prototype.has_flag("hidden")
+    local fuel_categories, fuel_filter = util.process_energy_source(prototype)
     database.entity[name] = {
       accepted_modules = {},
       blueprintable = util.is_blueprintable(prototype),
@@ -82,7 +83,8 @@ return function(database, dictionaries, metadata)
       crafting_speed = prototype.crafting_speed,
       entity_type = { class = "entity_type", name = prototype.type },
       fixed_recipe = fixed_recipe,
-      fuel_categories = util.process_energy_source(prototype),
+      fuel_categories = fuel_categories,
+      fuel_filter = fuel_filter,
       hidden = is_hidden,
       ingredient_limit = ingredient_limit,
       module_slots = prototype.module_inventory_size
