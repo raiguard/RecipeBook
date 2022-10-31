@@ -11,6 +11,7 @@ end
 function handlers.collapse_list_box(_, e)
   local state = e.element.state
   e.element.parent.parent.list_frame.style.height = state and 1 or 0
+  -- TODO: Keep track of collapsed states
 end
 
 --- @param self Gui
@@ -27,25 +28,8 @@ function handlers.overhead_button(self)
 end
 
 --- @param self Gui
---- @param e on_gui_click
-function handlers.pin_button(self, e)
-  self.state.pinned = not self.state.pinned
-  if self.state.pinned then
-    e.element.style = "flib_selected_frame_action_button"
-    e.element.sprite = "rb_pin_black"
-    self.refs.close_button.tooltip = { "gui.close" }
-    self.refs.search_button.tooltip = { "gui.search" }
-    if self.player.opened == self.refs.window then
-      self.player.opened = nil
-    end
-  else
-    e.element.style = "frame_action_button"
-    e.element.sprite = "rb_pin_white"
-    self.player.opened = self.refs.window
-    self.refs.window.force_auto_center()
-    self.refs.close_button.tooltip = { "gui.close-instruction" }
-    self.refs.search_button.tooltip = { "gui.rb-search-instruction" }
-  end
+function handlers.pin_button(self)
+  self:toggle_pinned()
 end
 
 --- @param self Gui

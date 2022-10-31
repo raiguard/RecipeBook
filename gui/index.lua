@@ -84,6 +84,26 @@ function gui:toggle()
   end
 end
 
+function gui:toggle_pinned()
+  self.state.pinned = not self.state.pinned
+  if self.state.pinned then
+    self.refs.pin_button.style = "flib_selected_frame_action_button"
+    self.refs.pin_button.sprite = "rb_pin_black"
+    self.refs.close_button.tooltip = { "gui.close" }
+    self.refs.search_button.tooltip = { "gui.search" }
+    if self.player.opened == self.refs.window then
+      self.player.opened = nil
+    end
+  else
+    self.refs.pin_button.style = "frame_action_button"
+    self.refs.pin_button.sprite = "rb_pin_white"
+    self.player.opened = self.refs.window
+    self.refs.window.force_auto_center()
+    self.refs.close_button.tooltip = { "gui.close-instruction" }
+    self.refs.search_button.tooltip = { "gui.rb-search-instruction" }
+  end
+end
+
 function gui:toggle_search()
   self.state.search_open = not self.state.search_open
   if self.state.search_open then
