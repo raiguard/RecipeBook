@@ -183,18 +183,18 @@ function templates.filter_pane()
     }
     table.insert(group_flows, group_flow)
     -- Assemble subgroups
-    for subgroup_name, prototypes in pairs(subgroups) do
+    for subgroup_name, subgroup in pairs(subgroups) do
       local subgroup_table = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
       table.insert(group_flow, subgroup_table)
-      for _, prototype in pairs(prototypes) do
-        --- @cast prototype GenericPrototype
-        local path = util.sprite_path[prototype.object_name] .. "/" .. prototype.name
+      for _, path in pairs(subgroup) do
+        local prototype = global.database[path].base
         table.insert(subgroup_table, {
           type = "sprite-button",
           style = "flib_slot_button_default",
           sprite = path,
           tooltip = { "gui.rb-prototype-tooltip", prototype.localised_name, path, prototype.localised_description },
           actions = { on_click = "prototype_button" },
+          -- TODO: Read the sprite instead?
           tags = { prototype = path },
         })
       end
@@ -288,7 +288,7 @@ end
 --- @param remark_caption LocalisedString?
 function templates.prototype_button(prototype, style, amount_caption, remark_caption)
   -- TODO: We actually need to get the group so we can show all the tooltips
-  local path = util.sprite_path[prototype.object_name] .. "/" .. prototype.name
+  local path = util.get_path(prototype)
   local remark = {}
   if remark_caption then
     -- TODO: Add "remark" capability to API to eliminate this hack

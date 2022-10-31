@@ -123,7 +123,7 @@ function gui:update_filter_panel()
       for _, button in pairs(subgroup.children) do
         local path = button.sprite
         local entry = db[path]
-        local _, base_prototype = next(entry)
+        local base_prototype = entry.base
         local is_hidden = util.is_hidden(base_prototype)
         local is_researched = entry.researched and entry.researched[force_index] or false
         local filters_match = (show_hidden or not is_hidden) and (show_unresearched or is_researched)

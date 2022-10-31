@@ -48,13 +48,14 @@ end
 --- @field parent_name string
 
 function database.build_groups()
-  log("Starting database generation")
+  log("Generating database")
   local profiler = game.create_profiler()
 
   local search_strings = dictionary.new("search")
 
   --- Each top-level prototype sorted into groups and subgroups for the search_interface
   --- @type table<string, table<string, GenericPrototype>>
+  log("Search tree")
   local search_tree = {}
   global.search_tree = search_tree
   for group_name, group_prototype in pairs(game.item_group_prototypes) do
@@ -70,34 +71,50 @@ function database.build_groups()
   global.database = db
 
   --- @param prototype GenericPrototype
-  local function add_to_subgroup(prototype)
-    local prototypes = search_tree[prototype.group.name][prototype.subgroup.name]
-    local order = prototype.order
-    -- TODO: Binary search
-    for i, other in pairs(prototypes) do
-      if order <= other.order then
-        added = true
-        table.insert(prototypes, i, prototype)
-        return
+  --- @param group_with GenericPrototype?
+  --- @return PrototypeEntry?
+  local function add_prototype(prototype, group_with)
+    local path, type = util.get_path(prototype)
+    local entry = db[path]
+    if not entry then
+      if group_with then
+        local parent_path = util.get_path(group_with)
+        local parent_entry = db[parent_path]
+        if parent_entry and not parent_entry[type] and compare_icons(prototype, group_with) then
+          parent_entry[type] = prototype -- Add this prototype to the parent
+          db[path] = parent_entry -- Associate this prototype with the group's data
+          return entry
+        end
       end
+
+      -- Add to database
+      db[path] = { base = prototype, [type] = prototype }
+      -- Add to filter panel and search dictionary
+      local subgroup = search_tree[prototype.group.name][prototype.subgroup.name]
+      local order = prototype.order
+      -- TODO: Binary search
+      for i, other_entry in pairs(subgroup) do
+        if order <= db[other_entry].base.order then
+          table.insert(subgroup, i, path)
+          return
+        end
+      end
+      table.insert(subgroup, path)
+      search_strings:add(util.prototype_type[prototype.object_name] .. "/" .. prototype.name, prototype.localised_name)
+
+      return db[path]
     end
-    table.insert(prototypes, prototype)
-    search_strings:add(util.sprite_path[prototype.object_name] .. "/" .. prototype.name, prototype.localised_name)
   end
 
-  local recipes = game.recipe_prototypes
-  local items = game.item_prototypes
-  local fluids = game.fluid_prototypes
-  local entities = game.entity_prototypes
-
-  -- Start from recipes
-  log("Phase 1: Recipes")
-  for recipe_name, recipe_prototype in pairs(recipes) do
+  -- Recipes determine what is actually attainable in the game
+  -- All other objects will only be added if they are related to a recipe
+  log("Recipes")
+  --- @type table<string, GenericPrototype>
+  local materials_to_add = {}
+  for _, recipe_prototype in pairs(game.recipe_prototypes) do
     if not excluded_categories[recipe_prototype.category] then
-      add_to_subgroup(recipe_prototype)
-      local path = "recipe/" .. recipe_name
-      db[path] = { recipe = recipe_prototype }
-      -- If there is exactly one product, and its icon is the same, then group them
+      add_prototype(recipe_prototype)
+      -- Group with the main product if the icons match
       local main_product = recipe_prototype.main_product
       if not main_product then
         local products = recipe_prototype.products
@@ -106,88 +123,60 @@ function database.build_groups()
         end
       end
       if main_product then
-        local product_prototype
-        if main_product.type == "item" then
-          product_prototype = items[main_product.name]
-        else
-          product_prototype = fluids[main_product.name]
-        end
+        local product_prototype = util.get_prototype(main_product)
+        add_prototype(product_prototype, recipe_prototype)
+      end
+      -- Mark all ingredients and products for adding in the next step
+      for _, ingredient in pairs(recipe_prototype.ingredients) do
+        materials_to_add[ingredient.type .. "/" .. ingredient.name] = util.get_prototype(ingredient)
+      end
+      for _, product in pairs(recipe_prototype.products) do
+        materials_to_add[product.type .. "/" .. product.name] = util.get_prototype(product)
+      end
+    end
+  end
 
-        if
-          product_prototype
-          and not db[main_product.type .. "/" .. main_product.name]
-          and compare_icons(recipe_prototype, product_prototype)
-        then
-          -- Associate this main_product with the recipe entry, and sync the two entries to the same set of prototypes
-          db[path][main_product.type] = product_prototype
-          db[main_product.type .. "/" .. main_product.name] = db[path]
+  log("Materials")
+  for _, prototype in pairs(materials_to_add) do
+    add_prototype(prototype) -- If a material was grouped with a recipe, this will do nothing
+    if prototype.object_name == "LuaItemPrototype" then
+      local place_result = prototype.place_result
+      if place_result then
+        add_prototype(place_result, prototype)
+      end
+      for _, product in pairs(prototype.rocket_launch_products) do
+        add_prototype(util.get_prototype(product))
+      end
+    end
+  end
 
-          if main_product.type == "item" then
-            local place_result = product_prototype.place_result
-            if
-              place_result
-              and not db["entity/" .. place_result.name]
-              and compare_icons(recipe_prototype, place_result)
-            then
-              db[path].entity = product_prototype.place_result
-              db["entity/" .. place_result.name] = db[path]
+  log("Resources")
+  for _, prototype in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+    local mineable = prototype.mineable_properties
+    if mineable.minable then
+      local products = mineable.products
+      if products and #products > 0 then
+        local should_add, grouped_material
+        for _, product in pairs(mineable.products) do
+          local product_prototype = util.get_prototype(product)
+          local product_path = util.get_path(product_prototype)
+          -- Only add resources whose products have an entry (and therefore, a recipe)
+          if db[product_path] then
+            should_add = true
+            if compare_icons(prototype, product_prototype) then
+              grouped_material = product_prototype
+              break
             end
           end
         end
-      end
-    end
-  end
-
-  -- Add missing items and fluids
-  log("Phase 2: Missing materials")
-  for name, prototype in pairs(items) do
-    -- If the item is "spawnable", then it is a utility on the shortcut bar
-    if not prototype.has_flag("spawnable") then
-      local path = "item/" .. name
-      if not db[path] then
-        add_to_subgroup(prototype)
-        db[path] = { item = prototype }
-      end
-    end
-  end
-  for name, prototype in pairs(fluids) do
-    -- If the item is "spawnable", then it is a utility on the shortcut bar
-    local path = "fluid/" .. name
-    if not db[path] then
-      add_to_subgroup(prototype)
-      db[path] = { fluid = prototype }
-    end
-  end
-
-  -- Add missing entities
-  log("Phase 3: Missing entities")
-  for name, prototype in pairs(entities) do
-    local path = "entity/" .. name
-    if not db[path] then
-      local products = prototype.mineable_properties.products
-      if products then
-        -- Group with entity
-        if #products == 1 then
-          local product = products[1]
-          local product_path = product.type .. "/" .. product.name
-          local product_group = db[product_path]
-          if
-            product_group
-            and not product_group.entity
-            and compare_icons(prototype, product_group[next(product_group)])
-          then
-            product_group.entity = prototype
-            db[path] = product_group
-          elseif prototype.type == "resource" then
-            add_to_subgroup(prototype)
-            db[path] = { entity = prototype }
-          end
+        if should_add then
+          add_prototype(prototype, grouped_material)
         end
       end
     end
   end
 
-  log("Phase 4: Technologies and research status")
+  log("Technologies and research status")
   for name in pairs(game.technology_prototypes) do
     local path = "technology/" .. name
     db[path] = {}
@@ -196,7 +185,7 @@ function database.build_groups()
     database.refresh_researched(force)
   end
 
-  -- Remove empty groups and subgroups
+  log("Search tree cleanup")
   for group_name, group in pairs(search_tree) do
     local size = 0
     for subgroup_name, subgroup in pairs(group) do
@@ -212,7 +201,7 @@ function database.build_groups()
   end
 
   profiler.stop()
-  log({ "", "Database generation finished, ", profiler })
+  log({ "", "Database generated, ", profiler })
 end
 
 --- @param entity LuaEntityPrototype

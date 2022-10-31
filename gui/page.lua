@@ -204,6 +204,11 @@ function page.update(self, prototype_path)
         end
       end
       libtable.insert(components, templates.list_box("Mined by", mined_by, required_fluid_str))
+
+      local mineable = entity.mineable_properties
+      if mineable.minable and #mineable.products > 0 then
+        libtable.insert(components, templates.list_box("Mining products", mineable.products))
+      end
     elseif entity.type == "mining-drill" then
       local categories = entity.resource_categories --[[@as table<string, _>]]
       -- TODO: Fluid filters?

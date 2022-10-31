@@ -19,6 +19,26 @@ function util.get_gui(player)
   end
 end
 
+--- @param prototype GenericPrototype
+--- @return string path
+--- @return string type
+function util.get_path(prototype)
+  local type = util.prototype_type[prototype.object_name]
+  return type .. "/" .. prototype.name, type
+end
+
+--- @param obj GenericObject
+--- @return GenericPrototype
+function util.get_prototype(obj)
+  return game[obj.type .. "_prototypes"][obj.name]
+end
+
+--- @param prototype GenericPrototype
+--- @return string path
+function util.get_type(prototype)
+  return util.prototype_type[prototype.object_name]
+end
+
 --- @param group PrototypeEntry
 --- @param player_crafting boolean?
 function util.group_is_hidden(group, player_crafting)
@@ -35,7 +55,7 @@ function util.group_is_hidden(group, player_crafting)
   end
 end
 
---- @param prototype ObjectPrototype
+--- @param prototype GenericPrototype
 --- @return boolean
 function util.is_hidden(prototype)
   if prototype.object_name == "LuaFluidPrototype" then
@@ -48,7 +68,7 @@ function util.is_hidden(prototype)
   return false
 end
 
-util.sprite_path = {
+util.prototype_type = {
   ["LuaEntityPrototype"] = "entity",
   ["LuaFluidPrototype"] = "fluid",
   ["LuaItemPrototype"] = "item",

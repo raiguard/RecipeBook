@@ -28,14 +28,12 @@
 --- @field page_header_label LuaGuiElement
 --- @field page_header_type_label LuaGuiElement
 
---- @alias Object GenericObject|Ingredient|Product
---- @alias ObjectPrototype LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype
-
 --- @class PlayerTable
 --- @field gui Gui?
 --- @field search_strings table<string, string>?
 
 --- @class PrototypeEntry
+--- @field base GenericPrototype
 --- @field recipe LuaRecipePrototype?
 --- @field item LuaItemPrototype?
 --- @field fluid LuaFluidPrototype?
