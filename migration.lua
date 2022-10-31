@@ -44,11 +44,11 @@ function migration.migrate_player(player)
     dictionary.translate(player)
   end
 
-  local existing_gui = util.get_gui(player)
+  local existing_gui = gui.get(player)
   if existing_gui then
-    existing_gui:destroy()
+    gui.destroy(existing_gui)
   end
-  gui.new(player, player_table)
+  gui.new(player, player_table) -- TODO: Defer this until they open it?
   gui.refresh_overhead_button(player)
 end
 

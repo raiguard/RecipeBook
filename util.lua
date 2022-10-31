@@ -2,23 +2,6 @@ local util = {}
 
 -- local coreutil = require("__core__.lualib.util")
 
---- @param player LuaPlayer
---- @return Gui?
-function util.get_gui(player)
-  local player_table = global.players[player.index]
-  if player_table then
-    local gui = player_table.gui
-    if gui and gui.refs.window.valid then
-      return gui
-    elseif gui then
-      gui:destroy()
-      gui = gui.new(player, player_table)
-      player.print({ "message.rb-recreated-gui" })
-      return gui
-    end
-  end
-end
-
 --- @param prototype GenericPrototype
 --- @return string path
 --- @return string type
