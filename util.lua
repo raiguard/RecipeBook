@@ -2,6 +2,12 @@ local util = {}
 
 -- local coreutil = require("__core__.lualib.util")
 
+util.crafting_machine = {
+  ["assembling-machine"] = true,
+  ["furnace"] = true,
+  ["rocket-silo"] = true,
+}
+
 --- @param prototype GenericPrototype
 --- @return string path
 --- @return string type

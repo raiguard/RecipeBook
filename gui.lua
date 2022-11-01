@@ -10,122 +10,10 @@ local root = {}
 local root_mt = { __index = root }
 script.register_metatable("RecipeBook_gui", root_mt)
 
--- HANDLERS
-
-local handlers = {}
-
---- @param self Gui
-function handlers.close_button(_, self)
-  self:hide()
-end
-
---- @param e on_gui_checked_state_changed
-function handlers.collapse_list_box(e)
-  local state = e.element.state
-  e.element.parent.parent.list_frame.style.height = state and 1 or 0
-  -- TODO: Keep track of collapsed states
-end
-
---- @param e on_gui_click
---- @param self Gui
-function handlers.filter_group_button(e, self)
-  if e.element.style.name ~= "rb_disabled_filter_group_button_tab" then
-    self:select_filter_group(e.element.name)
-  end
-end
-
---- @param self Gui
-function handlers.overhead_button(_, self)
-  self:toggle()
-end
-
---- @param self Gui
-function handlers.pin_button(_, self)
-  self:toggle_pinned()
-end
-
---- @param e on_gui_click
---- @param self Gui
-function handlers.prototype_button(e, self)
-  local tags = e.element.tags
-  if tags.prototype then
-    self:show_page(tags.prototype --[[@as string]])
-  end
-end
-
---- @param self Gui
-function handlers.search_button(_, self)
-  self:toggle_search()
-end
-
---- @param self Gui
---- @param e on_gui_text_changed
-function handlers.search_textfield(e, self)
-  -- TODO: Fuzzy search
-  self.state.search_query = e.element.text
-  self:update_filter_panel()
-end
-
---- @param e on_gui_click
---- @param self Gui
-function handlers.show_hidden_button(e, self)
-  self.state.show_hidden = not self.state.show_hidden
-  if self.state.show_hidden then
-    e.element.style = "flib_selected_frame_action_button"
-    e.element.sprite = "rb_show_hidden_black"
-  else
-    e.element.style = "frame_action_button"
-    e.element.sprite = "rb_show_hidden_white"
-  end
-  self:update_filter_panel()
-end
-
---- @param e on_gui_click
---- @param self Gui
-function handlers.show_unresearched_button(e, self)
-  self.state.show_unresearched = not self.state.show_unresearched
-  if self.state.show_unresearched then
-    e.element.style = "flib_selected_frame_action_button"
-    e.element.sprite = "rb_show_unresearched_black"
-  else
-    e.element.style = "frame_action_button"
-    e.element.sprite = "rb_show_unresearched_white"
-  end
-  self:update_filter_panel()
-end
-
---- @param e on_gui_click
---- @param self Gui
-function handlers.titlebar_flow(e, self)
-  if e.button == defines.mouse_button_type.middle then
-    self.elems.rb_main_window.force_auto_center()
-  end
-end
-
---- @param self Gui
-function handlers.window_closed(_, self)
-  if not self.state.pinned then
-    if self.state.search_open then
-      self:toggle_search()
-      self.player.opened = self.elems.rb_main_window
-    else
-      self:hide()
-    end
-  end
-end
-
-gui.add_handlers(handlers)
-
 -- TEMPLATES
 
-local crafting_machine = {
-  ["assembling-machine"] = true,
-  ["furnace"] = true,
-  ["rocket-silo"] = true,
-}
-
---- @param name string
 --- @param sprite string
+--- @param name string
 --- @param tooltip LocalisedString
 --- @param handler GuiElemHandler?
 local function frame_action_button(name, sprite, tooltip, handler)
@@ -170,7 +58,7 @@ local function prototype_button(prototype, style, amount_caption, remark_caption
     -- sprite = object.type .. "/" .. object.name,
     caption = { "", "            ", amount_caption or "", prototype.localised_name },
     tooltip = { "gui.rb-prototype-tooltip", prototype.localised_name, path, prototype.localised_description },
-    handler = handlers.prototype_button,
+    handler = root.on_prototype_button_clicked,
     tags = { prototype = path },
     {
       type = "sprite-button",
@@ -224,7 +112,7 @@ local function list_box(caption, objects, right_caption)
         style = "rb_list_box_caption",
         caption = { "", caption, " (", num_objects, ")" },
         state = false,
-        handler = { [defines.events.on_gui_checked_state_changed] = handlers.collapse_list_box },
+        handler = { [defines.events.on_gui_checked_state_changed] = root.collapse_list_box },
       },
       { type = "empty-widget", style = "flib_horizontal_pusher" },
       { type = "label", caption = right_caption },
@@ -245,22 +133,26 @@ end
 
 -- METHODS
 
---- @param self Gui
-function root.destroy(self)
+--- @param e on_gui_checked_state_changed
+function root:collapse_list_box(e)
+  local state = e.element.state
+  e.element.parent.parent.list_frame.style.height = state and 1 or 0
+  -- TODO: Keep track of collapsed states
+end
+
+function root:destroy()
   if self.elems.rb_main_window.valid then
     self.elems.rb_main_window.destroy()
   end
   self.player_table.gui = nil
 end
 
---- @param self Gui
-function root.focus_search(self)
+function root:focus_search()
   self.elems.search_textfield.select_all()
   self.elems.search_textfield.focus()
 end
 
---- @param self Gui
-function root.hide(self)
+function root:hide()
   self.elems.rb_main_window.visible = false
   if self.player.opened == self.elems.rb_main_window then
     self.player.opened = nil
@@ -268,9 +160,48 @@ function root.hide(self)
   self.player.set_shortcut_toggled("RecipeBook", false)
 end
 
---- @param self Gui
+--- @param e on_gui_click
+function root:on_filter_group_button_clicked(e)
+  if e.element.style.name ~= "rb_disabled_filter_group_button_tab" then
+    self:select_filter_group(e.element.name)
+  end
+end
+
+--- @param e on_gui_click
+function root:on_prototype_button_clicked(e)
+  local tags = e.element.tags
+  if tags.prototype then
+    self:show_page(tags.prototype --[[@as string]])
+  end
+end
+
+--- @param e on_gui_text_changed
+function root:on_search_query_changed(e)
+  -- TODO: Fuzzy search
+  self.state.search_query = e.element.text
+  self:update_filter_panel()
+end
+
+function root:on_window_closed()
+  if not self.state.pinned then
+    if self.state.search_open then
+      self:toggle_search()
+      self.player.opened = self.elems.rb_main_window
+    else
+      self:hide()
+    end
+  end
+end
+
+--- @param e on_gui_click?
+function root:recenter(e)
+  if not e or e.button == defines.mouse_button_type.middle then
+    self.elems.rb_main_window.force_auto_center()
+  end
+end
+
 --- @param group_name string
-function root.select_filter_group(self, group_name)
+function root:select_filter_group(group_name)
   local tabs = self.elems.filter_group_table
   local members = self.elems.filter_scroll_pane
   local previous_group = self.state.selected_filter_group
@@ -283,8 +214,7 @@ function root.select_filter_group(self, group_name)
   self.state.selected_filter_group = group_name
 end
 
---- @param self Gui
-function root.show(self)
+function root:show()
   self.elems.rb_main_window.visible = true
   self.elems.rb_main_window.bring_to_front()
   if not self.state.pinned then
@@ -294,10 +224,9 @@ function root.show(self)
   self.player.set_shortcut_toggled("RecipeBook", true)
 end
 
---- @param self Gui
 --- @param prototype_path string
 --- @return boolean?
-function root.show_page(self, prototype_path)
+function root:show_page(prototype_path)
   -- TODO: This currently redraws a page if you click a grouped item, then its recipe, etc
   -- Proper grouping of prototypes will fix this
   if self.state.current_page == prototype_path then
@@ -455,7 +384,7 @@ function root.show_page(self, prototype_path)
     localised_name = localised_name or entity.localised_name
     table.insert(types, "Entity")
 
-    if crafting_machine[entity.type] then
+    if util.crafting_machine[entity.type] then
       local filters = {}
       for category in pairs(entity.crafting_categories) do
         table.insert(filters, { filter = "category", category = category })
@@ -537,8 +466,7 @@ function root.show_page(self, prototype_path)
   return true
 end
 
---- @param self Gui
-function root.toggle(self)
+function root:toggle()
   if self.elems.rb_main_window.visible then
     self:hide()
   else
@@ -546,8 +474,7 @@ function root.toggle(self)
   end
 end
 
---- @param self Gui
-function root.toggle_pinned(self)
+function root:toggle_pinned()
   self.state.pinned = not self.state.pinned
   if self.state.pinned then
     self.elems.pin_button.style = "flib_selected_frame_action_button"
@@ -567,8 +494,7 @@ function root.toggle_pinned(self)
   end
 end
 
---- @param self Gui
-function root.toggle_search(self)
+function root:toggle_search()
   self.state.search_open = not self.state.search_open
   if self.state.search_open then
     self.elems.search_button.style = "flib_selected_frame_action_button"
@@ -587,9 +513,34 @@ function root.toggle_search(self)
   end
 end
 
+function root:toggle_show_hidden()
+  self.state.show_hidden = not self.state.show_hidden
+  local button = self.elems.show_hidden_button
+  if self.state.show_hidden then
+    button.style = "flib_selected_frame_action_button"
+    button.sprite = "rb_show_hidden_black"
+  else
+    button.style = "frame_action_button"
+    button.sprite = "rb_show_hidden_white"
+  end
+  self:update_filter_panel()
+end
+
+function root:toggle_show_unresearched()
+  self.state.show_unresearched = not self.state.show_unresearched
+  local button = self.elems.show_unresearched_button
+  if self.state.show_unresearched then
+    button.style = "flib_selected_frame_action_button"
+    button.sprite = "rb_show_unresearched_black"
+  else
+    button.style = "frame_action_button"
+    button.sprite = "rb_show_unresearched_white"
+  end
+  self:update_filter_panel()
+end
+
 -- Update filter panel contents based on filters and search query
--- --- @param self Gui
-function root.update_filter_panel(self)
+function root:update_filter_panel()
   local profiler = game.create_profiler()
   local show_hidden = self.state.show_hidden
   local show_unresearched = self.state.show_unresearched
@@ -666,8 +617,7 @@ function root.update_filter_panel(self)
   log({ "", "Update Filter Panel ", profiler })
 end
 
---- @param self Gui
-function root.update_translation_warning(self)
+function root:update_translation_warning()
   self.elems.filter_warning_frame.visible = not self.player_table.search_strings
 end
 
@@ -688,7 +638,7 @@ function root.new(player, player_table)
       style = "rb_filter_group_button_tab",
       sprite = "item-group/" .. group_name,
       tooltip = game.item_group_prototypes[group_name].localised_name,
-      handler = handlers.filter_group_button,
+      handler = root.on_filter_group_button_clicked,
     })
     -- Base flow
     local group_flow = {
@@ -710,7 +660,7 @@ function root.new(player, player_table)
           style = "flib_slot_button_default",
           sprite = path,
           tooltip = { "gui.rb-prototype-tooltip", prototype.localised_name, path, prototype.localised_description },
-          handler = handlers.prototype_button,
+          handler = root.on_prototype_button_clicked,
           -- TODO: Read the sprite instead?
           tags = { prototype = path },
         })
@@ -725,12 +675,12 @@ function root.new(player, player_table)
       name = "rb_main_window",
       direction = "vertical",
       visible = false,
-      handler = { [defines.events.on_gui_closed] = handlers.window_closed },
+      handler = { [defines.events.on_gui_closed] = root.on_window_closed },
       {
         type = "flow",
         name = "titlebar_flow",
         style = "flib_titlebar_flow",
-        handler = "titlebar_flow",
+        handler = root.recenter,
         frame_action_button("nav_backward_button", "rb_nav_backward", { "gui.rb-nav-backward-instruction" }),
         frame_action_button("nav_forward_button", "rb_nav_forward", { "gui.rb-nav-forward-instruction" }),
         {
@@ -748,20 +698,20 @@ function root.new(player, player_table)
           lose_focus_on_confirm = true,
           clear_and_focus_on_right_click = true,
           visible = false,
-          handler = { [defines.events.on_gui_text_changed] = handlers.search_textfield },
+          handler = { [defines.events.on_gui_text_changed] = root.on_search_query_changed },
         },
-        frame_action_button("search_button", "utility/search", { "gui.rb-search-instruction" }, handlers.search_button),
+        frame_action_button("search_button", "utility/search", { "gui.rb-search-instruction" }, root.toggle_search),
         frame_action_button(
           "show_unresearched_button",
           "rb_show_unresearched",
           { "gui.rb-show-unresearched-instruction" },
-          handlers.show_unresearched_button
+          root.toggle_show_unresearched
         ),
         frame_action_button(
           "show_hidden_button",
           "rb_show_hidden",
           { "gui.rb-show-hidden-instruction" },
-          handlers.show_hidden_button
+          root.toggle_show_hidden
         ),
         {
           type = "line",
@@ -769,8 +719,8 @@ function root.new(player, player_table)
           direction = "vertical",
           ignored_by_interaction = true,
         },
-        frame_action_button("pin_button", "rb_pin", { "gui.rb-pin-instruction" }, handlers.pin_button),
-        frame_action_button("close_button", "utility/close", { "gui.close-instruction" }, handlers.close_button),
+        frame_action_button("pin_button", "rb_pin", { "gui.rb-pin-instruction" }, root.toggle_pinned),
+        frame_action_button("close_button", "utility/close", { "gui.close-instruction" }, root.hide),
       },
       {
         type = "flow",
@@ -915,21 +865,22 @@ function root.refresh_overhead_button(player)
     button_flow.RecipeBook.destroy()
   end
   if player.mod_settings["rb-show-overhead-button"].value then
-    gui.add(mod_gui.get_button_flow(player), {
-      type = "sprite-button",
-      name = "RecipeBook",
-      style = mod_gui.button_style,
-      style_mods = { padding = 8 },
-      tooltip = { "mod-name.RecipeBook" },
-      sprite = "rb_logo",
-      actions = {
-        on_click = "overhead_button",
+    gui.add(button_flow, {
+      {
+        type = "sprite-button",
+        name = "RecipeBook",
+        style = mod_gui.button_style,
+        style_mods = { padding = 8 },
+        tooltip = { "mod-name.RecipeBook" },
+        sprite = "rb_logo",
+        handler = root.toggle,
       },
     })
   end
 end
 
 --- Get the player's GUI or create it if it does not exist
+--- @return Gui?
 function root.get(player)
   local player_table = global.players[player.index]
   if player_table then
@@ -948,10 +899,14 @@ function root.get(player)
 end
 
 --- @param e GuiEventData
-gui.dispatch_wrapper = function(e)
+gui.dispatch_wrapper = function(e, handler)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
-  return root.get(player)
+  local pgui = root.get(player)
+  if pgui then
+    handler(pgui, e)
+  end
 end
+gui.add_handlers(root)
 
 root.handle_events = gui.handle_events
 

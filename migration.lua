@@ -1,9 +1,9 @@
 local dictionary = require("__flib__.dictionary")
+local flib_migration = require("__flib__.migration")
 
 local gui = require("__RecipeBook__.gui")
 
 local database = require("__RecipeBook__.database")
-local util = require("__RecipeBook__.util")
 
 local migration = {}
 
@@ -18,6 +18,16 @@ function migration.init()
   migration.generic()
   for _, player in pairs(game.players) do
     migration.init_player(player)
+  end
+end
+
+function migration.on_configuration_changed(e)
+  if flib_migration.on_config_changed(e, migration.by_version) then
+    dictionary.init()
+    migration.generic()
+    for _, player in pairs(game.players) do
+      migration.migrate_player(player)
+    end
   end
 end
 

@@ -1,6 +1,5 @@
 local event = require("__flib__.event")
 local dictionary = require("__flib__.dictionary")
-local libmigration = require("__flib__.migration")
 
 local database = require("__RecipeBook__.database")
 local gui = require("__RecipeBook__.gui")
@@ -16,15 +15,7 @@ event.on_load(function()
   dictionary.load()
 end)
 
-event.on_configuration_changed(function(e)
-  if libmigration.on_config_changed(e, migration.by_version) then
-    dictionary.init()
-    migration.generic()
-    for _, player in pairs(game.players) do
-      migration.migrate_player(player)
-    end
-  end
-end)
+event.on_configuration_changed(migration.on_configuration_changed)
 
 event.on_player_created(function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
