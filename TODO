@@ -6,15 +6,12 @@ API additions:
 - LuaGui::cursor
 
 Todo:
-- Overhaul object grouping
-    - Group by place_result and main_product
-    - Only group if the icons match (requires LuaPrototype::icons)
-    - Keep a table of object type+name to grouped name
-- Implement search and pin functionality
+- Overhaul page generation
+    - Collect info in the database file, then parse that to create the GUI
+    - Memoize some things?
 - Show active page in filter panel
 - History navigation
-- Create info panel component for info pages
-    - Follow a similar style to vanilla tooltips
+- Look at redoing flib's slot buttons to be a bit brighter
 
 All list boxes from 3.0 - not all will be re-added:
 accepted_equipment

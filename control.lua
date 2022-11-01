@@ -3,7 +3,7 @@ local dictionary = require("__flib__.dictionary")
 local libmigration = require("__flib__.migration")
 
 local database = require("__RecipeBook__.database")
-local gui = require("__RecipeBook__.gui.index")
+local gui = require("__RecipeBook__.gui")
 local migration = require("__RecipeBook__.migration")
 
 gui.handle_events()
@@ -46,7 +46,7 @@ end)
 event.register("rb-linked-focus-search", function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local pgui = gui.get(player)
-  if pgui and not pgui.state.pinned and pgui.refs.rb_main_window.visible then
+  if pgui and not pgui.state.pinned and pgui.elems.rb_main_window.visible then
     if pgui.state.search_open then
       pgui:focus_search()
     else
@@ -135,7 +135,7 @@ event.on_string_translated(function(e)
       local player_table = global.players[player_index]
       if player_table then
         player_table.search_strings = result.dictionaries.search
-        if player_table.gui and player_table.gui.refs.rb_main_window.valid then
+        if player_table.gui and player_table.gui.elems.rb_main_window.valid then
           player_table.gui:update_translation_warning()
         end
       end

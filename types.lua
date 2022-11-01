@@ -1,4 +1,5 @@
--- This file is not required in the mod itself, but is read by the language server for type smarts
+--- @meta
+--- This file is not required in the mod itself, but is read by the language server for type smarts
 
 --- @class CustomObject
 --- @field type string
@@ -19,8 +20,3 @@
 --- @field fluid LuaFluidPrototype?
 --- @field entity LuaEntityPrototype?
 --- @field researched table<uint, boolean>?
-
---- Every searchable object sorted by order of appearance.
---- Keyed by object name, using Factorio Lua's insertion order preservation to retain order
---- Value is the object's sorting string
---- @alias SortedObjects table<string, string>
