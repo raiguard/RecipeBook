@@ -245,9 +245,21 @@ styles.rb_list_box_item = {
   icon_horizontal_align = "left",
 }
 
+styles.rb_list_box_item_unresearched = {
+  type = "button_style",
+  parent = "rb_list_box_item",
+  default_font_color = red_body_text_color,
+}
+
 styles.rb_small_transparent_slot = {
   type = "button_style",
   parent = "transparent_slot",
   left_margin = 4,
   size = 28,
+}
+
+styles.rb_subheader_red_label = {
+  type = "label_style",
+  parent = "subheader_caption_label",
+  font_color = red_body_text_color,
 }

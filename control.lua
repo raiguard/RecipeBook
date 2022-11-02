@@ -55,7 +55,7 @@ event.register("rb-open-selected", function(e)
   local path = selected_prototype.base_type .. "/" .. selected_prototype.name
   if global.database[path] then
     local pgui = gui.get(player)
-    if pgui and pgui:show_page(path) then
+    if pgui and pgui:update_page(path) then
       return
     end
   end

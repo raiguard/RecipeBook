@@ -88,7 +88,7 @@ function database.build_groups()
       end
 
       -- Add to database
-      db[path] = { base = prototype, [type] = prototype }
+      db[path] = { base = prototype, base_path = path, [type] = prototype }
       -- Add to filter panel and search dictionary
       local subgroup = search_tree[prototype.group.name][prototype.subgroup.name]
       local order = prototype.order
@@ -362,6 +362,60 @@ function database.refresh_researched(force)
       end
     end
   end
+end
+
+--- @param path string
+--- @return string? base_path
+function database.get_base_path(path)
+  local entry = global.database[path]
+  if entry then
+    local base_path = util.get_path(entry.base)
+    return base_path
+  end
+end
+
+--- @param entry PrototypeEntry
+--- @return table
+function database.get_properties(entry, force_index)
+  local base = entry.base
+  local properties = {
+    hidden = util.is_hidden(base),
+    researched = entry.researched and entry.researched[force_index] or false,
+  }
+
+  local recipe = entry.recipe
+  if recipe then
+    properties.ingredients = recipe.ingredients
+    properties.products = recipe.products
+  end
+
+  return properties
+end
+
+--- @param obj GenericObject
+--- @return boolean
+function database.is_researched(obj, force_index)
+  local entry = global.database[obj.type .. "/" .. obj.name]
+  if entry and entry.researched and entry.researched[force_index] then
+    return true
+  end
+  return false
+end
+
+--- @param obj GenericObject
+--- @return boolean
+function database.is_hidden(obj)
+  local entry = global.database[obj.type .. "/" .. obj.name]
+  if entry and util.is_hidden(entry.base) then
+    return true
+  end
+  return false
+end
+
+--- @param obj GenericObject
+--- @return PrototypeEntry?
+function database.get_entry(obj)
+  return global.database[obj.type .. "/" .. obj.name]
 end
 
 return database

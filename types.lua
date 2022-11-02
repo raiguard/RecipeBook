@@ -15,6 +15,7 @@
 
 --- @class PrototypeEntry
 --- @field base GenericPrototype
+--- @field base_path string
 --- @field recipe LuaRecipePrototype?
 --- @field item LuaItemPrototype?
 --- @field fluid LuaFluidPrototype?

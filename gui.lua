@@ -3,6 +3,7 @@ local math = require("__flib__.math")
 local mod_gui = require("__core__.lualib.mod-gui")
 local table = require("__flib__.table")
 
+local database = require("__RecipeBook__.database")
 local util = require("__RecipeBook__.util")
 
 --- @class Gui
@@ -29,111 +30,22 @@ local function frame_action_button(name, sprite, tooltip, handler)
   }
 end
 
---- @param prototype GenericPrototype
---- @param style string
---- @param amount_caption LocalisedString?
---- @param remark_caption LocalisedString?
-local function prototype_button(prototype, style, amount_caption, remark_caption)
-  -- TODO: We actually need to get the group so we can show all the tooltips
-  local path = util.get_path(prototype)
-  local remark = {}
-  if remark_caption then
-    -- TODO: Add "remark" capability to API to eliminate this hack
-    remark = {
-      type = "label",
-      style_mods = {
-        width = 464 - 16,
-        height = 36 - 8,
-        horizontal_align = "right",
-        vertical_align = "center",
-      },
-      caption = remark_caption,
-      ignored_by_interaction = true,
-    }
-  end
-  return {
-    type = "sprite-button",
-    style = style,
-    -- TODO: Add icon_horizontal_align support to sprite-buttons
-    -- sprite = object.type .. "/" .. object.name,
-    caption = { "", "            ", amount_caption or "", prototype.localised_name },
-    tooltip = { "gui.rb-prototype-tooltip", prototype.localised_name, path, prototype.localised_description },
-    handler = root.on_prototype_button_clicked,
-    tags = { prototype = path },
-    {
-      type = "sprite-button",
-      style = "rb_small_transparent_slot",
-      sprite = path,
-      ignored_by_interaction = true,
-    },
-    remark,
-  }
-end
-
---- @param caption LocalisedString
---- @param objects GenericObject[]
---- @param right_caption LocalisedString?
-local function list_box(caption, objects, right_caption)
-  local num_objects = #objects
-  local rows = {}
-  local database = global.database
-  for _, object in pairs(objects) do
-    if
-      not database[object.type .. "/" .. object.name]
-      or util.is_hidden(game[object.type .. "_prototypes"][object.name])
-    then
-      num_objects = num_objects - 1
-    else
-      table.insert(
-        rows,
-        prototype_button(
-          game[object.type .. "_prototypes"][object.name],
-          "rb_list_box_item",
-          object.amount or "",
-          object.remark
-        )
-      )
-    end
-  end
-  if num_objects == 0 then
-    return {}
-  end
+--- @param name string
+--- @param header LocalisedString
+--- @param header_remark LocalisedString
+local function list_box(name, header, header_remark)
   return {
     type = "flow",
-    style_mods = { bottom_margin = 4 },
+    name = name,
     direction = "vertical",
     {
       type = "flow",
       style = "centering_horizontal_flow",
-      {
-        type = "checkbox",
-        style = "rb_list_box_caption",
-        caption = caption,
-        state = false,
-        handler = { [defines.events.on_gui_checked_state_changed] = root.collapse_list_box },
-      },
-      {
-        type = "label",
-        style_mods = {
-          font = "default-semibold",
-          font_color = { 128, 206, 240 },
-        },
-        caption = "(" .. num_objects .. ")",
-      },
+      { type = "checkbox", style = "rb_list_box_caption", caption = header, state = true },
       { type = "empty-widget", style = "flib_horizontal_pusher" },
-      { type = "label", caption = right_caption },
+      { type = "label", caption = header_remark },
     },
-    {
-      type = "frame",
-      name = "list_frame",
-      style = "deep_frame_in_shallow_frame",
-      {
-        type = "flow",
-        style_mods = { vertical_spacing = 0 },
-        direction = "vertical",
-        children = rows,
-      },
-    },
+    { type = "frame", name = "list_frame", style = "deep_frame_in_shallow_frame", direction = "vertical" },
   }
 end
 
@@ -177,7 +89,7 @@ end
 function root:on_prototype_button_clicked(e)
   local tags = e.element.tags
   if tags.prototype then
-    self:show_page(tags.prototype --[[@as string]])
+    self:update_page(tags.prototype --[[@as string]])
   end
 end
 
@@ -230,246 +142,102 @@ function root:show()
   self.player.set_shortcut_toggled("RecipeBook", true)
 end
 
---- @param prototype_path string
+--- @param prototype_path string?
 --- @return boolean?
-function root:show_page(prototype_path)
-  -- TODO: This currently redraws a page if you click a grouped item, then its recipe, etc
-  -- Proper grouping of prototypes will fix this
-  if self.state.current_page == prototype_path then
-    return true
+function root:update_page(prototype_path)
+  local entry
+  if prototype_path then
+    entry = global.database[prototype_path]
+  elseif self.state.current_page then
+    entry = global.database[self.state.current_page]
   end
-
-  log("Updating page to " .. prototype_path)
-  local group = global.database[prototype_path]
-  if not group then
-    log("Page was not found")
+  if not entry and prototype_path then
+    util.flying_text(self.player, { "message.rb-no-info" })
     return
   end
+  local base_path = entry.base_path
+  if prototype_path and (base_path ~= self.state.current_page) then
+    local properties = database.get_properties(entry, self.player.force.index)
 
-  local profiler = game.create_profiler()
+    -- Header
+    local page_header_icon = self.elems.page_header_icon
+    page_header_icon.visible = true
+    page_header_icon.sprite = base_path
+    local page_header_label = self.elems.page_header_label
+    page_header_label.caption = entry.base.localised_name
+    if properties.researched then
+      page_header_label.style = "subheader_caption_label"
+    else
+      page_header_label.style = "rb_subheader_red_label"
+    end
+    -- TODO: Tooltip
 
-  local sprite, localised_name
-  -- TODO: Assemble info, THEN build the GUI
-  local components = {}
-
-  -- This will be common across all kinds of objects
-  local unlocked_by = {}
-
-  local types = {}
-
-  local recipe = group.recipe
-  if recipe then
-    sprite = "recipe/" .. recipe.name
-    localised_name = recipe.localised_name
-    table.insert(types, "Recipe")
-
-    table.insert(
-      components,
-      list_box(
-        "Ingredients",
-        -- TODO: Handle amount ranges and probabilities
-        table.map(recipe.ingredients, function(v)
-          if v.amount then
-            v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
+    -- Content
+    local page_scroll_pane = self.elems.page_scroll_pane
+    if page_scroll_pane.welcome_label then
+      page_scroll_pane.welcome_label.destroy()
+    end
+    local show_hidden = self.state.show_hidden
+    local show_unresearched = self.state.show_unresearched
+    local force_index = self.player.force.index
+    for _, component_name in pairs(page_scroll_pane.children_names) do
+      local component = page_scroll_pane[component_name]
+      if component then
+        local objects = properties[component_name]
+        local should_show = false
+        if objects then
+          local list = component.list_frame.children
+          local i = 0
+          for _, obj in pairs(objects) do
+            local obj_entry = database.get_entry(obj)
+            if obj_entry then
+              local is_researched = database.is_researched(obj, force_index)
+              local is_hidden = util.is_hidden(obj_entry.base)
+              if (show_unresearched or is_researched) and (show_hidden or not is_hidden) then
+                i = i + 1
+                should_show = true
+                local obj_path = obj.type .. "/" .. obj.name
+                local button = list[i]
+                if button then
+                  button.caption = { "", "            ", obj_entry.base.localised_name }
+                  button.icon.sprite = obj_path
+                  local tags = button.tags
+                  tags.prototype = obj_path
+                  button.tags = tags
+                else
+                  gui.add(component.list_frame, {
+                    {
+                      type = "sprite-button",
+                      style = is_researched and "rb_list_box_item" or "rb_list_box_item_unresearched",
+                      caption = { "", "            ", obj_entry.base.localised_name },
+                      handler = root.on_prototype_button_clicked,
+                      tags = { prototype = obj_path },
+                      {
+                        type = "sprite-button",
+                        name = "icon",
+                        style = "rb_small_transparent_slot",
+                        sprite = obj_path,
+                        ignored_by_interaction = true,
+                      },
+                    },
+                  })
+                end
+              end
+            end
           end
-          return v
-        end),
-        {
-          "",
-          "[img=quantity-time] [font=default-semibold]",
-          { "time-symbol-seconds", math.round(recipe.energy, 0.1) },
-          "[/font] ",
-          { "description.crafting-time" },
-        }
-      )
-    )
-    table.insert(
-      components,
-      list_box(
-        "Products",
-        table.map(recipe.products, function(v)
-          if v.amount then
-            v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
+          for j = i + 1, #list do
+            list[j].destroy()
           end
-          return v
-        end)
-      )
-    )
-
-    local made_in = {}
-    for _, crafter in
-      pairs(game.get_filtered_entity_prototypes({
-        { filter = "crafting-category", crafting_category = recipe.category },
-      }))
-    do
-      if crafter.ingredient_count == 0 or crafter.ingredient_count >= #recipe.ingredients then
-        table.insert(made_in, {
-          type = "entity",
-          name = crafter.name,
-          remark = {
-            "",
-            "[img=quantity-time] ",
-            { "time-symbol-seconds", math.round(recipe.energy / crafter.crafting_speed, 0.01) },
-            " ",
-          },
-        })
-      end
-    end
-    table.insert(components, list_box("Made in", made_in))
-
-    for _, technology in
-      pairs(game.get_filtered_technology_prototypes({ { filter = "enabled" }, { filter = "has-effects" } }))
-    do
-      for _, effect in pairs(technology.effects) do
-        if effect.type == "unlock-recipe" and effect.recipe == recipe.name then
-          table.insert(unlocked_by, { type = "technology", name = technology.name })
         end
+        component.visible = should_show
       end
     end
+
+    self.state.current_page = base_path
   end
-
-  local fluid = group.fluid
-  if fluid then
-    sprite = sprite or ("fluid/" .. fluid.name)
-    localised_name = localised_name or fluid.localised_name
-    table.insert(types, "Fluid")
-
-    local ingredient_in = {}
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
-      }))
-    do
-      table.insert(ingredient_in, { type = "recipe", name = recipe.name })
-    end
-    table.insert(components, list_box("Ingredient in", ingredient_in))
-
-    local product_of = {}
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
-      }))
-    do
-      table.insert(product_of, { type = "recipe", name = recipe.name })
-    end
-    table.insert(components, list_box("Product of", product_of))
-  end
-
-  local item = group.item
-  if item then
-    sprite = sprite or ("item/" .. item.name)
-    localised_name = localised_name or item.localised_name
-    table.insert(types, "Item")
-
-    local ingredient_in = {}
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = item.name } } },
-      }))
-    do
-      table.insert(ingredient_in, { type = "recipe", name = recipe.name })
-    end
-    table.insert(components, list_box("Ingredient in", ingredient_in))
-
-    local product_of = {}
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
-      }))
-    do
-      table.insert(product_of, { type = "recipe", name = recipe.name })
-    end
-    if #product_of > 1 or not recipe then
-      table.insert(components, list_box("Product of", product_of))
-    end
-  end
-
-  local entity = group.entity
-  if entity then
-    sprite = sprite or ("entity/" .. entity.name)
-    localised_name = localised_name or entity.localised_name
-    table.insert(types, "Entity")
-
-    if util.crafting_machine[entity.type] then
-      local filters = {}
-      for category in pairs(entity.crafting_categories) do
-        table.insert(filters, { filter = "category", category = category })
-        table.insert(filters, { mode = "and", filter = "hidden-from-player-crafting", invert = true })
-      end
-      local can_craft = {}
-      for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
-        if entity.ingredient_count == 0 or entity.ingredient_count >= #recipe.ingredients then
-          table.insert(can_craft, { type = "recipe", name = recipe.name })
-        end
-      end
-      table.insert(components, list_box("Can craft", can_craft))
-    elseif entity.type == "resource" then
-      local required_fluid_str
-      local required_fluid = entity.mineable_properties.required_fluid
-      if required_fluid then
-        required_fluid_str = {
-          "",
-          "Requires:  ",
-          "[img=fluid/" .. required_fluid .. "] ",
-          game.fluid_prototypes[required_fluid].localised_name,
-        }
-      end
-      local resource_category = entity.resource_category
-      local mined_by = {}
-      for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
-        if entity.resource_categories[resource_category] and (not required_fluid or entity.fluidbox_prototypes[1]) then
-          table.insert(mined_by, { type = "entity", name = entity.name })
-        end
-      end
-      table.insert(components, list_box("Mined by", mined_by, required_fluid_str))
-
-      local mineable = entity.mineable_properties
-      if mineable.minable and #mineable.products > 0 then
-        table.insert(components, list_box("Mining products", mineable.products))
-      end
-    elseif entity.type == "mining-drill" then
-      local categories = entity.resource_categories --[[@as table<string, _>]]
-      -- TODO: Fluid filters?
-      local supports_fluid = entity.fluidbox_prototypes[1] and true or false
-      local can_mine = {}
-      for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
-        if
-          categories[resource.resource_category] and (supports_fluid or not resource.mineable_properties.required_fluid)
-        then
-          table.insert(can_mine, { type = "entity", name = resource.name })
-        end
-      end
-      table.insert(components, list_box("Can mine", can_mine))
-    end
-  end
-
-  if #unlocked_by > 0 then
-    table.insert(components, list_box("Unlocked by", unlocked_by))
-  end
-
-  profiler.stop()
-  log({ "", "Build Info ", profiler })
-  profiler.reset()
-
-  self.elems.page_header_icon.sprite = sprite
-  self.elems.page_header_icon.visible = true
-  self.elems.page_header_label.caption = localised_name
-  self.elems.page_header_type_label.caption = table.concat(types, "/")
-
-  local page_scroll = self.elems.page_scroll
-  page_scroll.clear()
-  gui.add(page_scroll, components)
-
-  profiler.stop()
-  log({ "", "Build GUI ", profiler })
-
-  self.state.current_page = prototype_path
-
-  self.elems.page_scroll.scroll_to_top()
   if not self.elems.rb_main_window.visible then
     self:show()
   end
-  return true
 end
 
 function root:toggle()
@@ -530,6 +298,7 @@ function root:toggle_show_hidden()
     button.sprite = "rb_show_hidden_white"
   end
   self:update_filter_panel()
+  self:update_page()
 end
 
 function root:toggle_show_unresearched()
@@ -543,6 +312,7 @@ function root:toggle_show_unresearched()
     button.sprite = "rb_show_unresearched_white"
   end
   self:update_filter_panel()
+  self:update_page()
 end
 
 -- Update filter panel contents based on filters and search query
@@ -815,12 +585,13 @@ function root.new(player, player_table)
           },
           {
             type = "scroll-pane",
-            name = "page_scroll",
+            name = "page_scroll_pane",
             style = "flib_naked_scroll_pane",
             style_mods = { horizontally_stretchable = true, vertically_stretchable = true },
             vertical_scroll_policy = "always",
             {
               type = "label",
+              name = "welcome_label",
               style_mods = { horizontally_stretchable = true, single_line = false },
               caption = { "gui.rb-welcome-text" },
             },
@@ -830,10 +601,19 @@ function root.new(player, player_table)
     },
   })
 
+  -- Add components to page
+  local page_scroll_pane = elems.page_scroll_pane
+  gui.add(page_scroll_pane, { list_box("ingredients", { "description.ingredients" }) })
+  gui.add(page_scroll_pane, { list_box("products", { "description.products" }) })
+  gui.add(page_scroll_pane, { list_box("made_in", { "description.made-in" }) })
+
+  -- Ingredients
+
+  -- Dragging and centering
   elems.titlebar_flow.drag_target = elems.rb_main_window
   elems.rb_main_window.force_auto_center()
 
-  -- TODO:
+  -- Set initial state of show unresearched button
   elems.show_unresearched_button.sprite = "rb_show_unresearched_black"
   elems.show_unresearched_button.style = "flib_selected_frame_action_button"
 
@@ -917,3 +697,241 @@ gui.add_handlers(root)
 root.handle_events = gui.handle_events
 
 return root
+
+-- -- TODO: This currently redraws a page if you click a grouped item, then its recipe, etc
+-- -- Proper grouping of prototypes will fix this
+-- if self.state.current_page == prototype_path then
+--   return true
+-- end
+
+-- log("Updating page to " .. prototype_path)
+-- local group = global.database[prototype_path]
+-- if not group then
+--   log("Page was not found")
+--   return
+-- end
+
+-- local profiler = game.create_profiler()
+
+-- local sprite, localised_name
+-- -- TODO: Assemble info, THEN build the GUI
+-- local components = {}
+
+-- -- This will be common across all kinds of objects
+-- local unlocked_by = {}
+
+-- local types = {}
+
+-- local recipe = group.recipe
+-- if recipe then
+--   sprite = "recipe/" .. recipe.name
+--   localised_name = recipe.localised_name
+--   table.insert(types, "Recipe")
+
+--   table.insert(
+--     components,
+--     list_box(
+--       "Ingredients",
+--       -- TODO: Handle amount ranges and probabilities
+--       table.map(recipe.ingredients, function(v)
+--         if v.amount then
+--           v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
+--         end
+--         return v
+--       end),
+--       {
+--         "",
+--         "[img=quantity-time] [font=default-semibold]",
+--         { "time-symbol-seconds", math.round(recipe.energy, 0.1) },
+--         "[/font] ",
+--         { "description.crafting-time" },
+--       }
+--     )
+--   )
+--   table.insert(
+--     components,
+--     list_box(
+--       "Products",
+--       table.map(recipe.products, function(v)
+--         if v.amount then
+--           v.amount = { "", "[font=default-semibold]", v.amount, " ×[/font]  " }
+--         end
+--         return v
+--       end)
+--     )
+--   )
+
+--   local made_in = {}
+--   for _, crafter in
+--     pairs(game.get_filtered_entity_prototypes({
+--       { filter = "crafting-category", crafting_category = recipe.category },
+--     }))
+--   do
+--     if crafter.ingredient_count == 0 or crafter.ingredient_count >= #recipe.ingredients then
+--       table.insert(made_in, {
+--         type = "entity",
+--         name = crafter.name,
+--         remark = {
+--           "",
+--           "[img=quantity-time] ",
+--           { "time-symbol-seconds", math.round(recipe.energy / crafter.crafting_speed, 0.01) },
+--           " ",
+--         },
+--       })
+--     end
+--   end
+--   table.insert(components, list_box("Made in", made_in))
+
+--   for _, technology in
+--     pairs(game.get_filtered_technology_prototypes({ { filter = "enabled" }, { filter = "has-effects" } }))
+--   do
+--     for _, effect in pairs(technology.effects) do
+--       if effect.type == "unlock-recipe" and effect.recipe == recipe.name then
+--         table.insert(unlocked_by, { type = "technology", name = technology.name })
+--       end
+--     end
+--   end
+-- end
+
+-- local fluid = group.fluid
+-- if fluid then
+--   sprite = sprite or ("fluid/" .. fluid.name)
+--   localised_name = localised_name or fluid.localised_name
+--   table.insert(types, "Fluid")
+
+--   local ingredient_in = {}
+--   for _, recipe in
+--     pairs(game.get_filtered_recipe_prototypes({
+--       { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
+--     }))
+--   do
+--     table.insert(ingredient_in, { type = "recipe", name = recipe.name })
+--   end
+--   table.insert(components, list_box("Ingredient in", ingredient_in))
+
+--   local product_of = {}
+--   for _, recipe in
+--     pairs(game.get_filtered_recipe_prototypes({
+--       { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
+--     }))
+--   do
+--     table.insert(product_of, { type = "recipe", name = recipe.name })
+--   end
+--   table.insert(components, list_box("Product of", product_of))
+-- end
+
+-- local item = group.item
+-- if item then
+--   sprite = sprite or ("item/" .. item.name)
+--   localised_name = localised_name or item.localised_name
+--   table.insert(types, "Item")
+
+--   local ingredient_in = {}
+--   for _, recipe in
+--     pairs(game.get_filtered_recipe_prototypes({
+--       { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = item.name } } },
+--     }))
+--   do
+--     table.insert(ingredient_in, { type = "recipe", name = recipe.name })
+--   end
+--   table.insert(components, list_box("Ingredient in", ingredient_in))
+
+--   local product_of = {}
+--   for _, recipe in
+--     pairs(game.get_filtered_recipe_prototypes({
+--       { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
+--     }))
+--   do
+--     table.insert(product_of, { type = "recipe", name = recipe.name })
+--   end
+--   if #product_of > 1 or not recipe then
+--     table.insert(components, list_box("Product of", product_of))
+--   end
+-- end
+
+-- local entity = group.entity
+-- if entity then
+--   sprite = sprite or ("entity/" .. entity.name)
+--   localised_name = localised_name or entity.localised_name
+--   table.insert(types, "Entity")
+
+--   if util.crafting_machine[entity.type] then
+--     local filters = {}
+--     for category in pairs(entity.crafting_categories) do
+--       table.insert(filters, { filter = "category", category = category })
+--       table.insert(filters, { mode = "and", filter = "hidden-from-player-crafting", invert = true })
+--     end
+--     local can_craft = {}
+--     for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
+--       if entity.ingredient_count == 0 or entity.ingredient_count >= #recipe.ingredients then
+--         table.insert(can_craft, { type = "recipe", name = recipe.name })
+--       end
+--     end
+--     table.insert(components, list_box("Can craft", can_craft))
+--   elseif entity.type == "resource" then
+--     local required_fluid_str
+--     local required_fluid = entity.mineable_properties.required_fluid
+--     if required_fluid then
+--       required_fluid_str = {
+--         "",
+--         "Requires:  ",
+--         "[img=fluid/" .. required_fluid .. "] ",
+--         game.fluid_prototypes[required_fluid].localised_name,
+--       }
+--     end
+--     local resource_category = entity.resource_category
+--     local mined_by = {}
+--     for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
+--       if entity.resource_categories[resource_category] and (not required_fluid or entity.fluidbox_prototypes[1]) then
+--         table.insert(mined_by, { type = "entity", name = entity.name })
+--       end
+--     end
+--     table.insert(components, list_box("Mined by", mined_by, required_fluid_str))
+
+--     local mineable = entity.mineable_properties
+--     if mineable.minable and #mineable.products > 0 then
+--       table.insert(components, list_box("Mining products", mineable.products))
+--     end
+--   elseif entity.type == "mining-drill" then
+--     local categories = entity.resource_categories --[[@as table<string, _>]]
+--     -- TODO: Fluid filters?
+--     local supports_fluid = entity.fluidbox_prototypes[1] and true or false
+--     local can_mine = {}
+--     for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+--       if
+--         categories[resource.resource_category] and (supports_fluid or not resource.mineable_properties.required_fluid)
+--       then
+--         table.insert(can_mine, { type = "entity", name = resource.name })
+--       end
+--     end
+--     table.insert(components, list_box("Can mine", can_mine))
+--   end
+-- end
+
+-- if #unlocked_by > 0 then
+--   table.insert(components, list_box("Unlocked by", unlocked_by))
+-- end
+
+-- profiler.stop()
+-- log({ "", "Build Info ", profiler })
+-- profiler.reset()
+
+-- self.elems.page_header_icon.sprite = sprite
+-- self.elems.page_header_icon.visible = true
+-- self.elems.page_header_label.caption = localised_name
+-- self.elems.page_header_type_label.caption = table.concat(types, "/")
+
+-- local page_scroll = self.elems.page_scroll
+-- page_scroll.clear()
+-- gui.add(page_scroll, components)
+
+-- profiler.stop()
+-- log({ "", "Build GUI ", profiler })
+
+-- self.state.current_page = prototype_path
+
+-- self.elems.page_scroll.scroll_to_top()
+-- if not self.elems.rb_main_window.visible then
+--   self:show()
+-- end
+-- return true

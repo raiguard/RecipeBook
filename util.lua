@@ -2,11 +2,28 @@ local util = {}
 
 -- local coreutil = require("__core__.lualib.util")
 
+util.components = {
+  ingredients = {
+    type = "list_box",
+    header = { "gui.rb-ingredients" },
+  },
+}
+
 util.crafting_machine = {
   ["assembling-machine"] = true,
   ["furnace"] = true,
   ["rocket-silo"] = true,
 }
+
+--- @param player LuaPlayer
+--- @param text LocalisedString
+function util.flying_text(player, text)
+  player.create_local_flying_text({
+    text = text,
+    create_at_cursor = true,
+  })
+  player.play_sound({ path = "utility/cannot_build" })
+end
 
 --- @param prototype GenericPrototype
 --- @return string path
@@ -20,28 +37,6 @@ end
 --- @return GenericPrototype
 function util.get_prototype(obj)
   return game[obj.type .. "_prototypes"][obj.name]
-end
-
---- @param prototype GenericPrototype
---- @return string path
-function util.get_type(prototype)
-  return util.prototype_type[prototype.object_name]
-end
-
---- @param group PrototypeEntry
---- @param player_crafting boolean?
-function util.group_is_hidden(group, player_crafting)
-  local key, prototype = next(group)
-  if key == "recipe" then
-    local hidden = prototype.hidden
-    if not hidden and player_crafting then
-      return prototype.hidden_from_player_crafting
-    end
-  elseif key == "item" or key == "entity" then
-    return prototype.has_flag("hidden")
-  elseif key == "fluid" then
-    return prototype.hidden
-  end
 end
 
 --- @param prototype GenericPrototype
