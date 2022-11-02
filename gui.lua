@@ -76,7 +76,6 @@ end
 local function list_box(caption, objects, right_caption)
   local num_objects = #objects
   local rows = {}
-  local i = 0
   local database = global.database
   for _, object in pairs(objects) do
     if
@@ -85,12 +84,11 @@ local function list_box(caption, objects, right_caption)
     then
       num_objects = num_objects - 1
     else
-      i = i + 1
       table.insert(
         rows,
         prototype_button(
           game[object.type .. "_prototypes"][object.name],
-          "rb_list_box_row_" .. (i % 2 == 0 and "even" or "odd"),
+          "rb_list_box_item",
           object.amount or "",
           object.remark
         )
@@ -110,9 +108,17 @@ local function list_box(caption, objects, right_caption)
       {
         type = "checkbox",
         style = "rb_list_box_caption",
-        caption = { "", caption, " (", num_objects, ")" },
+        caption = caption,
         state = false,
         handler = { [defines.events.on_gui_checked_state_changed] = root.collapse_list_box },
+      },
+      {
+        type = "label",
+        style_mods = {
+          font = "default-semibold",
+          font_color = { 128, 206, 240 },
+        },
+        caption = "(" .. num_objects .. ")",
       },
       { type = "empty-widget", style = "flib_horizontal_pusher" },
       { type = "label", caption = right_caption },
