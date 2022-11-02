@@ -1,3 +1,5 @@
+local hidden_font_color = { r = 0.8, g = 0.8, b = 0.8, a = 0.8 }
+
 data:extend({
   {
     type = "custom-input",
@@ -245,6 +247,12 @@ styles.rb_list_box_item = {
   icon_horizontal_align = "left",
 }
 
+styles.rb_list_box_item_hidden = {
+  type = "button_style",
+  parent = "rb_list_box_item",
+  default_font_color = hidden_font_color,
+}
+
 styles.rb_list_box_item_unresearched = {
   type = "button_style",
   parent = "rb_list_box_item",
@@ -258,7 +266,13 @@ styles.rb_small_transparent_slot = {
   size = 28,
 }
 
-styles.rb_subheader_red_label = {
+styles.rb_subheader_label_hidden = {
+  type = "label_style",
+  parent = "subheader_caption_label",
+  font_color = hidden_font_color,
+}
+
+styles.rb_subheader_label_unresearched = {
   type = "label_style",
   parent = "subheader_caption_label",
   font_color = red_body_text_color,

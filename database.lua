@@ -1,4 +1,5 @@
 local dictionary = require("__flib__.dictionary")
+local math = require("__flib__.math")
 local table = require("__flib__.table")
 
 local util = require("__RecipeBook__.util")
@@ -387,6 +388,79 @@ function database.get_properties(entry, force_index)
   if recipe then
     properties.ingredients = recipe.ingredients
     properties.products = recipe.products
+
+    local item_ingredients = 0
+    for _, ingredient in pairs(recipe.ingredients) do
+      if ingredient.type == "item" then
+        item_ingredients = item_ingredients + 1
+      end
+    end
+
+    properties.made_in = {}
+    for _, crafter in
+      pairs(game.get_filtered_entity_prototypes({
+        { filter = "crafting-category", crafting_category = recipe.category },
+      }))
+    do
+      if database.get_entry_proto(crafter) then
+        local ingredient_count = crafter.ingredient_count
+        if ingredient_count == 0 or ingredient_count >= item_ingredients then
+          table.insert(properties.made_in, {
+            type = "entity",
+            name = crafter.name,
+            duration = math.round(recipe.energy / crafter.crafting_speed, 0.01),
+          })
+        end
+      end
+    end
+  end
+
+  local fluid = entry.fluid
+  if fluid then
+    properties.ingredient_in = {}
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
+      }))
+    do
+      if database.get_entry_proto(recipe) then
+        table.insert(properties.ingredient_in, { type = "recipe", name = recipe.name })
+      end
+    end
+    properties.product_of = {}
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
+      }))
+    do
+      if database.get_entry_proto(recipe) then
+        table.insert(properties.product_of, { type = "recipe", name = recipe.name })
+      end
+    end
+  end
+
+  local item = entry.item
+  if item then
+    properties.ingredient_in = properties.ingredient_in or {}
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = item.name } } },
+      }))
+    do
+      if database.get_entry_proto(recipe) then
+        table.insert(properties.ingredient_in, { type = "recipe", name = recipe.name })
+      end
+    end
+    properties.product_of = properties.product_of or {}
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
+      }))
+    do
+      if database.get_entry_proto(recipe) then
+        table.insert(properties.product_of, { type = "recipe", name = recipe.name })
+      end
+    end
   end
 
   return properties
@@ -416,6 +490,15 @@ end
 --- @return PrototypeEntry?
 function database.get_entry(obj)
   return global.database[obj.type .. "/" .. obj.name]
+end
+
+--- @param prototype GenericPrototype
+-- @return PrototypeEntry?
+function database.get_entry_proto(prototype)
+  local type = util.prototype_type[prototype.object_name]
+  if type then
+    return global.database[type .. "/" .. prototype.name]
+  end
 end
 
 return database

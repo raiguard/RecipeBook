@@ -142,104 +142,6 @@ function root:show()
   self.player.set_shortcut_toggled("RecipeBook", true)
 end
 
---- @param prototype_path string?
---- @return boolean?
-function root:update_page(prototype_path)
-  local entry
-  if prototype_path then
-    entry = global.database[prototype_path]
-  elseif self.state.current_page then
-    entry = global.database[self.state.current_page]
-  end
-  if not entry and prototype_path then
-    util.flying_text(self.player, { "message.rb-no-info" })
-    return
-  end
-  local base_path = entry.base_path
-  if prototype_path and (base_path ~= self.state.current_page) then
-    local properties = database.get_properties(entry, self.player.force.index)
-
-    -- Header
-    local page_header_icon = self.elems.page_header_icon
-    page_header_icon.visible = true
-    page_header_icon.sprite = base_path
-    local page_header_label = self.elems.page_header_label
-    page_header_label.caption = entry.base.localised_name
-    if properties.researched then
-      page_header_label.style = "subheader_caption_label"
-    else
-      page_header_label.style = "rb_subheader_red_label"
-    end
-    -- TODO: Tooltip
-
-    -- Content
-    local page_scroll_pane = self.elems.page_scroll_pane
-    if page_scroll_pane.welcome_label then
-      page_scroll_pane.welcome_label.destroy()
-    end
-    local show_hidden = self.state.show_hidden
-    local show_unresearched = self.state.show_unresearched
-    local force_index = self.player.force.index
-    for _, component_name in pairs(page_scroll_pane.children_names) do
-      local component = page_scroll_pane[component_name]
-      if component then
-        local objects = properties[component_name]
-        local should_show = false
-        if objects then
-          local list = component.list_frame.children
-          local i = 0
-          for _, obj in pairs(objects) do
-            local obj_entry = database.get_entry(obj)
-            if obj_entry then
-              local is_researched = database.is_researched(obj, force_index)
-              local is_hidden = util.is_hidden(obj_entry.base)
-              if (show_unresearched or is_researched) and (show_hidden or not is_hidden) then
-                i = i + 1
-                should_show = true
-                local obj_path = obj.type .. "/" .. obj.name
-                local button = list[i]
-                if button then
-                  button.caption = { "", "            ", obj_entry.base.localised_name }
-                  button.icon.sprite = obj_path
-                  local tags = button.tags
-                  tags.prototype = obj_path
-                  button.tags = tags
-                else
-                  gui.add(component.list_frame, {
-                    {
-                      type = "sprite-button",
-                      style = is_researched and "rb_list_box_item" or "rb_list_box_item_unresearched",
-                      caption = { "", "            ", obj_entry.base.localised_name },
-                      handler = root.on_prototype_button_clicked,
-                      tags = { prototype = obj_path },
-                      {
-                        type = "sprite-button",
-                        name = "icon",
-                        style = "rb_small_transparent_slot",
-                        sprite = obj_path,
-                        ignored_by_interaction = true,
-                      },
-                    },
-                  })
-                end
-              end
-            end
-          end
-          for j = i + 1, #list do
-            list[j].destroy()
-          end
-        end
-        component.visible = should_show
-      end
-    end
-
-    self.state.current_page = base_path
-  end
-  if not self.elems.rb_main_window.visible then
-    self:show()
-  end
-end
-
 function root:toggle()
   if self.elems.rb_main_window.visible then
     self:hide()
@@ -391,6 +293,131 @@ function root:update_filter_panel()
   end
   profiler.stop()
   log({ "", "Update Filter Panel ", profiler })
+end
+
+--- @param prototype_path string?
+--- @return boolean?
+function root:update_page(prototype_path)
+  local entry
+  if prototype_path then
+    entry = global.database[prototype_path]
+  elseif self.state.current_page then
+    entry = global.database[self.state.current_page]
+  end
+  if not entry then
+    if prototype_path then
+      util.flying_text(self.player, { "message.rb-no-info" })
+    end
+    return
+  end
+  local base_path = entry.base_path
+  if not prototype_path or (base_path ~= self.state.current_page) then
+    local properties = database.get_properties(entry, self.player.force.index)
+
+    -- Header
+    local page_header_icon = self.elems.page_header_icon
+    page_header_icon.visible = true
+    page_header_icon.sprite = base_path
+    local page_header_label = self.elems.page_header_label
+    page_header_label.caption = entry.base.localised_name
+    if properties.hidden then
+      page_header_label.style = "rb_subheader_label_hidden"
+    elseif not properties.researched then
+      page_header_label.style = "rb_subheader_label_unresearched"
+    else
+      page_header_label.style = "subheader_caption_label"
+    end
+    local caption = { "" }
+    if entry.recipe then
+      table.insert(caption, { "description.recipe" })
+      table.insert(caption, "/")
+    end
+    if entry.item then
+      table.insert(caption, { "description.rb-item" })
+      table.insert(caption, "/")
+    end
+    if entry.fluid then
+      table.insert(caption, { "gui-train.fluid" })
+      table.insert(caption, "/")
+    end
+    if entry.entity then
+      table.insert(caption, { "description.rb-entity" })
+      table.insert(caption, "/")
+    end
+    caption[#caption] = nil
+    self.elems.page_header_type_label.caption = caption
+    -- TODO: Tooltip
+
+    -- Content
+    local page_scroll_pane = self.elems.page_scroll_pane
+    if page_scroll_pane.welcome_label then
+      page_scroll_pane.welcome_label.destroy()
+    end
+    local show_hidden = self.state.show_hidden
+    local show_unresearched = self.state.show_unresearched
+    local force_index = self.player.force.index
+    for _, component_name in pairs(page_scroll_pane.children_names) do
+      local component = page_scroll_pane[component_name]
+      if component then
+        local objects = properties[component_name]
+        local should_show = false
+        if objects then
+          local children = component.list_frame.children
+          local i = 0
+          for _, obj in pairs(objects) do
+            local obj_entry = database.get_entry(obj)
+            if obj_entry then
+              local is_researched = database.is_researched(obj, force_index)
+              local is_hidden = util.is_hidden(obj_entry.base)
+              if (show_unresearched or is_researched) and (show_hidden or not is_hidden) then
+                i = i + 1
+                should_show = true
+                local obj_path = obj.type .. "/" .. obj.name
+                local button = children[i]
+                if not button then
+                  gui.add(component.list_frame, {
+                    {
+                      type = "sprite-button",
+                      handler = root.on_prototype_button_clicked,
+                      {
+                        type = "sprite-button",
+                        name = "icon",
+                        style = "rb_small_transparent_slot",
+                        sprite = obj_path,
+                        ignored_by_interaction = true,
+                      },
+                    },
+                  })
+                  button = component.list_frame.children[i]
+                end
+                local style = "rb_list_box_item"
+                if is_hidden then
+                  style = "rb_list_box_item_hidden"
+                elseif not is_researched then
+                  style = "rb_list_box_item_unresearched"
+                end
+                button.style = style
+                button.caption = { "", "            ", obj_entry.base.localised_name }
+                button.icon.sprite = obj_path
+                local tags = button.tags
+                tags.prototype = obj_path
+                button.tags = tags
+              end
+            end
+          end
+          for j = i + 1, #children do
+            children[j].destroy()
+          end
+        end
+        component.visible = should_show
+      end
+    end
+
+    self.state.current_page = base_path
+  end
+  if not self.elems.rb_main_window.visible then
+    self:show()
+  end
 end
 
 function root:update_translation_warning()
@@ -606,6 +633,8 @@ function root.new(player, player_table)
   gui.add(page_scroll_pane, { list_box("ingredients", { "description.ingredients" }) })
   gui.add(page_scroll_pane, { list_box("products", { "description.products" }) })
   gui.add(page_scroll_pane, { list_box("made_in", { "description.made-in" }) })
+  gui.add(page_scroll_pane, { list_box("ingredient_in", { "description.rb-ingredient-in" }) })
+  gui.add(page_scroll_pane, { list_box("product_of", { "description.rb-product-of" }) })
 
   -- Ingredients
 

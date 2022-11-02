@@ -4,6 +4,10 @@ API additions:
 - LuaGuiElement::remark
 - on_gui_hover_in, on_gui_hover_out
 - LuaGui::cursor
+- get_filtered_entity_prototypes:
+    - ingredient_limit
+- get_filtered_technology_prototypes:
+    - 'unlocks-recipe'
 
 Todo:
 - Overhaul page generation
