@@ -52,18 +52,10 @@ event.register("rb-open-selected", function(e)
   if not selected_prototype then
     return
   end
-  local path = selected_prototype.base_type .. "/" .. selected_prototype.name
-  if global.database[path] then
-    local pgui = gui.get(player)
-    if pgui and pgui:update_page(path) then
-      return
-    end
+  local pgui = gui.get(player)
+  if pgui then
+    pgui:update_page(selected_prototype.base_type .. "/" .. selected_prototype.name)
   end
-  player.create_local_flying_text({
-    text = { "message.rb-no-info" },
-    create_at_cursor = true,
-  })
-  player.play_sound({ path = "utility/cannot_build" })
 end)
 
 event.register("rb-toggle", function(e)

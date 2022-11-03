@@ -386,6 +386,17 @@ function root:update_page(prototype_path)
                         sprite = obj_path,
                         ignored_by_interaction = true,
                       },
+                      {
+                        type = "label",
+                        name = "remark",
+                        style_mods = {
+                          horizontal_align = "right",
+                          height = 36 - 8,
+                          width = 464 - 24,
+                          vertical_align = "center",
+                        },
+                        ignored_by_interaction = true,
+                      },
                     },
                   })
                   button = component.list_frame.children[i]
@@ -397,7 +408,59 @@ function root:update_page(prototype_path)
                   style = "rb_list_box_item_unresearched"
                 end
                 button.style = style
-                button.caption = { "", "            ", obj_entry.base.localised_name }
+                -- Caption
+                local caption = { "", "            " }
+                if obj.probability and obj.probability < 1 then
+                  table.insert(caption, {
+                    "",
+                    "[font=default-semibold]",
+                    { "format-percent", math.round(obj.probability * 100, 0.01) },
+                    "[/font] ",
+                  })
+                end
+                if obj.amount then
+                  table.insert(caption, { "", "[font=default-semibold]", math.round(obj.amount, 0.01), " ×[/font]  " })
+                elseif obj.amount_min and obj.amount_max then
+                  table.insert(caption, {
+                    "",
+                    "[font=default-semibold]",
+                    math.round(obj.amount_min, 0.01),
+                    "-",
+                    math.round(obj.amount_max, 0.01),
+                    " ×[/font]  ",
+                  })
+                end
+                table.insert(caption, obj_entry.base.localised_name)
+                button.caption = caption
+                -- Remark
+                local remark = { "" }
+                if obj.duration then
+                  table.insert(
+                    remark,
+                    { "", "[img=quantity-time] ", { "time-symbol-seconds", math.round(obj.duration, 0.01) } }
+                  )
+                end
+                if obj.temperature then
+                  table.insert(remark, { "", "  ", { "format-degrees-c-compact", math.round(obj.temperature, 0.01) } })
+                elseif obj.minimum_temperature and obj.maximum_temperature then
+                  local temperature_min = obj.minimum_temperature --[[@as number]]
+                  local temperature_max = obj.maximum_temperature --[[@as number]]
+                  local temperature_string
+                  if temperature_min == math.min_double then
+                    temperature_string = "≤" .. math.round(temperature_max, 0.01)
+                  elseif temperature_max == math.max_double then
+                    temperature_string = "≥" .. math.round(temperature_min, 0.01)
+                  else
+                    temperature_string = ""
+                      .. math.round(temperature_min, 0.01)
+                      .. "-"
+                      .. math.round(temperature_max, 0.01)
+                  end
+                  table.insert(remark, { "", "  ", { "format-degrees-c-compact", temperature_string } })
+                end
+                button.remark.caption = remark
+
+                -- Icon and action
                 button.icon.sprite = obj_path
                 local tags = button.tags
                 tags.prototype = obj_path

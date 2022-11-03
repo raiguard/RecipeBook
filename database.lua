@@ -376,7 +376,7 @@ function database.get_base_path(path)
 end
 
 --- @param entry PrototypeEntry
---- @return table
+--- @return EntryProperties
 function database.get_properties(entry, force_index)
   local base = entry.base
   local properties = {
@@ -408,7 +408,7 @@ function database.get_properties(entry, force_index)
           table.insert(properties.made_in, {
             type = "entity",
             name = crafter.name,
-            duration = math.round(recipe.energy / crafter.crafting_speed, 0.01),
+            duration = recipe.energy / crafter.crafting_speed,
           })
         end
       end

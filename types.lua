@@ -4,7 +4,9 @@
 --- @class CustomObject
 --- @field type string
 --- @field name string
---- @field remark LocalisedString?
+--- @field duration number?
+
+--- @alias EntryProperties table<string, GenericObject[]>
 
 --- @alias GenericObject Ingredient|Product|CustomObject
 --- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype
