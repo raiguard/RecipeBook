@@ -463,6 +463,29 @@ function database.get_properties(entry, force_index)
     end
   end
 
+  local entity = entry.entity
+  if entity then
+    if util.crafting_machine[entity.type] then
+      properties.can_craft = {}
+      local filters = {}
+      for category in pairs(entity.crafting_categories) do
+        table.insert(filters, { filter = "category", category = category })
+        table.insert(filters, { mode = "and", filter = "hidden-from-player-crafting", invert = true })
+      end
+      for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
+        local item_ingredients = 0
+        for _, ingredient in pairs(recipe.ingredients) do
+          if ingredient.type == "item" then
+            item_ingredients = item_ingredients + 1
+          end
+        end
+        if entity.ingredient_count == 0 or entity.ingredient_count >= item_ingredients then
+          table.insert(properties.can_craft, { type = "recipe", name = recipe.name })
+        end
+      end
+    end
+  end
+
   return properties
 end
 

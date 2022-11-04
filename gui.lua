@@ -1,5 +1,6 @@
 local gui = require("__flib__.gui-lite")
 local math = require("__flib__.math")
+local misc = require("__flib__.misc")
 local mod_gui = require("__core__.lualib.mod-gui")
 local table = require("__flib__.table")
 
@@ -38,10 +39,17 @@ local function list_box(name, header, header_remark)
     type = "flow",
     name = name,
     direction = "vertical",
+    visible = false,
     {
       type = "flow",
       style = "centering_horizontal_flow",
-      { type = "checkbox", style = "rb_list_box_caption", caption = header, state = true },
+      {
+        type = "checkbox",
+        style = "rb_list_box_caption",
+        caption = header,
+        state = false,
+        handler = root.collapse_list_box,
+      },
       { type = "empty-widget", style = "flib_horizontal_pusher" },
       { type = "label", caption = header_remark },
     },
@@ -419,14 +427,19 @@ function root:update_page(prototype_path)
                   })
                 end
                 if obj.amount then
-                  table.insert(caption, { "", "[font=default-semibold]", math.round(obj.amount, 0.01), " ×[/font]  " })
+                  table.insert(caption, {
+                    "",
+                    "[font=default-semibold]",
+                    misc.delineate_number(math.round(obj.amount, 0.01)),
+                    " ×[/font]  ",
+                  })
                 elseif obj.amount_min and obj.amount_max then
                   table.insert(caption, {
                     "",
                     "[font=default-semibold]",
-                    math.round(obj.amount_min, 0.01),
-                    "-",
-                    math.round(obj.amount_max, 0.01),
+                    misc.delineate_number(math.round(obj.amount_min, 0.01)),
+                    " - ",
+                    misc.delineate_number(math.round(obj.amount_max, 0.01)),
                     " ×[/font]  ",
                   })
                 end
@@ -447,13 +460,13 @@ function root:update_page(prototype_path)
                   local temperature_max = obj.maximum_temperature --[[@as number]]
                   local temperature_string
                   if temperature_min == math.min_double then
-                    temperature_string = "≤" .. math.round(temperature_max, 0.01)
+                    temperature_string = "≤ " .. math.round(temperature_max, 0.01)
                   elseif temperature_max == math.max_double then
-                    temperature_string = "≥" .. math.round(temperature_min, 0.01)
+                    temperature_string = "≥ " .. math.round(temperature_min, 0.01)
                   else
                     temperature_string = ""
                       .. math.round(temperature_min, 0.01)
-                      .. "-"
+                      .. " - "
                       .. math.round(temperature_max, 0.01)
                   end
                   table.insert(remark, { "", "  ", { "format-degrees-c-compact", temperature_string } })
@@ -626,7 +639,7 @@ function root.new(player, player_table)
                 type = "scroll-pane",
                 name = "filter_scroll_pane",
                 style = "rb_filter_scroll_pane",
-                vertical_scroll_policy = "always",
+                vertical_scroll_policy = "always", -- FIXME: The scroll pane is stretching for some reason
                 children = group_flows,
               },
               {
@@ -698,6 +711,7 @@ function root.new(player, player_table)
   gui.add(page_scroll_pane, { list_box("made_in", { "description.made-in" }) })
   gui.add(page_scroll_pane, { list_box("ingredient_in", { "description.rb-ingredient-in" }) })
   gui.add(page_scroll_pane, { list_box("product_of", { "description.rb-product-of" }) })
+  gui.add(page_scroll_pane, { list_box("can_craft", { "description.rb-can-craft" }) })
 
   -- Ingredients
 

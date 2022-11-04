@@ -242,7 +242,6 @@ styles.rb_list_box_item = {
   parent = "list_box_item",
   height = 36,
   horizontally_stretchable = "on",
-  horizontal_align = "left",
   draw_shadow_under_picture = true,
   icon_horizontal_align = "left",
 }
