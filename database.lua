@@ -26,12 +26,8 @@ local database = {}
 --- @param a GenericPrototype
 --- @param b GenericPrototype
 local function compare_icons(a, b)
-  if game.active_mods.base == "1.1.71" then
-    return table.deep_compare(a.icons, b.icons)
-  else
-    -- TEMPORARY:
-    return a.name == b.name
-  end
+  -- return table.deep_compare(a.icons, b.icons)
+  return a.name == b.name
 end
 
 --- @param entry PrototypeEntry

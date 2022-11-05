@@ -387,13 +387,7 @@ function root:update_page(prototype_path)
                     {
                       type = "sprite-button",
                       handler = root.on_prototype_button_clicked,
-                      {
-                        type = "sprite-button",
-                        name = "icon",
-                        style = "rb_small_transparent_slot",
-                        sprite = obj_path,
-                        ignored_by_interaction = true,
-                      },
+                      sprite = obj_path,
                       {
                         type = "label",
                         name = "remark",
@@ -474,7 +468,7 @@ function root:update_page(prototype_path)
                 button.remark.caption = remark
 
                 -- Icon and action
-                button.icon.sprite = obj_path
+                button.sprite = obj_path
                 local tags = button.tags
                 tags.prototype = obj_path
                 button.tags = tags
@@ -538,7 +532,17 @@ function root.new(player, player_table)
           type = "sprite-button",
           style = "flib_slot_button_default",
           sprite = path,
-          tooltip = { "gui.rb-prototype-tooltip", prototype.localised_name, path, prototype.localised_description },
+          tooltip = {
+            "",
+            {
+              "gui.rb-prototype-tooltip",
+              prototype.localised_name,
+              path,
+              prototype.localised_description,
+            },
+            "\n",
+            "foo bar",
+          },
           handler = root.on_prototype_button_clicked,
           -- TODO: Read the sprite instead?
           tags = { prototype = path },
