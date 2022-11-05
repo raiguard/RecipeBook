@@ -53,7 +53,12 @@ local function list_box(name, header, header_remark)
       { type = "empty-widget", style = "flib_horizontal_pusher" },
       { type = "label", caption = header_remark },
     },
-    { type = "frame", name = "list_frame", style = "deep_frame_in_shallow_frame", direction = "vertical" },
+    {
+      type = "frame",
+      name = "list_frame",
+      style = "deep_frame_in_shallow_frame",
+      direction = "vertical",
+    },
   }
 end
 
@@ -392,7 +397,7 @@ function root:update_page(prototype_path)
                         style_mods = {
                           horizontal_align = "right",
                           height = 36 - 8,
-                          width = 464 - 24,
+                          width = (40 * 12) - 24,
                           vertical_align = "center",
                         },
                         ignored_by_interaction = true,
@@ -663,7 +668,7 @@ function root.new(player, player_table)
         {
           type = "frame",
           style = "inside_shallow_frame",
-          style_mods = { width = 500 },
+          style_mods = { width = (40 * 12) + 24 + 12 },
           direction = "vertical",
           {
             type = "frame",

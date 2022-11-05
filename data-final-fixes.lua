@@ -37,3 +37,8 @@ recipe.results[4] = {
   probability = 0.6666666666666666666667,
 }
 data:extend({ recipe })
+
+local styles = data.raw["gui-style"]["default"]
+styles.flib_selected_frame_action_button.top_padding = 1
+styles.flib_selected_frame_action_button.bottom_padding = -1
+styles.flib_selected_frame_action_button.clicked_vertical_offset = 0
