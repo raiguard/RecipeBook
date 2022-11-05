@@ -323,17 +323,15 @@ function root:update_page(prototype_path)
     local properties = database.get_properties(entry, self.player.force.index)
 
     -- Header
-    local page_header_icon = self.elems.page_header_icon
-    page_header_icon.visible = true
-    page_header_icon.sprite = base_path
-    local page_header_label = self.elems.page_header_label
-    page_header_label.caption = entry.base.localised_name
+    local page_header_caption = self.elems.page_header_caption
+    page_header_caption.sprite = base_path
+    page_header_caption.caption = { "", "             ", entry.base.localised_name }
     if properties.hidden then
-      page_header_label.style = "rb_subheader_label_hidden"
+      page_header_caption.style = "rb_subheader_caption_button_hidden"
     elseif not properties.researched then
-      page_header_label.style = "rb_subheader_label_unresearched"
+      page_header_caption.style = "rb_subheader_caption_button_unresearched"
     else
-      page_header_label.style = "subheader_caption_label"
+      page_header_caption.style = "rb_subheader_caption_button"
     end
     local caption = { "" }
     if entry.recipe then
@@ -672,15 +670,10 @@ function root.new(player, player_table)
             style = "subheader_frame",
             {
               type = "sprite-button",
-              name = "page_header_icon",
-              style = "rb_small_transparent_slot",
-              visible = false,
-            },
-            {
-              type = "label",
-              name = "page_header_label",
-              style = "subheader_caption_label",
+              name = "page_header_caption",
+              style = "rb_subheader_caption_button",
               caption = { "gui.rb-welcome-title" },
+              enabled = false,
             },
             { type = "empty-widget", style = "flib_horizontal_pusher" },
             {
