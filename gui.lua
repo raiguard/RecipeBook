@@ -10,7 +10,7 @@ local util = require("__RecipeBook__.util")
 --- @class Gui
 local root = {}
 local root_mt = { __index = root }
-script.register_metatable("RecipeBook_gui", root_mt)
+script.register_metatable("RecipeBook_main_gui", root_mt)
 
 -- TEMPLATES
 
@@ -18,6 +18,7 @@ script.register_metatable("RecipeBook_gui", root_mt)
 --- @param name string
 --- @param tooltip LocalisedString
 --- @param handler GuiElemHandler?
+--- @return GuiElemDef
 local function frame_action_button(name, sprite, tooltip, handler)
   return {
     type = "sprite-button",
@@ -34,6 +35,7 @@ end
 --- @param name string
 --- @param header LocalisedString
 --- @param header_remark LocalisedString
+--- @return GuiElemDef
 local function list_box(name, header, header_remark)
   return {
     type = "flow",
@@ -570,9 +572,9 @@ function root.new(player, player_table)
       handler = { [defines.events.on_gui_closed] = root.on_window_closed },
       {
         type = "flow",
-        name = "titlebar_flow",
         style = "flib_titlebar_flow",
         handler = root.recenter,
+        drag_target = "rb_main_window",
         frame_action_button("nav_backward_button", "rb_nav_backward", { "gui.rb-nav-backward-instruction" }),
         frame_action_button("nav_forward_button", "rb_nav_forward", { "gui.rb-nav-forward-instruction" }),
         {
@@ -724,7 +726,6 @@ function root.new(player, player_table)
   -- Ingredients
 
   -- Dragging and centering
-  elems.titlebar_flow.drag_target = elems.rb_main_window
   elems.rb_main_window.force_auto_center()
 
   -- Set initial state of show unresearched button
