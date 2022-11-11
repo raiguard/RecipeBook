@@ -1,6 +1,6 @@
+local format = require("__flib__.format")
 local gui = require("__flib__.gui-lite")
 local math = require("__flib__.math")
-local misc = require("__flib__.misc")
 local mod_gui = require("__core__.lualib.mod-gui")
 local table = require("__flib__.table")
 
@@ -60,6 +60,12 @@ local function list_box(name, header, header_remark)
       direction = "vertical",
     },
   }
+end
+
+--- @param num number
+--- @return string
+local function format_number(num)
+  return format.number(math.round(num, 0.01))
 end
 
 -- METHODS
@@ -427,16 +433,16 @@ function root:update_page(prototype_path)
                   table.insert(caption, {
                     "",
                     "[font=default-semibold]",
-                    misc.delineate_number(math.round(obj.amount, 0.01)),
+                    format_number(obj.amount),
                     " ×[/font]  ",
                   })
                 elseif obj.amount_min and obj.amount_max then
                   table.insert(caption, {
                     "",
                     "[font=default-semibold]",
-                    misc.delineate_number(math.round(obj.amount_min, 0.01)),
+                    format_number(obj.amount_min),
                     " - ",
-                    misc.delineate_number(math.round(obj.amount_max, 0.01)),
+                    format_number(obj.amount_max),
                     " ×[/font]  ",
                   })
                 end
@@ -792,15 +798,13 @@ function root.get(player)
   end
 end
 
---- @param e GuiEventData
-gui.dispatch_wrapper = function(e, handler)
+gui.add_handlers(root, function(e, handler)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local pgui = root.get(player)
   if pgui then
     handler(pgui, e)
   end
-end
-gui.add_handlers(root)
+end)
 
 root.handle_events = gui.handle_events
 
