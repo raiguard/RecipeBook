@@ -28,7 +28,7 @@ local function frame_action_button(name, sprite, tooltip, handler)
     hovered_sprite = sprite .. "_black",
     clicked_sprite = sprite .. "_black",
     tooltip = tooltip,
-    handler = handler,
+    handler = { [defines.events.on_gui_click] = handler },
   }
 end
 
@@ -50,7 +50,7 @@ local function list_box(name, header, header_remark)
         style = "rb_list_box_caption",
         caption = header,
         state = false,
-        handler = root.collapse_list_box,
+        handler = { [defines.events.on_gui_click] = root.collapse_list_box },
       },
       { type = "empty-widget", style = "flib_horizontal_pusher" },
       { type = "label", caption = header_remark },
@@ -397,7 +397,7 @@ function root:update_page(prototype_path)
                   gui.add(component.list_frame, {
                     {
                       type = "sprite-button",
-                      handler = root.on_prototype_button_clicked,
+                      handler = { [defines.events.on_gui_click] = root.on_prototype_button_clicked },
                       sprite = obj_path,
                       {
                         type = "label",
@@ -522,7 +522,7 @@ function root.new(player, player_table)
       style = "rb_filter_group_button_tab",
       sprite = "item-group/" .. group_name,
       tooltip = game.item_group_prototypes[group_name].localised_name,
-      handler = root.on_filter_group_button_clicked,
+      handler = { [defines.events.on_gui_click] = root.on_filter_group_button_clicked },
     })
     -- Base flow
     local group_flow = {
@@ -554,7 +554,7 @@ function root.new(player, player_table)
             "\n",
             "foo bar",
           },
-          handler = root.on_prototype_button_clicked,
+          handler = { [defines.events.on_gui_click] = root.on_prototype_button_clicked },
           -- TODO: Read the sprite instead?
           tags = { prototype = path },
         })
@@ -722,6 +722,7 @@ function root.new(player, player_table)
   gui.add(page_scroll_pane, { list_box("ingredient_in", { "description.rb-ingredient-in" }) })
   gui.add(page_scroll_pane, { list_box("product_of", { "description.rb-product-of" }) })
   gui.add(page_scroll_pane, { list_box("can_craft", { "description.rb-can-craft" }) })
+  gui.add(page_scroll_pane, { list_box("mined_by", { "description.rb-mined-by" }) })
 
   -- Ingredients
 

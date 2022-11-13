@@ -479,6 +479,15 @@ function database.get_properties(entry, force_index)
           table.insert(properties.can_craft, { type = "recipe", name = recipe.name })
         end
       end
+    elseif entity.type == "resource" then
+      local required_fluid = entity.mineable_properties.required_fluid
+      local resource_category = entity.resource_category
+      properties.mined_by = {}
+      for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
+        if entity.resource_categories[resource_category] and (not required_fluid or entity.fluidbox_prototypes[1]) then
+          table.insert(properties.mined_by, { type = "entity", name = entity.name })
+        end
+      end
     end
   end
 
