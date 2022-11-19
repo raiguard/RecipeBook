@@ -12,13 +12,16 @@ local util = require("__RecipeBook__.util")
 
 -- TODO: Use data-stage properties instead of hardcoding
 local excluded_categories = {
-  ["ee-testing-tool"] = true,
   ["big-turbine"] = true,
   ["condenser-turbine"] = true,
   ["delivery-cannon"] = true,
+  ["fuel-depot"] = true,
+  ["ee-testing-tool"] = true,
   ["spaceship-antimatter-engine"] = true,
   ["spaceship-ion-engine"] = true,
   ["spaceship-rocket-engine"] = true,
+  ["transport-drone-request"] = true,
+  ["transport-fluid-request"] = true,
 }
 
 local database = {}
