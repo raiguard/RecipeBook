@@ -569,6 +569,7 @@ function root.new(player, player_table)
       name = "rb_main_window",
       direction = "vertical",
       visible = false,
+      elem_mods = { auto_center = true },
       handler = { [defines.events.on_gui_closed] = root.on_window_closed },
       {
         type = "flow",
@@ -715,19 +716,20 @@ function root.new(player, player_table)
   })
 
   -- Add components to page
+  -- Do this separately so the names aren't saved in the elems table
   local page_scroll_pane = elems.page_scroll_pane
-  gui.add(page_scroll_pane, { list_box("ingredients", { "description.ingredients" }) })
-  gui.add(page_scroll_pane, { list_box("products", { "description.products" }) })
-  gui.add(page_scroll_pane, { list_box("made_in", { "description.made-in" }) })
-  gui.add(page_scroll_pane, { list_box("ingredient_in", { "description.rb-ingredient-in" }) })
-  gui.add(page_scroll_pane, { list_box("product_of", { "description.rb-product-of" }) })
-  gui.add(page_scroll_pane, { list_box("can_craft", { "description.rb-can-craft" }) })
-  gui.add(page_scroll_pane, { list_box("mined_by", { "description.rb-mined-by" }) })
-
-  -- Ingredients
-
-  -- Dragging and centering
-  elems.rb_main_window.force_auto_center()
+  gui.add(
+    page_scroll_pane,
+    {
+      list_box("ingredients", { "description.ingredients" }),
+      list_box("products", { "description.products" }),
+      list_box("made_in", { "description.made-in" }),
+      list_box("ingredient_in", { "description.rb-ingredient-in" }),
+      list_box("product_of", { "description.rb-product-of" }),
+      list_box("can_craft", { "description.rb-can-craft" }),
+      list_box("mined_by", { "description.rb-mined-by" }),
+    }
+  )
 
   -- Set initial state of show unresearched button
   elems.show_unresearched_button.sprite = "rb_show_unresearched_black"
