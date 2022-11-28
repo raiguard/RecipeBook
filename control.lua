@@ -1,28 +1,36 @@
-local event = require("__flib__.event")
 local dictionary = require("__flib__.dictionary")
+local migration = require("__flib__.migration")
 
 local database = require("__RecipeBook__.database")
 local gui = require("__RecipeBook__.gui")
-local migration = require("__RecipeBook__.migration")
+local migrations = require("__RecipeBook__.migrations")
 
 gui.handle_events()
 
-event.on_init(function()
-  migration.init()
+script.on_init(function()
+  migrations.init()
 end)
 
-event.on_load(function()
+script.on_load(function()
   dictionary.load()
 end)
 
-event.on_configuration_changed(migration.on_configuration_changed)
-
-event.on_player_created(function(e)
-  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
-  migration.init_player(player)
+script.on_configuration_changed(function(e)
+  if migration.on_config_changed(e, migrations.by_version) then
+    dictionary.init()
+    migrations.generic()
+    for _, player in pairs(game.players) do
+      migrations.migrate_player(player)
+    end
+  end
 end)
 
-event.on_player_joined_game(function(e)
+script.on_event(defines.events.on_player_created, function(e)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  migrations.init_player(player)
+end)
+
+script.on_event(defines.events.on_player_joined_game, function(e)
   local player_table = global.players[e.player_index]
   if player_table and not player_table.search_strings then
     local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
@@ -30,11 +38,11 @@ event.on_player_joined_game(function(e)
   end
 end)
 
-event.on_player_left_game(function(e)
+script.on_event(defines.events.on_player_left_game, function(e)
   dictionary.cancel_translation(e.player_index)
 end)
 
-event.register("rb-linked-focus-search", function(e)
+script.on_event("rb-linked-focus-search", function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local pgui = gui.get(player)
   if pgui and not pgui.state.pinned and pgui.elems.rb_main_window.visible then
@@ -46,7 +54,7 @@ event.register("rb-linked-focus-search", function(e)
   end
 end)
 
-event.register("rb-open-selected", function(e)
+script.on_event("rb-open-selected", function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local selected_prototype = e.selected_prototype
   if not selected_prototype then
@@ -58,7 +66,7 @@ event.register("rb-open-selected", function(e)
   end
 end)
 
-event.register("rb-toggle", function(e)
+script.on_event("rb-toggle", function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local pgui = gui.get(player)
   if pgui then
@@ -66,7 +74,7 @@ event.register("rb-toggle", function(e)
   end
 end)
 
-event.on_research_finished(function(e)
+script.on_event(defines.events.on_research_finished, function(e)
   local profiler = game.create_profiler()
   local technology = e.research
   database.on_technology_researched(technology, technology.force.index)
@@ -76,7 +84,7 @@ event.on_research_finished(function(e)
   global.update_force_guis[technology.force.index] = true
 end)
 
-event.on_tick(function()
+script.on_event(defines.events.on_tick, function()
   dictionary.check_skipped()
   if next(global.update_force_guis) then
     for force_index in pairs(global.update_force_guis) do
@@ -94,7 +102,7 @@ event.on_tick(function()
   end
 end)
 
-event.on_lua_shortcut(function(e)
+script.on_event(defines.events.on_lua_shortcut, function(e)
   if e.prototype_name == "RecipeBook" then
     local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
     local pgui = gui.get(player)
@@ -104,14 +112,14 @@ event.on_lua_shortcut(function(e)
   end
 end)
 
-event.on_runtime_mod_setting_changed(function(e)
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(e)
   if e.setting == "rb-show-overhead-button" then
     local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
     gui.refresh_overhead_button(player)
   end
 end)
 
-event.on_string_translated(function(e)
+script.on_event(defines.events.on_string_translated, function(e)
   local result = dictionary.process_translation(e)
   if result then
     for _, player_index in pairs(result.players) do
