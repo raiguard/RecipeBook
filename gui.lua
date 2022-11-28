@@ -1,11 +1,11 @@
-local format = require("__flib__.format")
-local gui = require("__flib__.gui-lite")
-local math = require("__flib__.math")
-local mod_gui = require("__core__.lualib.mod-gui")
-local table = require("__flib__.table")
+local format = require("__flib__/format")
+local gui = require("__flib__/gui-lite")
+local math = require("__flib__/math")
+local mod_gui = require("__core__/lualib/mod-gui")
+local table = require("__flib__/table")
 
-local database = require("__RecipeBook__.database")
-local util = require("__RecipeBook__.util")
+local database = require("__RecipeBook__/database")
+local util = require("__RecipeBook__/util")
 
 --- @class Gui
 local root = {}
@@ -564,149 +564,150 @@ function root.new(player, player_table)
 
   -- Build GUI
   local elems = gui.add(player.gui.screen, {
-    type = "frame",
-    name = "rb_main_window",
-    direction = "vertical",
-    visible = false,
-    elem_mods = { auto_center = true },
-    handler = { [defines.events.on_gui_closed] = root.on_window_closed },
     {
-      type = "flow",
-      style = "flib_titlebar_flow",
-      handler = root.recenter,
-      drag_target = "rb_main_window",
-      frame_action_button("nav_backward_button", "rb_nav_backward", { "gui.rb-nav-backward-instruction" }),
-      frame_action_button("nav_forward_button", "rb_nav_forward", { "gui.rb-nav-forward-instruction" }),
+      type = "frame",
+      name = "rb_main_window",
+      direction = "vertical",
+      visible = false,
+      handler = { [defines.events.on_gui_closed] = root.on_window_closed },
       {
-        type = "label",
-        style = "frame_title",
-        caption = { "mod-name.RecipeBook" },
-        ignored_by_interaction = true,
-      },
-      { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
-      {
-        type = "textfield",
-        name = "search_textfield",
-        style = "long_number_textfield",
-        style_mods = { top_margin = -3 },
-        lose_focus_on_confirm = true,
-        clear_and_focus_on_right_click = true,
-        visible = false,
-        handler = { [defines.events.on_gui_text_changed] = root.on_search_query_changed },
-      },
-      frame_action_button("search_button", "utility/search", { "gui.rb-search-instruction" }, root.toggle_search),
-      frame_action_button(
-        "show_unresearched_button",
-        "rb_show_unresearched",
-        { "gui.rb-show-unresearched-instruction" },
-        root.toggle_show_unresearched
-      ),
-      frame_action_button(
-        "show_hidden_button",
-        "rb_show_hidden",
-        { "gui.rb-show-hidden-instruction" },
-        root.toggle_show_hidden
-      ),
-      {
-        type = "line",
-        style_mods = { top_margin = -2, bottom_margin = 2 },
-        direction = "vertical",
-        ignored_by_interaction = true,
-      },
-      frame_action_button("pin_button", "rb_pin", { "gui.rb-pin-instruction" }, root.toggle_pinned),
-      frame_action_button("close_button", "utility/close", { "gui.close-instruction" }, root.hide),
-    },
-    {
-      type = "flow",
-      style_mods = { horizontal_spacing = 12 },
-      {
-        type = "frame",
-        name = "filter_outer_frame",
-        style = "inside_deep_frame",
-        direction = "vertical",
+        type = "flow",
+        style = "flib_titlebar_flow",
+        handler = root.recenter,
+        drag_target = "rb_main_window",
+        frame_action_button("nav_backward_button", "rb_nav_backward", { "gui.rb-nav-backward-instruction" }),
+        frame_action_button("nav_forward_button", "rb_nav_forward", { "gui.rb-nav-forward-instruction" }),
         {
-          type = "frame",
-          name = "filter_warning_frame",
-          style = "negative_subheader_frame",
-          style_mods = { horizontally_stretchable = true },
+          type = "label",
+          style = "frame_title",
+          caption = { "mod-name.RecipeBook" },
+          ignored_by_interaction = true,
+        },
+        { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
+        {
+          type = "textfield",
+          name = "search_textfield",
+          style = "long_number_textfield",
+          style_mods = { top_margin = -3 },
+          lose_focus_on_confirm = true,
+          clear_and_focus_on_right_click = true,
           visible = false,
-          {
-            type = "label",
-            style = "bold_label",
-            style_mods = { left_padding = 8 },
-            caption = { "gui.rb-localised-search-unavailable" },
-          },
+          handler = { [defines.events.on_gui_text_changed] = root.on_search_query_changed },
         },
+        frame_action_button("search_button", "utility/search", { "gui.rb-search-instruction" }, root.toggle_search),
+        frame_action_button(
+          "show_unresearched_button",
+          "rb_show_unresearched",
+          { "gui.rb-show-unresearched-instruction" },
+          root.toggle_show_unresearched
+        ),
+        frame_action_button(
+          "show_hidden_button",
+          "rb_show_hidden",
+          { "gui.rb-show-hidden-instruction" },
+          root.toggle_show_hidden
+        ),
         {
-          type = "table",
-          name = "filter_group_table",
-          style = "filter_group_table",
-          column_count = 6,
-          children = group_tabs,
+          type = "line",
+          style_mods = { top_margin = -2, bottom_margin = 2 },
+          direction = "vertical",
+          ignored_by_interaction = true,
         },
+        frame_action_button("pin_button", "rb_pin", { "gui.rb-pin-instruction" }, root.toggle_pinned),
+        frame_action_button("close_button", "utility/close", { "gui.close-instruction" }, root.hide),
+      },
+      {
+        type = "flow",
+        style_mods = { horizontal_spacing = 12 },
         {
           type = "frame",
-          style = "rb_filter_frame",
+          name = "filter_outer_frame",
+          style = "inside_deep_frame",
+          direction = "vertical",
           {
             type = "frame",
-            style = "rb_filter_deep_frame",
-            {
-              type = "scroll-pane",
-              name = "filter_scroll_pane",
-              style = "rb_filter_scroll_pane",
-              vertical_scroll_policy = "always", -- FIXME: The scroll pane is stretching for some reason
-              children = group_flows,
-            },
+            name = "filter_warning_frame",
+            style = "negative_subheader_frame",
+            style_mods = { horizontally_stretchable = true },
+            visible = false,
             {
               type = "label",
-              name = "filter_no_results_label",
-              style_mods = {
-                width = 40 * 10,
-                height = 40 * 14,
-                vertically_stretchable = true,
-                horizontal_align = "center",
-                vertical_align = "center",
+              style = "bold_label",
+              style_mods = { left_padding = 8 },
+              caption = { "gui.rb-localised-search-unavailable" },
+            },
+          },
+          {
+            type = "table",
+            name = "filter_group_table",
+            style = "filter_group_table",
+            column_count = 6,
+            children = group_tabs,
+          },
+          {
+            type = "frame",
+            style = "rb_filter_frame",
+            {
+              type = "frame",
+              style = "rb_filter_deep_frame",
+              {
+                type = "scroll-pane",
+                name = "filter_scroll_pane",
+                style = "rb_filter_scroll_pane",
+                vertical_scroll_policy = "always", -- FIXME: The scroll pane is stretching for some reason
+                children = group_flows,
               },
-              caption = { "gui.nothing-found" },
-              visible = false,
+              {
+                type = "label",
+                name = "filter_no_results_label",
+                style_mods = {
+                  width = 40 * 10,
+                  height = 40 * 14,
+                  vertically_stretchable = true,
+                  horizontal_align = "center",
+                  vertical_align = "center",
+                },
+                caption = { "gui.nothing-found" },
+                visible = false,
+              },
             },
           },
         },
-      },
-      {
-        type = "frame",
-        style = "inside_shallow_frame",
-        style_mods = { width = (40 * 12) + 24 + 12 },
-        direction = "vertical",
         {
           type = "frame",
-          style = "subheader_frame",
+          style = "inside_shallow_frame",
+          style_mods = { width = (40 * 12) + 24 + 12 },
+          direction = "vertical",
           {
-            type = "sprite-button",
-            name = "page_header_caption",
-            style = "rb_subheader_caption_button",
-            caption = { "gui.rb-welcome-title" },
-            enabled = false,
+            type = "frame",
+            style = "subheader_frame",
+            {
+              type = "sprite-button",
+              name = "page_header_caption",
+              style = "rb_subheader_caption_button",
+              caption = { "gui.rb-welcome-title" },
+              enabled = false,
+            },
+            { type = "empty-widget", style = "flib_horizontal_pusher" },
+            {
+              type = "label",
+              name = "page_header_type_label",
+              style = "info_label",
+              style_mods = { font = "default-semibold", right_margin = 8 },
+            },
           },
-          { type = "empty-widget", style = "flib_horizontal_pusher" },
           {
-            type = "label",
-            name = "page_header_type_label",
-            style = "info_label",
-            style_mods = { font = "default-semibold", right_margin = 8 },
-          },
-        },
-        {
-          type = "scroll-pane",
-          name = "page_scroll_pane",
-          style = "flib_naked_scroll_pane",
-          style_mods = { horizontally_stretchable = true, vertically_stretchable = true },
-          vertical_scroll_policy = "always",
-          {
-            type = "label",
-            name = "welcome_label",
-            style_mods = { horizontally_stretchable = true, single_line = false },
-            caption = { "gui.rb-welcome-text" },
+            type = "scroll-pane",
+            name = "page_scroll_pane",
+            style = "flib_naked_scroll_pane",
+            style_mods = { horizontally_stretchable = true, vertically_stretchable = true },
+            vertical_scroll_policy = "always",
+            {
+              type = "label",
+              name = "welcome_label",
+              style_mods = { horizontally_stretchable = true, single_line = false },
+              caption = { "gui.rb-welcome-text" },
+            },
           },
         },
       },
@@ -714,17 +715,19 @@ function root.new(player, player_table)
   })
 
   -- Add components to page
-  -- Do this separately so the names aren't saved in the elems table
   local page_scroll_pane = elems.page_scroll_pane
-  gui.add(page_scroll_pane, {
-    list_box("ingredients", { "description.ingredients" }),
-    list_box("products", { "description.products" }),
-    list_box("made_in", { "description.made-in" }),
-    list_box("ingredient_in", { "description.rb-ingredient-in" }),
-    list_box("product_of", { "description.rb-product-of" }),
-    list_box("can_craft", { "description.rb-can-craft" }),
-    list_box("mined_by", { "description.rb-mined-by" }),
-  })
+  gui.add(page_scroll_pane, { list_box("ingredients", { "description.ingredients" }) })
+  gui.add(page_scroll_pane, { list_box("products", { "description.products" }) })
+  gui.add(page_scroll_pane, { list_box("made_in", { "description.made-in" }) })
+  gui.add(page_scroll_pane, { list_box("ingredient_in", { "description.rb-ingredient-in" }) })
+  gui.add(page_scroll_pane, { list_box("product_of", { "description.rb-product-of" }) })
+  gui.add(page_scroll_pane, { list_box("can_craft", { "description.rb-can-craft" }) })
+  gui.add(page_scroll_pane, { list_box("mined_by", { "description.rb-mined-by" }) })
+
+  -- Ingredients
+
+  -- Dragging and centering
+  elems.rb_main_window.force_auto_center()
 
   -- Set initial state of show unresearched button
   elems.show_unresearched_button.sprite = "rb_show_unresearched_black"

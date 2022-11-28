@@ -1,8 +1,8 @@
-local dictionary = require("__flib__.dictionary")
-local math = require("__flib__.math")
-local table = require("__flib__.table")
+local dictionary = require("__flib__/dictionary")
+local math = require("__flib__/math")
+local table = require("__flib__/table")
 
-local util = require("__RecipeBook__.util")
+local util = require("__RecipeBook__/util")
 
 -- DESIGN GOALS:
 -- Find a balance between caching information and generating it on the fly

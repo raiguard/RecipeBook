@@ -1,6 +1,6 @@
 local util = {}
 
--- local coreutil = require("__core__.lualib.util")
+-- local coreutil = require("__core__/lualib/util")
 
 util.components = {
   ingredients = {

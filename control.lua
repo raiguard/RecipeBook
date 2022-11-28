@@ -1,9 +1,9 @@
-local dictionary = require("__flib__.dictionary")
-local migration = require("__flib__.migration")
+local dictionary = require("__flib__/dictionary")
+local migration = require("__flib__/migration")
 
-local database = require("__RecipeBook__.database")
-local gui = require("__RecipeBook__.gui")
-local migrations = require("__RecipeBook__.migrations")
+local database = require("__RecipeBook__/database")
+local gui = require("__RecipeBook__/gui")
+local migrations = require("__RecipeBook__/migrations")
 
 gui.handle_events()
 
