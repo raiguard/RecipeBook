@@ -200,7 +200,8 @@ function database.build_groups()
   end
 
   profiler.stop()
-  log({ "", "Database generated, ", profiler })
+  -- FIXME:
+  -- log({ "", "Database generated, ", profiler })
 end
 
 --- @param entity LuaEntityPrototype
