@@ -339,7 +339,7 @@ function root:update_page(prototype_path)
     -- Header
     local page_header_caption = self.elems.page_header_caption
     page_header_caption.sprite = base_path
-    page_header_caption.caption = { "", "             ", entry.base.localised_name }
+    page_header_caption.caption = { "", "             ", { "?", entry.base.localised_name, prototype_path } }
     if properties.hidden then
       page_header_caption.style = "rb_subheader_caption_button_hidden"
     elseif not properties.researched then
@@ -449,7 +449,7 @@ function root:update_page(prototype_path)
                     " ×[/font]  ",
                   })
                 end
-                table.insert(caption, obj_entry.base.localised_name)
+                table.insert(caption, { "?", obj_entry.base.localised_name, obj_path })
                 button.caption = caption
                 -- Remark
                 local remark = { "" }
@@ -546,14 +546,10 @@ function root.new(player, player_table)
           sprite = path,
           tooltip = {
             "",
-            {
-              "gui.rb-prototype-tooltip",
-              prototype.localised_name,
-              path,
-              prototype.localised_description,
-            },
+            { "", "[font=default-bold]", { "?", prototype.localised_name, path }, "[/font]" },
             "\n",
-            "foo bar",
+            { "?", { "", prototype.localised_description, "\n" }, "" },
+            path,
           },
           handler = { [defines.events.on_gui_click] = root.on_prototype_button_clicked },
           -- TODO: Read the sprite instead?
