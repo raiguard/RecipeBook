@@ -1,5 +1,4 @@
 local dictionary = require("__flib__/dictionary")
-local math = require("__flib__/math")
 local table = require("__flib__/table")
 
 local util = require("__RecipeBook__/util")
@@ -53,9 +52,9 @@ function database.build_groups()
 
   local search_strings = dictionary.new("search")
 
+  log("Search tree")
   --- Each top-level prototype sorted into groups and subgroups for the search_interface
   --- @type table<string, table<string, GenericPrototype>>
-  log("Search tree")
   local search_tree = {}
   global.search_tree = search_tree
   for group_name, group_prototype in pairs(game.item_group_prototypes) do
