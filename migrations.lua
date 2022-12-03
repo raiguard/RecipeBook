@@ -1,57 +1,48 @@
-local dictionary = require("__flib__/dictionary")
+local dictionary = require("__flib__/dictionary-new")
 local flib_migration = require("__flib__/migration")
 
+local database = require("__RecipeBook__/database")
 local gui = require("__RecipeBook__/gui")
 
-local database = require("__RecipeBook__/database")
+local migrations = {}
 
-local migration = {}
-
-function migration.init()
-  dictionary.init()
+function migrations.on_init()
+  dictionary.on_init()
 
   --- @type table<uint, PlayerTable>
   global.players = {}
   --- @type table<uint, boolean>
   global.update_force_guis = {} --
 
-  migration.generic()
+  database.build()
+
   for _, player in pairs(game.players) do
-    migration.init_player(player)
+    migrations.init_player(player)
   end
 end
 
-function migration.on_configuration_changed(e)
-  if flib_migration.on_config_changed(e, migration.by_version) then
-    dictionary.init()
-    migration.generic()
+--- @param e ConfigurationChangedData
+function migrations.on_configuration_changed(e)
+  if flib_migration.on_config_changed(e, migrations.by_version) then
+    dictionary.on_configuration_changed()
+    database.build()
     for _, player in pairs(game.players) do
-      migration.migrate_player(player)
+      migrations.migrate_player(player)
     end
   end
 end
 
-function migration.generic()
-  database.build_groups()
-end
-
 --- @param player LuaPlayer
-function migration.init_player(player)
+function migrations.init_player(player)
   global.players[player.index] = {}
-
-  migration.migrate_player(player)
+  migrations.migrate_player(player)
 end
 
 --- @param player LuaPlayer
-function migration.migrate_player(player)
+function migrations.migrate_player(player)
   local player_table = global.players[player.index]
   if not player_table then
     return
-  end
-
-  player_table.search_strings = nil
-  if player.connected then
-    dictionary.translate(player)
   end
 
   local existing_gui = gui.get(player)
@@ -62,13 +53,13 @@ function migration.migrate_player(player)
   gui.refresh_overhead_button(player)
 end
 
-migration.by_version = {
+migrations.by_version = {
   ["4.0.0"] = function()
     -- NUKE EVERYTHING
     global = {}
     -- Re-init
-    migration.init()
+    migrations.on_init()
   end,
 }
 
-return migration
+return migrations

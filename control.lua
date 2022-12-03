@@ -1,45 +1,18 @@
-local dictionary = require("__flib__/dictionary")
-local migration = require("__flib__/migration")
+local dictionary = require("__flib__/dictionary-new")
 
 local database = require("__RecipeBook__/database")
 local gui = require("__RecipeBook__/gui")
 local migrations = require("__RecipeBook__/migrations")
 
+dictionary.handle_events()
 gui.handle_events()
 
-script.on_init(function()
-  migrations.init()
-end)
-
-script.on_load(function()
-  dictionary.load()
-end)
-
-script.on_configuration_changed(function(e)
-  if migration.on_config_changed(e, migrations.by_version) then
-    dictionary.init()
-    migrations.generic()
-    for _, player in pairs(game.players) do
-      migrations.migrate_player(player)
-    end
-  end
-end)
+script.on_init(migrations.on_init)
+script.on_configuration_changed(migrations.on_configuration_changed)
 
 script.on_event(defines.events.on_player_created, function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   migrations.init_player(player)
-end)
-
-script.on_event(defines.events.on_player_joined_game, function(e)
-  local player_table = global.players[e.player_index]
-  if player_table and not player_table.search_strings then
-    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
-    dictionary.translate(player)
-  end
-end)
-
-script.on_event(defines.events.on_player_left_game, function(e)
-  dictionary.cancel_translation(e.player_index)
 end)
 
 script.on_event("rb-linked-focus-search", function(e)
@@ -86,7 +59,7 @@ script.on_event(defines.events.on_research_finished, function(e)
 end)
 
 script.on_event(defines.events.on_tick, function()
-  dictionary.check_skipped()
+  dictionary.on_tick()
   if next(global.update_force_guis) then
     for force_index in pairs(global.update_force_guis) do
       local force = game.forces[force_index]
@@ -120,17 +93,11 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(e)
   end
 end)
 
-script.on_event(defines.events.on_string_translated, function(e)
-  local result = dictionary.process_translation(e)
-  if result then
-    for _, player_index in pairs(result.players) do
-      local player_table = global.players[player_index]
-      if player_table then
-        player_table.search_strings = result.dictionaries.search
-        if player_table.gui and player_table.gui.elems.rb_main_window.valid then
-          player_table.gui:update_translation_warning()
-        end
-      end
+script.on_event(dictionary.on_player_dictionaries_ready, function(e)
+  local player_table = global.players[e.player_index]
+  if player_table then
+    if player_table.gui and player_table.gui.elems.rb_main_window.valid then
+      player_table.gui:update_translation_warning()
     end
   end
 end)

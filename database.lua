@@ -1,4 +1,4 @@
-local dictionary = require("__flib__/dictionary")
+local dictionary = require("__flib__/dictionary-new")
 local table = require("__flib__/table")
 
 local util = require("__RecipeBook__/util")
@@ -46,11 +46,11 @@ end
 --- @field members GenericPrototype[]
 --- @field parent_name string
 
-function database.build_groups()
+function database.build()
   log("Generating database")
   local profiler = game.create_profiler()
 
-  local search_strings = dictionary.new("search")
+  dictionary.new("search")
 
   log("Search tree")
   --- Each top-level prototype sorted into groups and subgroups for the search_interface
@@ -99,7 +99,8 @@ function database.build_groups()
         end
       end
       table.insert(subgroup, path)
-      search_strings:add(util.prototype_type[prototype.object_name] .. "/" .. prototype.name, prototype.localised_name)
+      local prototype_path = util.prototype_type[prototype.object_name] .. "/" .. prototype.name
+      dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
 
       return db[path]
     end

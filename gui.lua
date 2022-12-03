@@ -1,3 +1,4 @@
+local dictionary = require("__flib__/dictionary-new")
 local format = require("__flib__/format")
 local gui = require("__flib__/gui-lite")
 local math = require("__flib__/math")
@@ -249,7 +250,7 @@ function root:update_filter_panel()
   local tabs_table = self.elems.filter_group_table
   local groups_scroll = self.elems.filter_scroll_pane
   local first_valid
-  local search_strings = self.player_table.search_strings or {}
+  local search_strings = dictionary.get(self.player.index, "search") or {}
 
   for _, group in pairs(groups_scroll.children) do
     local filtered_count = 0
@@ -503,7 +504,7 @@ function root:update_page(prototype_path)
 end
 
 function root:update_translation_warning()
-  self.elems.filter_warning_frame.visible = not self.player_table.search_strings
+  self.elems.filter_warning_frame.visible = not dictionary.get(self.player.index, "search")
 end
 
 -- BOOTSTRAP

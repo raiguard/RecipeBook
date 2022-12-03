@@ -13,7 +13,6 @@
 
 --- @class PlayerTable
 --- @field gui Gui?
---- @field search_strings table<string, string>?
 
 --- @class PrototypeEntry
 --- @field base GenericPrototype

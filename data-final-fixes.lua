@@ -10,8 +10,16 @@ data.raw["recipe"]["rocket-part"].hide_from_player_crafting = true
 -- Hide EEE from RB
 data.raw["recipe"]["electric-energy-interface"].hidden = true
 
+local styles = data.raw["gui-style"]["default"]
+styles.flib_selected_frame_action_button.top_padding = 1
+styles.flib_selected_frame_action_button.bottom_padding = -1
+styles.flib_selected_frame_action_button.clicked_vertical_offset = 0
+
 -- Testing recipe
 local recipe = table.deepcopy(data.raw["recipe"]["advanced-oil-processing"])
+if not recipe.ingredients then
+  return
+end
 recipe.name = "rb-test-recipe"
 recipe.ingredients[1].temperature = 130
 recipe.ingredients[2].minimum_temperature = 10
@@ -37,8 +45,3 @@ recipe.results[4] = {
   probability = 0.6666666666666666666667,
 }
 data:extend({ recipe })
-
-local styles = data.raw["gui-style"]["default"]
-styles.flib_selected_frame_action_button.top_padding = 1
-styles.flib_selected_frame_action_button.bottom_padding = -1
-styles.flib_selected_frame_action_button.clicked_vertical_offset = 0
