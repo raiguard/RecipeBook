@@ -52,8 +52,7 @@ script.on_event(defines.events.on_research_finished, function(e)
   local technology = e.research
   database.on_technology_researched(technology, technology.force.index)
   profiler.stop()
-  -- FIXME:
-  -- log({ "", "Unlock Tech ", profiler })
+  log({ "", "Unlock Tech ", profiler })
   -- Update on the next tick in case multiple researches are done at once
   global.update_force_guis[technology.force.index] = true
 end)

@@ -201,8 +201,7 @@ function database.build()
   end
 
   profiler.stop()
-  -- FIXME:
-  -- log({ "", "Database generated, ", profiler })
+  log({ "", "Database generated, ", profiler })
 end
 
 --- @param entity LuaEntityPrototype

@@ -314,8 +314,7 @@ function root:update_filter_panel()
     self.elems.filter_no_results_label.visible = true
   end
   profiler.stop()
-  -- FIXME:
-  -- log({ "", "Update Filter Panel ", profiler })
+  log({ "", "Update Filter Panel ", profiler })
 end
 
 --- @param prototype_path string?
