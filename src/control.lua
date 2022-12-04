@@ -1,4 +1,4 @@
-local dictionary = require("__flib__.dictionary")
+local dictionary = require("__flib__.dictionary-lite")
 local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
@@ -167,10 +167,12 @@ end)
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
+dictionary.handle_events() -- Must be defined first so we can override
+
 -- BOOTSTRAP
 
 event.on_init(function()
-  dictionary.init()
+  dictionary.on_init()
   on_tick_n.init()
 
   global_data.init()
@@ -187,8 +189,6 @@ event.on_init(function()
 end)
 
 event.on_load(function()
-  dictionary.load()
-
   formatter.create_all_caches()
 
   -- When mod configuration changes, don't bother to build anything because it'll have to be built again anyway
@@ -221,7 +221,7 @@ end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
-    dictionary.init()
+    dictionary.on_configuration_changed()
 
     global_data.update_sync_data()
     global_data.build_prototypes()
@@ -232,6 +232,31 @@ event.on_configuration_changed(function(e)
     for i, player in pairs(game.players) do
       player_data.refresh(player, global.players[i])
     end
+  end
+end)
+
+-- DICTIONARIES
+
+script.on_event(dictionary.on_player_dictionaries_ready, function(e)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  local player_table = global.players[e.player_index]
+
+  player_table.translations = dictionary.get_all(e.player_index)
+  if player_table.flags.can_open_gui then
+    REFRESH_CONTENTS(player, player_table)
+  else
+    -- Show message if needed
+    if player_table.flags.show_message_after_translation then
+      player.print({ "message.rb-can-open-gui" })
+      player_table.flags.show_message_after_translation = false
+    end
+
+    -- Create GUI
+    SEARCH_GUI.build(player, player_table)
+    -- Update flags
+    player_table.flags.can_open_gui = true
+    -- Enable shortcut
+    player.set_shortcut_available("rb-search", true)
   end
 end)
 
@@ -502,18 +527,10 @@ event.on_player_removed(function(e)
   player_data.remove(e.player_index)
 end)
 
-event.on_player_joined_game(function(e)
-  dictionary.translate(game.get_player(e.player_index))
-end)
-
-event.on_player_left_game(function(e)
-  dictionary.cancel_translation(e.player_index)
-end)
-
 -- TICK
 
 event.on_tick(function(e)
-  dictionary.check_skipped()
+  dictionary.on_tick()
 
   local actions = on_tick_n.retrieve(e.tick)
   if actions then
@@ -532,7 +549,7 @@ event.on_tick(function(e)
         game.write_file("rb-dump", func(output), false, msg.player_index)
         game.print("[color=green]Dumped database to script-output/rb-dump[/color]")
       elseif msg.action == "refresh_all" then
-        dictionary.init()
+        dictionary.on_init()
         database.build()
         database.check_forces()
         for player_index, player in pairs(game.players) do
@@ -541,41 +558,6 @@ event.on_tick(function(e)
           player_table.flags.show_message_after_translation = true
         end
         game.print("[color=green]Database refresh complete, retranslating dictionaries...[/color]")
-      end
-    end
-  end
-end)
-
--- TRANSLATIONS
-
-event.on_string_translated(function(e)
-  local language_data = dictionary.process_translation(e)
-  if language_data then
-    for _, player_index in pairs(language_data.players) do
-      local player = game.get_player(player_index)
-      local player_table = global.players[player_index]
-
-      -- If the translations table already exists then this player just joined the game
-      -- If the player changed languages, then just refresh the GUI contents
-      if player_table.translations and (player_table.language or "") ~= language_data.language then
-        player_table.language = language_data.language
-        player_table.translations = language_data.dictionaries
-        REFRESH_CONTENTS(player, player_table)
-      elseif not player_table.flags.can_open_gui then
-        player_table.language = language_data.language
-        player_table.translations = language_data.dictionaries
-        -- Show message if needed
-        if player_table.flags.show_message_after_translation then
-          player.print({ "message.rb-can-open-gui" })
-          player_table.flags.show_message_after_translation = false
-        end
-
-        -- Create GUI
-        SEARCH_GUI.build(player, player_table)
-        -- Update flags
-        player_table.flags.can_open_gui = true
-        -- Enable shortcut
-        player.set_shortcut_available("rb-search", true)
       end
     end
   end

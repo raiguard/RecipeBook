@@ -1,12 +1,10 @@
 local table = require("__flib__.table")
 
-local constants = require("constants")
-
 local util = require("scripts.util")
 
 local item_proc = {}
 
-function item_proc.build(database, dictionaries, metadata)
+function item_proc.build(database, metadata)
   local modules = {}
   local place_as_equipment_results = {}
   local place_results = {}
@@ -36,9 +34,8 @@ function item_proc.build(database, dictionaries, metadata)
         rocket_launch_payloads[product.name] = { ident }
       end
     end
-    local default_categories = util.unique_string_array(
-      #launch_products > 0 and table.shallow_copy(metadata.rocket_silo_categories) or {}
-    )
+    local default_categories =
+      util.unique_string_array(#launch_products > 0 and table.shallow_copy(metadata.rocket_silo_categories) or {})
 
     local place_as_equipment_result = prototype.place_as_equipment_result
     if place_as_equipment_result then
@@ -180,8 +177,8 @@ function item_proc.build(database, dictionaries, metadata)
       subgroup = { class = "group", name = prototype.subgroup.name },
       unlocked_by = util.unique_obj_array(),
     }
-    dictionaries.item:add(name, prototype.localised_name)
-    dictionaries.item_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("item", name, prototype.localised_name)
+    util.add_to_dictionary("item_description", name, prototype.localised_description)
   end
 
   -- Add rocket launch payloads to their material tables

@@ -6,7 +6,7 @@ local util = require("scripts.util")
 
 local fluid_proc = require("scripts.database.fluid")
 
-return function(database, dictionaries, metadata)
+return function(database, metadata)
   for name, prototype in pairs(global.prototypes.recipe) do
     local category = prototype.category
     local group = prototype.group
@@ -118,7 +118,7 @@ return function(database, dictionaries, metadata)
     end
 
     database.recipe[name] = data
-    dictionaries.recipe:add(name, prototype.localised_name)
-    dictionaries.recipe_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("recipe", name, prototype.localised_name)
+    util.add_to_dictionary("recipe_description", name, prototype.localised_description)
   end
 end

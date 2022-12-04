@@ -1,6 +1,6 @@
 local util = require("scripts.util")
 
-return function(database, dictionaries)
+return function(database)
   for name, prototype in pairs(global.prototypes.recipe_category) do
     database.recipe_category[name] = {
       class = "recipe_category",
@@ -10,7 +10,7 @@ return function(database, dictionaries)
       prototype_name = name,
       recipes = util.unique_obj_array({}),
     }
-    dictionaries.recipe_category:add(name, prototype.localised_name)
-    dictionaries.recipe_category_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("recipe_category", name, prototype.localised_name)
+    util.add_to_dictionary("recipe_category_description", name, prototype.localised_description)
   end
 end

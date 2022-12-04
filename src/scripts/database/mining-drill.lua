@@ -2,7 +2,7 @@ local util = require("scripts.util")
 
 local mining_drill_proc = {}
 
-function mining_drill_proc.build(database, dictionaries)
+function mining_drill_proc.build(database)
   for name, prototype in pairs(global.prototypes.mining_drill) do
     for category in pairs(prototype.resource_categories) do
       local category_data = database.resource_category[category]
@@ -33,8 +33,8 @@ function mining_drill_proc.build(database, dictionaries)
       supports_fluid = #prototype.fluidbox_prototypes > 0,
       unlocked_by = {},
     }
-    dictionaries.entity:add(name, prototype.localised_name)
-    dictionaries.entity_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("entity", name, prototype.localised_name)
+    util.add_to_dictionary("entity_description", name, prototype.localised_description)
   end
 end
 

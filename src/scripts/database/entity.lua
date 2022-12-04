@@ -2,7 +2,7 @@ local table = require("__flib__.table")
 
 local util = require("scripts.util")
 
-return function(database, dictionaries, metadata)
+return function(database, metadata)
   metadata.gathered_from = {}
 
   --- @type table<string, LuaEntityPrototype>
@@ -64,7 +64,7 @@ return function(database, dictionaries, metadata)
       unlocked_by = {},
     }
 
-    dictionaries.entity:add(name, prototype.localised_name)
-    dictionaries.entity_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("entity", name, prototype.localised_name)
+    util.add_to_dictionary("entity_description", name, prototype.localised_description)
   end
 end

@@ -2,7 +2,7 @@ local util = require("scripts.util")
 
 local offshore_pump_proc = {}
 
-function offshore_pump_proc.build(database, dictionaries)
+function offshore_pump_proc.build(database)
   -- Iterate offshore pumps
   for name, prototype in pairs(global.prototypes.offshore_pump) do
     -- Add to material
@@ -26,8 +26,8 @@ function offshore_pump_proc.build(database, dictionaries)
       size = util.get_size(prototype),
       unlocked_by = {},
     }
-    dictionaries.entity:add(name, prototype.localised_name)
-    dictionaries.entity_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("entity", name, prototype.localised_name)
+    util.add_to_dictionary("entity_description", name, prototype.localised_description)
   end
 end
 

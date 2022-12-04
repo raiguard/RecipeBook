@@ -1,7 +1,7 @@
 local fluid_proc = require("scripts.database.fluid")
 local util = require("scripts.util")
 
-return function(database, dictionaries)
+return function(database)
   --- @type LuaCustomTable<string, LuaEntityPrototype>
   local prototypes = global.prototypes.resource
   for name, prototype in pairs(prototypes) do
@@ -73,7 +73,7 @@ return function(database, dictionaries)
       resource_category = { class = "resource_category", name = resource_category },
       required_fluid = required_fluid,
     }
-    dictionaries.resource:add(name, prototype.localised_name)
-    dictionaries.resource_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("resource", name, prototype.localised_name)
+    util.add_to_dictionary("resource_description", name, prototype.localised_description)
   end
 end

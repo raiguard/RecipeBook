@@ -31,7 +31,7 @@ local function insert_science_packs(database, obj_data, science_packs)
   end
 end
 
-return function(database, dictionaries, metadata)
+return function(database, metadata)
   for name, prototype in pairs(global.prototypes.technology) do
     local unlocks_equipment = util.unique_obj_array()
     local unlocks_fluids = util.unique_obj_array()
@@ -158,8 +158,8 @@ return function(database, dictionaries, metadata)
       localised_name = prototype.localised_name
     end
 
-    dictionaries.technology:add(prototype.name, localised_name)
-    dictionaries.technology_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("technology", prototype.name, localised_name)
+    util.add_to_dictionary("technology_description", name, prototype.localised_description)
   end
 
   -- Generate prerequisites and prerequisite_of

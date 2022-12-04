@@ -1,4 +1,6 @@
-return function(database, dictionaries)
+local util = require("scripts.util")
+
+return function(database)
   --- @type table<string, LuaItemPrototype>
   local prototypes = global.prototypes.item
   for name, prototype in pairs(prototypes) do
@@ -8,8 +10,8 @@ return function(database, dictionaries)
         order = prototype.order,
         prototype_name = name,
       }
-      dictionaries.science_pack:add(name, prototype.localised_name)
-      dictionaries.science_pack_description:add(name, prototype.localised_description)
+      util.add_to_dictionary("science_pack", name, prototype.localised_name)
+      util.add_to_dictionary("science_pack_description", name, prototype.localised_description)
     end
   end
 end

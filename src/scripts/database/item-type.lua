@@ -1,4 +1,6 @@
-return function(database, dictionaries)
+local util = require("scripts.util")
+
+return function(database)
   for name, prototype in pairs(global.prototypes.item) do
     local type = prototype.type
     local type_data = database.item_type[type]
@@ -9,8 +11,8 @@ return function(database, dictionaries)
         prototype_name = type,
       }
       database.item_type[type] = type_data
-      dictionaries.item_type:add(type, { "item-type." .. type })
-      dictionaries.item_type_description:add(type, { "item-type-description." .. type })
+      util.add_to_dictionary("item_type", type, { "item-type." .. type })
+      util.add_to_dictionary("item_type_description", type, { "item-type-description." .. type })
     end
 
     table.insert(type_data.items, { class = "item", name = name })

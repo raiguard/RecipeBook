@@ -1,4 +1,5 @@
 local area = require("__flib__.area")
+local dictionary = require("__flib__.dictionary-lite")
 local math = require("__flib__.math")
 local misc = require("__flib__.misc")
 local table = require("__flib__.table")
@@ -233,6 +234,29 @@ function util.is_blueprintable(prototype)
     and not prototype.has_flag("not-selectable-in-game")
     and not prototype.has_flag("not-blueprintable")
     and not prototype.has_flag("hidden")
+end
+
+--- Create a new dictionary only if not in on_load.
+--- @param name string
+--- @param initial_contents Dictionary?
+function util.new_dictionary(name, initial_contents)
+  if game then
+    dictionary.new(name, initial_contents)
+  end
+end
+
+--- Add to the dictionary only if not in on_load.
+--- @param dict string
+--- @param key string
+--- @param localised LocalisedString
+function util.add_to_dictionary(dict, key, localised)
+  if game then
+    -- Fall back to internal key in non-description dictionaries
+    if not string.find(dict, "description") then
+      localised = { "?", localised, key }
+    end
+    dictionary.add(dict, key, localised)
+  end
 end
 
 return util

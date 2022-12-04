@@ -1,6 +1,6 @@
 local util = require("scripts.util")
 
-return function(database, dictionaries)
+return function(database)
   for name, prototype in pairs(global.prototypes.generator) do
     local fluid_box = prototype.fluidbox_prototypes[1]
     local can_burn = {}
@@ -28,7 +28,7 @@ return function(database, dictionaries)
       unlocked_by = {},
     }
 
-    dictionaries.entity:add(name, prototype.localised_name)
-    dictionaries.entity_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("entity", name, prototype.localised_name)
+    util.add_to_dictionary("entity_description", name, prototype.localised_description)
   end
 end

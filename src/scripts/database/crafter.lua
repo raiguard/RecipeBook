@@ -1,6 +1,6 @@
 local util = require("scripts.util")
 
-return function(database, dictionaries, metadata)
+return function(database, metadata)
   -- Characters as crafters
   for name, prototype in pairs(global.prototypes.character) do
     local ingredient_limit = prototype.ingredient_count
@@ -26,8 +26,8 @@ return function(database, dictionaries, metadata)
       science_packs = {},
       unlocked_by = {},
     }
-    dictionaries.entity:add(name, prototype.localised_name)
-    dictionaries.entity_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("entity", name, prototype.localised_name)
+    util.add_to_dictionary("entity_description", name, prototype.localised_description)
   end
 
   -- Actual crafters
@@ -100,8 +100,8 @@ return function(database, dictionaries, metadata)
       size = util.get_size(prototype),
       unlocked_by = {},
     }
-    dictionaries.entity:add(name, prototype.localised_name)
-    dictionaries.entity_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("entity", name, prototype.localised_name)
+    util.add_to_dictionary("entity_description", name, prototype.localised_description)
   end
 
   metadata.rocket_silo_categories = rocket_silo_categories

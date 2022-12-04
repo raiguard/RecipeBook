@@ -5,7 +5,7 @@ local util = require("scripts.util")
 
 local fuel_category_proc = {}
 
-function fuel_category_proc.build(database, dictionaries)
+function fuel_category_proc.build(database)
   -- Add the actual fuel categories
   for name, prototype in pairs(global.prototypes.fuel_category) do
     database.fuel_category[name] = {
@@ -15,8 +15,8 @@ function fuel_category_proc.build(database, dictionaries)
       items = util.unique_obj_array({}),
       prototype_name = name,
     }
-    dictionaries.fuel_category:add(name, prototype.localised_name)
-    dictionaries.fuel_category_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("fuel_category", name, prototype.localised_name)
+    util.add_to_dictionary("fuel_category_description", name, prototype.localised_description)
   end
 
   -- Add our fake fuel category for fluids
@@ -29,12 +29,12 @@ function fuel_category_proc.build(database, dictionaries)
   }
 end
 
-function fuel_category_proc.check_fake_category(database, dictionaries)
+function fuel_category_proc.check_fake_category(database)
   local category = database.fuel_category[fake_name]
   if #category.fluids > 0 then
     -- Add translations
-    dictionaries.fuel_category:add(fake_name, { "fuel-category-name." .. fake_name })
-    dictionaries.fuel_category_description:add(fake_name, { "fuel-category-description." .. fake_name })
+    util.add_to_dictionary("fuel_category", fake_name, { "fuel-category-name." .. fake_name })
+    util.add_to_dictionary("fuel_category_description", fake_name, { "fuel-category-description." .. fake_name })
   else
     -- Remove the category
     database.fuel_category[fake_name] = nil

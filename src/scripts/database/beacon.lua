@@ -2,7 +2,7 @@ local area = require("__flib__.area")
 
 local util = require("scripts.util")
 
-return function(database, dictionaries, metadata)
+return function(database, metadata)
   metadata.beacon_allowed_effects = {}
   for name, prototype in pairs(global.prototypes.beacon) do
     local size = util.get_size(prototype)
@@ -27,8 +27,8 @@ return function(database, dictionaries, metadata)
       unlocked_by = {},
     }
 
-    dictionaries.entity:add(name, prototype.localised_name)
-    dictionaries.entity_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("entity", name, prototype.localised_name)
+    util.add_to_dictionary("entity_description", name, prototype.localised_description)
 
     metadata.beacon_allowed_effects[name] = prototype.allowed_effects
   end

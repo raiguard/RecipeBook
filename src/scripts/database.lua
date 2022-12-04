@@ -1,7 +1,6 @@
-local dictionary = require("__flib__.dictionary")
-dictionary.set_use_local_storage(true)
-
 local constants = require("constants")
+
+local util = require("scripts.util")
 
 local beacon = require("scripts.database.beacon")
 local burning = require("scripts.database.burning")
@@ -35,49 +34,47 @@ function database.build()
     database[class] = {}
   end
 
-  -- Dictionaries for translation
-  local dictionaries = {}
+  -- Create dictionaries
   for _, class in pairs(constants.classes) do
-    dictionaries[class] = dictionary.new(class, true)
-    local desc_name = class .. "_description"
-    dictionaries[desc_name] = dictionary.new(desc_name)
+    util.new_dictionary(class)
+    util.new_dictionary(class .. "_description")
   end
-  dictionary.new("gui", true, constants.gui_strings)
+  util.new_dictionary("gui", constants.gui_strings)
 
   -- Data that is needed for generation but will not be saved
   local metadata = {}
 
-  entity_type(database, dictionaries)
-  equipment_category(database, dictionaries)
-  fuel_category(database, dictionaries)
-  group(database, dictionaries)
-  item_type(database, dictionaries)
-  recipe_category(database, dictionaries)
-  resource_category(database, dictionaries)
-  science_pack(database, dictionaries)
+  entity_type(database)
+  equipment_category(database)
+  fuel_category(database)
+  group(database)
+  item_type(database)
+  recipe_category(database)
+  resource_category(database)
+  science_pack(database)
 
-  equipment(database, dictionaries)
+  equipment(database)
 
-  beacon(database, dictionaries, metadata)
-  crafter(database, dictionaries, metadata)
-  generator(database, dictionaries)
-  entity(database, dictionaries, metadata)
-  mining_drill(database, dictionaries)
+  beacon(database, metadata)
+  crafter(database, metadata)
+  generator(database)
+  entity(database, metadata)
+  mining_drill(database)
 
-  fluid(database, dictionaries, metadata)
-  item(database, dictionaries, metadata)
+  fluid(database, metadata)
+  item(database, metadata)
 
-  lab(database, dictionaries)
-  offshore_pump(database, dictionaries)
+  lab(database)
+  offshore_pump(database)
 
-  recipe(database, dictionaries, metadata)
-  resource(database, dictionaries)
-  technology(database, dictionaries, metadata)
+  recipe(database, metadata)
+  resource(database)
+  technology(database, metadata)
 
   offshore_pump.check_enabled_at_start(database)
-  fluid.process_temperatures(database, dictionaries, metadata)
+  fluid.process_temperatures(database, metadata)
   mining_drill.add_resources(database)
-  fuel_category.check_fake_category(database, dictionaries)
+  fuel_category.check_fake_category(database)
 
   burning(database)
   entity_state(database)
@@ -105,15 +102,13 @@ function database.handle_research_updated(technology, to_value)
   end
   technology_data.researched_forces[force_index] = to_value
 
-  for _, objects in
-    pairs({
-      technology_data.unlocks_equipment,
-      technology_data.unlocks_fluids,
-      technology_data.unlocks_items,
-      technology_data.unlocks_entities,
-      technology_data.unlocks_recipes,
-    })
-  do
+  for _, objects in pairs({
+    technology_data.unlocks_equipment,
+    technology_data.unlocks_fluids,
+    technology_data.unlocks_items,
+    technology_data.unlocks_entities,
+    technology_data.unlocks_recipes,
+  }) do
     for _, obj_ident in ipairs(objects) do
       local class = obj_ident.class
       local obj_data = database[class][obj_ident.name]

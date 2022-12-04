@@ -1,6 +1,8 @@
+local util = require("scripts.util")
+
 local equipment_category_proc = {}
 
-function equipment_category_proc.build(database, dictionaries)
+function equipment_category_proc.build(database)
   for name, prototype in pairs(global.prototypes.equipment_category) do
     database.equipment_category[name] = {
       class = "equipment_category",
@@ -8,8 +10,8 @@ function equipment_category_proc.build(database, dictionaries)
       equipment = {},
       prototype_name = name,
     }
-    dictionaries.equipment_category:add(name, prototype.localised_name)
-    dictionaries.equipment_category_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("equipment_category", name, prototype.localised_name)
+    util.add_to_dictionary("equipment_category_description", name, prototype.localised_description)
   end
 end
 

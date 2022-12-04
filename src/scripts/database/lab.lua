@@ -2,7 +2,7 @@ local table = require("__flib__.table")
 
 local util = require("scripts.util")
 
-return function(database, dictionaries)
+return function(database)
   for name, prototype in pairs(global.prototypes.lab) do
     -- Add to items
     for _, item_name in ipairs(prototype.lab_inputs) do
@@ -35,7 +35,7 @@ return function(database, dictionaries)
       size = util.get_size(prototype),
       unlocked_by = {},
     }
-    dictionaries.entity:add(name, prototype.localised_name)
-    dictionaries.entity_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("entity", name, prototype.localised_name)
+    util.add_to_dictionary("entity_description", name, prototype.localised_description)
   end
 end

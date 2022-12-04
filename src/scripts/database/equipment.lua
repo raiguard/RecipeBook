@@ -30,7 +30,7 @@ local function get_equipment_property(properties, source, name, formatter, label
   end
 end
 
-return function(database, dictionaries)
+return function(database)
   --- @type table<string, LuaEquipmentPrototype>
   local prototypes = global.prototypes.equipment
   for name, prototype in pairs(prototypes) do
@@ -81,7 +81,7 @@ return function(database, dictionaries)
       take_result = prototype.take_result and { class = "item", name = prototype.take_result.name } or nil,
       unlocked_by = {},
     }
-    dictionaries.equipment:add(name, prototype.localised_name)
-    dictionaries.equipment_description:add(name, prototype.localised_description)
+    util.add_to_dictionary("equipment", name, prototype.localised_name)
+    util.add_to_dictionary("equipment_description", name, prototype.localised_description)
   end
 end

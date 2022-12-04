@@ -1,4 +1,4 @@
-local dictionary = require("__flib__.dictionary")
+local dictionary = require("__flib__.dictionary-lite")
 local on_tick_n = require("__flib__.on-tick-n")
 
 local database = require("scripts.database")

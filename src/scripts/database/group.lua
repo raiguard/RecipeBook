@@ -1,6 +1,6 @@
 local util = require("scripts.util")
 
-return function(database, dictionaries)
+return function(database)
   for name, prototype in pairs(global.prototypes.item_group) do
     database.group[name] = {
       class = "group",
@@ -10,7 +10,7 @@ return function(database, dictionaries)
       prototype_name = name,
       recipes = util.unique_obj_array({}),
     }
-    dictionaries.group:add(name, prototype.localised_name)
+    util.add_to_dictionary("group", name, prototype.localised_name)
     -- NOTE: Groups do not have descriptions
   end
 end

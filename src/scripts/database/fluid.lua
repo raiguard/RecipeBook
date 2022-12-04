@@ -6,7 +6,7 @@ local util = require("scripts.util")
 
 local fluid_proc = {}
 
-function fluid_proc.build(database, _, metadata)
+function fluid_proc.build(database, metadata)
   local localised_fluids = {}
   for name, prototype in pairs(global.prototypes.fluid) do
     -- Group
@@ -87,14 +87,14 @@ function fluid_proc.is_within_range(base, comp, flip)
   end
 end
 
-function fluid_proc.process_temperatures(database, dictionaries, metadata)
+function fluid_proc.process_temperatures(database, metadata)
   -- Create a new fluids table so insertion order will neatly organize the temperature variants
   local new_fluid_table = {}
   for fluid_name, fluid_data in pairs(database.fluid) do
     new_fluid_table[fluid_name] = fluid_data
     local localised = metadata.localised_fluids[fluid_name]
-    dictionaries.fluid:add(fluid_name, localised.name)
-    dictionaries.fluid_description:add(fluid_name, localised.description)
+    util.add_to_dictionary("fluid", fluid_name, localised.name)
+    util.add_to_dictionary("fluid_description", fluid_name, localised.description)
     local temperatures = fluid_data.temperatures
     if temperatures and table_size(temperatures) > 0 then
       -- Step 1: Add a variant for the default temperature if one does not exist
@@ -118,7 +118,7 @@ function fluid_proc.process_temperatures(database, dictionaries, metadata)
         temperatures[temperature_data.name] = temperature_data
         -- Add to database and add translation
         new_fluid_table[temperature_data.name] = temperature_data
-        dictionaries.fluid:add(temperature_data.name, {
+        util.add_to_dictionary("fluid", temperature_data.name, {
           "",
           localised.name,
           " (",
