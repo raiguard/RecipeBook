@@ -1,4 +1,4 @@
-local dictionary = require("__flib__/dictionary-new")
+local dictionary = require("__flib__/dictionary-lite")
 local format = require("__flib__/format")
 local gui = require("__flib__/gui-lite")
 local math = require("__flib__/math")

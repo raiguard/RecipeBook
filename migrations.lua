@@ -1,4 +1,4 @@
-local dictionary = require("__flib__/dictionary-new")
+local dictionary = require("__flib__/dictionary-lite")
 local flib_migration = require("__flib__/migration")
 
 local database = require("__RecipeBook__/database")
