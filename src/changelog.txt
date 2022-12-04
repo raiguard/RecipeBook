@@ -1,7 +1,9 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.1
 Date: ????
-  Features:
+  Changes:
+    - Updated to Factorio 1.1.74 and flib 0.12.0
+      - Dictionary translations are performed 10x faster in singleplayer
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.0
 Date: 2022-10-30
