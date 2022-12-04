@@ -2,7 +2,7 @@ local dictionary = require("__flib__.dictionary-lite")
 local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
 local on_tick_n = require("__flib__.on-tick-n")
-local reverse_defines = require("__flib__.reverse-defines")
+local table = require("__flib__.table")
 
 local constants = require("constants")
 local database = require("scripts.database")
@@ -91,7 +91,7 @@ end
 -- User commands
 
 commands.add_command("rb-refresh-all", { "command-help.rb-refresh-all" }, function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if not player.admin then
     player.print({ "cant-run-command-not-admin", "rb-refresh-all" })
     return
@@ -105,7 +105,7 @@ end)
 -- Debug commands
 
 commands.add_command("rb-print-object", nil, function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if not player.admin then
     player.print({ "cant-run-command-not-admin", "rb-dump-data" })
     return
@@ -130,7 +130,7 @@ commands.add_command("rb-print-object", nil, function(e)
 end)
 
 commands.add_command("rb-count-objects", nil, function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if not player.admin then
     player.print({ "cant-run-command-not-admin", "rb-dump-data" })
     return
@@ -145,7 +145,7 @@ commands.add_command("rb-count-objects", nil, function(e)
 end)
 
 commands.add_command("rb-dump-database", nil, function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if not player.admin then
     player.print({ "cant-run-command-not-admin", "rb-dump-data" })
     return
@@ -235,7 +235,7 @@ end)
 -- DICTIONARIES
 
 script.on_event(dictionary.on_player_dictionaries_ready, function(e)
-  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]] --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
 
   player_table.translations = dictionary.get_all(e.player_index)
@@ -326,7 +326,7 @@ end)
 
 script.on_event(defines.events.on_gui_closed, function(e)
   if not read_gui_action(e) then
-    local player = game.get_player(e.player_index)
+    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
     local player_table = global.players[e.player_index]
     if player_table.flags.technology_gui_open then
       player_table.flags.technology_gui_open = false
@@ -348,7 +348,7 @@ end)
 
 script.on_event(defines.events.on_lua_shortcut, function(e)
   if e.prototype_name == "rb-search" then
-    local player = game.get_player(e.player_index)
+    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
     local player_table = global.players[e.player_index]
 
     local cursor_stack = player.cursor_stack
@@ -387,7 +387,7 @@ local function get_opened_relative_gui_type(player)
   local opened = player.opened
 
   -- Attempt 1: Some GUIs can be converted straight from their gui_type
-  local straight_conversion = defines.relative_gui_type[reverse_defines.gui_type[gui_type] .. "_gui"]
+  local straight_conversion = defines.relative_gui_type[table.find(defines.gui_type, gui_type) .. "_gui"]
   if straight_conversion then
     return { gui = straight_conversion }
   end
@@ -414,7 +414,7 @@ local function get_opened_relative_gui_type(player)
 end
 
 script.on_event({ "rb-search", "rb-open-selected" }, function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
 
   if player_table.flags.can_open_gui then
@@ -482,7 +482,7 @@ end)
 script.on_event(
   { "rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front", "rb-linked-focus-search" },
   function(e)
-    local player = game.get_player(e.player_index)
+    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
     local player_table = global.players[e.player_index]
     local opened = player.opened
     if
@@ -514,7 +514,7 @@ script.on_event(
 
 script.on_event(defines.events.on_player_created, function(e)
   player_data.init(e.player_index)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
   player_data.refresh(player, player_table)
   formatter.create_cache(e.player_index)

@@ -1,7 +1,7 @@
-local area = require("__flib__.area")
+local bounding_box = require("__flib__.bounding-box")
 local dictionary = require("__flib__.dictionary-lite")
+local format = require("__flib__.format")
 local math = require("__flib__.math")
-local misc = require("__flib__.misc")
 local table = require("__flib__.table")
 
 local constants = require("constants")
@@ -25,7 +25,7 @@ end
 
 -- HACK: Requiring `formatter` in this file causes a dependency loop
 local function format_number(value)
-  return misc.delineate_number(math.round_to(value, 2))
+  return format.number(math.round(value, 0.01))
 end
 
 --- @class TemperatureIdent
@@ -165,10 +165,12 @@ function util.convert_to_ident(class, source)
   end
 end
 
+--- @param prototype LuaEntityPrototype
+--- @return DisplayResolution?
 function util.get_size(prototype)
   if prototype.selection_box then
-    local box = area.load(prototype.selection_box)
-    return { height = math.ceil(box:height()), width = math.ceil(box:width()) }
+    local box = prototype.selection_box
+    return { height = math.ceil(bounding_box.height(box)), width = math.ceil(bounding_box.width(box)) }
   end
 end
 

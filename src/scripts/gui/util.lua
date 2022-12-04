@@ -1,4 +1,4 @@
-local area = require("__flib__.area")
+local bounding_box = require("__flib__.bounding-box")
 local gui = require("__flib__.gui")
 local math = require("__flib__.math")
 local table = require("__flib__.table")
@@ -27,7 +27,7 @@ function gui_util.navigate_to(e)
     if table.deep_compare(interaction.modifiers, modifiers) then
       local action = interaction.action
       local context_data = database[context.class][context.name]
-      local player = game.get_player(e.player_index)
+      local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
 
       if action == "view_details" then
         return context
@@ -39,9 +39,9 @@ function gui_util.navigate_to(e)
           local cursor_stack = player.cursor_stack
           player.clear_cursor()
           if cursor_stack and cursor_stack.valid then
-            local CollisionBox = area.load(game.entity_prototypes[blueprint_result.name].collision_box)
-            local height = CollisionBox:height()
-            local width = CollisionBox:width()
+            local collision_box = game.entity_prototypes[blueprint_result.name].collision_box
+            local height = bounding_box.height(collision_box)
+            local width = bounding_box.width(collision_box)
             cursor_stack.set_stack({ name = "blueprint", count = 1 })
             cursor_stack.set_blueprint_entities({
               {

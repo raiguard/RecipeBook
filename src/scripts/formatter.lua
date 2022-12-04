@@ -19,9 +19,8 @@
     - is_label: show_glyphs = false, show_tooltip_details = false
 ]]
 
-local fixed_format = require("lib.fixed-precision-format")
+local flib_format = require("__flib__.format")
 local math = require("__flib__.math")
-local misc = require("__flib__.misc")
 local table = require("__flib__.table")
 
 local constants = require("constants")
@@ -70,7 +69,7 @@ local function control(content, action)
 end
 
 local function number(value)
-  return misc.delineate_number(math.round_to(value, 2))
+  return flib_format.number(math.round(value, 0.01))
 end
 
 local function temperature(value, gui_translations)
@@ -87,15 +86,15 @@ local function area(value, gui_translations)
 end
 
 local function energy(value, gui_translations)
-  return fixed_format(value * 60, 3, "2") .. gui_translations.si_watt
+  return flib_format.number(value * 60, true, 3) .. gui_translations.si_watt
 end
 
 local function energy_storage(value, gui_translations)
-  return fixed_format(value, 3, "2") .. gui_translations.si_joule
+  return flib_format.number(value, true, 2) .. gui_translations.si_joule
 end
 
 local function fuel_value(value, gui_translations)
-  return fixed_format(value, 3, "2") .. gui_translations.si_joule
+  return flib_format.number(value, true, 3) .. gui_translations.si_joule
 end
 
 local function percent(value, gui_translations)
@@ -145,8 +144,8 @@ local function get_amount_string(amount_ident, player_data, options)
   local amount = amount_ident.amount
   local output
   if options.amount_only then
-    output = amount_ident.amount and tostring(math.round_to(amount, 1))
-      or "~" .. math.round_to((amount_ident.amount_min + amount_ident.amount_max) / 2, 1)
+    output = amount_ident.amount and tostring(math.round(amount, 0.1))
+      or "~" .. math.round((amount_ident.amount_min + amount_ident.amount_max) / 2, 0.1)
   else
     local gui_translations = player_data.translations.gui
     -- Amount
@@ -166,7 +165,7 @@ local function get_amount_string(amount_ident, player_data, options)
     -- Probability
     local probability = amount_ident.probability
     if probability and probability < 1 then
-      output = math.round_to(probability * 100, 2) .. "% " .. output
+      output = math.round(probability * 100, 0.01) .. "% " .. output
     end
 
     -- Rocket parts required

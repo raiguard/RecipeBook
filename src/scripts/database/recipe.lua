@@ -99,7 +99,7 @@ return function(database, metadata)
         and fluidbox_counts.inputs >= fluids.ingredients
         and fluidbox_counts.outputs >= fluids.products
       then
-        local crafting_time = math.round_to(prototype.energy / crafter_data.crafting_speed, 2)
+        local crafting_time = math.round(prototype.energy / crafter_data.crafting_speed, 0.01)
         data.made_in[#data.made_in + 1] = {
           class = "entity",
           name = crafter_name,
