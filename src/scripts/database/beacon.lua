@@ -11,8 +11,8 @@ return function(database, metadata)
       class = "entity",
       distribution_effectivity = prototype.distribution_effectivity,
       effect_area = {
-        height = size.height + prototype.supply_area_distance,
-        width = size.width + prototype.supply_area_distance,
+        height = size.height + (prototype.supply_area_distance * 2),
+        width = size.width + (prototype.supply_area_distance * 2),
       },
       energy_usage = prototype.energy_usage,
       entity_type = { class = "entity_type", name = prototype.type },
