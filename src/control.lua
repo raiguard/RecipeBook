@@ -1,5 +1,4 @@
 local dictionary = require("__flib__.dictionary-lite")
-local event = require("__flib__.event")
 local gui = require("__flib__.gui")
 local migration = require("__flib__.migration")
 local on_tick_n = require("__flib__.on-tick-n")
@@ -171,7 +170,7 @@ dictionary.handle_events() -- Must be defined first so we can override
 
 -- BOOTSTRAP
 
-event.on_init(function()
+script.on_init(function()
   dictionary.on_init()
   on_tick_n.init()
 
@@ -188,7 +187,7 @@ event.on_init(function()
   end
 end)
 
-event.on_load(function()
+script.on_load(function()
   formatter.create_all_caches()
 
   -- When mod configuration changes, don't bother to build anything because it'll have to be built again anyway
@@ -219,19 +218,17 @@ event.on_load(function()
   end
 end)
 
-event.on_configuration_changed(function(e)
-  if migration.on_config_changed(e, migrations) then
-    dictionary.on_configuration_changed()
+migration.handle_on_configuration_changed(migrations, function()
+  dictionary.on_configuration_changed()
 
-    global_data.update_sync_data()
-    global_data.build_prototypes()
+  global_data.update_sync_data()
+  global_data.build_prototypes()
 
-    database.build()
-    database.check_forces()
+  database.build()
+  database.check_forces()
 
-    for i, player in pairs(game.players) do
-      player_data.refresh(player, global.players[i])
-    end
+  for i, player in pairs(game.players) do
+    player_data.refresh(player, global.players[i])
   end
 end)
 
@@ -262,7 +259,7 @@ end)
 
 -- FORCE
 
-event.on_force_created(function(e)
+script.on_event(defines.events.on_force_created, function(e)
   if not global.forces or not database.generated then
     return
   end
@@ -270,7 +267,7 @@ event.on_force_created(function(e)
   database.check_force(e.force)
 end)
 
-event.register({ defines.events.on_research_finished, defines.events.on_research_reversed }, function(e)
+script.on_event({ defines.events.on_research_finished, defines.events.on_research_reversed }, function(e)
   -- This can be called by other mods before we get a chance to load
   if not global.players or not database.generated then
     return
@@ -310,7 +307,7 @@ end
 
 gui.hook_events(read_gui_action)
 
-event.on_gui_click(function(e)
+script.on_event(defines.events.on_gui_click, function(e)
   -- If clicking on the Factory Planner dimmer frame
   if not read_gui_action(e) and e.element.style.name == "fp_frame_semitransparent" then
     -- Bring all GUIs to the front
@@ -327,7 +324,7 @@ event.on_gui_click(function(e)
   end
 end)
 
-event.on_gui_closed(function(e)
+script.on_event(defines.events.on_gui_closed, function(e)
   if not read_gui_action(e) then
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
@@ -349,7 +346,7 @@ end)
 
 -- INTERACTION
 
-event.on_lua_shortcut(function(e)
+script.on_event(defines.events.on_lua_shortcut, function(e)
   if e.prototype_name == "rb-search" then
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
@@ -416,7 +413,7 @@ local function get_opened_relative_gui_type(player)
   end
 end
 
-event.register({ "rb-search", "rb-open-selected" }, function(e)
+script.on_event({ "rb-search", "rb-open-selected" }, function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
@@ -482,7 +479,7 @@ event.register({ "rb-search", "rb-open-selected" }, function(e)
   end
 end)
 
-event.register(
+script.on_event(
   { "rb-navigate-backward", "rb-navigate-forward", "rb-return-to-home", "rb-jump-to-front", "rb-linked-focus-search" },
   function(e)
     local player = game.get_player(e.player_index)
@@ -515,7 +512,7 @@ event.register(
 
 -- PLAYER
 
-event.on_player_created(function(e)
+script.on_event(defines.events.on_player_created, function(e)
   player_data.init(e.player_index)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
@@ -523,13 +520,13 @@ event.on_player_created(function(e)
   formatter.create_cache(e.player_index)
 end)
 
-event.on_player_removed(function(e)
+script.on_event(defines.events.on_player_removed, function(e)
   player_data.remove(e.player_index)
 end)
 
 -- TICK
 
-event.on_tick(function(e)
+script.on_event(defines.events.on_tick, function(e)
   dictionary.on_tick()
 
   local actions = on_tick_n.retrieve(e.tick)
