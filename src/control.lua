@@ -166,8 +166,6 @@ end)
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
-dictionary.handle_events() -- Must be defined first so we can override
-
 -- BOOTSTRAP
 
 script.on_init(function()
@@ -233,6 +231,8 @@ migration.handle_on_configuration_changed(migrations, function()
 end)
 
 -- DICTIONARIES
+
+dictionary.handle_events()
 
 script.on_event(dictionary.on_player_dictionaries_ready, function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]] --[[@as LuaPlayer]]
