@@ -310,8 +310,11 @@ end
 --- @param technology LuaTechnology
 --- @param force_index uint
 function database.on_technology_researched(technology, force_index)
-  local technology_name = technology.name
   local db = global.database
+  if not db then
+    return
+  end
+  local technology_name = technology.name
   local technology_path = "technology/" .. technology_name
   if not db[technology_path] then
     db[technology_path] = { researched = {} }
