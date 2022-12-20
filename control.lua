@@ -4,6 +4,31 @@ local database = require("__RecipeBook__/database")
 local gui = require("__RecipeBook__/gui")
 local migrations = require("__RecipeBook__/migrations")
 
+remote.add_interface("RecipeBook", {
+  --- Open the given page in Recipe Book.
+  --- @param player_index uint
+  --- @param class string
+  --- @param name string
+  --- @return boolean success
+  open_page = function(player_index, class, name)
+    local path = class.."/"..name
+    local entry = global.database[path]
+    if not entry or not entry.base then
+      return false
+    end
+    local player = game.get_player(player_index)
+    if not player then
+      return false
+    end
+    local pgui = gui.get(player)
+    if pgui then
+      pgui:update_page(path)
+      pgui:show()
+    end
+    return true
+  end
+})
+
 dictionary.handle_events()
 gui.handle_events()
 
