@@ -36,12 +36,18 @@ script.on_init(migrations.on_init)
 script.on_configuration_changed(migrations.on_configuration_changed)
 
 script.on_event(defines.events.on_player_created, function(e)
-  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
   migrations.init_player(player)
 end)
 
 script.on_event("rb-linked-focus-search", function(e)
-  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
   local pgui = gui.get(player)
   if pgui and not pgui.state.pinned and pgui.elems.rb_main_window.visible then
     if pgui.state.search_open then
@@ -53,7 +59,10 @@ script.on_event("rb-linked-focus-search", function(e)
 end)
 
 script.on_event("rb-open-selected", function(e)
-  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
   local selected_prototype = e.selected_prototype
   if not selected_prototype then
     return
@@ -65,7 +74,10 @@ script.on_event("rb-open-selected", function(e)
 end)
 
 script.on_event("rb-toggle", function(e)
-  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
   local pgui = gui.get(player)
   if pgui then
     pgui:toggle()
@@ -104,7 +116,10 @@ end)
 
 script.on_event(defines.events.on_lua_shortcut, function(e)
   if e.prototype_name == "RecipeBook" then
-    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+    local player = game.get_player(e.player_index)
+    if not player then
+      return
+    end
     local pgui = gui.get(player)
     if pgui then
       pgui:toggle()
@@ -114,7 +129,10 @@ end)
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(e)
   if e.setting == "rb-show-overhead-button" then
-    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+    local player = game.get_player(e.player_index)
+    if not player then
+      return
+    end
     gui.refresh_overhead_button(player)
   end
 end)
