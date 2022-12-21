@@ -10,11 +10,6 @@ data.raw["recipe"]["rocket-part"].hide_from_player_crafting = true
 -- Hide EEE from RB
 data.raw["recipe"]["electric-energy-interface"].hidden = true
 
-local styles = data.raw["gui-style"]["default"]
-styles.flib_selected_frame_action_button.top_padding = 1
-styles.flib_selected_frame_action_button.bottom_padding = -1
-styles.flib_selected_frame_action_button.clicked_vertical_offset = 0
-
 -- Testing recipe
 local recipe = table.deepcopy(data.raw["recipe"]["advanced-oil-processing"])
 if not recipe.ingredients then

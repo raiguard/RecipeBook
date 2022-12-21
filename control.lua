@@ -13,22 +13,18 @@ remote.add_interface("RecipeBook", {
   --- @param name string
   --- @return boolean success
   open_page = function(player_index, class, name)
-    local path = class.."/"..name
+    local path = class .. "/" .. name
     local entry = global.database[path]
     if not entry or not entry.base then
       return false
     end
-    local player = game.get_player(player_index)
-    if not player then
-      return false
-    end
-    local pgui = gui.get(player)
-    if pgui then
-      pgui:update_page(path)
-      pgui:show()
+    local player_gui = gui.get(player_index)
+    if player_gui then
+      gui.update_page(player_gui, path)
+      gui.show(player_gui)
     end
     return true
-  end
+  end,
 })
 
 -- Lifecycle
@@ -41,7 +37,7 @@ script.on_event(defines.events.on_player_created, function(e)
   if not player then
     return
   end
-  migrations.init_player(player)
+  migrations.migrate_player(player)
 end)
 
 -- Dictionary
@@ -49,11 +45,9 @@ end)
 dictionary.handle_events()
 
 script.on_event(dictionary.on_player_dictionaries_ready, function(e)
-  local player_table = global.players[e.player_index]
-  if player_table then
-    if player_table.gui and player_table.gui.elems.rb_main_window.valid then
-      player_table.gui:update_translation_warning()
-    end
+  local player_gui = gui.get(e.player_index)
+  if player_gui then
+    gui.update_translation_warning(player_gui)
   end
 end)
 
@@ -62,43 +56,31 @@ end)
 gui.handle_events()
 
 script.on_event("rb-linked-focus-search", function(e)
-  local player = game.get_player(e.player_index)
-  if not player then
-    return
-  end
-  local pgui = gui.get(player)
-  if pgui and not pgui.state.pinned and pgui.elems.rb_main_window.visible then
-    if pgui.state.search_open then
-      pgui:focus_search()
+  local player_gui = gui.get(e.player_index)
+  if player_gui and not player_gui.state.pinned and player_gui.elems.rb_main_window.visible then
+    if player_gui.state.search_open then
+      gui.focus_search(player_gui)
     else
-      pgui:toggle_search()
+      gui.toggle_search(player_gui)
     end
   end
 end)
 
 script.on_event("rb-open-selected", function(e)
-  local player = game.get_player(e.player_index)
-  if not player then
-    return
-  end
   local selected_prototype = e.selected_prototype
   if not selected_prototype then
     return
   end
-  local pgui = gui.get(player)
-  if pgui then
-    pgui:update_page(selected_prototype.base_type .. "/" .. selected_prototype.name)
+  local player_gui = gui.get(e.player_index)
+  if player_gui then
+    gui.update_page(player_gui, selected_prototype.base_type .. "/" .. selected_prototype.name)
   end
 end)
 
 script.on_event("rb-toggle", function(e)
-  local player = game.get_player(e.player_index)
-  if not player then
-    return
-  end
-  local pgui = gui.get(player)
-  if pgui then
-    pgui:toggle()
+  local player_gui = gui.get(e.player_index)
+  if player_gui then
+    gui.toggle(player_gui)
   end
 end)
 
@@ -106,13 +88,9 @@ script.on_event(defines.events.on_lua_shortcut, function(e)
   if e.prototype_name ~= "RecipeBook" then
     return
   end
-  local player = game.get_player(e.player_index)
-  if not player then
-    return
-  end
-  local pgui = gui.get(player)
-  if pgui then
-    pgui:toggle()
+  local player_gui = gui.get(e.player_index)
+  if player_gui then
+    gui.toggle(player_gui)
   end
 end)
 
@@ -142,19 +120,12 @@ end)
 
 script.on_event(defines.events.on_tick, function()
   dictionary.on_tick()
-  if next(global.update_force_guis) then
-    for force_index in pairs(global.update_force_guis) do
-      local force = game.forces[force_index]
-      if force then
-        for _, player in pairs(force.players) do
-          local pgui = gui.get(player)
-          if pgui then
-            pgui:update_filter_panel()
-          end
-        end
-      end
-    end
-    global.update_force_guis = {}
-  end
-end)
 
+  for force_index in pairs(global.update_force_guis) do
+    local force = game.forces[force_index]
+    if force then
+      gui.update_force(force)
+    end
+  end
+  global.update_force_guis = {}
+end)

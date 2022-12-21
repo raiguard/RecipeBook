@@ -9,8 +9,7 @@ local migrations = {}
 function migrations.on_init()
   dictionary.on_init()
 
-  --- @type table<uint, PlayerTable>
-  global.players = {}
+  gui.init()
   --- @type table<uint, boolean>
   global.update_force_guis = {} --
 
@@ -33,23 +32,8 @@ function migrations.on_configuration_changed(e)
 end
 
 --- @param player LuaPlayer
-function migrations.init_player(player)
-  global.players[player.index] = {}
-  migrations.migrate_player(player)
-end
-
---- @param player LuaPlayer
 function migrations.migrate_player(player)
-  local player_table = global.players[player.index]
-  if not player_table then
-    return
-  end
-
-  local existing_gui = gui.get(player)
-  if existing_gui then
-    gui.destroy(existing_gui)
-  end
-  gui.new(player, player_table) -- TODO: Defer this until they open it?
+  gui.new(player) -- TODO: Defer this until they open it?
   gui.refresh_overhead_button(player)
 end
 
