@@ -1,3 +1,6 @@
+local format = require("__flib__/format")
+local math = require("__flib__/math")
+
 local util = {}
 
 util.crafting_machine = {
@@ -14,6 +17,12 @@ function util.flying_text(player, text)
     create_at_cursor = true,
   })
   player.play_sound({ path = "utility/cannot_build" })
+end
+
+--- @param num number
+--- @return string
+function util.format_number(num)
+  return format.number(math.round(num, 0.01))
 end
 
 --- @param prototype GenericPrototype
@@ -41,6 +50,14 @@ function util.is_hidden(prototype)
     return prototype.hidden
   end
   return false
+end
+
+--- @param entry PrototypeEntry
+--- @param force_index uint
+--- @return boolean
+function util.is_unresearched(entry, force_index)
+  local researched = entry.researched or {}
+  return not researched[force_index]
 end
 
 util.prototype_type = {

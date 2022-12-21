@@ -1,5 +1,4 @@
 local dictionary = require("__flib__/dictionary-lite")
-local format = require("__flib__/format")
 local flib_gui = require("__flib__/gui-lite")
 local math = require("__flib__/math")
 local mod_gui = require("__core__/lualib/mod-gui")
@@ -21,6 +20,9 @@ local gui = {}
 --- @field close_button LuaGuiElement
 --- @field filter_group_table LuaGuiElement
 --- @field filter_scroll_pane LuaGuiElement
+--- @field page_header_sprite LuaGuiElement
+--- @field page_header_caption LuaGuiElement
+--- @field page_header_type_label LuaGuiElement
 --- @field page_scroll_pane LuaGuiElement
 
 --- @class GuiHandlers
@@ -136,12 +138,6 @@ flib_gui.add_handlers(handlers, function(e, handler)
     handler(pgui, e)
   end
 end)
-
---- @param num number
---- @return string
-local function format_number(num)
-  return format.number(math.round(num, 0.01))
-end
 
 -- Methods
 
@@ -314,190 +310,221 @@ function gui.update_filter_panel(self)
   log({ "", "Update Filter Panel ", profiler })
 end
 
+--- @param obj GenericObject
+--- @param localised_name LocalisedString
+--- @return LocalisedString
+local function build_caption(obj, localised_name)
+  --- @type LocalisedString
+  local caption = { "", "            " }
+  if obj.probability and obj.probability < 1 then
+    caption[#caption + 1] = {
+      "",
+      "[font=default-semibold]",
+      { "format-percent", math.round(obj.probability * 100, 0.01) },
+      "[/font] ",
+    }
+  end
+  if obj.amount then
+    caption[#caption + 1] = {
+      "",
+      "[font=default-semibold]",
+      util.format_number(obj.amount),
+      " ×[/font]  ",
+    }
+  elseif obj.amount_min and obj.amount_max then
+    caption[#caption + 1] = {
+      "",
+      "[font=default-semibold]",
+      util.format_number(obj.amount_min),
+      " - ",
+      util.format_number(obj.amount_max),
+      " ×[/font]  ",
+    }
+  end
+  caption[#caption + 1] = localised_name
+
+  return caption
+end
+
+--- @param obj GenericObject
+--- @return LocalisedString
+local function build_remark(obj)
+  --- @type LocalisedString
+  local remark = { "" }
+  if obj.duration then
+    remark[#remark + 1] = { "", "[img=quantity-time] ", { "time-symbol-seconds", math.round(obj.duration, 0.01) } }
+  end
+  if obj.temperature then
+    remark[#remark + 1] = { "", "  ", { "format-degrees-c-compact", math.round(obj.temperature, 0.01) } }
+  elseif obj.minimum_temperature and obj.maximum_temperature then
+    local temperature_min = obj.minimum_temperature --[[@as number]]
+    local temperature_max = obj.maximum_temperature --[[@as number]]
+    local temperature_string
+    if temperature_min == math.min_double then
+      temperature_string = "≤ " .. math.round(temperature_max, 0.01)
+    elseif temperature_max == math.max_double then
+      temperature_string = "≥ " .. math.round(temperature_min, 0.01)
+    else
+      temperature_string = "" .. math.round(temperature_min, 0.01) .. " - " .. math.round(temperature_max, 0.01)
+    end
+    remark[#remark + 1] = { "", "  ", { "format-degrees-c-compact", temperature_string } }
+  end
+  return remark
+end
+
+local function technology_button()
+  return {
+    type = "button",
+    style = "rb_list_box_item",
+    handler = { [defines.events.on_gui_click] = handlers.on_prototype_button_click },
+    {
+      type = "sprite-button",
+      name = "icon",
+      style = "transparent_slot",
+      style_mods = { size = 28 },
+      ignored_by_interaction = true,
+    },
+    {
+      type = "label",
+      name = "remark",
+      style_mods = { width = 480 - 24, height = 28, horizontal_align = "right", vertical_align = "center" },
+      ignored_by_interaction = true,
+    },
+  }
+end
+
+--- @param self Gui
+--- @param flow LuaGuiElement
+--- @param members GenericObject[]
+--- @param remark any?
+local function update_list_box(self, flow, members, remark)
+  members = members or {}
+  local header_flow = flow.header_flow --[[@as LuaGuiElement]]
+  local list_frame = flow.list_frame --[[@as LuaGuiElement]]
+  local children = list_frame.children
+
+  -- Header remark
+  local remark_label = header_flow.remark
+  remark_label.caption = remark or ""
+
+  local show_hidden = self.state.show_hidden
+  local show_unresearched = self.state.show_unresearched
+  local force_index = self.player.force.index
+
+  local _ -- To avoid creating a global
+  local child_index = 0
+  for member_index = 1, #members do
+    local member = members[member_index]
+    local entry = database.get_entry(member)
+    if not entry then
+      goto continue
+    end
+    -- Validate visibility
+    local is_hidden = util.is_hidden(entry.base)
+    local is_unresearched = util.is_unresearched(entry, force_index)
+    if is_hidden and not show_hidden then
+      goto continue
+    elseif is_unresearched and not show_unresearched then
+      goto continue
+    end
+    -- Get button
+    child_index = child_index + 1
+    local button = children[member_index]
+    if not button then
+      _, button = flib_gui.add(list_frame, technology_button())
+    end
+    -- Style
+    local style = "rb_list_box_item"
+    if is_hidden then
+      style = "rb_list_box_item_hidden"
+    elseif is_unresearched then
+      style = "rb_list_box_item_unresearched"
+    end
+    button.style = style
+    -- Sprite
+    button.icon.sprite = entry.base_path
+    -- Caption
+    button.caption = build_caption(member, entry.base.localised_name)
+    -- Remark
+    button.remark.caption = build_remark(member)
+    -- Tags
+    local tags = button.tags
+    tags.prototype = entry.base_path
+    button.tags = tags
+    ::continue::
+  end
+  for i = child_index + 1, #children do
+    children[i].destroy()
+  end
+  flow.visible = child_index > 0
+
+  -- Child count
+  header_flow.count_label.caption = { "", "[", child_index, "]" }
+end
+
 --- @param self Gui
 --- @param prototype_path string?
 --- @return boolean?
 function gui.update_page(self, prototype_path)
-  local entry
-  if prototype_path then
-    entry = global.database[prototype_path]
-  elseif self.state.current_page then
-    entry = global.database[self.state.current_page]
-  end
-  if not entry then
-    if prototype_path then
-      util.flying_text(self.player, { "message.rb-no-info" })
-    end
+  local prototype_path = prototype_path or self.state.current_page
+  if not prototype_path then
     return
   end
-  local base_path = entry.base_path
-  if not prototype_path or (base_path ~= self.state.current_page) then
-    local properties = database.get_properties(entry, self.player.force.index)
-
-    -- Header
-    local page_header_caption = self.elems.page_header_caption
-    page_header_caption.sprite = base_path
-    page_header_caption.caption = { "", "             ", { "?", entry.base.localised_name, prototype_path } }
-    if properties.hidden then
-      page_header_caption.style = "rb_subheader_caption_button_hidden"
-    elseif not properties.researched then
-      page_header_caption.style = "rb_subheader_caption_button_unresearched"
-    else
-      page_header_caption.style = "rb_subheader_caption_button"
-    end
-    local caption = { "" }
-    if entry.recipe then
-      table.insert(caption, { "description.recipe" })
-      table.insert(caption, "/")
-    end
-    if entry.item then
-      table.insert(caption, { "description.rb-item" })
-      table.insert(caption, "/")
-    end
-    if entry.fluid then
-      table.insert(caption, { "gui-train.fluid" })
-      table.insert(caption, "/")
-    end
-    if entry.entity then
-      table.insert(caption, { "description.rb-entity" })
-      table.insert(caption, "/")
-    end
-    caption[#caption] = nil
-    self.elems.page_header_type_label.caption = caption
-    -- TODO: Tooltip
-
-    -- Content
-    local page_scroll_pane = self.elems.page_scroll_pane
-    if page_scroll_pane.welcome_label then
-      page_scroll_pane.welcome_label.destroy()
-    end
-    local show_hidden = self.state.show_hidden
-    local show_unresearched = self.state.show_unresearched
-    local force_index = self.player.force.index
-    for _, component_name in pairs(page_scroll_pane.children_names) do
-      local component = page_scroll_pane[component_name]
-      if component then
-        local objects = properties[component_name]
-        local should_show = false
-        if objects then
-          local children = component.list_frame.children
-          local i = 0
-          for _, obj in pairs(objects) do
-            local obj_entry = database.get_entry(obj)
-            if obj_entry then
-              local is_researched = database.is_researched(obj, force_index)
-              local is_hidden = util.is_hidden(obj_entry.base)
-              if (show_unresearched or is_researched) and (show_hidden or not is_hidden) then
-                i = i + 1
-                should_show = true
-                local obj_path = obj.type .. "/" .. obj.name
-                local button = children[i]
-                if not button then
-                  flib_gui.add(component.list_frame, {
-                    {
-                      type = "sprite-button",
-                      handler = { [defines.events.on_gui_click] = handlers.on_prototype_button_click },
-                      sprite = obj_path,
-                      {
-                        type = "label",
-                        name = "remark",
-                        style_mods = {
-                          horizontal_align = "right",
-                          height = 36 - 8,
-                          width = (40 * 12) - 24,
-                          vertical_align = "center",
-                        },
-                        ignored_by_interaction = true,
-                      },
-                    },
-                  })
-                  button = component.list_frame.children[i]
-                end
-                local style = "rb_list_box_item"
-                if is_hidden then
-                  style = "rb_list_box_item_hidden"
-                elseif not is_researched then
-                  style = "rb_list_box_item_unresearched"
-                end
-                button.style = style
-                -- Caption
-                local caption = { "", "            " }
-                if obj.probability and obj.probability < 1 then
-                  table.insert(caption, {
-                    "",
-                    "[font=default-semibold]",
-                    { "format-percent", math.round(obj.probability * 100, 0.01) },
-                    "[/font] ",
-                  })
-                end
-                if obj.amount then
-                  table.insert(caption, {
-                    "",
-                    "[font=default-semibold]",
-                    format_number(obj.amount),
-                    " ×[/font]  ",
-                  })
-                elseif obj.amount_min and obj.amount_max then
-                  table.insert(caption, {
-                    "",
-                    "[font=default-semibold]",
-                    format_number(obj.amount_min),
-                    " - ",
-                    format_number(obj.amount_max),
-                    " ×[/font]  ",
-                  })
-                end
-                table.insert(caption, { "?", obj_entry.base.localised_name, obj_path })
-                button.caption = caption
-                -- Remark
-                local remark = { "" }
-                if obj.duration then
-                  table.insert(
-                    remark,
-                    { "", "[img=quantity-time] ", { "time-symbol-seconds", math.round(obj.duration, 0.01) } }
-                  )
-                end
-                if obj.temperature then
-                  table.insert(remark, { "", "  ", { "format-degrees-c-compact", math.round(obj.temperature, 0.01) } })
-                elseif obj.minimum_temperature and obj.maximum_temperature then
-                  local temperature_min = obj.minimum_temperature --[[@as number]]
-                  local temperature_max = obj.maximum_temperature --[[@as number]]
-                  local temperature_string
-                  if temperature_min == math.min_double then
-                    temperature_string = "≤ " .. math.round(temperature_max, 0.01)
-                  elseif temperature_max == math.max_double then
-                    temperature_string = "≥ " .. math.round(temperature_min, 0.01)
-                  else
-                    temperature_string = ""
-                      .. math.round(temperature_min, 0.01)
-                      .. " - "
-                      .. math.round(temperature_max, 0.01)
-                  end
-                  table.insert(remark, { "", "  ", { "format-degrees-c-compact", temperature_string } })
-                end
-                button.remark.caption = remark
-
-                -- Icon and action
-                button.sprite = obj_path
-                local tags = button.tags
-                tags.prototype = obj_path
-                button.tags = tags
-              end
-            end
-          end
-          for j = i + 1, #children do
-            children[j].destroy()
-          end
-        end
-        component.visible = should_show
-      end
-    end
-
-    self.state.current_page = base_path
+  self.state.current_page = prototype_path
+  local properties = database.get_properties(prototype_path, self.player.force.index)
+  if not properties then
+    return
   end
-  if not self.elems.rb_main_window.visible then
-    gui.show(self)
+  local entry = properties.entry
+
+  -- Header
+  local header_sprite = self.elems.page_header_sprite
+  header_sprite.visible = true
+  header_sprite.sprite = prototype_path
+  local header_caption = self.elems.page_header_caption
+  header_caption.caption = entry.base.localised_name
+  local style = "caption_label"
+  if util.is_hidden(entry.base) then
+    style = "rb_caption_label_hidden"
+  elseif util.is_unresearched(entry, self.player.force.index) then
+    style = "rb_caption_label_unresearched"
   end
+  header_caption.style = style
+  -- TODO: This is ugly
+  local header_type = self.elems.page_header_type_label
+  local type_caption = { "" }
+  if entry.recipe then
+    table.insert(type_caption, { "description.recipe" })
+    table.insert(type_caption, "/")
+  end
+  if entry.item then
+    table.insert(type_caption, { "description.rb-item" })
+    table.insert(type_caption, "/")
+  end
+  if entry.fluid then
+    table.insert(type_caption, { "gui-train.fluid" })
+    table.insert(type_caption, "/")
+  end
+  if entry.entity then
+    table.insert(type_caption, { "description.rb-entity" })
+    table.insert(type_caption, "/")
+  end
+  type_caption[#type_caption] = nil
+  header_type.caption = type_caption
+
+  -- Contents
+  local scroll_pane = self.elems.page_scroll_pane
+  if scroll_pane.welcome_label then
+    scroll_pane.welcome_label.destroy()
+  end
+
+  update_list_box(self, scroll_pane.ingredients, properties.ingredients)
+  update_list_box(self, scroll_pane.products, properties.products)
+  update_list_box(self, scroll_pane.made_in, properties.made_in)
+  update_list_box(self, scroll_pane.ingredient_in, properties.ingredient_in)
+  update_list_box(self, scroll_pane.product_of, properties.product_of)
+  update_list_box(self, scroll_pane.can_craft, properties.can_craft)
+  update_list_box(self, scroll_pane.mined_by, properties.mined_by)
 end
 
 --- @param self Gui
@@ -629,9 +656,8 @@ end
 
 --- @param name string
 --- @param header LocalisedString
---- @param header_remark LocalisedString
 --- @return GuiElemDef
-local function list_box(name, header, header_remark)
+local function list_box(name, header)
   return {
     type = "flow",
     name = name,
@@ -639,6 +665,7 @@ local function list_box(name, header, header_remark)
     visible = false,
     {
       type = "flow",
+      name = "header_flow",
       style = "centering_horizontal_flow",
       {
         type = "checkbox",
@@ -647,8 +674,14 @@ local function list_box(name, header, header_remark)
         state = false,
         handler = { [defines.events.on_gui_click] = handlers.collapse_list_box },
       },
+      {
+        type = "label",
+        name = "count_label",
+        style = "info_label",
+        style_mods = { font = "default-semibold", horizontally_squashable = false },
+      },
       { type = "empty-widget", style = "flib_horizontal_pusher" },
-      { type = "label", caption = header_remark },
+      { type = "label", name = "remark" },
     },
     {
       type = "frame",
@@ -663,159 +696,159 @@ end
 --- @return GuiElems
 function gui.build_window(player)
   local elems = flib_gui.add(player.gui.screen, {
+    type = "frame",
+    name = "rb_main_window",
+    direction = "vertical",
+    visible = false,
+    elem_mods = { auto_center = true },
+    handler = { [defines.events.on_gui_closed] = handlers.on_window_closed },
     {
-      type = "frame",
-      name = "rb_main_window",
-      direction = "vertical",
-      visible = false,
-      elem_mods = { auto_center = true },
-      handler = { [defines.events.on_gui_closed] = handlers.on_window_closed },
+      style = "flib_titlebar_flow",
+      type = "flow",
+      drag_target = "rb_main_window",
+      handler = { [defines.events.on_gui_click] = handlers.on_titlebar_click },
+      frame_action_button("nav_backward_button", "rb_nav_backward", { "gui.rb-nav-backward-instruction" }),
+      frame_action_button("nav_forward_button", "rb_nav_forward", { "gui.rb-nav-forward-instruction" }),
       {
-        style = "flib_titlebar_flow",
-        type = "flow",
-        drag_target = "rb_main_window",
-        handler = { [defines.events.on_gui_click] = handlers.on_titlebar_click },
-        frame_action_button("nav_backward_button", "rb_nav_backward", { "gui.rb-nav-backward-instruction" }),
-        frame_action_button("nav_forward_button", "rb_nav_forward", { "gui.rb-nav-forward-instruction" }),
+        type = "label",
+        style = "frame_title",
+        caption = { "mod-name.RecipeBook" },
+        ignored_by_interaction = true,
+      },
+      { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
+      {
+        type = "textfield",
+        name = "search_textfield",
+        style = "long_number_textfield",
+        style_mods = { top_margin = -3 },
+        lose_focus_on_confirm = true,
+        clear_and_focus_on_right_click = true,
+        visible = false,
+        handler = { [defines.events.on_gui_text_changed] = handlers.on_search_query_changed },
+      },
+      frame_action_button(
+        "search_button",
+        "utility/search",
+        { "gui.rb-search-instruction" },
+        handlers.on_search_button_click
+      ),
+      frame_action_button(
+        "show_unresearched_button",
+        "rb_show_unresearched",
+        { "gui.rb-show-unresearched-instruction" },
+        handlers.on_show_unresearched_button_click
+      ),
+      frame_action_button(
+        "show_hidden_button",
+        "rb_show_hidden",
+        { "gui.rb-show-hidden-instruction" },
+        handlers.on_show_hidden_button_click
+      ),
+      {
+        type = "line",
+        style_mods = { top_margin = -2, bottom_margin = 2 },
+        direction = "vertical",
+        ignored_by_interaction = true,
+      },
+      frame_action_button("pin_button", "rb_pin", { "gui.rb-pin-instruction" }, handlers.on_pin_button_click),
+      frame_action_button("close_button", "utility/close", { "gui.close-instruction" }, handlers.on_close_button_click),
+    },
+    {
+      type = "flow",
+      style_mods = { horizontal_spacing = 12 },
+      {
+        type = "frame",
+        name = "filter_outer_frame",
+        style = "inside_deep_frame",
+        direction = "vertical",
         {
-          type = "label",
-          style = "frame_title",
-          caption = { "mod-name.RecipeBook" },
-          ignored_by_interaction = true,
-        },
-        { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
-        {
-          type = "textfield",
-          name = "search_textfield",
-          style = "long_number_textfield",
-          style_mods = { top_margin = -3 },
-          lose_focus_on_confirm = true,
-          clear_and_focus_on_right_click = true,
+          type = "frame",
+          name = "filter_warning_frame",
+          style = "negative_subheader_frame",
+          style_mods = { horizontally_stretchable = true },
           visible = false,
-          handler = { [defines.events.on_gui_text_changed] = handlers.on_search_query_changed },
+          {
+            type = "label",
+            style = "bold_label",
+            style_mods = { left_padding = 8 },
+            caption = { "gui.rb-localised-search-unavailable" },
+          },
         },
-        frame_action_button(
-          "search_button",
-          "utility/search",
-          { "gui.rb-search-instruction" },
-          handlers.on_search_button_click
-        ),
-        frame_action_button(
-          "show_unresearched_button",
-          "rb_show_unresearched",
-          { "gui.rb-show-unresearched-instruction" },
-          handlers.on_show_unresearched_button_click
-        ),
-        frame_action_button(
-          "show_hidden_button",
-          "rb_show_hidden",
-          { "gui.rb-show-hidden-instruction" },
-          handlers.on_show_hidden_button_click
-        ),
         {
-          type = "line",
-          style_mods = { top_margin = -2, bottom_margin = 2 },
-          direction = "vertical",
-          ignored_by_interaction = true,
+          type = "table",
+          name = "filter_group_table",
+          style = "filter_group_table",
+          column_count = 6,
         },
-        frame_action_button("pin_button", "rb_pin", { "gui.rb-pin-instruction" }, handlers.on_pin_button_click),
-        frame_action_button(
-          "close_button",
-          "utility/close",
-          { "gui.close-instruction" },
-          handlers.on_close_button_click
-        ),
+        {
+          type = "frame",
+          style = "rb_filter_frame",
+          {
+            type = "frame",
+            style = "rb_filter_deep_frame",
+            {
+              type = "scroll-pane",
+              name = "filter_scroll_pane",
+              style = "rb_filter_scroll_pane",
+            },
+            vertical_scroll_policy = "always", -- FIXME: The scroll pane is stretching for some reason
+            {
+              type = "label",
+              name = "filter_no_results_label",
+              style_mods = {
+                width = 40 * 10,
+                height = 40 * 14,
+                vertically_stretchable = true,
+                horizontal_align = "center",
+                vertical_align = "center",
+              },
+              caption = { "gui.nothing-found" },
+              visible = false,
+            },
+          },
+        },
       },
       {
-        type = "flow",
-        style_mods = { horizontal_spacing = 12 },
+        type = "frame",
+        style = "inside_shallow_frame",
+        style_mods = { width = (40 * 12) + 24 + 12 },
+        direction = "vertical",
         {
           type = "frame",
-          name = "filter_outer_frame",
-          style = "inside_deep_frame",
-          direction = "vertical",
+          style = "subheader_frame",
+          style_mods = { left_padding = 12 },
           {
-            type = "frame",
-            name = "filter_warning_frame",
-            style = "negative_subheader_frame",
-            style_mods = { horizontally_stretchable = true },
+            type = "sprite-button",
+            name = "page_header_sprite",
+            style = "transparent_slot",
+            style_mods = { size = 28, right_margin = 4 },
             visible = false,
-            {
-              type = "label",
-              style = "bold_label",
-              style_mods = { left_padding = 8 },
-              caption = { "gui.rb-localised-search-unavailable" },
-            },
           },
           {
-            type = "table",
-            name = "filter_group_table",
-            style = "filter_group_table",
-            column_count = 6,
+            type = "label",
+            name = "page_header_caption",
+            style = "caption_label",
+            caption = { "gui.rb-welcome-title" },
           },
+          { type = "empty-widget", style = "flib_horizontal_pusher" },
           {
-            type = "frame",
-            style = "rb_filter_frame",
-            {
-              type = "frame",
-              style = "rb_filter_deep_frame",
-              {
-                type = "scroll-pane",
-                name = "filter_scroll_pane",
-                style = "rb_filter_scroll_pane",
-              },
-              vertical_scroll_policy = "always", -- FIXME: The scroll pane is stretching for some reason
-              {
-                type = "label",
-                name = "filter_no_results_label",
-                style_mods = {
-                  width = 40 * 10,
-                  height = 40 * 14,
-                  vertically_stretchable = true,
-                  horizontal_align = "center",
-                  vertical_align = "center",
-                },
-                caption = { "gui.nothing-found" },
-                visible = false,
-              },
-            },
+            type = "label",
+            name = "page_header_type_label",
+            style = "info_label",
+            style_mods = { font = "default-semibold", right_margin = 8 },
           },
         },
         {
-          type = "frame",
-          style = "inside_shallow_frame",
-          style_mods = { width = (40 * 12) + 24 + 12 },
-          direction = "vertical",
+          type = "scroll-pane",
+          name = "page_scroll_pane",
+          style = "flib_naked_scroll_pane",
+          style_mods = { horizontally_stretchable = true, vertically_stretchable = true },
+          vertical_scroll_policy = "always",
           {
-            type = "frame",
-            style = "subheader_frame",
-            {
-              type = "sprite-button",
-              name = "page_header_caption",
-              style = "rb_subheader_caption_button",
-              caption = { "gui.rb-welcome-title" },
-              enabled = false,
-            },
-            { type = "empty-widget", style = "flib_horizontal_pusher" },
-            {
-              type = "label",
-              name = "page_header_type_label",
-              style = "info_label",
-              style_mods = { font = "default-semibold", right_margin = 8 },
-            },
-          },
-          {
-            type = "scroll-pane",
-            name = "page_scroll_pane",
-            style = "flib_naked_scroll_pane",
-            style_mods = { horizontally_stretchable = true, vertically_stretchable = true },
-            vertical_scroll_policy = "always",
-            {
-              type = "label",
-              name = "welcome_label",
-              style_mods = { horizontally_stretchable = true, single_line = false },
-              caption = { "gui.rb-welcome-text" },
-            },
+            type = "label",
+            name = "welcome_label",
+            style_mods = { horizontally_stretchable = true, single_line = false },
+            caption = { "gui.rb-welcome-text" },
           },
         },
       },
@@ -873,13 +906,13 @@ function gui.build_window(player)
 
   -- Add components to page
   local page_scroll_pane = elems.page_scroll_pane
-  flib_gui.add(page_scroll_pane, { list_box("ingredients", { "description.ingredients" }) })
-  flib_gui.add(page_scroll_pane, { list_box("products", { "description.products" }) })
-  flib_gui.add(page_scroll_pane, { list_box("made_in", { "description.made-in" }) })
-  flib_gui.add(page_scroll_pane, { list_box("ingredient_in", { "description.rb-ingredient-in" }) })
-  flib_gui.add(page_scroll_pane, { list_box("product_of", { "description.rb-product-of" }) })
-  flib_gui.add(page_scroll_pane, { list_box("can_craft", { "description.rb-can-craft" }) })
-  flib_gui.add(page_scroll_pane, { list_box("mined_by", { "description.rb-mined-by" }) })
+  flib_gui.add(page_scroll_pane, list_box("ingredients", { "description.ingredients" }))
+  flib_gui.add(page_scroll_pane, list_box("products", { "description.products" }))
+  flib_gui.add(page_scroll_pane, list_box("made_in", { "description.made-in" }))
+  flib_gui.add(page_scroll_pane, list_box("ingredient_in", { "description.rb-ingredient-in" }))
+  flib_gui.add(page_scroll_pane, list_box("product_of", { "description.rb-product-of" }))
+  flib_gui.add(page_scroll_pane, list_box("can_craft", { "description.rb-can-craft" }))
+  flib_gui.add(page_scroll_pane, list_box("mined_by", { "description.rb-mined-by" }))
 
   return elems
 end

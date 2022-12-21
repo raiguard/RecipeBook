@@ -378,129 +378,6 @@ function database.get_base_path(path)
   end
 end
 
---- @param entry PrototypeEntry
---- @return EntryProperties
-function database.get_properties(entry, force_index)
-  local base = entry.base
-  local properties = {
-    hidden = util.is_hidden(base),
-    researched = entry.researched and entry.researched[force_index] or false,
-  }
-
-  local recipe = entry.recipe
-  if recipe then
-    properties.ingredients = recipe.ingredients
-    properties.products = recipe.products
-
-    local item_ingredients = 0
-    for _, ingredient in pairs(recipe.ingredients) do
-      if ingredient.type == "item" then
-        item_ingredients = item_ingredients + 1
-      end
-    end
-
-    properties.made_in = {}
-    for _, crafter in
-      pairs(game.get_filtered_entity_prototypes({
-        { filter = "crafting-category", crafting_category = recipe.category },
-      }))
-    do
-      if database.get_entry_proto(crafter) then
-        local ingredient_count = crafter.ingredient_count
-        if ingredient_count == 0 or ingredient_count >= item_ingredients then
-          table.insert(properties.made_in, {
-            type = "entity",
-            name = crafter.name,
-            duration = recipe.energy / crafter.crafting_speed,
-          })
-        end
-      end
-    end
-  end
-
-  local fluid = entry.fluid
-  if fluid then
-    properties.ingredient_in = {}
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
-      }))
-    do
-      if database.get_entry_proto(recipe) then
-        table.insert(properties.ingredient_in, { type = "recipe", name = recipe.name })
-      end
-    end
-    properties.product_of = {}
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
-      }))
-    do
-      if database.get_entry_proto(recipe) then
-        table.insert(properties.product_of, { type = "recipe", name = recipe.name })
-      end
-    end
-  end
-
-  local item = entry.item
-  if item then
-    properties.ingredient_in = properties.ingredient_in or {}
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = item.name } } },
-      }))
-    do
-      if database.get_entry_proto(recipe) then
-        table.insert(properties.ingredient_in, { type = "recipe", name = recipe.name })
-      end
-    end
-    properties.product_of = properties.product_of or {}
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
-      }))
-    do
-      if database.get_entry_proto(recipe) then
-        table.insert(properties.product_of, { type = "recipe", name = recipe.name })
-      end
-    end
-  end
-
-  local entity = entry.entity
-  if entity then
-    if util.crafting_machine[entity.type] then
-      properties.can_craft = {}
-      local filters = {}
-      for category in pairs(entity.crafting_categories) do
-        table.insert(filters, { filter = "category", category = category })
-        table.insert(filters, { mode = "and", filter = "hidden-from-player-crafting", invert = true })
-      end
-      for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
-        local item_ingredients = 0
-        for _, ingredient in pairs(recipe.ingredients) do
-          if ingredient.type == "item" then
-            item_ingredients = item_ingredients + 1
-          end
-        end
-        if entity.ingredient_count == 0 or entity.ingredient_count >= item_ingredients then
-          table.insert(properties.can_craft, { type = "recipe", name = recipe.name })
-        end
-      end
-    elseif entity.type == "resource" then
-      local required_fluid = entity.mineable_properties.required_fluid
-      local resource_category = entity.resource_category
-      properties.mined_by = {}
-      for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
-        if entity.resource_categories[resource_category] and (not required_fluid or entity.fluidbox_prototypes[1]) then
-          table.insert(properties.mined_by, { type = "entity", name = entity.name })
-        end
-      end
-    end
-  end
-
-  return properties
-end
-
 --- @param obj GenericObject
 --- @return boolean
 function database.is_researched(obj, force_index)
@@ -534,6 +411,185 @@ function database.get_entry_proto(prototype)
   if type then
     return global.database[type .. "/" .. prototype.name]
   end
+end
+
+-- Entry properties
+
+--- @param properties EntryProperties
+--- @param recipe LuaRecipePrototype
+local function add_recipe_properties(properties, recipe)
+  properties.ingredients = recipe.ingredients
+  properties.products = recipe.products
+
+  local item_ingredients = 0
+  for _, ingredient in pairs(recipe.ingredients) do
+    if ingredient.type == "item" then
+      item_ingredients = item_ingredients + 1
+    end
+  end
+
+  properties.made_in = {}
+  for _, crafter in
+    pairs(game.get_filtered_entity_prototypes({
+      { filter = "crafting-category", crafting_category = recipe.category },
+    }))
+  do
+    local ingredient_count = crafter.ingredient_count
+    if database.get_entry_proto(crafter) and (ingredient_count == 0 or ingredient_count >= item_ingredients) then
+      table.insert(properties.made_in, {
+        type = "entity",
+        name = crafter.name,
+        duration = recipe.energy / crafter.crafting_speed,
+      })
+    end
+  end
+end
+
+--- @param properties EntryProperties
+--- @param fluid LuaFluidPrototype
+local function add_fluid_properties(properties, fluid)
+  properties.ingredient_in = {}
+  for _, recipe in
+    pairs(game.get_filtered_recipe_prototypes({
+      { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
+    }))
+  do
+    if database.get_entry_proto(recipe) then
+      table.insert(properties.ingredient_in, { type = "recipe", name = recipe.name })
+    end
+  end
+  properties.product_of = {}
+  for _, recipe in
+    pairs(game.get_filtered_recipe_prototypes({
+      { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
+    }))
+  do
+    if database.get_entry_proto(recipe) then
+      table.insert(properties.product_of, { type = "recipe", name = recipe.name })
+    end
+  end
+end
+
+--- @param properties EntryProperties
+--- @param item LuaItemPrototype
+local function add_item_properties(properties, item)
+  properties.ingredient_in = properties.ingredient_in or {}
+  for _, recipe in
+    pairs(game.get_filtered_recipe_prototypes({
+      { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = item.name } } },
+    }))
+  do
+    if database.get_entry_proto(recipe) then
+      table.insert(properties.ingredient_in, { type = "recipe", name = recipe.name })
+    end
+  end
+  properties.product_of = properties.product_of or {}
+  for _, recipe in
+    pairs(game.get_filtered_recipe_prototypes({
+      { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
+    }))
+  do
+    if database.get_entry_proto(recipe) then
+      table.insert(properties.product_of, { type = "recipe", name = recipe.name })
+    end
+  end
+end
+
+--- @param properties EntryProperties
+--- @param entity LuaEntityPrototype
+local function add_entity_properties(properties, entity)
+  if util.crafting_machine[entity.type] then
+    properties.can_craft = {}
+    local filters = {}
+    for category in pairs(entity.crafting_categories) do
+      table.insert(filters, { filter = "category", category = category })
+      table.insert(filters, { mode = "and", filter = "hidden-from-player-crafting", invert = true })
+    end
+    for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
+      local item_ingredients = 0
+      for _, ingredient in pairs(recipe.ingredients) do
+        if ingredient.type == "item" then
+          item_ingredients = item_ingredients + 1
+        end
+      end
+      if entity.ingredient_count == 0 or entity.ingredient_count >= item_ingredients then
+        table.insert(properties.can_craft, { type = "recipe", name = recipe.name })
+      end
+    end
+  elseif entity.type == "resource" then
+    local required_fluid = entity.mineable_properties.required_fluid
+    local resource_category = entity.resource_category
+    properties.mined_by = {}
+    for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
+      if entity.resource_categories[resource_category] and (not required_fluid or entity.fluidbox_prototypes[1]) then
+        table.insert(properties.mined_by, { type = "entity", name = entity.name })
+      end
+    end
+  end
+end
+
+--- @class EntryProperties
+--- @field entry PrototypeEntry
+--- @field hidden boolean
+--- @field researched boolean
+--- @field ingredients GenericObject[]?
+--- @field products GenericObject[]?
+--- @field made_in GenericObject[]?
+--- @field ingredient_in GenericObject[]?
+--- @field product_of GenericObject[]?
+--- @field unlocked_by GenericObject[]?
+--- @field can_craft GenericObject[]?
+--- @field mined_by GenericObject[]?
+
+--- @type table<uint, table<string, EntryProperties>>
+local cache = {}
+
+--- @param path string
+--- @return EntryProperties?
+function database.get_properties(path, force_index)
+  local force_cache = cache[force_index]
+  if not force_cache then
+    force_cache = {}
+    cache[force_index] = force_cache
+  end
+  local cached = force_cache[path]
+  if cached then
+    return cached
+  end
+
+  local entry = global.database[path]
+  if not entry then
+    return
+  end
+
+  --- @type EntryProperties
+  local properties = {
+    entry = entry,
+  }
+
+  local recipe = entry.recipe
+  if recipe then
+    add_recipe_properties(properties, recipe)
+  end
+
+  local fluid = entry.fluid
+  if fluid then
+    add_fluid_properties(properties, fluid)
+  end
+
+  local item = entry.item
+  if item then
+    add_item_properties(properties, item)
+  end
+
+  local entity = entry.entity
+  if entity then
+    add_entity_properties(properties, entity)
+  end
+
+  force_cache[path] = properties
+
+  return properties
 end
 
 return database
