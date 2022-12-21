@@ -16,7 +16,7 @@ function migrations.on_init()
   database.build()
 
   for _, player in pairs(game.players) do
-    migrations.init_player(player)
+    migrations.migrate_player(player)
   end
 end
 

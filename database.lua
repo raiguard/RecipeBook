@@ -99,7 +99,8 @@ function database.build()
         end
       end
       table.insert(subgroup, path)
-      local prototype_path = util.prototype_type[prototype.object_name] .. "/" .. prototype.name
+      local prototype_type = util.prototype_type[prototype.object_name]
+      local prototype_path = prototype_type .. "/" .. prototype.name
       dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
 
       return db[path]
