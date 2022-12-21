@@ -558,6 +558,7 @@ end
 
 --- @class EntryProperties
 --- @field entry PrototypeEntry
+--- @field types string[]
 --- @field hidden boolean
 --- @field researched boolean
 --- @field ingredients GenericObject[]?
@@ -594,25 +595,30 @@ function database.get_properties(path, force_index)
   --- @type EntryProperties
   local properties = {
     entry = entry,
+    types = {},
   }
 
   local recipe = entry.recipe
   if recipe then
+    properties.types[#properties.types + 1] = "recipe"
     add_recipe_properties(properties, recipe)
   end
 
   local fluid = entry.fluid
   if fluid then
+    properties.types[#properties.types + 1] = "fluid"
     add_fluid_properties(properties, fluid)
   end
 
   local item = entry.item
   if item then
+    properties.types[#properties.types + 1] = "item"
     add_item_properties(properties, item)
   end
 
   local entity = entry.entity
   if entity then
+    properties.types[#properties.types + 1] = "entity"
     add_entity_properties(properties, entity)
   end
 

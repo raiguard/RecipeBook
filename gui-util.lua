@@ -4,6 +4,7 @@ local math = require("__flib__/math")
 local database = require("__RecipeBook__/database")
 local util = require("__RecipeBook__/util")
 
+--- @class GuiUtil
 local gui_util = {}
 
 --- @param player LuaPlayer
@@ -192,18 +193,12 @@ function gui_util.build_base_gui(player, handlers)
       local subgroup_table = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
       table.insert(group_flow, subgroup_table)
       for _, path in pairs(subgroup) do
-        local prototype = global.database[path].base
+        local type, name = string.match(path, "(.*)/(.*)")
         table.insert(subgroup_table, {
           type = "sprite-button",
           style = "flib_slot_button_default",
           sprite = path,
-          tooltip = {
-            "",
-            { "", "[font=default-bold]", { "?", prototype.localised_name, path }, "[/font]" },
-            "\n",
-            { "?", { "", prototype.localised_description, "\n" }, "" },
-            path,
-          },
+          tooltip = gui_util.build_tooltip({ type = type, name = name }),
           handler = { [defines.events.on_gui_click] = handlers.on_prototype_button_click },
           -- TODO: Read the sprite instead?
           tags = { prototype = path },
@@ -324,6 +319,29 @@ function gui_util.build_list_box(parent, handlers, name, header)
   })
 end
 
+--- @param handlers table<string, function>
+--- @return GuiElemDef
+function gui_util.build_prototype_button(handlers)
+  return {
+    type = "button",
+    style = "rb_list_box_item",
+    handler = { [defines.events.on_gui_click] = handlers.on_prototype_button_click },
+    {
+      type = "sprite-button",
+      name = "icon",
+      style = "transparent_slot",
+      style_mods = { size = 28 },
+      ignored_by_interaction = true,
+    },
+    {
+      type = "label",
+      name = "remark",
+      style_mods = { width = 480 - 24, height = 28, horizontal_align = "right", vertical_align = "center" },
+      ignored_by_interaction = true,
+    },
+  }
+end
+
 --- @param obj GenericObject
 --- @return LocalisedString
 function gui_util.build_remark(obj)
@@ -353,27 +371,17 @@ function gui_util.build_remark(obj)
   return remark
 end
 
---- @param handlers table<string, function>
---- @return GuiElemDef
-function gui_util.build_prototype_button(handlers)
-  return {
-    type = "button",
-    style = "rb_list_box_item",
-    handler = { [defines.events.on_gui_click] = handlers.on_prototype_button_click },
-    {
-      type = "sprite-button",
-      name = "icon",
-      style = "transparent_slot",
-      style_mods = { size = 28 },
-      ignored_by_interaction = true,
-    },
-    {
-      type = "label",
-      name = "remark",
-      style_mods = { width = 480 - 24, height = 28, horizontal_align = "right", vertical_align = "center" },
-      ignored_by_interaction = true,
-    },
+--- @param obj GenericObject
+--- @return LocalisedString
+function gui_util.build_tooltip(obj)
+  local prototype = game[obj.type .. "_prototypes"][obj.name]
+  local tooltip = {
+    "",
+    { "gui.rb-tooltip-title", { "", prototype.localised_name, " (", util.type_locale[obj.type], ")" } },
+    { "?", { "", "\n", prototype.localised_description }, "" },
   }
+
+  return tooltip
 end
 
 --- @param self Gui
@@ -428,6 +436,8 @@ function gui_util.update_list_box(self, handlers, flow, members, remark)
     button.icon.sprite = entry.base_path
     -- Caption
     button.caption = gui_util.build_caption(member)
+    -- Tooltip
+    button.tooltip = gui_util.build_tooltip(member)
     -- Remark
     button.remark.caption = gui_util.build_remark(member)
     -- Tags

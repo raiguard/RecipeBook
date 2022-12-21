@@ -68,4 +68,11 @@ util.prototype_type = {
   LuaTechnologyPrototype = "technology",
 }
 
+util.type_locale = {
+  entity = { "description.rb-entity" },
+  fluid = { "gui-train.fluid" },
+  item = { "description.rb-item" },
+  recipe = { "description.recipe" },
+}
+
 return util

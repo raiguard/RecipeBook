@@ -318,6 +318,7 @@ function gui.update_page(self, prototype_path)
   if not prototype_path then
     return
   end
+
   self.state.current_page = prototype_path
 
   local profiler = game.create_profiler()
@@ -341,23 +342,10 @@ function gui.update_page(self, prototype_path)
     style = "rb_caption_label_unresearched"
   end
   header_caption.style = style
-  -- TODO: This is ugly
   local header_type = self.elems.page_header_type_label
   local type_caption = { "" }
-  if entry.recipe then
-    table.insert(type_caption, { "description.recipe" })
-    table.insert(type_caption, "/")
-  end
-  if entry.item then
-    table.insert(type_caption, { "description.rb-item" })
-    table.insert(type_caption, "/")
-  end
-  if entry.fluid then
-    table.insert(type_caption, { "gui-train.fluid" })
-    table.insert(type_caption, "/")
-  end
-  if entry.entity then
-    table.insert(type_caption, { "description.rb-entity" })
+  for _, type in pairs(properties.types) do
+    table.insert(type_caption, util.type_locale[type])
     table.insert(type_caption, "/")
   end
   type_caption[#type_caption] = nil
