@@ -5,6 +5,7 @@
 --- @field type string
 --- @field name string
 --- @field duration number?
+--- @field required_fluid Ingredient?
 
 --- @alias GenericObject Ingredient|Product|CustomObject
 --- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype

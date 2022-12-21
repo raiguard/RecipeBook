@@ -223,16 +223,20 @@ function gui_util.build_base_gui(player, handlers)
   gui_util.build_list_box(page_scroll_pane, handlers, "product_of", { "description.rb-product-of" })
   gui_util.build_list_box(page_scroll_pane, handlers, "can_craft", { "description.rb-can-craft" })
   gui_util.build_list_box(page_scroll_pane, handlers, "mined_by", { "description.rb-mined-by" })
+  gui_util.build_list_box(page_scroll_pane, handlers, "can_mine", { "description.rb-can-mine" })
 
   return elems
 end
 
 --- @param obj GenericObject
---- @param localised_name LocalisedString
+--- @param include_icon boolean?
 --- @return LocalisedString
-function gui_util.build_caption(obj, localised_name)
+function gui_util.build_caption(obj, include_icon)
   --- @type LocalisedString
   local caption = { "", "            " }
+  if include_icon then
+    caption[#caption + 1] = "[img=" .. obj.type .. "/" .. obj.name .. "]  "
+  end
   if obj.probability and obj.probability < 1 then
     caption[#caption + 1] = {
       "",
@@ -258,7 +262,8 @@ function gui_util.build_caption(obj, localised_name)
       " ×[/font]  ",
     }
   end
-  caption[#caption + 1] = localised_name
+  -- TODO: Optimize this
+  caption[#caption + 1] = game[obj.type .. "_prototypes"][obj.name].localised_name
 
   return caption
 end
@@ -324,8 +329,11 @@ end
 function gui_util.build_remark(obj)
   --- @type LocalisedString
   local remark = { "" }
+  if obj.required_fluid then
+    remark[#remark + 1] = { "", gui_util.build_caption(obj.required_fluid, true) }
+  end
   if obj.duration then
-    remark[#remark + 1] = { "", "[img=quantity-time] ", { "time-symbol-seconds", math.round(obj.duration, 0.01) } }
+    remark[#remark + 1] = { "", "  [img=quantity-time] ", { "time-symbol-seconds", math.round(obj.duration, 0.01) } }
   end
   if obj.temperature then
     remark[#remark + 1] = { "", "  ", { "format-degrees-c-compact", math.round(obj.temperature, 0.01) } }
@@ -419,7 +427,7 @@ function gui_util.update_list_box(self, handlers, flow, members, remark)
     -- Sprite
     button.icon.sprite = entry.base_path
     -- Caption
-    button.caption = gui_util.build_caption(member, entry.base.localised_name)
+    button.caption = gui_util.build_caption(member)
     -- Remark
     button.remark.caption = gui_util.build_remark(member)
     -- Tags

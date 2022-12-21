@@ -525,6 +525,32 @@ local function add_entity_properties(properties, entity)
         table.insert(properties.mined_by, { type = "entity", name = entity.name })
       end
     end
+  elseif entity.type == "mining-drill" then
+    --- @type string|boolean?
+    local filter
+    for _, fluidbox_prototype in pairs(entity.fluidbox_prototypes) do
+      local production_type = fluidbox_prototype.production_type
+      if production_type == "input" or production_type == "input-output" then
+        filter = fluidbox_prototype.filter and fluidbox_prototype.filter.name or true
+        break
+      end
+    end
+    local resource_categories = entity.resource_categories --[[@as table<string, _>]]
+    properties.can_mine = {}
+    for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+      local mineable = resource.mineable_properties
+      local required_fluid = mineable.required_fluid
+      if
+        resource_categories[resource.resource_category]
+        and (not required_fluid or filter == true or filter == required_fluid)
+      then
+        table.insert(properties.can_mine, {
+          type = "entity",
+          name = resource.name,
+          required_fluid = required_fluid and { type = "fluid", name = required_fluid, amount = mineable.fluid_amount },
+        })
+      end
+    end
   end
 end
 

@@ -376,6 +376,7 @@ function gui.update_page(self, prototype_path)
   gui_util.update_list_box(self, handlers, scroll_pane.product_of, properties.product_of)
   gui_util.update_list_box(self, handlers, scroll_pane.can_craft, properties.can_craft)
   gui_util.update_list_box(self, handlers, scroll_pane.mined_by, properties.mined_by)
+  gui_util.update_list_box(self, handlers, scroll_pane.can_mine, properties.can_mine)
 
   profiler.stop()
   log({ "", "[", prototype_path, "] ", profiler })
