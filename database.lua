@@ -568,6 +568,7 @@ end
 --- @field unlocked_by GenericObject[]?
 --- @field can_craft GenericObject[]?
 --- @field mined_by GenericObject[]?
+--- @field can_mine GenericObject[]?
 
 --- @type table<uint, table<string, EntryProperties>>
 local cache = {}
