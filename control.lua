@@ -4,6 +4,8 @@ local database = require("__RecipeBook__/database")
 local gui = require("__RecipeBook__/gui")
 local migrations = require("__RecipeBook__/migrations")
 
+-- Interface
+
 remote.add_interface("RecipeBook", {
   --- Open the given page in Recipe Book.
   --- @param player_index uint
@@ -29,8 +31,7 @@ remote.add_interface("RecipeBook", {
   end
 })
 
-dictionary.handle_events()
-gui.handle_events()
+-- Lifecycle
 
 script.on_init(migrations.on_init)
 script.on_configuration_changed(migrations.on_configuration_changed)
@@ -42,6 +43,23 @@ script.on_event(defines.events.on_player_created, function(e)
   end
   migrations.init_player(player)
 end)
+
+-- Dictionary
+
+dictionary.handle_events()
+
+script.on_event(dictionary.on_player_dictionaries_ready, function(e)
+  local player_table = global.players[e.player_index]
+  if player_table then
+    if player_table.gui and player_table.gui.elems.rb_main_window.valid then
+      player_table.gui:update_translation_warning()
+    end
+  end
+end)
+
+-- Gui
+
+gui.handle_events()
 
 script.on_event("rb-linked-focus-search", function(e)
   local player = game.get_player(e.player_index)
@@ -84,6 +102,22 @@ script.on_event("rb-toggle", function(e)
   end
 end)
 
+script.on_event(defines.events.on_lua_shortcut, function(e)
+  if e.prototype_name ~= "RecipeBook" then
+    return
+  end
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
+  local pgui = gui.get(player)
+  if pgui then
+    pgui:toggle()
+  end
+end)
+
+-- Triggers
+
 script.on_event(defines.events.on_research_finished, function(e)
   local profiler = game.create_profiler()
   local technology = e.research
@@ -93,6 +127,16 @@ script.on_event(defines.events.on_research_finished, function(e)
   if global.update_force_guis then
     -- Update on the next tick in case multiple researches are done at once
     global.update_force_guis[technology.force.index] = true
+  end
+end)
+
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(e)
+  if e.setting == "rb-show-overhead-button" then
+    local player = game.get_player(e.player_index)
+    if not player then
+      return
+    end
+    gui.refresh_overhead_button(player)
   end
 end)
 
@@ -114,34 +158,3 @@ script.on_event(defines.events.on_tick, function()
   end
 end)
 
-script.on_event(defines.events.on_lua_shortcut, function(e)
-  if e.prototype_name == "RecipeBook" then
-    local player = game.get_player(e.player_index)
-    if not player then
-      return
-    end
-    local pgui = gui.get(player)
-    if pgui then
-      pgui:toggle()
-    end
-  end
-end)
-
-script.on_event(defines.events.on_runtime_mod_setting_changed, function(e)
-  if e.setting == "rb-show-overhead-button" then
-    local player = game.get_player(e.player_index)
-    if not player then
-      return
-    end
-    gui.refresh_overhead_button(player)
-  end
-end)
-
-script.on_event(dictionary.on_player_dictionaries_ready, function(e)
-  local player_table = global.players[e.player_index]
-  if player_table then
-    if player_table.gui and player_table.gui.elems.rb_main_window.valid then
-      player_table.gui:update_translation_warning()
-    end
-  end
-end)
