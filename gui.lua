@@ -319,6 +319,9 @@ function gui.update_page(self, prototype_path)
     return
   end
   self.state.current_page = prototype_path
+
+  local profiler = game.create_profiler()
+
   local properties = database.get_properties(prototype_path, self.player.force.index)
   if not properties then
     return
@@ -373,6 +376,9 @@ function gui.update_page(self, prototype_path)
   gui_util.update_list_box(self, handlers, scroll_pane.product_of, properties.product_of)
   gui_util.update_list_box(self, handlers, scroll_pane.can_craft, properties.can_craft)
   gui_util.update_list_box(self, handlers, scroll_pane.mined_by, properties.mined_by)
+
+  profiler.stop()
+  log({ "", "[", prototype_path, "] ", profiler })
 end
 
 --- @param self Gui

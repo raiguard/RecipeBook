@@ -29,7 +29,7 @@ recipe.ingredients[4] = {
   type = "fluid",
   name = "sulfuric-acid",
   maximum_temperature = 420,
-  amount = 1,
+  amount = 0.5,
 }
 recipe.results[2].temperature = 25
 recipe.results[4] = {
