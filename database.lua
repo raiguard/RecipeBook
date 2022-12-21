@@ -21,6 +21,7 @@ local excluded_categories = {
   ["spaceship-rocket-engine"] = true,
   ["transport-drone-request"] = true,
   ["transport-fluid-request"] = true,
+  ["void-crushing"] = true,
 }
 
 local database = {}
@@ -547,7 +548,8 @@ local function add_entity_properties(properties, entity)
         table.insert(properties.can_mine, {
           type = "entity",
           name = resource.name,
-          required_fluid = required_fluid and { type = "fluid", name = required_fluid, amount = mineable.fluid_amount },
+          required_fluid = required_fluid
+            and { type = "fluid", name = required_fluid, amount = mineable.fluid_amount / 10 },
         })
       end
     end
