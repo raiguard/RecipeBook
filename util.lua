@@ -1,14 +1,5 @@
 local util = {}
 
--- local coreutil = require("__core__/lualib/util")
-
-util.components = {
-  ingredients = {
-    type = "list_box",
-    header = { "gui.rb-ingredients" },
-  },
-}
-
 util.crafting_machine = {
   ["assembling-machine"] = true,
   ["furnace"] = true,
@@ -53,11 +44,11 @@ function util.is_hidden(prototype)
 end
 
 util.prototype_type = {
-  ["LuaEntityPrototype"] = "entity",
-  ["LuaFluidPrototype"] = "fluid",
-  ["LuaItemPrototype"] = "item",
-  ["LuaRecipePrototype"] = "recipe",
-  ["LuaTechnologyPrototype"] = "technology",
+  LuaEntityPrototype = "entity",
+  LuaFluidPrototype = "fluid",
+  LuaItemPrototype = "item",
+  LuaRecipePrototype = "recipe",
+  LuaTechnologyPrototype = "technology",
 }
 
 return util
