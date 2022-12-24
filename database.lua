@@ -178,6 +178,11 @@ function database.build()
     end
   end
 
+  log("Characters")
+  for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
+    add_prototype(character)
+  end
+
   log("Technologies and research status")
   for name in pairs(game.technology_prototypes) do
     local path = "technology/" .. name
@@ -367,6 +372,14 @@ function database.refresh_researched(force)
       end
     end
   end
+  -- Characters
+  -- TODO: Gate some characters if mods "unlock" them (Nullius)?
+  for name in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
+    local entry = db["entity/" .. name]
+    if entry then
+      add_researched(entry, force_index)
+    end
+  end
 end
 
 --- @param path string
@@ -430,6 +443,15 @@ local function add_recipe_properties(properties, recipe)
   end
 
   properties.made_in = {}
+  for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
+    if character.crafting_categories[recipe.category] then
+      table.insert(properties.made_in, {
+        type = "entity",
+        name = character.name,
+        duration = recipe.energy,
+      })
+    end
+  end
   for _, crafter in
     pairs(game.get_filtered_entity_prototypes({
       { filter = "crafting-category", crafting_category = recipe.category },
@@ -513,7 +535,8 @@ local function add_entity_properties(properties, entity)
           item_ingredients = item_ingredients + 1
         end
       end
-      if entity.ingredient_count == 0 or entity.ingredient_count >= item_ingredients then
+      local ingredient_count = entity.ingredient_count or 0
+      if ingredient_count == 0 or ingredient_count >= item_ingredients then
         table.insert(properties.can_craft, { type = "recipe", name = recipe.name })
       end
     end

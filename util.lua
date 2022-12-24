@@ -5,6 +5,7 @@ local util = {}
 
 util.crafting_machine = {
   ["assembling-machine"] = true,
+  ["character"] = true,
   ["furnace"] = true,
   ["rocket-silo"] = true,
 }

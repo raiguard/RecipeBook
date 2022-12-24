@@ -6,6 +6,7 @@ API additions:
 - LuaGui::cursor
 - get_filtered_entity_prototypes:
     - ingredient_limit
+    - add characters to crafting_category filter
 - get_filtered_technology_prototypes:
     - 'unlocks-recipe'
 
