@@ -447,8 +447,8 @@ function gui_util.update_list_box(self, handlers, flow, members, remark)
   local remark_label = header_flow.remark
   remark_label.caption = remark or ""
 
-  local show_hidden = self.state.show_hidden
-  local show_unresearched = self.state.show_unresearched
+  local show_hidden = self.show_hidden
+  local show_unresearched = self.show_unresearched
   local force_index = self.player.force.index
 
   local _ -- To avoid creating a global

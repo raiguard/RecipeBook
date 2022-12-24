@@ -58,8 +58,8 @@ gui.handle_events()
 
 script.on_event("rb-linked-focus-search", function(e)
   local player_gui = gui.get(e.player_index)
-  if player_gui and not player_gui.state.pinned and player_gui.elems.rb_main_window.visible then
-    if player_gui.state.search_open then
+  if player_gui and not player_gui.pinned and player_gui.elems.rb_main_window.visible then
+    if player_gui.search_open then
       gui.focus_search(player_gui)
     else
       gui.toggle_search(player_gui)

@@ -86,22 +86,22 @@ handlers = {
   --- @param e EventData.on_gui_text_changed
   on_search_query_changed = function(self, e)
     -- TODO: Fuzzy search
-    self.state.search_query = e.element.text
+    self.search_query = e.element.text
     gui.update_filter_panel(self)
   end,
 
   --- @param self Gui
   on_show_hidden_button_click = function(self)
-    self.state.show_hidden = not self.state.show_hidden
-    gui_util.update_fab(self.elems.show_hidden_button, self.state.show_hidden and "selected" or "default")
+    self.show_hidden = not self.show_hidden
+    gui_util.update_fab(self.elems.show_hidden_button, self.show_hidden and "selected" or "default")
     gui.update_filter_panel(self)
     gui.update_page(self)
   end,
 
   --- @param self Gui
   on_show_unresearched_button_click = function(self)
-    self.state.show_unresearched = not self.state.show_unresearched
-    gui_util.update_fab(self.elems.show_unresearched_button, self.state.show_unresearched and "selected" or "default")
+    self.show_unresearched = not self.show_unresearched
+    gui_util.update_fab(self.elems.show_unresearched_button, self.show_unresearched and "selected" or "default")
     gui.update_filter_panel(self)
     gui.update_page(self)
   end,
@@ -116,10 +116,10 @@ handlers = {
 
   --- @param self Gui
   on_window_closed = function(self)
-    if self.state.pinned then
+    if self.pinned then
       return
     end
-    if self.state.search_open then
+    if self.search_open then
       gui.toggle_search(self)
       self.player.opened = self.elems.rb_main_window
       return
@@ -155,7 +155,7 @@ end
 --- @param self Gui
 --- @param delta integer
 function gui.nav_history(self, delta)
-  local history = self.state.history
+  local history = self.history
   history.__index = math.clamp(history.__index + delta, 1, #history)
   gui.update_page(self, history[history.__index], true)
 end
@@ -165,21 +165,21 @@ end
 function gui.select_filter_group(self, group_name)
   local tabs = self.elems.filter_group_table
   local members = self.elems.filter_scroll_pane
-  local previous_group = self.state.selected_filter_group
+  local previous_group = self.selected_filter_group
   if previous_group then
     tabs[previous_group].enabled = true
     members[previous_group].visible = false
   end
   tabs[group_name].enabled = false
   members[group_name].visible = true
-  self.state.selected_filter_group = group_name
+  self.selected_filter_group = group_name
 end
 
 --- @param self Gui
 function gui.show(self)
   self.elems.rb_main_window.visible = true
   self.elems.rb_main_window.bring_to_front()
-  if not self.state.pinned then
+  if not self.pinned then
     self.player.opened = self.elems.rb_main_window
     self.elems.rb_main_window.force_auto_center()
   end
@@ -197,8 +197,8 @@ end
 
 --- @param self Gui
 function gui.toggle_pinned(self)
-  self.state.pinned = not self.state.pinned
-  if self.state.pinned then
+  self.pinned = not self.pinned
+  if self.pinned then
     self.elems.pin_button.style = "flib_selected_frame_action_button"
     self.elems.pin_button.sprite = "rb_pin_black"
     self.elems.close_button.tooltip = { "gui.close" }
@@ -218,8 +218,8 @@ end
 
 --- @param self Gui
 function gui.toggle_search(self)
-  self.state.search_open = not self.state.search_open
-  if self.state.search_open then
+  self.search_open = not self.search_open
+  if self.search_open then
     self.elems.search_button.style = "flib_selected_frame_action_button"
     self.elems.search_button.sprite = "utility/search_black"
     self.elems.search_textfield.visible = true
@@ -228,9 +228,9 @@ function gui.toggle_search(self)
     self.elems.search_button.style = "frame_action_button"
     self.elems.search_button.sprite = "utility/search_white"
     self.elems.search_textfield.visible = false
-    if #self.state.search_query > 0 then
+    if #self.search_query > 0 then
       self.elems.search_textfield.text = ""
-      self.state.search_query = ""
+      self.search_query = ""
       gui.update_filter_panel(self)
     end
   end
@@ -239,9 +239,9 @@ end
 --- @param self Gui
 function gui.update_filter_panel(self)
   local profiler = game.create_profiler()
-  local show_hidden = self.state.show_hidden
-  local show_unresearched = self.state.show_unresearched
-  local search_query = string.lower(self.state.search_query)
+  local show_hidden = self.show_hidden
+  local show_unresearched = self.show_unresearched
+  local search_query = string.lower(self.search_query)
   local db = global.database
   local force_index = self.player.force.index
   local tabs_table = self.elems.filter_group_table
@@ -292,7 +292,7 @@ function gui.update_filter_panel(self)
       group_tab.enabled = false
     else
       group_tab.style = "rb_filter_group_button_tab"
-      group_tab.enabled = group.name ~= self.state.selected_filter_group
+      group_tab.enabled = group.name ~= self.selected_filter_group
     end
     if is_visible and has_search_matches then
       first_valid = first_valid or group.name
@@ -302,7 +302,7 @@ function gui.update_filter_panel(self)
   if first_valid then
     groups_scroll.visible = true
     self.elems.filter_no_results_label.visible = false
-    local current_tab = tabs_table[self.state.selected_filter_group] --[[@as LuaGuiElement]]
+    local current_tab = tabs_table[self.selected_filter_group] --[[@as LuaGuiElement]]
     if current_tab.visible == false or current_tab.style.name == "rb_disabled_filter_group_button_tab" then
       gui.select_filter_group(self, first_valid)
     end
@@ -319,7 +319,7 @@ end
 --- @param in_history boolean?
 --- @return boolean?
 function gui.update_page(self, prototype_path, in_history)
-  local current_page = self.state.current_page
+  local current_page = self.current_page
   -- Don't do anything if the page is the same
   if prototype_path == current_page then
     return
@@ -391,7 +391,7 @@ function gui.update_page(self, prototype_path, in_history)
   log({ "", "[", path, "] ", profiler })
 
   -- Update history
-  local history = self.state.history
+  local history = self.history
   if not in_history then
     local existing = table.find(history, path)
     if existing then
@@ -400,7 +400,7 @@ function gui.update_page(self, prototype_path, in_history)
     table.insert(history, path)
     history.__index = #history
   end
-  self.state.current_page = path
+  self.current_page = path
   -- Update history buttons
   gui_util.update_fab(self.elems.nav_backward_button, history.__index > 1 and "default" or "disabled")
   gui_util.update_fab(self.elems.nav_forward_button, history.__index < #history and "default" or "disabled")
@@ -432,26 +432,24 @@ function gui.new(player)
 
   --- @class Gui
   local self = {
+    --- @type string?
+    current_page = nil,
     elems = elems,
+    --- @type {[integer]: string, __index: integer}
+    history = { __index = 0 },
+    pinned = false,
     player = player,
-    state = {
-      --- @type string?
-      current_page = nil,
-      --- @type {[integer]: string, __index: integer}
-      history = { __index = 0 },
-      pinned = false,
-      search_open = false,
-      search_query = "",
-      --- @type string?
-      selected_filter_group = next(global.search_tree),
-      show_hidden = false,
-      show_unresearched = true,
-    },
+    search_open = false,
+    search_query = "",
+    --- @type string?
+    selected_filter_group = next(global.search_tree),
+    show_hidden = false,
+    show_unresearched = true,
   }
 
   global.guis[player.index] = self
 
-  gui.select_filter_group(self, self.state.selected_filter_group)
+  gui.select_filter_group(self, self.selected_filter_group)
   gui.update_filter_panel(self)
   gui.update_translation_warning(self)
 

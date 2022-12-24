@@ -586,7 +586,7 @@ end
 --- @field types string[]
 --- @field hidden boolean
 --- @field researched boolean
---- @field crafting_time uint?
+--- @field crafting_time double?
 --- @field ingredients GenericObject[]?
 --- @field products GenericObject[]?
 --- @field made_in GenericObject[]?
