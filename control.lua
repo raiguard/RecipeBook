@@ -74,6 +74,7 @@ script.on_event("rb-open-selected", function(e)
   local player_gui = gui.get(e.player_index)
   if player_gui then
     gui.update_page(player_gui, selected_prototype.base_type .. "/" .. selected_prototype.name)
+    gui.show(player_gui)
   end
 end)
 
