@@ -357,7 +357,20 @@ function gui.update_page(self, prototype_path)
     scroll_pane.welcome_label.destroy()
   end
 
-  gui_util.update_list_box(self, handlers, scroll_pane.ingredients, properties.ingredients)
+  gui_util.update_list_box(
+    self,
+    handlers,
+    scroll_pane.ingredients,
+    properties.ingredients,
+    properties.crafting_time
+      and {
+        "",
+        "[img=quantity-time][font=default-bold]",
+        { "time-symbol-seconds", properties.crafting_time },
+        "[/font] ",
+        { "description.crafting-time" },
+      }
+  )
   gui_util.update_list_box(self, handlers, scroll_pane.products, properties.products)
   gui_util.update_list_box(self, handlers, scroll_pane.made_in, properties.made_in)
   gui_util.update_list_box(self, handlers, scroll_pane.ingredient_in, properties.ingredient_in)

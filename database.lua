@@ -442,6 +442,8 @@ local function add_recipe_properties(properties, recipe)
     end
   end
 
+  properties.crafting_time = recipe.energy
+
   properties.made_in = {}
   for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
     if character.crafting_categories[recipe.category] then
@@ -584,6 +586,7 @@ end
 --- @field types string[]
 --- @field hidden boolean
 --- @field researched boolean
+--- @field crafting_time uint?
 --- @field ingredients GenericObject[]?
 --- @field products GenericObject[]?
 --- @field made_in GenericObject[]?
