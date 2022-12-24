@@ -1,5 +1,6 @@
 local dictionary = require("__flib__/dictionary-lite")
 local flib_gui = require("__flib__/gui-lite")
+local math = require("__flib__/math")
 local mod_gui = require("__core__/lualib/mod-gui")
 local table = require("__flib__/table")
 
@@ -12,6 +13,8 @@ local gui = {}
 
 --- @class GuiElems
 --- @field rb_main_window LuaGuiElement
+--- @field nav_backward_button LuaGuiElement
+--- @field nav_forward_button LuaGuiElement
 --- @field search_textfield LuaGuiElement
 --- @field search_button LuaGuiElement
 --- @field show_unresearched_button LuaGuiElement
@@ -49,6 +52,13 @@ handlers = {
   end,
 
   --- @param self Gui
+  --- @param e EventData.on_gui_click
+  on_nav_button_click = function(self, e)
+    local delta = e.element.name == "nav_backward_button" and -1 or 1
+    gui.nav_history(self, delta)
+  end,
+
+  --- @param self Gui
   on_overhead_button_click = function(self)
     gui.toggle(self)
   end,
@@ -83,14 +93,7 @@ handlers = {
   --- @param self Gui
   on_show_hidden_button_click = function(self)
     self.state.show_hidden = not self.state.show_hidden
-    local button = self.elems.show_hidden_button
-    if self.state.show_hidden then
-      button.style = "flib_selected_frame_action_button"
-      button.sprite = "rb_show_hidden_black"
-    else
-      button.style = "frame_action_button"
-      button.sprite = "rb_show_hidden_white"
-    end
+    gui_util.update_fab(self.elems.show_hidden_button, self.state.show_hidden and "selected" or "default")
     gui.update_filter_panel(self)
     gui.update_page(self)
   end,
@@ -98,14 +101,7 @@ handlers = {
   --- @param self Gui
   on_show_unresearched_button_click = function(self)
     self.state.show_unresearched = not self.state.show_unresearched
-    local button = self.elems.show_unresearched_button
-    if self.state.show_unresearched then
-      button.style = "flib_selected_frame_action_button"
-      button.sprite = "rb_show_unresearched_black"
-    else
-      button.style = "frame_action_button"
-      button.sprite = "rb_show_unresearched_white"
-    end
+    gui_util.update_fab(self.elems.show_unresearched_button, self.state.show_unresearched and "selected" or "default")
     gui.update_filter_panel(self)
     gui.update_page(self)
   end,
@@ -154,6 +150,14 @@ function gui.hide(self)
     self.player.opened = nil
   end
   self.player.set_shortcut_toggled("RecipeBook", false)
+end
+
+--- @param self Gui
+--- @param delta integer
+function gui.nav_history(self, delta)
+  local history = self.state.history
+  history.__index = math.clamp(history.__index + delta, 1, #history)
+  gui.update_page(self, history[history.__index], true)
 end
 
 --- @param self Gui
@@ -312,18 +316,23 @@ end
 
 --- @param self Gui
 --- @param prototype_path string?
+--- @param in_history boolean?
 --- @return boolean?
-function gui.update_page(self, prototype_path)
-  local prototype_path = prototype_path or self.state.current_page
-  if not prototype_path then
+function gui.update_page(self, prototype_path, in_history)
+  local current_page = self.state.current_page
+  -- Don't do anything if the page is the same
+  if prototype_path == current_page then
+    return
+  end
+  local path = prototype_path or current_page
+  if not path then
+    -- Just in case
     return
   end
 
-  self.state.current_page = prototype_path
-
   local profiler = game.create_profiler()
 
-  local properties = database.get_properties(prototype_path, self.player.force.index)
+  local properties = database.get_properties(path, self.player.force.index)
   if not properties then
     return
   end
@@ -332,7 +341,7 @@ function gui.update_page(self, prototype_path)
   -- Header
   local header_sprite = self.elems.page_header_sprite
   header_sprite.visible = true
-  header_sprite.sprite = prototype_path
+  header_sprite.sprite = path
   local header_caption = self.elems.page_header_caption
   header_caption.caption = entry.base.localised_name
   local style = "caption_label"
@@ -352,25 +361,24 @@ function gui.update_page(self, prototype_path)
   header_type.caption = type_caption
 
   -- Contents
+
   local scroll_pane = self.elems.page_scroll_pane
   if scroll_pane.welcome_label then
     scroll_pane.welcome_label.destroy()
   end
 
-  gui_util.update_list_box(
-    self,
-    handlers,
-    scroll_pane.ingredients,
-    properties.ingredients,
-    properties.crafting_time
-      and {
-        "",
-        "[img=quantity-time][font=default-bold]",
-        { "time-symbol-seconds", properties.crafting_time },
-        "[/font] ",
-        { "description.crafting-time" },
-      }
-  )
+  --- @type LocalisedString?
+  local crafting_time
+  if properties.crafting_time then
+    crafting_time = {
+      "",
+      "[img=quantity-time][font=default-bold]",
+      { "time-symbol-seconds", properties.crafting_time },
+      "[/font] ",
+      { "description.crafting-time" },
+    }
+  end
+  gui_util.update_list_box(self, handlers, scroll_pane.ingredients, properties.ingredients, crafting_time)
   gui_util.update_list_box(self, handlers, scroll_pane.products, properties.products)
   gui_util.update_list_box(self, handlers, scroll_pane.made_in, properties.made_in)
   gui_util.update_list_box(self, handlers, scroll_pane.ingredient_in, properties.ingredient_in)
@@ -380,7 +388,24 @@ function gui.update_page(self, prototype_path)
   gui_util.update_list_box(self, handlers, scroll_pane.can_mine, properties.can_mine)
 
   profiler.stop()
-  log({ "", "[", prototype_path, "] ", profiler })
+  log({ "", "[", path, "] ", profiler })
+
+  -- Update history
+  local history = self.state.history
+  if not in_history then
+    local existing = table.find(history, path)
+    if existing then
+      table.remove(history, existing)
+    end
+    table.insert(history, path)
+    history.__index = #history
+  end
+  self.state.current_page = path
+  -- Update history buttons
+  gui_util.update_fab(self.elems.nav_backward_button, history.__index > 1 and "default" or "disabled")
+  gui_util.update_fab(self.elems.nav_forward_button, history.__index < #history and "default" or "disabled")
+
+  return true
 end
 
 --- @param self Gui
@@ -400,9 +425,10 @@ end
 function gui.new(player)
   local elems = gui_util.build_base_gui(player, handlers)
 
-  -- Set initial state of show unresearched button
-  elems.show_unresearched_button.sprite = "rb_show_unresearched_black"
-  elems.show_unresearched_button.style = "flib_selected_frame_action_button"
+  -- Set initial button states
+  gui_util.update_fab(elems.nav_backward_button, "disabled")
+  gui_util.update_fab(elems.nav_forward_button, "disabled")
+  gui_util.update_fab(elems.show_unresearched_button, "selected")
 
   --- @class Gui
   local self = {
@@ -411,6 +437,8 @@ function gui.new(player)
     state = {
       --- @type string?
       current_page = nil,
+      --- @type {[integer]: string, __index: integer}
+      history = { __index = 0 },
       pinned = false,
       search_open = false,
       search_query = "",

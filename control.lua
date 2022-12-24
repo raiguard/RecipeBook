@@ -3,6 +3,7 @@ local dictionary = require("__flib__/dictionary-lite")
 local database = require("__RecipeBook__/database")
 local gui = require("__RecipeBook__/gui")
 local migrations = require("__RecipeBook__/migrations")
+local util = require("__RecipeBook__/util")
 
 -- Interface
 
@@ -72,10 +73,15 @@ script.on_event("rb-open-selected", function(e)
     return
   end
   local player_gui = gui.get(e.player_index)
-  if player_gui then
-    gui.update_page(player_gui, selected_prototype.base_type .. "/" .. selected_prototype.name)
-    gui.show(player_gui)
+  if not player_gui then
+    return
   end
+  local updated = gui.update_page(player_gui, selected_prototype.base_type .. "/" .. selected_prototype.name)
+  if not updated then
+    util.flying_text(player_gui.player, { "message.rb-no-info" })
+    return
+  end
+  gui.show(player_gui)
 end)
 
 script.on_event("rb-toggle", function(e)

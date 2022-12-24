@@ -23,8 +23,18 @@ function gui_util.build_base_gui(player, handlers)
       type = "flow",
       drag_target = "rb_main_window",
       handler = { [defines.events.on_gui_click] = handlers.on_titlebar_click },
-      gui_util.build_fab("nav_backward_button", "rb_nav_backward", { "gui.rb-nav-backward-instruction" }),
-      gui_util.build_fab("nav_forward_button", "rb_nav_forward", { "gui.rb-nav-forward-instruction" }),
+      gui_util.build_fab(
+        "nav_backward_button",
+        "rb_nav_backward",
+        { "gui.rb-nav-backward-instruction" },
+        handlers.on_nav_button_click
+      ),
+      gui_util.build_fab(
+        "nav_forward_button",
+        "rb_nav_forward",
+        { "gui.rb-nav-forward-instruction" },
+        handlers.on_nav_button_click
+      ),
       {
         type = "label",
         style = "frame_title",
@@ -396,6 +406,30 @@ function gui_util.build_tooltip(obj)
   tooltip[#tooltip + 1] = description
 
   return tooltip
+end
+
+--- @alias FabState
+--- | "default"
+--- | "selected"
+--- | "disabled"
+
+--- @param button LuaGuiElement
+--- @param state FabState
+function gui_util.update_fab(button, state)
+  local sprite_base = string.match(button.sprite, "(.*)_[a-z]")
+  if state == "default" then
+    button.enabled = true
+    button.style = "frame_action_button"
+    button.sprite = sprite_base .. "_white"
+  elseif state == "selected" then
+    button.enabled = true
+    button.style = "flib_selected_frame_action_button"
+    button.sprite = sprite_base .. "_black"
+  elseif state == "disabled" then
+    button.enabled = false
+    button.style = "frame_action_button"
+    button.sprite = sprite_base .. "_disabled"
+  end
 end
 
 --- @param self Gui
