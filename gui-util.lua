@@ -374,20 +374,35 @@ end
 --- @param obj GenericObject
 --- @return LocalisedString
 function gui_util.build_tooltip(obj)
-  local prototype = game[obj.type .. "_prototypes"][obj.name]
+  local entry = database.get_entry(obj)
+  if not entry then
+    return ""
+  end
+  local base = entry.base
+  --- @type LocalisedString
   local tooltip = {
     "",
-    { "gui.rb-tooltip-title", { "", prototype.localised_name, " (", util.type_locale[obj.type], ")" } },
-    { "?", { "", "\n", prototype.localised_description }, "" },
+    { "gui.rb-tooltip-title", { "", base.localised_name, " (", util.type_locale[obj.type], ")" } },
   }
+  --- @type LocalisedString
+  local description = { "?" }
+  for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
+    local prototype = entry[key]
+    if prototype then
+      description[#description + 1] = { "", "\n", prototype.localised_description }
+    end
+  end
+  description[#description + 1] = ""
+  tooltip[#tooltip + 1] = description
 
   return tooltip
 end
 
 --- @param self Gui
+--- @param handlers GuiHandlers
 --- @param flow LuaGuiElement
 --- @param members GenericObject[]
---- @param remark any?
+--- @param remark LocalisedString?
 function gui_util.update_list_box(self, handlers, flow, members, remark)
   members = members or {}
   local header_flow = flow.header_flow --[[@as LuaGuiElement]]
