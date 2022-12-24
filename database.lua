@@ -645,6 +645,11 @@ function database.get_properties(path, force_index)
     add_entity_properties(properties, entity)
   end
 
+  -- Don't show product of if it just shows this recipe
+  if recipe and item and #properties.product_of == 1 and properties.product_of[1].name == recipe.name then
+    properties.product_of = nil
+  end
+
   force_cache[path] = properties
 
   return properties
