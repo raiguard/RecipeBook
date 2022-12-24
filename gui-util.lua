@@ -23,18 +23,6 @@ function gui_util.build_base_gui(player, handlers)
       type = "flow",
       drag_target = "rb_main_window",
       handler = { [defines.events.on_gui_click] = handlers.on_titlebar_click },
-      gui_util.build_fab(
-        "nav_backward_button",
-        "rb_nav_backward",
-        { "gui.rb-nav-backward-instruction" },
-        handlers.on_nav_button_click
-      ),
-      gui_util.build_fab(
-        "nav_forward_button",
-        "rb_nav_forward",
-        { "gui.rb-nav-forward-instruction" },
-        handlers.on_nav_button_click
-      ),
       {
         type = "label",
         style = "frame_title",
@@ -69,6 +57,24 @@ function gui_util.build_base_gui(player, handlers)
         "rb_show_hidden",
         { "gui.rb-show-hidden-instruction" },
         handlers.on_show_hidden_button_click
+      ),
+      {
+        type = "line",
+        style_mods = { top_margin = -2, bottom_margin = 2 },
+        direction = "vertical",
+        ignored_by_interaction = true,
+      },
+      gui_util.build_fab(
+        "nav_backward_button",
+        "rb_nav_backward",
+        { "gui.rb-nav-backward-instruction" },
+        handlers.on_nav_button_click
+      ),
+      gui_util.build_fab(
+        "nav_forward_button",
+        "rb_nav_forward",
+        { "gui.rb-nav-forward-instruction" },
+        handlers.on_nav_button_click
       ),
       {
         type = "line",
