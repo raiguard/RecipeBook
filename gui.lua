@@ -330,7 +330,7 @@ function gui.update_page(self, prototype_path, in_history)
   local current_page = self.current_page
   -- Don't do anything if the page is the same
   if prototype_path == current_page then
-    return
+    return true
   end
   local path = prototype_path or current_page
   if not path then
