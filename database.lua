@@ -114,7 +114,7 @@ function database.build()
   --- @type table<string, GenericPrototype>
   local materials_to_add = {}
   for _, recipe_prototype in pairs(game.recipe_prototypes) do
-    if not excluded_categories[recipe_prototype.category] then
+    if not excluded_categories[recipe_prototype.category] and #recipe_prototype.products > 0 then
       add_prototype(recipe_prototype)
       -- Group with the main product if the icons match
       local main_product = recipe_prototype.main_product
