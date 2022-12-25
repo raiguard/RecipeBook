@@ -66,10 +66,16 @@ handlers = {
   --- @param self Gui
   --- @param e EventData.on_gui_click
   on_prototype_button_click = function(self, e)
-    local tags = e.element.tags
-    if tags.prototype then
-      gui.update_page(self, tags.prototype --[[@as string]])
+    local prototype = e.element.tags.prototype --[[@as string?]]
+    if not prototype then
+      return
     end
+    local type, name = string.match(prototype, "(.*)/(.*)")
+    if type == "technology" then
+      self.player.open_technology_gui(name)
+      return
+    end
+    gui.update_page(self, prototype)
   end,
 
   --- @param self Gui
@@ -386,6 +392,7 @@ function gui.update_page(self, prototype_path, in_history)
   gui_util.update_list_box(self, handlers, scroll_pane.can_craft, properties.can_craft)
   gui_util.update_list_box(self, handlers, scroll_pane.mined_by, properties.mined_by)
   gui_util.update_list_box(self, handlers, scroll_pane.can_mine, properties.can_mine)
+  gui_util.update_list_box(self, handlers, scroll_pane.unlocked_by, properties.unlocked_by)
 
   profiler.stop()
   log({ "", "[", path, "] ", profiler })
@@ -477,15 +484,13 @@ function gui.refresh_overhead_button(player)
   end
   if player.mod_settings["rb-show-overhead-button"].value then
     flib_gui.add(button_flow, {
-      {
-        type = "sprite-button",
-        name = "RecipeBook",
-        style = mod_gui.button_style,
-        style_mods = { padding = 8 },
-        tooltip = { "mod-name.RecipeBook" },
-        sprite = "rb_logo",
-        handler = { [defines.events.on_gui_click] = handlers.on_overhead_button_click },
-      },
+      type = "sprite-button",
+      name = "RecipeBook",
+      style = mod_gui.button_style,
+      style_mods = { padding = 8 },
+      tooltip = { "mod-name.RecipeBook" },
+      sprite = "rb_logo",
+      handler = { [defines.events.on_gui_click] = handlers.on_overhead_button_click },
     })
   end
 end

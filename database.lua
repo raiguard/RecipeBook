@@ -184,9 +184,9 @@ function database.build()
   end
 
   log("Technologies and research status")
-  for name in pairs(game.technology_prototypes) do
+  for name, technology in pairs(game.technology_prototypes) do
     local path = "technology/" .. name
-    db[path] = {}
+    db[path] = { base = technology, base_path = path }
   end
   for _, force in pairs(game.forces) do
     database.refresh_researched(force)
@@ -429,6 +429,18 @@ end
 
 -- Entry properties
 
+--- @param technology LuaTechnologyPrototype
+--- @param recipe_name string
+--- @return boolean
+local function unlocks_recipe(technology, recipe_name)
+  for _, effect in pairs(technology.effects) do
+    if effect.type == "unlock-recipe" and effect.recipe == recipe_name then
+      return true
+    end
+  end
+  return false
+end
+
 --- @param properties EntryProperties
 --- @param recipe LuaRecipePrototype
 local function add_recipe_properties(properties, recipe)
@@ -468,6 +480,13 @@ local function add_recipe_properties(properties, recipe)
       })
     end
   end
+
+  properties.unlocked_by = {}
+  for technology_name, technology in pairs(game.technology_prototypes) do
+    if unlocks_recipe(technology, recipe.name) then
+      properties.unlocked_by[#properties.unlocked_by + 1] = { type = "technology", name = technology_name }
+    end
+  end
 end
 
 --- @param properties EntryProperties
@@ -484,13 +503,28 @@ local function add_fluid_properties(properties, fluid)
     end
   end
   properties.product_of = {}
-  for _, recipe in
-    pairs(game.get_filtered_recipe_prototypes({
-      { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
-    }))
-  do
+  local product_of_recipes = game.get_filtered_recipe_prototypes({
+    { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
+  })
+  for _, recipe in pairs(product_of_recipes) do
     if database.get_entry_proto(recipe) then
       table.insert(properties.product_of, { type = "recipe", name = recipe.name })
+    end
+  end
+
+  properties.unlocked_by = properties.unlocked_by or {}
+  for recipe_name, recipe in pairs(product_of_recipes) do
+    if recipe.unlock_results then
+      for technology_name, technology in pairs(game.technology_prototypes) do
+        if
+          unlocks_recipe(technology, recipe_name)
+          and not table.for_each(properties.unlocked_by, function(obj)
+            return obj.name == technology_name
+          end)
+        then
+          properties.unlocked_by[#properties.unlocked_by + 1] = { type = "technology", name = technology_name }
+        end
+      end
     end
   end
 end
@@ -509,13 +543,28 @@ local function add_item_properties(properties, item)
     end
   end
   properties.product_of = properties.product_of or {}
-  for _, recipe in
-    pairs(game.get_filtered_recipe_prototypes({
-      { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
-    }))
-  do
+  local product_of_recipes = game.get_filtered_recipe_prototypes({
+    { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
+  })
+  for _, recipe in pairs(product_of_recipes) do
     if database.get_entry_proto(recipe) then
       table.insert(properties.product_of, { type = "recipe", name = recipe.name })
+    end
+  end
+
+  properties.unlocked_by = properties.unlocked_by or {}
+  for recipe_name, recipe in pairs(product_of_recipes) do
+    if recipe.unlock_results then
+      for technology_name, technology in pairs(game.technology_prototypes) do
+        if
+          unlocks_recipe(technology, recipe_name)
+          and not table.for_each(properties.unlocked_by, function(obj)
+            return obj.name == technology_name
+          end)
+        then
+          properties.unlocked_by[#properties.unlocked_by + 1] = { type = "technology", name = technology_name }
+        end
+      end
     end
   end
 end
@@ -592,10 +641,10 @@ end
 --- @field made_in GenericObject[]?
 --- @field ingredient_in GenericObject[]?
 --- @field product_of GenericObject[]?
---- @field unlocked_by GenericObject[]?
 --- @field can_craft GenericObject[]?
 --- @field mined_by GenericObject[]?
 --- @field can_mine GenericObject[]?
+--- @field unlocked_by GenericObject[]?
 
 --- @type table<uint, table<string, EntryProperties>>
 local cache = {}

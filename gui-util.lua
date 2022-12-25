@@ -235,6 +235,7 @@ function gui_util.build_base_gui(player, handlers)
   gui_util.build_list_box(page_scroll_pane, handlers, "can_craft", { "description.rb-can-craft" })
   gui_util.build_list_box(page_scroll_pane, handlers, "mined_by", { "description.rb-mined-by" })
   gui_util.build_list_box(page_scroll_pane, handlers, "can_mine", { "description.rb-can-mine" })
+  gui_util.build_list_box(page_scroll_pane, handlers, "unlocked_by", { "description.rb-unlocked-by" })
 
   return elems
 end

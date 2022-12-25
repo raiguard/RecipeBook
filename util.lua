@@ -49,6 +49,8 @@ function util.is_hidden(prototype)
     return prototype.has_flag("hidden")
   elseif prototype.object_name == "LuaRecipePrototype" then
     return prototype.hidden
+  elseif prototype.object_name == "LuaTechnologyPrototype" then
+    return prototype.hidden
   end
   return false
 end
@@ -74,6 +76,7 @@ util.type_locale = {
   fluid = { "gui-train.fluid" },
   item = { "description.rb-item" },
   recipe = { "description.recipe" },
+  technology = { "gui-map-generator.technology-difficulty-group-tile" },
 }
 
 return util

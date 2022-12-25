@@ -8,7 +8,7 @@
 --- @field required_fluid Ingredient?
 
 --- @alias GenericObject Ingredient|Product|CustomObject
---- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype
+--- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
 
 --- @class PlayerTable
 --- @field gui Gui?
