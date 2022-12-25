@@ -315,6 +315,7 @@ function gui_util.build_list_box(parent, handlers, name, header)
       style = "centering_horizontal_flow",
       {
         type = "checkbox",
+        name = "checkbox",
         style = "rb_list_box_caption",
         caption = header,
         state = false,
@@ -446,7 +447,8 @@ end
 --- @param flow LuaGuiElement
 --- @param members GenericObject[]
 --- @param remark LocalisedString?
-function gui_util.update_list_box(self, handlers, flow, members, remark)
+--- @param no_collapse boolean?
+function gui_util.update_list_box(self, handlers, flow, members, remark, no_collapse)
   members = members or {}
   local header_flow = flow.header_flow --[[@as LuaGuiElement]]
   local list_frame = flow.list_frame --[[@as LuaGuiElement]]
@@ -507,7 +509,12 @@ function gui_util.update_list_box(self, handlers, flow, members, remark)
   for i = child_index + 1, #children do
     children[i].destroy()
   end
+
   flow.visible = child_index > 0
+
+  local collapsed = child_index > 15 and not no_collapse
+  list_frame.style.height = collapsed and 1 or 0
+  header_flow.checkbox.state = collapsed
 
   -- Child count
   header_flow.count_label.caption = { "", "[", child_index, "]" }

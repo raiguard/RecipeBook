@@ -386,8 +386,8 @@ function gui.update_page(self, prototype_path, in_history)
       { "description.crafting-time" },
     }
   end
-  gui_util.update_list_box(self, handlers, scroll_pane.ingredients, properties.ingredients, crafting_time)
-  gui_util.update_list_box(self, handlers, scroll_pane.products, properties.products)
+  gui_util.update_list_box(self, handlers, scroll_pane.ingredients, properties.ingredients, crafting_time, true)
+  gui_util.update_list_box(self, handlers, scroll_pane.products, properties.products, nil, true)
   gui_util.update_list_box(self, handlers, scroll_pane.made_in, properties.made_in)
   gui_util.update_list_box(self, handlers, scroll_pane.ingredient_in, properties.ingredient_in)
   gui_util.update_list_box(self, handlers, scroll_pane.product_of, properties.product_of)
