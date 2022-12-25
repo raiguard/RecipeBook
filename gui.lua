@@ -102,7 +102,7 @@ handlers = {
     self.show_hidden = not self.show_hidden
     gui_util.update_fab(self.elems.show_hidden_button, self.show_hidden and "selected" or "default")
     gui.update_filter_panel(self)
-    gui.update_page(self)
+    gui.update_page(self, nil, true)
   end,
 
   --- @param self Gui
@@ -110,7 +110,7 @@ handlers = {
     self.show_unresearched = not self.show_unresearched
     gui_util.update_fab(self.elems.show_unresearched_button, self.show_unresearched and "selected" or "default")
     gui.update_filter_panel(self)
-    gui.update_page(self)
+    gui.update_page(self, nil, true)
   end,
 
   --- @param self Gui
