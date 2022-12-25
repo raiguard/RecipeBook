@@ -72,6 +72,7 @@ handlers = {
     end
     local type, name = string.match(prototype, "(.*)/(.*)")
     if type == "technology" then
+      -- TODO: Keep-open logic
       self.player.open_technology_gui(name)
       return
     end
@@ -316,6 +317,7 @@ function gui.update_filter_panel(self)
     groups_scroll.visible = false
     self.elems.filter_no_results_label.visible = true
   end
+
   profiler.stop()
   log({ "", "Update Filter Panel ", profiler })
 end
@@ -392,10 +394,9 @@ function gui.update_page(self, prototype_path, in_history)
   gui_util.update_list_box(self, handlers, scroll_pane.can_craft, properties.can_craft)
   gui_util.update_list_box(self, handlers, scroll_pane.mined_by, properties.mined_by)
   gui_util.update_list_box(self, handlers, scroll_pane.can_mine, properties.can_mine)
+  gui_util.update_list_box(self, handlers, scroll_pane.burned_in, properties.burned_in)
+  gui_util.update_list_box(self, handlers, scroll_pane.can_burn, properties.can_burn)
   gui_util.update_list_box(self, handlers, scroll_pane.unlocked_by, properties.unlocked_by)
-
-  profiler.stop()
-  log({ "", "[", path, "] ", profiler })
 
   -- Update history
   local history = self.history
@@ -411,6 +412,9 @@ function gui.update_page(self, prototype_path, in_history)
   -- Update history buttons
   gui_util.update_fab(self.elems.nav_backward_button, history.__index > 1 and "default" or "disabled")
   gui_util.update_fab(self.elems.nav_forward_button, history.__index < #history and "default" or "disabled")
+
+  profiler.stop()
+  log({ "", "[", path, "] ", profiler })
 
   return true
 end

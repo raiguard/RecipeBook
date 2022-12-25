@@ -567,6 +567,18 @@ local function add_item_properties(properties, item)
       end
     end
   end
+
+  if not item.fuel_value then
+    return
+  end
+  local fuel_category = item.fuel_category
+  properties.burned_in = {}
+  for entity_name, entity_prototype in pairs(game.entity_prototypes) do
+    local burner = entity_prototype.burner_prototype
+    if burner and burner.fuel_categories[fuel_category] then
+      properties.burned_in[#properties.burned_in + 1] = { type = "entity", name = entity_name }
+    end
+  end
 end
 
 --- @param properties EntryProperties
@@ -628,6 +640,19 @@ local function add_entity_properties(properties, entity)
       end
     end
   end
+
+  -- TODO: Fluid burning
+  properties.can_burn = {}
+  local burner = entity.burner_prototype
+  if burner then
+    for category in pairs(burner.fuel_categories) do
+      for item_name in
+        pairs(game.get_filtered_item_prototypes({ { filter = "fuel-category", ["fuel-category"] = category } }))
+      do
+        properties.can_burn[#properties.can_burn + 1] = { type = "item", name = item_name }
+      end
+    end
+  end
 end
 
 --- @class EntryProperties
@@ -644,6 +669,8 @@ end
 --- @field can_craft GenericObject[]?
 --- @field mined_by GenericObject[]?
 --- @field can_mine GenericObject[]?
+--- @field burned_in GenericObject[]?
+--- @field can_burn GenericObject[]?
 --- @field unlocked_by GenericObject[]?
 
 --- @type table<uint, table<string, EntryProperties>>
