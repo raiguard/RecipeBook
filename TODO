@@ -11,12 +11,8 @@ API additions:
     - 'unlocks-recipe'
 
 Todo:
-- Overhaul page generation
-    - Collect info in the database file, then parse that to create the GUI
-    - Memoize some things?
 - Show active page in filter panel
 - History navigation
-- Look at redoing flib's slot buttons to be a bit brighter
 
 All list boxes from 3.0 - not all will be re-added:
 accepted_equipment
