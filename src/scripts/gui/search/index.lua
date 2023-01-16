@@ -243,7 +243,7 @@ function Gui:update_favorites()
     pairs,
     { always_show = true }
   )
-  refs.delete_favorites_button.enabled = table_size(favorites) > 0 and true or false
+  refs.delete_favorites_button.enabled = next(favorites) and true or false
   for id, InfoGui in pairs(self.player_table.guis.info) do
     if not constants.ignored_info_ids[id] then
       local context = InfoGui:get_context()
@@ -262,7 +262,7 @@ function Gui:update_history()
     ipairs,
     { always_show = true }
   )
-  refs.delete_history_button.enabled = table_size(self.player_table.global_history) > 0 and true or false
+  refs.delete_history_button.enabled = next(self.player_table.global_history) and true or false
 end
 
 function Gui:bring_to_front()

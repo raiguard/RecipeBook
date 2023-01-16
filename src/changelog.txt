@@ -1,7 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.2
 Date: ????
-  Features:
+  Optimizations:
+    - Massively reduced save loading time with large numbers of modules or fluids (credit to Rseding)
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.1
 Date: 2022-12-06

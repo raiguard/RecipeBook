@@ -111,7 +111,7 @@ return function(database, metadata)
 
     -- Compatible modules
     for module_name, module_limitations in pairs(metadata.modules) do
-      if table_size(module_limitations) == 0 or module_limitations[name] then
+      if not next(module_limitations) or module_limitations[name] then
         data.accepted_modules[#data.accepted_modules + 1] = { class = "item", name = module_name }
         table.insert(database.item[module_name].affects_recipes, { class = "recipe", name = name })
       end
