@@ -589,9 +589,9 @@ end
 
 --- @param e EventData.CustomInputEvent
 local function on_toggle(e)
-	local player_gui = gui.get(e.player_index)
-	if player_gui then
-		gui.toggle(player_gui)
+	local self = gui.get(e.player_index)
+	if self then
+		gui.toggle(self)
 	end
 end
 
@@ -600,10 +600,28 @@ local function on_lua_shortcut(e)
 	if e.prototype_name ~= "RecipeBook" then
 		return
 	end
-	local player_gui = gui.get(e.player_index)
-	if player_gui then
-		gui.toggle(player_gui)
+	local self = gui.get(e.player_index)
+	if self then
+		gui.toggle(self)
 	end
+end
+
+--- @param e EventData.CustomInputEvent
+local function on_next(e)
+	local self = gui.get(e.player_index)
+	if not self then
+		return
+	end
+	gui.nav_history(self, 1)
+end
+
+--- @param e EventData.CustomInputEvent
+local function on_previous(e)
+	local self = gui.get(e.player_index)
+	if not self then
+		return
+	end
+	gui.nav_history(self, -1)
 end
 
 local mod = {}
@@ -628,7 +646,9 @@ mod.events = {
 	[defines.events.on_tick] = on_tick,
 	[dictionary.on_player_dictionaries_ready] = on_player_dictionaries_ready,
 	["rb-linked-focus-search"] = on_focus_search,
+	["rb-next"] = on_next,
 	["rb-open-selected"] = on_open_selected,
+	["rb-previous"] = on_previous,
 	["rb-toggle"] = on_toggle,
 }
 
