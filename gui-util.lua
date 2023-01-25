@@ -486,7 +486,7 @@ function gui_util.update_list_box(self, handlers, flow, members, remark, no_coll
 		end
 		-- Get button
 		child_index = child_index + 1
-		local button = children[member_index]
+		local button = children[child_index]
 		if not button then
 			_, button = flib_gui.add(list_frame, gui_util.build_prototype_button(handlers))
 		end
