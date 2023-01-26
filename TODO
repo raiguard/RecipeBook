@@ -61,3 +61,12 @@ unlocks_equipment
 unlocks_fluids
 unlocks_items
 unlocks_recipes
+
+Burner classes:
+Boiler?
+Inserter
+Lab
+Mining drill
+Pump
+Radar
+Reactor
