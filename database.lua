@@ -516,6 +516,18 @@ local function add_fluid_properties(properties, fluid)
 		end
 	end
 
+	-- TODO: Fluid energy sources, boilers
+	properties.burned_in = {}
+	for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "generator" } })) do
+		local fluid_box = entity.fluidbox_prototypes[1]
+		if
+			(fluid_box.filter and fluid_box.filter.name == fluid.name)
+			or (not fluid_box.filter and fluid.fuel_value > 0)
+		then
+			table.insert(properties.burned_in, { type = "entity", name = entity_name })
+		end
+	end
+
 	properties.unlocked_by = properties.unlocked_by or {}
 	for recipe_name, recipe in pairs(product_of_recipes) do
 		if recipe.unlock_results then
@@ -649,7 +661,6 @@ local function add_entity_properties(properties, entity)
 		end
 	end
 
-	-- TODO: Fluid burning
 	properties.can_burn = {}
 	local burner = entity.burner_prototype
 	if burner then
@@ -658,6 +669,19 @@ local function add_entity_properties(properties, entity)
 				pairs(game.get_filtered_item_prototypes({ { filter = "fuel-category", ["fuel-category"] = category } }))
 			do
 				properties.can_burn[#properties.can_burn + 1] = { type = "item", name = item_name }
+			end
+		end
+	end
+	local fluid_energy_source_prototype = entity.fluid_energy_source_prototype
+	if fluid_energy_source_prototype then
+		local filter = fluid_energy_source_prototype.fluid_box.filter
+		if filter then
+			properties.can_burn[#properties.can_burn + 1] = { type = "fluid", name = filter.name }
+		else
+			for fluid_name in
+				pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
+			do
+				properties.can_burn[#properties.can_burn + 1] = { type = "fluid", name = fluid_name }
 			end
 		end
 	end
