@@ -1,4 +1,3 @@
-local dictionary = require("__flib__.dictionary-lite")
 local on_tick_n = require("__flib__.on-tick-n")
 
 local database = require("scripts.database")
@@ -10,9 +9,6 @@ return {
   ["3.0.0"] = function()
     -- NUKE EVERYTHING
     global = {}
-
-    -- Re-init everything
-    dictionary.init()
 
     global_data.init()
     global_data.build_prototypes()
