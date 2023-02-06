@@ -527,6 +527,17 @@ local function add_fluid_properties(properties, fluid)
 			table.insert(properties.burned_in, { type = "entity", name = entity_name })
 		end
 	end
+	for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
+		for _, fluidbox in pairs(entity.fluidbox_prototypes) do
+			if
+				(fluidbox.production_type == "input" or fluidbox.production_type == "input-output")
+				and fluidbox.filter
+				and fluidbox.filter.name == fluid.name
+			then
+				table.insert(properties.burned_in, { type = "entity", name = entity_name })
+			end
+		end
+	end
 
 	properties.unlocked_by = properties.unlocked_by or {}
 	for recipe_name, recipe in pairs(product_of_recipes) do
