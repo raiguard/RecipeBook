@@ -5,6 +5,7 @@ local mod_gui = require("__core__/lualib/mod-gui")
 local table = require("__flib__/table")
 
 local database = require("__RecipeBook__/database")
+local gui_templates = require("__RecipeBook__/gui-templates")
 local gui_util = require("__RecipeBook__/gui-util")
 local util = require("__RecipeBook__/util")
 
@@ -65,7 +66,7 @@ handlers = {
   --- @param self Gui
   --- @param e EventData.on_gui_click
   on_prototype_button_click = function(self, e)
-    local prototype = e.element.tags.prototype --[[@as string?]]
+    local prototype = e.element.sprite --[[@as string?]]
     if not prototype then
       return
     end
@@ -99,7 +100,7 @@ handlers = {
   --- @param self Gui
   on_show_hidden_button_click = function(self)
     self.show_hidden = not self.show_hidden
-    gui_util.update_fab(self.elems.show_hidden_button, self.show_hidden and "selected" or "default")
+    gui_util.update_frame_action_button(self.elems.show_hidden_button, self.show_hidden and "selected" or "default")
     gui.update_filter_panel(self)
     gui.update_page(self, nil, true)
   end,
@@ -107,7 +108,10 @@ handlers = {
   --- @param self Gui
   on_show_unresearched_button_click = function(self)
     self.show_unresearched = not self.show_unresearched
-    gui_util.update_fab(self.elems.show_unresearched_button, self.show_unresearched and "selected" or "default")
+    gui_util.update_frame_action_button(
+      self.elems.show_unresearched_button,
+      self.show_unresearched and "selected" or "default"
+    )
     gui.update_filter_panel(self)
     gui.update_page(self, nil, true)
   end,
@@ -411,8 +415,11 @@ function gui.update_page(self, prototype_path, in_history)
   end
   self.current_page = path
   -- Update history buttons
-  gui_util.update_fab(self.elems.nav_backward_button, history.__index > 1 and "default" or "disabled")
-  gui_util.update_fab(self.elems.nav_forward_button, history.__index < #history and "default" or "disabled")
+  gui_util.update_frame_action_button(self.elems.nav_backward_button, history.__index > 1 and "default" or "disabled")
+  gui_util.update_frame_action_button(
+    self.elems.nav_forward_button,
+    history.__index < #history and "default" or "disabled"
+  )
 
   profiler.stop()
   log({ "", "[", path, "] ", profiler })
@@ -432,12 +439,12 @@ end
 function gui.new(player)
   gui.destroy(player.index)
 
-  local elems = gui_util.build_base_gui(player, handlers)
+  local elems = gui_templates.base(player, handlers)
 
   -- Set initial button states
-  gui_util.update_fab(elems.nav_backward_button, "disabled")
-  gui_util.update_fab(elems.nav_forward_button, "disabled")
-  gui_util.update_fab(elems.show_unresearched_button, "selected")
+  gui_util.update_frame_action_button(elems.nav_backward_button, "disabled")
+  gui_util.update_frame_action_button(elems.nav_forward_button, "disabled")
+  gui_util.update_frame_action_button(elems.show_unresearched_button, "selected")
 
   --- @class Gui
   local self = {
