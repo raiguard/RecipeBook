@@ -23,8 +23,7 @@ local gui = {}
 --- @field close_button LuaGuiElement
 --- @field filter_group_table LuaGuiElement
 --- @field filter_scroll_pane LuaGuiElement
---- @field page_header_sprite LuaGuiElement
---- @field page_header_caption LuaGuiElement
+--- @field page_header_title LuaGuiElement
 --- @field page_header_type_label LuaGuiElement
 --- @field page_scroll_pane LuaGuiElement
 
@@ -348,18 +347,16 @@ function gui.update_page(self, prototype_path, in_history)
   local entry = properties.entry
 
   -- Header
-  local header_sprite = self.elems.page_header_sprite
-  header_sprite.visible = true
-  header_sprite.sprite = path
-  local header_caption = self.elems.page_header_caption
-  header_caption.caption = entry.base.localised_name
-  local style = "caption_label"
+  local header_title = self.elems.page_header_title
+  header_title.caption = { "", "            ", entry.base.localised_name }
+  header_title.sprite = entry.base_path
+  local style = "rb_subheader_caption_button"
   if util.is_hidden(entry.base) then
-    style = "rb_caption_label_hidden"
+    style = "rb_subheader_caption_button_hidden"
   elseif util.is_unresearched(entry, self.player.force.index) then
-    style = "rb_caption_label_unresearched"
+    style = "rb_subheader_caption_button_unresearched"
   end
-  header_caption.style = style
+  header_title.style = style
   local header_type = self.elems.page_header_type_label
   local type_caption = { "" }
   for _, type in pairs(properties.types) do

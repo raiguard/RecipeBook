@@ -143,18 +143,11 @@ function gui_util.build_base_gui(player, handlers)
         {
           type = "frame",
           style = "subheader_frame",
-          style_mods = { left_padding = 12 },
           {
             type = "sprite-button",
-            name = "page_header_sprite",
-            style = "transparent_slot",
-            style_mods = { size = 28, right_margin = 4 },
-            visible = false,
-          },
-          {
-            type = "label",
-            name = "page_header_caption",
-            style = "caption_label",
+            name = "page_header_title",
+            style = "rb_subheader_caption_button",
+            enabled = false,
             caption = { "gui.rb-welcome-title" },
           },
           { type = "empty-widget", style = "flib_horizontal_pusher" },
@@ -343,16 +336,9 @@ end
 --- @return GuiElemDef
 function gui_util.build_prototype_button(handlers)
   return {
-    type = "button",
+    type = "sprite-button",
     style = "rb_list_box_item",
     handler = { [defines.events.on_gui_click] = handlers.on_prototype_button_click },
-    {
-      type = "sprite-button",
-      name = "icon",
-      style = "transparent_slot",
-      style_mods = { size = 28 },
-      ignored_by_interaction = true,
-    },
     {
       type = "label",
       name = "remark",
@@ -493,17 +479,13 @@ function gui_util.update_list_box(self, handlers, flow, members, remark, no_coll
     end
     button.style = style
     -- Sprite
-    button.icon.sprite = entry.base_path
+    button.sprite = entry.base_path
     -- Caption
     button.caption = gui_util.build_caption(member)
     -- Tooltip
     button.tooltip = gui_util.build_tooltip(member)
     -- Remark
     button.remark.caption = gui_util.build_remark(member)
-    -- Tags
-    local tags = button.tags
-    tags.prototype = entry.base_path
-    button.tags = tags
     ::continue::
   end
   for i = child_index + 1, #children do

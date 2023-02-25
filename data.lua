@@ -272,31 +272,30 @@ styles.rb_list_box_item_unresearched = {
   default_font_color = red_body_text_color,
 }
 
--- TODO: icon_horizontal_align PR
--- styles.rb_subheader_caption_button = {
---   type = "button_style",
---   disabled_graphical_set = {},
---   disabled_font_color = bold_font_color,
---   font = "default-bold",
---   icon_horizontal_align = "left",
---   padding = 0,
---   left_margin = 4,
---   height = 36,
---   minimal_width = 0,
---   draw_shadow_under_picture = true,
--- }
+styles.rb_subheader_caption_button = {
+  type = "button_style",
+  disabled_graphical_set = {},
+  disabled_font_color = bold_font_color,
+  font = "default-bold",
+  icon_horizontal_align = "left",
+  padding = 0,
+  left_margin = 4,
+  height = 36,
+  minimal_width = 0,
+  draw_shadow_under_picture = true,
+}
 
--- styles.rb_subheader_caption_button_hidden = {
---   type = "button_style",
---   parent = "rb_subheader_caption_button",
---   disabled_font_color = hidden_font_color,
--- }
+styles.rb_subheader_caption_button_hidden = {
+  type = "button_style",
+  parent = "rb_subheader_caption_button",
+  disabled_font_color = hidden_font_color,
+}
 
--- styles.rb_subheader_caption_button_unresearched = {
---   type = "button_style",
---   parent = "rb_subheader_caption_button",
---   disabled_font_color = red_body_text_color,
--- }
+styles.rb_subheader_caption_button_unresearched = {
+  type = "button_style",
+  parent = "rb_subheader_caption_button",
+  disabled_font_color = red_body_text_color,
+}
 
 styles.rb_caption_label_hidden = {
   type = "label_style",
