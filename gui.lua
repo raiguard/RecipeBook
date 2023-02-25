@@ -328,7 +328,10 @@ end
 function gui.update_page(self, prototype_path, in_history)
   local current_page = self.current_page
   -- Don't do anything if the page is the same
-  local base_path = prototype_path and database.get_base_path(prototype_path) or nil
+  local base_path = prototype_path and database.get_base_path(prototype_path)
+  if not base_path then
+    return
+  end
   if base_path == current_page then
     return true
   end
