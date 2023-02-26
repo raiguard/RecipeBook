@@ -433,18 +433,6 @@ end
 
 -- Entry properties
 
---- @param technology LuaTechnologyPrototype
---- @param recipe_name string
---- @return boolean
-local function unlocks_recipe(technology, recipe_name)
-  for _, effect in pairs(technology.effects) do
-    if effect.type == "unlock-recipe" and effect.recipe == recipe_name then
-      return true
-    end
-  end
-  return false
-end
-
 --- @param properties EntryProperties
 --- @param recipe LuaRecipePrototype
 local function add_recipe_properties(properties, recipe)
@@ -486,10 +474,10 @@ local function add_recipe_properties(properties, recipe)
   end
 
   properties.unlocked_by = {}
-  for technology_name, technology in pairs(game.technology_prototypes) do
-    if unlocks_recipe(technology, recipe.name) then
-      properties.unlocked_by[#properties.unlocked_by + 1] = { type = "technology", name = technology_name }
-    end
+  for technology_name in
+    pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
+  do
+    properties.unlocked_by[#properties.unlocked_by + 1] = { type = "technology", name = technology_name }
   end
 end
 
@@ -541,10 +529,11 @@ local function add_fluid_properties(properties, fluid)
   properties.unlocked_by = properties.unlocked_by or {}
   for recipe_name, recipe in pairs(product_of_recipes) do
     if recipe.unlock_results then
-      for technology_name, technology in pairs(game.technology_prototypes) do
+      for technology_name in
+        pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe_name } }))
+      do
         if
-          unlocks_recipe(technology, recipe_name)
-          and not table.for_each(properties.unlocked_by, function(obj)
+          not table.for_each(properties.unlocked_by, function(obj)
             return obj.name == technology_name
           end)
         then
@@ -581,10 +570,11 @@ local function add_item_properties(properties, item)
   properties.unlocked_by = properties.unlocked_by or {}
   for recipe_name, recipe in pairs(product_of_recipes) do
     if recipe.unlock_results then
-      for technology_name, technology in pairs(game.technology_prototypes) do
+      for technology_name in
+        pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe_name } }))
+      do
         if
-          unlocks_recipe(technology, recipe_name)
-          and not table.for_each(properties.unlocked_by, function(obj)
+          not table.for_each(properties.unlocked_by, function(obj)
             return obj.name == technology_name
           end)
         then

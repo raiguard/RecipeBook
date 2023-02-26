@@ -8,8 +8,6 @@ API additions:
     - ingredient_limit
     - add characters to crafting_category filter
     - energy source filters (type, fuel category, fluid, etc)
-- get_filtered_technology_prototypes:
-    - 'unlocks-recipe'
 
 Todo:
 - Show active page in filter panel
