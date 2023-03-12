@@ -1,5 +1,8 @@
 local flib_gui = require("__flib__/gui-lite")
 
+local database = require("__RecipeBook__/database")
+local util = require("__RecipeBook__/util")
+
 --- @class GuiTemplates
 local gui_templates = {}
 
@@ -208,12 +211,12 @@ function gui_templates.base(player, handlers)
       local subgroup_table = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
       table.insert(group_flow, subgroup_table)
       for _, path in pairs(subgroup) do
-        -- local type, name = string.match(path, "(.*)/(.*)")
+        local type, name = string.match(path, "(.*)/(.*)")
         table.insert(subgroup_table, {
           type = "sprite-button",
           style = "flib_slot_button_default",
           sprite = path,
-          -- tooltip = gui_templates.build_tooltip({ type = type, name = name }),
+          tooltip = gui_templates.tooltip({ type = type, name = name }),
           handler = { [defines.events.on_gui_click] = handlers.on_prototype_button_click },
         })
       end
@@ -310,6 +313,33 @@ function gui_templates.list_box_item(handlers)
       ignored_by_interaction = true,
     },
   }
+end
+
+--- @param obj GenericObject
+--- @return LocalisedString
+function gui_templates.tooltip(obj)
+  local entry = database.get_entry(obj)
+  if not entry then
+    return ""
+  end
+  local base = entry.base
+  --- @type LocalisedString
+  local tooltip = {
+    "",
+    { "gui.rb-tooltip-title", { "", base.localised_name, " (", util.type_locale[obj.type], ")" } },
+  }
+  --- @type LocalisedString
+  local description = { "?" }
+  for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
+    local prototype = entry[key]
+    if prototype then
+      description[#description + 1] = { "", "\n", prototype.localised_description }
+    end
+  end
+  description[#description + 1] = ""
+  tooltip[#tooltip + 1] = description
+
+  return tooltip
 end
 
 return gui_templates

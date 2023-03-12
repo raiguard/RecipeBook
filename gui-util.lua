@@ -77,33 +77,6 @@ function gui_util.build_remark(obj)
   return remark
 end
 
---- @param obj GenericObject
---- @return LocalisedString
-function gui_util.build_tooltip(obj)
-  local entry = database.get_entry(obj)
-  if not entry then
-    return ""
-  end
-  local base = entry.base
-  --- @type LocalisedString
-  local tooltip = {
-    "",
-    { "gui.rb-tooltip-title", { "", base.localised_name, " (", util.type_locale[obj.type], ")" } },
-  }
-  --- @type LocalisedString
-  local description = { "?" }
-  for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
-    local prototype = entry[key]
-    if prototype then
-      description[#description + 1] = { "", "\n", prototype.localised_description }
-    end
-  end
-  description[#description + 1] = ""
-  tooltip[#tooltip + 1] = description
-
-  return tooltip
-end
-
 --- @alias FabState
 --- | "default"
 --- | "selected"
@@ -183,7 +156,7 @@ function gui_util.update_list_box(self, handlers, flow, members, remark, no_coll
     -- Caption
     button.caption = gui_util.build_caption(member)
     -- Tooltip
-    button.tooltip = gui_util.build_tooltip(member)
+    button.tooltip = gui_templates.tooltip(member)
     -- Remark
     button.remark.caption = gui_util.build_remark(member)
     ::continue::
