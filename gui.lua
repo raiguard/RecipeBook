@@ -102,7 +102,7 @@ handlers = {
     self.show_hidden = not self.show_hidden
     gui_util.update_frame_action_button(self.elems.show_hidden_button, self.show_hidden and "selected" or "default")
     gui.update_filter_panel(self)
-    gui.update_page(self, nil, true)
+    gui.update_page(self)
   end,
 
   --- @param self Gui
@@ -113,7 +113,7 @@ handlers = {
       self.show_unresearched and "selected" or "default"
     )
     gui.update_filter_panel(self)
-    gui.update_page(self, nil, true)
+    gui.update_page(self)
   end,
 
   --- @param self Gui
@@ -167,7 +167,8 @@ end
 function gui.nav_history(self, delta)
   local history = self.history
   history.__index = math.clamp(history.__index + delta, 1, #history)
-  gui.update_page(self, history[history.__index], true)
+  self.current_page = history[history.__index]
+  gui.update_page(self)
 end
 
 --- @param self Gui
@@ -327,21 +328,16 @@ end
 
 --- @param self Gui
 --- @param prototype_path string?
---- @param in_history boolean?
 --- @return boolean?
-function gui.update_page(self, prototype_path, in_history)
-  local current_page = self.current_page
-  -- Don't do anything if the page is the same
-  local base_path = prototype_path and database.get_base_path(prototype_path)
-  if not base_path then
+function gui.update_page(self, prototype_path)
+  if prototype_path then
+    prototype_path = database.get_base_path(prototype_path)
+  end
+  local path = prototype_path or self.current_page
+  if not path then
     return
   end
-  if base_path == current_page then
-    return true
-  end
-  local path = base_path or current_page
-  if not path then
-    -- Just in case
+  if prototype_path and path == self.current_page then
     return
   end
 
@@ -405,7 +401,7 @@ function gui.update_page(self, prototype_path, in_history)
 
   -- Update history
   local history = self.history
-  if not in_history then
+  if prototype_path then
     local existing = table.find(history, path)
     if existing then
       table.remove(history, existing)
@@ -528,6 +524,7 @@ local function update_force_guis(force)
     local player_gui = gui.get(player.index)
     if player_gui then
       gui.update_filter_panel(player_gui)
+      gui.update_page(player_gui)
     end
   end
 end
