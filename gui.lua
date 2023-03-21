@@ -338,7 +338,7 @@ function gui.update_page(self, prototype_path)
     return
   end
   if prototype_path and path == self.current_page then
-    return
+    return true
   end
 
   local profiler = game.create_profiler()
