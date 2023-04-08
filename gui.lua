@@ -3,7 +3,7 @@ local flib_format = require("__flib__/format")
 local flib_gui = require("__flib__/gui-lite")
 local flib_math = require("__flib__/math")
 
---- @alias InfoType
+--- @alias ContextType
 --- | "ingredient"
 --- | "product"
 
@@ -24,14 +24,10 @@ local function build_dictionaries()
 end
 
 --- @param obj Ingredient|Product
---- @param include_icon boolean?
 --- @return LocalisedString
-local function build_caption(obj, include_icon)
+local function build_caption(obj)
   --- @type LocalisedString
   local caption = { "", "            " }
-  if include_icon then
-    caption[#caption + 1] = "[img=" .. obj.type .. "/" .. obj.name .. "]  "
-  end
   if obj.probability and obj.probability < 1 then
     caption[#caption + 1] = {
       "",
@@ -71,16 +67,14 @@ local function update_info_page(self)
   local recipe = self.recipes[self.index]
 
   self.elems.info_recipe_count_label.caption = "[" .. self.index .. "/" .. #self.recipes .. "]"
-  self.elems.info_type_label.caption = self.info_type == "product" and "Product of" or "Ingredient in"
+  self.elems.info_context_label.sprite = self.context
+  self.elems.info_context_label.caption =
+    { "", "            ", self.context_type == "product" and "Product of" or "Ingredient in" }
+  self.elems.info_recipe_name_label.sprite = "recipe/" .. recipe.name
+  self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
 
   local ingredients_frame = self.elems.info_ingredients_frame
   ingredients_frame.clear()
-  flib_gui.add(ingredients_frame, {
-    type = "sprite-button",
-    style = "rbl_list_box_item",
-    sprite = "quantity-time",
-    caption = { "", "            ", recipe.energy },
-  })
   local item_ingredients = 0
   for _, ingredient in pairs(recipe.ingredients) do
     if ingredient.type == "item" then
@@ -94,6 +88,8 @@ local function update_info_page(self)
       handler = on_search_result_clicked,
     })
   end
+  self.elems.info_ingredients_count_label.caption = "[" .. #recipe.ingredients .. "]"
+  self.elems.info_ingredients_energy_label.caption = "[img=quantity-time] " .. format_number(recipe.energy) .. " s"
 
   local products_frame = self.elems.info_products_frame
   products_frame.clear()
@@ -106,6 +102,7 @@ local function update_info_page(self)
       handler = on_search_result_clicked,
     })
   end
+  self.elems.info_products_count_label.caption = "[" .. #recipe.products .. "]"
 
   local made_in_frame = self.elems.info_made_in_frame
   made_in_frame.clear()
@@ -143,6 +140,7 @@ local function update_info_page(self)
       { type = "sprite-button", style = "slot_button", sprite = "technology/" .. technology.name }
     )
   end
+  self.elems.info_unlocked_by_flow.visible = #unlocked_by_frame.children > 0
 end
 
 --- @param e EventData.on_gui_text_changed
@@ -161,11 +159,11 @@ on_search_result_clicked = function(e)
   local result = e.element.sprite
   local result_type, result_name = string.match(result, "(.-)/(.*)")
   local self = global.gui[e.player_index]
-  self.info_type = e.button == defines.mouse_button_type.left and "product" or "ingredient"
+  self.context_type = e.button == defines.mouse_button_type.left and "product" or "ingredient"
 
   local recipes = game.get_filtered_recipe_prototypes({
     {
-      filter = "has-" .. self.info_type .. "-" .. result_type,
+      filter = "has-" .. self.context_type .. "-" .. result_type,
       elem_filters = {
         { filter = "name", name = result_name },
       },
@@ -184,12 +182,10 @@ on_search_result_clicked = function(e)
   self.recipes = recipes_array
   self.index = 1
 
-  local prototype = game[result_type .. "_prototypes"][result_name]
-  self.elems.info_result_caption.sprite = result
-  self.elems.info_result_caption.caption = { "", "            ", prototype.localised_name }
   self.elems.search_pane.visible = false
   self.elems.info_pane.visible = true
   self.elems.back_to_search_button.visible = true
+  self.context = result
 
   update_info_page(self)
 end
@@ -303,12 +299,17 @@ local function create_gui(player)
         style_mods = { horizontally_stretchable = true },
         {
           type = "sprite-button",
-          name = "info_result_caption",
+          name = "info_recipe_name_label",
           style = "rbl_subheader_caption_button",
           enabled = false,
         },
         { type = "empty-widget", style = "flib_horizontal_pusher" },
-        { type = "label", name = "info_type_label", style = "bold_label" },
+        {
+          type = "sprite-button",
+          name = "info_context_label",
+          style = "rbl_subheader_caption_button",
+          enabled = false,
+        },
         {
           type = "label",
           name = "info_recipe_count_label",
@@ -343,11 +344,19 @@ local function create_gui(player)
           style_mods = { horizontal_spacing = 12 },
           {
             type = "flow",
+            style_mods = { width = 240 },
             direction = "vertical",
             {
-              type = "label",
-              style = "caption_label",
-              caption = "Ingredients",
+              type = "flow",
+              { type = "label", style = "caption_label", caption = "Ingredients" },
+              {
+                type = "label",
+                name = "info_ingredients_count_label",
+                style = "info_label",
+                style_mods = { font = "default-semibold" },
+              },
+              { type = "empty-widget", style = "flib_horizontal_pusher" },
+              { type = "label", name = "info_ingredients_energy_label", style_mods = { font = "default-semibold" } },
             },
             {
               type = "frame",
@@ -359,17 +368,22 @@ local function create_gui(player)
           },
           {
             type = "flow",
+            style_mods = { width = 240 },
             direction = "vertical",
             {
-              type = "label",
-              style = "caption_label",
-              caption = "Products",
+              type = "flow",
+              { type = "label", style = "caption_label", caption = "Products" },
+              {
+                type = "label",
+                name = "info_products_count_label",
+                style = "info_label",
+                style_mods = { font = "default-semibold" },
+              },
             },
             {
               type = "frame",
               name = "info_products_frame",
               style = "deep_frame_in_shallow_frame",
-              style_mods = { width = 240 },
               direction = "vertical",
             },
           },
@@ -393,11 +407,13 @@ local function create_gui(player)
 
   --- @class GuiData
   global.gui[player.index] = {
+    --- @type string?
+    context = nil,
+    --- @type ContextType
+    context_type = "product",
     elems = elems,
     --- @type uint
     index = 1,
-    --- @type InfoType
-    info_type = "product",
     --- @type LuaRecipePrototype[]?
     recipes = nil,
     player = player,
