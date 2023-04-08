@@ -1,0 +1,18 @@
+{
+  "name": "RecipeBookLite",
+  "version": "1.0.0",
+  "title": "Recipe Book Lite",
+  "description": "A simple and performant recipe browser.",
+  "author": "raiguard",
+  "contact": "https://github.com/raiguard/RecipeBookLite",
+  "homepage": "https://github.com/raiguard/RecipeBookLite",
+  "factorio_version": "1.1",
+  "dependencies": [ "base >= 1.1.80", "flib >= 0.12.5", "! RecipeBook" ],
+  "package": {
+    "ignore": [ "imgui.ini", "screenshots", "stylua.toml" ],
+    "scripts": {
+      "prepublish": "factorio-crowdin-sync"
+    },
+    "sync_portal_details": true
+  }
+}
