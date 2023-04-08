@@ -4,8 +4,8 @@ local flib_gui = require("__flib__/gui-lite")
 local flib_math = require("__flib__/math")
 
 --- @alias InfoType
---- | "ingredient_in"
---- | "product_of"
+--- | "ingredient"
+--- | "product"
 
 --- @param num number
 --- @return string
@@ -71,7 +71,7 @@ local function update_info_page(self)
   local recipe = self.recipes[self.index]
 
   self.elems.info_recipe_count_label.caption = "[" .. self.index .. "/" .. #self.recipes .. "]"
-  self.elems.info_type_label.caption = self.info_type == "product_of" and "Product of" or "Ingredient in"
+  self.elems.info_type_label.caption = self.info_type == "product" and "Product of" or "Ingredient in"
 
   local ingredients_frame = self.elems.info_ingredients_frame
   ingredients_frame.clear()
@@ -160,23 +160,37 @@ end
 on_search_result_clicked = function(e)
   local result = e.element.sprite
   local result_type, result_name = string.match(result, "(.-)/(.*)")
-  local prototype = game[result_type .. "_prototypes"][result_name]
   local self = global.gui[e.player_index]
+  self.info_type = e.button == defines.mouse_button_type.left and "product" or "ingredient"
+
+  local recipes = game.get_filtered_recipe_prototypes({
+    {
+      filter = "has-" .. self.info_type .. "-" .. result_type,
+      elem_filters = {
+        { filter = "name", name = result_name },
+      },
+    },
+  })
+  local recipes_array = {}
+  for _, recipe in pairs(recipes) do
+    recipes_array[#recipes_array + 1] = recipe
+  end
+  if not next(recipes_array) then
+    self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
+    self.player.play_sound({ path = "utility/cannot_build" })
+    return
+  end
+
+  self.recipes = recipes_array
+  self.index = 1
+
+  local prototype = game[result_type .. "_prototypes"][result_name]
   self.elems.info_result_caption.sprite = result
   self.elems.info_result_caption.caption = { "", "            ", prototype.localised_name }
   self.elems.search_pane.visible = false
   self.elems.info_pane.visible = true
   self.elems.back_to_search_button.visible = true
 
-  local recipes = game.get_filtered_recipe_prototypes({
-    { filter = "has-product-" .. result_type, elem_filters = { { filter = "name", name = result_name } } },
-  })
-  local recipes_array = {}
-  for _, recipe in pairs(recipes) do
-    recipes_array[#recipes_array + 1] = recipe
-  end
-  self.recipes = recipes_array
-  self.index = 1
   update_info_page(self)
 end
 
@@ -383,9 +397,10 @@ local function create_gui(player)
     --- @type uint
     index = 1,
     --- @type InfoType
-    info_type = "product_of",
+    info_type = "product",
     --- @type LuaRecipePrototype[]?
     recipes = nil,
+    player = player,
   }
 end
 
