@@ -53,10 +53,26 @@ local function build_caption(obj)
       " ×[/font]  ",
     }
   end
-  -- TODO: Optimize this
   caption[#caption + 1] = game[obj.type .. "_prototypes"][obj.name].localised_name
 
+  -- TODO: Temperatures
+
   return caption
+end
+
+--- @param recipe LuaRecipePrototype
+--- @return boolean
+local function is_hand_craftable(recipe)
+  -- TODO: Account for other characters and god controller?
+  if not game.entity_prototypes["character"].crafting_categories[recipe.category] then
+    return false
+  end
+  for _, ingredient in pairs(recipe.ingredients) do
+    if ingredient.type == "fluid" then
+      return false
+    end
+  end
+  return true
 end
 
 -- This is needed in update_info_page
@@ -106,14 +122,16 @@ local function update_info_page(self)
 
   local made_in_frame = self.elems.info_made_in_frame
   made_in_frame.clear()
-  flib_gui.add(made_in_frame, {
-    type = "sprite-button",
-    style = "slot_button",
-    sprite = "utility/hand",
-    hovered_sprite = "utility/hand_black",
-    clicked_sprite = "utility/hand_black",
-    number = recipe.energy,
-  })
+  if is_hand_craftable(recipe) then
+    flib_gui.add(made_in_frame, {
+      type = "sprite-button",
+      style = "slot_button",
+      sprite = "utility/hand",
+      hovered_sprite = "utility/hand_black",
+      clicked_sprite = "utility/hand_black",
+      number = recipe.energy,
+    })
+  end
   for _, machine in
     pairs(game.get_filtered_entity_prototypes({
       { filter = "crafting-category", crafting_category = recipe.category },
