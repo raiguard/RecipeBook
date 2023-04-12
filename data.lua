@@ -63,6 +63,20 @@ data:extend({
     size = 32,
     flags = { "gui-icon" },
   },
+  {
+    type = "sprite",
+    name = "rbl_show_hidden_black",
+    filename = "__RecipeBookLite__/graphics/show-hidden-black.png",
+    size = 32,
+    flags = { "gui-icon" },
+  },
+  {
+    type = "sprite",
+    name = "rbl_show_unresearched_black",
+    filename = "__RecipeBookLite__/graphics/show-unresearched-black.png",
+    size = 32,
+    flags = { "gui-icon" },
+  },
 })
 
 local styles = data.raw["gui-style"]["default"]

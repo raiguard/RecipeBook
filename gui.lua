@@ -16,6 +16,21 @@ local on_prototype_button_clicked
 local on_prototype_button_hovered
 
 --- @param self GuiData
+local function update_search_results(self)
+  local query = self.search_query
+  local show_hidden = self.show_hidden
+  local dictionary = flib_dictionary.get(self.player.index, "search") or {}
+  for _, button in pairs(self.elems.search_table.children) do
+    if show_hidden or not button.tags.is_hidden then
+      local search_key = dictionary[button.sprite] or button.name
+      button.visible = not not string.find(string.lower(search_key), query, nil, true)
+    else
+      button.visible = false
+    end
+  end
+end
+
+--- @param self GuiData
 local function update_info_page(self)
   local recipe = self.recipes[self.index]
 
@@ -120,13 +135,17 @@ end
 
 --- @param e EventData.on_gui_text_changed
 local function on_search_textfield_changed(e)
-  local text = string.lower(e.text)
   local self = global.gui[e.player_index]
-  local dictionary = flib_dictionary.get(e.player_index, "search") or {}
-  for _, button in pairs(self.elems.search_table.children) do
-    local search_key = dictionary[button.sprite] or button.name
-    button.visible = not not string.find(string.lower(search_key), text, nil, true)
-  end
+  self.search_query = string.lower(e.text)
+  update_search_results(self)
+end
+
+--- @param e EventData.on_gui_click
+local function on_show_hidden_clicked(e)
+  local self = global.gui[e.player_index]
+  self.show_hidden = not self.show_hidden
+  e.element.style = self.show_hidden and "flib_selected_tool_button" or "tool_button"
+  update_search_results(self)
 end
 
 --- @param e EventData.on_gui_click
@@ -277,10 +296,13 @@ end
 local function create_gui(player)
   local buttons = {}
   for _, item in pairs(game.item_prototypes) do
+    local is_hidden = item.has_flag("hidden")
     table.insert(buttons, {
       type = "sprite-button",
-      style = "slot_button",
+      style = is_hidden and "flib_slot_button_grey" or "slot_button",
       sprite = "item/" .. item.name,
+      visible = not is_hidden,
+      tags = { is_hidden = is_hidden },
       raise_hover_events = true,
       handler = {
         [defines.events.on_gui_click] = on_prototype_button_clicked,
@@ -289,10 +311,13 @@ local function create_gui(player)
     })
   end
   for _, fluid in pairs(game.fluid_prototypes) do
+    local is_hidden = fluid.hidden
     table.insert(buttons, {
       type = "sprite-button",
-      style = "slot_button",
+      style = is_hidden and "flib_slot_button_grey" or "slot_button",
       sprite = "fluid/" .. fluid.name,
+      visible = not is_hidden,
+      tags = { is_hidden = is_hidden },
       raise_hover_events = true,
       handler = {
         [defines.events.on_gui_click] = on_prototype_button_clicked,
@@ -361,6 +386,21 @@ local function create_gui(player)
         style_mods = { horizontally_stretchable = true },
         { type = "label", style = "subheader_caption_label", caption = { "gui.rbl-search" } },
         { type = "empty-widget", style = "flib_horizontal_pusher" },
+        -- {
+        --   type = "sprite-button",
+        --   name = "show_unresearched_button",
+        --   style = "tool_button",
+        --   sprite = "rbl_show_unresearched_black",
+        --   tooltip = { "gui.rbl-show-unresearched" },
+        -- },
+        {
+          type = "sprite-button",
+          name = "show_hidden_button",
+          style = "tool_button",
+          sprite = "rbl_show_hidden_black",
+          tooltip = { "gui.rbl-show-hidden" },
+          handler = on_show_hidden_clicked,
+        },
         {
           type = "textfield",
           name = "search_textfield",
@@ -529,10 +569,12 @@ local function create_gui(player)
     elems = elems,
     --- @type uint
     index = 1,
-    --- @type LuaRecipePrototype[]?
-    recipes = nil,
     pinned = false,
     player = player,
+    --- @type LuaRecipePrototype[]?
+    recipes = nil,
+    search_query = "",
+    show_hidden = false,
   }
   global.gui[player.index] = self
   return self
@@ -591,6 +633,7 @@ flib_gui.add_handlers({
   on_prototype_button_hovered = on_prototype_button_hovered,
   on_recipe_nav_clicked = on_recipe_nav_clicked,
   on_search_textfield_changed = on_search_textfield_changed,
+  on_show_hidden_clicked = on_show_hidden_clicked,
 })
 
 return gui
