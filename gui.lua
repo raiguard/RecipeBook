@@ -1,79 +1,11 @@
 local flib_dictionary = require("__flib__/dictionary-lite")
-local flib_format = require("__flib__/format")
 local flib_gui = require("__flib__/gui-lite")
-local flib_math = require("__flib__/math")
+
+local util = require("__RecipeBookLite__/util")
 
 --- @alias ContextType
 --- | "ingredient"
 --- | "product"
-
---- @param num number
---- @return string
-local function format_number(num)
-  return flib_format.number(flib_math.round(num, 0.01))
-end
-
-local function build_dictionaries()
-  flib_dictionary.new("search")
-  for _, item in pairs(game.item_prototypes) do
-    flib_dictionary.add("search", "item/" .. item.name, { "?", item.localised_name, item.name })
-  end
-  for _, fluid in pairs(game.fluid_prototypes) do
-    flib_dictionary.add("search", "fluid/" .. fluid.name, { "?", fluid.localised_name, fluid.name })
-  end
-end
-
---- @param obj Ingredient|Product
---- @return LocalisedString
-local function build_caption(obj)
-  --- @type LocalisedString
-  local caption = { "", "            " }
-  if obj.probability and obj.probability < 1 then
-    caption[#caption + 1] = {
-      "",
-      "[font=default-semibold]",
-      { "format-percent", flib_math.round(obj.probability * 100, 0.01) },
-      "[/font] ",
-    }
-  end
-  if obj.amount then
-    caption[#caption + 1] = {
-      "",
-      "[font=default-semibold]",
-      format_number(obj.amount),
-      " ×[/font]  ",
-    }
-  elseif obj.amount_min and obj.amount_max then
-    caption[#caption + 1] = {
-      "",
-      "[font=default-semibold]",
-      format_number(obj.amount_min),
-      " - ",
-      format_number(obj.amount_max),
-      " ×[/font]  ",
-    }
-  end
-  caption[#caption + 1] = game[obj.type .. "_prototypes"][obj.name].localised_name
-
-  -- TODO: Temperatures
-
-  return caption
-end
-
---- @param recipe LuaRecipePrototype
---- @return boolean
-local function is_hand_craftable(recipe)
-  -- TODO: Account for other characters and god controller?
-  if not game.entity_prototypes["character"].crafting_categories[recipe.category] then
-    return false
-  end
-  for _, ingredient in pairs(recipe.ingredients) do
-    if ingredient.type == "fluid" then
-      return false
-    end
-  end
-  return true
-end
 
 -- This is needed in update_info_page
 local on_search_result_clicked
@@ -100,12 +32,12 @@ local function update_info_page(self)
       type = "sprite-button",
       style = "rbl_list_box_item",
       sprite = ingredient.type .. "/" .. ingredient.name,
-      caption = build_caption(ingredient),
+      caption = util.build_caption(ingredient),
       handler = on_search_result_clicked,
     })
   end
   self.elems.info_ingredients_count_label.caption = "[" .. #recipe.ingredients .. "]"
-  self.elems.info_ingredients_energy_label.caption = "[img=quantity-time] " .. format_number(recipe.energy) .. " s"
+  self.elems.info_ingredients_energy_label.caption = "[img=quantity-time] " .. util.format_number(recipe.energy) .. " s"
 
   local products_frame = self.elems.info_products_frame
   products_frame.clear()
@@ -114,7 +46,7 @@ local function update_info_page(self)
       type = "sprite-button",
       style = "rbl_list_box_item",
       sprite = product.type .. "/" .. product.name,
-      caption = build_caption(product),
+      caption = util.build_caption(product),
       handler = on_search_result_clicked,
     })
   end
@@ -122,7 +54,7 @@ local function update_info_page(self)
 
   local made_in_frame = self.elems.info_made_in_frame
   made_in_frame.clear()
-  if is_hand_craftable(recipe) then
+  if util.is_hand_craftable(recipe) then
     flib_gui.add(made_in_frame, {
       type = "sprite-button",
       style = "slot_button",
@@ -452,9 +384,9 @@ local gui = {}
 gui.on_init = function()
   --- @type table<uint, GuiData>
   global.gui = {}
-  build_dictionaries()
+  util.build_dictionaries()
 end
-gui.on_configuration_changed = build_dictionaries
+gui.on_configuration_changed = util.build_dictionaries
 
 gui.events = {
   [defines.events.on_player_created] = on_player_created,
