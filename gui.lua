@@ -183,8 +183,42 @@ on_prototype_button_hovered = function(e)
   end
   --- @type string, string
   local type, name = string.match(elem.sprite, "(.-)/(.*)")
-  local prototype = game[type .. "_prototypes"][name]
-  elem.tooltip = { "gui.rbl-tooltip-title", prototype.localised_name, { "gui.rbl-" .. type } }
+  elem.tooltip = util.build_tooltip(global.gui[e.player_index].player, type, name)
+end
+
+--- @param self GuiData
+local function return_to_search(self)
+  self.elems.nav_backward_button.visible = false
+  self.elems.info_pane.visible = false
+  self.elems.search_pane.visible = true
+  if self.player.mod_settings["rbl-auto-focus-search-box"].value then
+    self.elems.search_textfield.focus()
+    self.elems.search_textfield.select_all()
+  end
+end
+
+--- @param self GuiData
+local function show_gui(self)
+  self.player.set_shortcut_toggled("rbl-toggle-gui", true)
+  local window = self.elems.rbl_main_window
+  window.visible = true
+  if not self.pinned then
+    self.player.opened = window
+  end
+  if self.player.mod_settings["rbl-always-open-search"].value then
+    return_to_search(self)
+  end
+end
+
+--- @param self GuiData
+local function hide_gui(self)
+  self.player.set_shortcut_toggled("rbl-toggle-gui", false)
+  local window = self.elems.rbl_main_window
+  window.visible = false
+  if self.player.opened == window then
+    self.player.opened = nil
+  end
+  self.player.set_shortcut_toggled("rbl-toggle-gui", false)
 end
 
 --- @param e EventData.on_gui_closed
@@ -193,22 +227,13 @@ local function on_main_window_closed(e)
   if self.pinned then
     return
   end
-  e.element.visible = false
-  if self.player.opened == e.element then
-    self.player.opened = nil
-  end
-  self.player.set_shortcut_toggled("rbl-toggle-gui", false)
+  hide_gui(self)
 end
 
 --- @param e EventData.on_gui_click
 local function on_close_button_clicked(e)
   local self = global.gui[e.player_index]
-  local window = self.elems.rbl_main_window
-  window.visible = false
-  if self.player.opened == window then
-    self.player.opened = nil
-  end
-  self.player.set_shortcut_toggled("rbl-toggle-gui", false)
+  hide_gui(self)
 end
 
 --- @param e EventData.on_gui_click
@@ -232,9 +257,7 @@ end
 --- @param e EventData.on_gui_click
 local function on_nav_backward_clicked(e)
   local self = global.gui[e.player_index]
-  self.elems.nav_backward_button.visible = false
-  self.elems.info_pane.visible = false
-  self.elems.search_pane.visible = true
+  return_to_search(self)
 end
 
 --- @param e EventData.on_gui_click
@@ -536,11 +559,11 @@ local function on_gui_toggle(e)
   if not self then
     self = create_gui(player)
   end
-  self.elems.rbl_main_window.visible = true
-  if not self.pinned then
-    player.opened = self.elems.rbl_main_window
+  if self.elems.rbl_main_window.visible then
+    hide_gui(self)
+  else
+    show_gui(self)
   end
-  player.set_shortcut_toggled("rbl-toggle-gui", true)
 end
 
 local gui = {}

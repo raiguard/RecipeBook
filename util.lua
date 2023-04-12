@@ -51,6 +51,42 @@ function util.build_dictionaries()
   end
 end
 
+--- @param player LuaPlayer
+--- @param type string
+--- @param name string
+--- @return LocalisedString
+function util.build_tooltip(player, type, name)
+  local prototype = game[type .. "_prototypes"][name]
+
+  --- @type LocalisedString
+  local prototype_history = { "" }
+  -- XXX: get_prototype_history errors if there is no history, but we cannot tell that ahead of time,
+  -- so a pcall is required for now
+  -- FIXME: Prototype history is not working all the time
+  local has_history, history = pcall(script.get_prototype_history, type, name)
+  if
+    has_history
+    and history
+    and (#history.changed > 0 or (history.created ~= "base" and history.created ~= "core"))
+  then
+    prototype_history =
+      { "", "\n", { "gui.rbl-info-color", { "?", { "mod-name." .. history.created }, history.created } } }
+  end
+
+  --- @type LocalisedString
+  local control_hints = { "" }
+  if player.mod_settings["rbl-show-control-hints"].value then
+    control_hints = { "", "\n", { "gui.rbl-left-click-instruction" }, "\n", { "gui.rbl-right-click-instruction" } }
+  end
+
+  return {
+    "",
+    { "gui.rbl-tooltip-title", prototype.localised_name, { "gui.rbl-" .. type } },
+    prototype_history,
+    control_hints,
+  }
+end
+
 --- @param num number
 --- @return string
 function util.format_number(num)
