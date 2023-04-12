@@ -21,7 +21,7 @@ local function update_info_page(self)
   self.elems.info_recipe_count_label.caption = "[" .. self.index .. "/" .. #self.recipes .. "]"
   self.elems.info_context_label.sprite = self.context
   self.elems.info_context_label.caption =
-    { "", "            ", self.context_type == "product" and "Product of" or "Ingredient in" }
+    { "", "            ", self.context_type == "product" and { "gui.rbl-product-of" } or { "gui.rbl-ingredient-in" } }
   self.elems.info_recipe_name_label.sprite = "recipe/" .. recipe.name
   self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
 
@@ -194,7 +194,12 @@ local function create_gui(player)
       type = "flow",
       style = "flib_titlebar_flow",
       drag_target = "rbl_main_window",
-      { type = "label", style = "frame_title", caption = "Recipe Book Lite", ignored_by_interaction = true },
+      {
+        type = "label",
+        style = "frame_title",
+        caption = { "mod-name.RecipeBookLite" },
+        ignored_by_interaction = true,
+      },
       { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
       {
         type = "sprite-button",
@@ -224,7 +229,7 @@ local function create_gui(player)
         type = "frame",
         style = "subheader_frame",
         style_mods = { horizontally_stretchable = true },
-        { type = "label", style = "subheader_caption_label", caption = "Search" },
+        { type = "label", style = "subheader_caption_label", caption = { "gui.rbl-search" } },
         { type = "empty-widget", style = "flib_horizontal_pusher" },
         {
           type = "textfield",
@@ -315,7 +320,7 @@ local function create_gui(player)
             direction = "vertical",
             {
               type = "flow",
-              { type = "label", style = "caption_label", caption = "Ingredients" },
+              { type = "label", style = "caption_label", caption = { "gui.rbl-ingredients" } },
               {
                 type = "label",
                 name = "info_ingredients_count_label",
@@ -339,7 +344,7 @@ local function create_gui(player)
             direction = "vertical",
             {
               type = "flow",
-              { type = "label", style = "caption_label", caption = "Products" },
+              { type = "label", style = "caption_label", caption = { "gui.rbl-products" } },
               {
                 type = "label",
                 name = "info_products_count_label",
@@ -358,14 +363,14 @@ local function create_gui(player)
         {
           type = "flow",
           style_mods = { vertical_align = "center", horizontal_spacing = 12 },
-          { type = "label", style = "caption_label", caption = "Made in" },
+          { type = "label", style = "caption_label", caption = { "gui.rbl-made-in" } },
           { type = "frame", name = "info_made_in_frame", style = "slot_button_deep_frame" },
         },
         {
           type = "flow",
           name = "info_unlocked_by_flow",
           style_mods = { vertical_align = "center", horizontal_spacing = 12 },
-          { type = "label", style = "caption_label", caption = "Unlocked by" },
+          { type = "label", style = "caption_label", caption = { "gui.rbl-unlocked-by" } },
           { type = "frame", name = "info_unlocked_by_frame", style = "slot_button_deep_frame" },
         },
       },
