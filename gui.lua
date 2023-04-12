@@ -143,14 +143,6 @@ local function on_search_textfield_changed(e)
 end
 
 --- @param e EventData.on_gui_click
-local function on_show_hidden_clicked(e)
-  local self = global.gui[e.player_index]
-  self.show_hidden = not self.show_hidden
-  e.element.style = self.show_hidden and "flib_selected_tool_button" or "tool_button"
-  update_search_results(self)
-end
-
---- @param e EventData.on_gui_click
 on_prototype_button_clicked = function(e)
   local result = e.element.sprite
   local result_type, result_name = string.match(result, "(.-)/(.*)")
@@ -276,6 +268,16 @@ local function on_pin_button_clicked(e)
 end
 
 --- @param e EventData.on_gui_click
+local function on_show_hidden_clicked(e)
+  local self = global.gui[e.player_index]
+  self.show_hidden = not self.show_hidden
+  e.element.style = self.show_hidden and "flib_selected_frame_action_button" or "frame_action_button"
+  e.element.sprite = self.show_hidden and "rbl_show_hidden_black" or "rbl_show_hidden_white"
+  update_search_results(self)
+  -- TODO: Update context list
+end
+
+--- @param e EventData.on_gui_click
 local function on_nav_backward_clicked(e)
   local self = global.gui[e.player_index]
   return_to_search(self)
@@ -358,6 +360,16 @@ local function create_gui(player)
       },
       {
         type = "sprite-button",
+        name = "show_hidden_button",
+        style = "frame_action_button",
+        sprite = "rbl_show_hidden_white",
+        hovered_sprite = "rbl_show_hidden_black",
+        clicked_sprite = "rbl_show_hidden_black",
+        tooltip = { "gui.rbl-show-hidden" },
+        handler = on_show_hidden_clicked,
+      },
+      {
+        type = "sprite-button",
         name = "pin_button",
         style = "frame_action_button",
         sprite = "flib_pin_white",
@@ -388,21 +400,6 @@ local function create_gui(player)
         style_mods = { horizontally_stretchable = true },
         { type = "label", style = "subheader_caption_label", caption = { "gui.rbl-search" } },
         { type = "empty-widget", style = "flib_horizontal_pusher" },
-        -- {
-        --   type = "sprite-button",
-        --   name = "show_unresearched_button",
-        --   style = "tool_button",
-        --   sprite = "rbl_show_unresearched_black",
-        --   tooltip = { "gui.rbl-show-unresearched" },
-        -- },
-        {
-          type = "sprite-button",
-          name = "show_hidden_button",
-          style = "tool_button",
-          sprite = "rbl_show_hidden_black",
-          tooltip = { "gui.rbl-show-hidden" },
-          handler = on_show_hidden_clicked,
-        },
         {
           type = "textfield",
           name = "search_textfield",
