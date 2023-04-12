@@ -241,6 +241,7 @@ local function create_gui(player)
       type = "frame",
       name = "info_pane",
       style = "inside_shallow_frame",
+      style_mods = { width = 516 },
       direction = "vertical",
       visible = false,
       {
@@ -251,6 +252,7 @@ local function create_gui(player)
           type = "sprite-button",
           name = "info_recipe_name_label",
           style = "rbl_subheader_caption_button",
+          style_mods = { horizontally_squashable = true },
           enabled = false,
         },
         { type = "empty-widget", style = "flib_horizontal_pusher" },
@@ -264,7 +266,12 @@ local function create_gui(player)
           type = "label",
           name = "info_recipe_count_label",
           style = "info_label",
-          style_mods = { font = "default-semibold", right_margin = 4 },
+          style_mods = {
+            font = "default-semibold",
+            right_margin = 4,
+            single_line = true,
+            horizontally_squashable = false,
+          },
         },
         {
           type = "sprite-button",
