@@ -51,11 +51,14 @@ function util.build_dictionaries()
   end
 end
 
+--- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaTechnologyPrototype
+
 --- @param player LuaPlayer
 --- @param type string
 --- @param name string
 --- @return LocalisedString
 function util.build_tooltip(player, type, name)
+  --- @type GenericPrototype
   local prototype = game[type .. "_prototypes"][name]
 
   --- @type LocalisedString
@@ -87,6 +90,7 @@ function util.build_tooltip(player, type, name)
     "",
     { "gui.rbl-tooltip-title", prototype.localised_name, { "gui.rbl-" .. type } },
     prototype_history,
+    { "?", { "", "\n", prototype.localised_description }, "" },
     control_hints,
   }
 end
