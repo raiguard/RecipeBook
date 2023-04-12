@@ -69,8 +69,12 @@ function util.build_tooltip(player, type, name)
     and history
     and (#history.changed > 0 or (history.created ~= "base" and history.created ~= "core"))
   then
-    prototype_history =
-      { "", "\n", { "gui.rbl-info-color", { "?", { "mod-name." .. history.created }, history.created } } }
+    --- @type LocalisedString
+    local items = { "", { "?", { "mod-name." .. history.created }, history.created } }
+    for _, mod_name in pairs(history.changed) do
+      items[#items + 1] = { "", " › ", { "?", { "mod-name." .. mod_name }, mod_name } }
+    end
+    prototype_history = { "", "\n", { "gui.rbl-info-color", items } }
   end
 
   --- @type LocalisedString
