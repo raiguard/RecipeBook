@@ -3,6 +3,10 @@ local flib_gui = require("__flib__/gui-lite")
 
 local util = require("__RecipeBookLite__/util")
 
+local search_columns = 13
+local main_panel_width = 40 * search_columns + 12
+local materials_column_width = (main_panel_width - (12 * 3)) / 2
+
 --- @alias ContextType
 --- | "ingredient"
 --- | "product"
@@ -233,15 +237,21 @@ local function create_gui(player)
       {
         type = "scroll-pane",
         style = "flib_naked_scroll_pane_no_padding",
-        style_mods = { maximal_height = 40 * 12, width = 40 * 12 + 12 },
-        { type = "table", name = "search_table", style = "slot_table", column_count = 12, children = buttons },
+        style_mods = { maximal_height = main_panel_width, width = main_panel_width },
+        {
+          type = "table",
+          name = "search_table",
+          style = "slot_table",
+          column_count = search_columns,
+          children = buttons,
+        },
       },
     },
     {
       type = "frame",
       name = "info_pane",
       style = "inside_shallow_frame",
-      style_mods = { width = 516 },
+      style_mods = { width = main_panel_width },
       direction = "vertical",
       visible = false,
       {
@@ -301,7 +311,7 @@ local function create_gui(player)
           style_mods = { horizontal_spacing = 12 },
           {
             type = "flow",
-            style_mods = { width = 240 },
+            style_mods = { width = materials_column_width },
             direction = "vertical",
             {
               type = "flow",
@@ -319,13 +329,13 @@ local function create_gui(player)
               type = "frame",
               name = "info_ingredients_frame",
               style = "deep_frame_in_shallow_frame",
-              style_mods = { width = 240 },
+              style_mods = { width = materials_column_width },
               direction = "vertical",
             },
           },
           {
             type = "flow",
-            style_mods = { width = 240 },
+            style_mods = { width = materials_column_width },
             direction = "vertical",
             {
               type = "flow",
