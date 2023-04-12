@@ -57,6 +57,19 @@ function util.format_number(num)
   return flib_format.number(flib_math.round(num, 0.01))
 end
 
+--- @param entity_name string
+--- @return string?
+function util.get_item_to_place(entity_name)
+  local prototype = game.entity_prototypes[entity_name]
+  if not prototype then
+    return
+  end
+  local _, item = next(prototype.items_to_place_this)
+  if item then
+    return item.name
+  end
+end
+
 --- @param recipe LuaRecipePrototype
 --- @return boolean
 function util.is_hand_craftable(recipe)

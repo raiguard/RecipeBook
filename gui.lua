@@ -11,8 +11,9 @@ local materials_column_width = (main_panel_width - (12 * 3)) / 2
 --- | "ingredient"
 --- | "product"
 
--- This is needed in update_info_page
-local on_search_result_clicked
+-- These are needed in update_info_page
+local on_prototype_button_clicked
+local on_prototype_button_hovered
 
 --- @param self GuiData
 local function update_info_page(self)
@@ -37,7 +38,11 @@ local function update_info_page(self)
       style = "rbl_list_box_item",
       sprite = ingredient.type .. "/" .. ingredient.name,
       caption = util.build_caption(ingredient),
-      handler = on_search_result_clicked,
+      raise_hover_events = true,
+      handler = {
+        [defines.events.on_gui_click] = on_prototype_button_clicked,
+        [defines.events.on_gui_hover] = on_prototype_button_hovered,
+      },
     })
   end
   self.elems.info_ingredients_count_label.caption = "[" .. #recipe.ingredients .. "]"
@@ -51,7 +56,11 @@ local function update_info_page(self)
       style = "rbl_list_box_item",
       sprite = product.type .. "/" .. product.name,
       caption = util.build_caption(product),
-      handler = on_search_result_clicked,
+      raise_hover_events = true,
+      handler = {
+        [defines.events.on_gui_click] = on_prototype_button_clicked,
+        [defines.events.on_gui_hover] = on_prototype_button_hovered,
+      },
     })
   end
   self.elems.info_products_count_label.caption = "[" .. #recipe.products .. "]"
@@ -66,6 +75,7 @@ local function update_info_page(self)
       hovered_sprite = "utility/hand_black",
       clicked_sprite = "utility/hand_black",
       number = recipe.energy,
+      tooltip = { "gui.rbl-handcraft" },
     })
   end
   for _, machine in
@@ -80,6 +90,11 @@ local function update_info_page(self)
         style = "slot_button",
         sprite = "entity/" .. machine.name,
         number = recipe.energy / machine.crafting_speed,
+        raise_hover_events = true,
+        handler = {
+          [defines.events.on_gui_click] = on_prototype_button_clicked,
+          [defines.events.on_gui_hover] = on_prototype_button_hovered,
+        },
       })
     end
   end
@@ -89,10 +104,16 @@ local function update_info_page(self)
   for _, technology in
     pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
   do
-    flib_gui.add(
-      unlocked_by_frame,
-      { type = "sprite-button", style = "slot_button", sprite = "technology/" .. technology.name }
-    )
+    flib_gui.add(unlocked_by_frame, {
+      type = "sprite-button",
+      style = "slot_button",
+      sprite = "technology/" .. technology.name,
+      raise_hover_events = true,
+      handler = {
+        [defines.events.on_gui_click] = on_prototype_button_clicked,
+        [defines.events.on_gui_hover] = on_prototype_button_hovered,
+      },
+    })
   end
   self.elems.info_unlocked_by_flow.visible = #unlocked_by_frame.children > 0
 end
@@ -109,10 +130,21 @@ local function on_search_textfield_changed(e)
 end
 
 --- @param e EventData.on_gui_click
-on_search_result_clicked = function(e)
+on_prototype_button_clicked = function(e)
   local result = e.element.sprite
   local result_type, result_name = string.match(result, "(.-)/(.*)")
+  if result_type == "entity" then
+    result_name = util.get_item_to_place(result_name)
+    result_type = "item"
+  end
+  if not result_name then
+    return
+  end
   local self = global.gui[e.player_index]
+  if result_type == "technology" then
+    self.player.open_technology_gui(result_name)
+    return
+  end
   self.context_type = e.button == defines.mouse_button_type.left and "product" or "ingredient"
 
   local recipes = game.get_filtered_recipe_prototypes({
@@ -142,6 +174,17 @@ on_search_result_clicked = function(e)
   self.context = result
 
   update_info_page(self)
+end
+
+on_prototype_button_hovered = function(e)
+  local elem = e.element
+  if elem.tooltip ~= "" then
+    return
+  end
+  --- @type string, string
+  local type, name = string.match(elem.sprite, "(.-)/(.*)")
+  local prototype = game[type .. "_prototypes"][name]
+  elem.tooltip = { "gui.rbl-tooltip-title", prototype.localised_name, { "gui.rbl-" .. type } }
 end
 
 --- @param e EventData.on_gui_closed
@@ -215,8 +258,11 @@ local function create_gui(player)
       type = "sprite-button",
       style = "slot_button",
       sprite = "item/" .. item.name,
-      tooltip = item.localised_name,
-      handler = on_search_result_clicked,
+      raise_hover_events = true,
+      handler = {
+        [defines.events.on_gui_click] = on_prototype_button_clicked,
+        [defines.events.on_gui_hover] = on_prototype_button_hovered,
+      },
     })
   end
   for _, fluid in pairs(game.fluid_prototypes) do
@@ -224,8 +270,11 @@ local function create_gui(player)
       type = "sprite-button",
       style = "slot_button",
       sprite = "fluid/" .. fluid.name,
-      tooltip = fluid.localised_name,
-      handler = on_search_result_clicked,
+      raise_hover_events = true,
+      handler = {
+        [defines.events.on_gui_click] = on_prototype_button_clicked,
+        [defines.events.on_gui_hover] = on_prototype_button_hovered,
+      },
     })
   end
   local elems = flib_gui.add(player.gui.screen, {
@@ -327,6 +376,8 @@ local function create_gui(player)
           style = "rbl_subheader_caption_button",
           style_mods = { horizontally_squashable = true },
           enabled = false,
+          raise_hover_events = true,
+          handler = { [defines.events.on_gui_hover] = on_prototype_button_hovered },
         },
         { type = "empty-widget", style = "flib_horizontal_pusher" },
         {
@@ -334,6 +385,8 @@ local function create_gui(player)
           name = "info_context_label",
           style = "rbl_subheader_caption_button",
           enabled = false,
+          raise_hover_events = true,
+          handler = { [defines.events.on_gui_hover] = on_prototype_button_hovered },
         },
         {
           type = "label",
@@ -510,8 +563,9 @@ flib_gui.add_handlers({
   on_main_window_closed = on_main_window_closed,
   on_nav_backward_clicked = on_nav_backward_clicked,
   on_pin_button_clicked = on_pin_button_clicked,
+  on_prototype_button_clicked = on_prototype_button_clicked,
+  on_prototype_button_hovered = on_prototype_button_hovered,
   on_recipe_nav_clicked = on_recipe_nav_clicked,
-  on_search_result_clicked = on_search_result_clicked,
   on_search_textfield_changed = on_search_textfield_changed,
 })
 
