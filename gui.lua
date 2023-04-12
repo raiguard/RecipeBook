@@ -38,8 +38,10 @@ local function update_info_page(self)
   self.elems.info_context_label.sprite = self.context
   self.elems.info_context_label.caption =
     { "", "            ", self.context_type == "product" and { "gui.rbl-product-of" } or { "gui.rbl-ingredient-in" } }
+  self.elems.info_context_label.tooltip = ""
   self.elems.info_recipe_name_label.sprite = "recipe/" .. recipe.name
   self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
+  self.elems.info_recipe_name_label.tooltip = ""
 
   local ingredients_frame = self.elems.info_ingredients_frame
   ingredients_frame.clear()
