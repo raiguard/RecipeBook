@@ -7,7 +7,7 @@
   "contact": "https://github.com/raiguard/RecipeBookLite",
   "homepage": "https://github.com/raiguard/RecipeBookLite",
   "factorio_version": "1.1",
-  "dependencies": [ "base >= 1.1.80", "flib >= 0.12.5", "! RecipeBook" ],
+  "dependencies": [ "base >= 1.1.80", "flib >= 0.12.5" ],
   "package": {
     "ignore": [ "imgui.ini", "screenshots", "stylua.toml" ],
     "scripts": {
