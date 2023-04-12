@@ -138,16 +138,58 @@ on_search_result_clicked = function(e)
 
   self.elems.search_pane.visible = false
   self.elems.info_pane.visible = true
-  self.elems.back_to_search_button.visible = true
+  self.elems.nav_backward_button.visible = true
   self.context = result
 
   update_info_page(self)
 end
 
---- @param e EventData.on_gui_click
-local function on_back_to_search_clicked(e)
+--- @param e EventData.on_gui_closed
+local function on_main_window_closed(e)
   local self = global.gui[e.player_index]
-  self.elems.back_to_search_button.visible = false
+  if self.pinned then
+    return
+  end
+  e.element.visible = false
+  if self.player.opened == e.element then
+    self.player.opened = nil
+  end
+  self.player.set_shortcut_toggled("rbl-toggle-gui", false)
+end
+
+--- @param e EventData.on_gui_click
+local function on_close_button_clicked(e)
+  local self = global.gui[e.player_index]
+  local window = self.elems.rbl_main_window
+  window.visible = false
+  if self.player.opened == window then
+    self.player.opened = nil
+  end
+  self.player.set_shortcut_toggled("rbl-toggle-gui", false)
+end
+
+--- @param e EventData.on_gui_click
+local function on_pin_button_clicked(e)
+  local self = global.gui[e.player_index]
+  self.pinned = not self.pinned
+  if self.pinned then
+    self.player.opened = nil
+    e.element.style = "flib_selected_frame_action_button"
+    e.element.sprite = "flib_pin_black"
+    self.elems.close_button.tooltip = { "gui.close" }
+  else
+    self.player.opened = self.elems.rbl_main_window
+    self.elems.rbl_main_window.force_auto_center()
+    e.element.style = "frame_action_button"
+    e.element.sprite = "flib_pin_white"
+    self.elems.close_button.tooltip = { "gui.close-instruction" }
+  end
+end
+
+--- @param e EventData.on_gui_click
+local function on_nav_backward_clicked(e)
+  local self = global.gui[e.player_index]
+  self.elems.nav_backward_button.visible = false
   self.elems.info_pane.visible = false
   self.elems.search_pane.visible = true
 end
@@ -165,6 +207,7 @@ local function on_recipe_nav_clicked(e)
 end
 
 --- @param player LuaPlayer
+--- @return GuiData
 local function create_gui(player)
   local buttons = {}
   for _, item in pairs(game.item_prototypes) do
@@ -190,6 +233,8 @@ local function create_gui(player)
     name = "rbl_main_window",
     direction = "vertical",
     elem_mods = { auto_center = true },
+    visible = false,
+    handler = { [defines.events.on_gui_closed] = on_main_window_closed },
     {
       type = "flow",
       style = "flib_titlebar_flow",
@@ -203,21 +248,34 @@ local function create_gui(player)
       { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
       {
         type = "sprite-button",
-        name = "back_to_search_button",
+        name = "nav_backward_button",
         style = "frame_action_button",
         sprite = "rbl_nav_backward_white",
         hovered_sprite = "rbl_nav_backward_black",
         clicked_sprite = "rbl_nav_backward_black",
-        tooltip = "Back to search",
+        tooltip = { "gui.rbl-go-back" },
         visible = false,
-        handler = on_back_to_search_clicked,
+        handler = on_nav_backward_clicked,
       },
       {
         type = "sprite-button",
+        name = "pin_button",
+        style = "frame_action_button",
+        sprite = "flib_pin_white",
+        hovered_sprite = "flib_pin_black",
+        clicked_sprite = "flib_pin_black",
+        tooltip = { "gui.flib-keep-open" },
+        handler = on_pin_button_clicked,
+      },
+      {
+        type = "sprite-button",
+        name = "close_button",
         style = "frame_action_button",
         sprite = "utility/close_white",
         hovered_sprite = "utility/close_black",
         clicked_sprite = "utility/close_black",
+        tooltip = { "gui.close-instruction" },
+        handler = on_close_button_clicked,
       },
     },
     {
@@ -386,7 +444,7 @@ local function create_gui(player)
   })
 
   --- @class GuiData
-  global.gui[player.index] = {
+  local self = {
     --- @type string?
     context = nil,
     --- @type ContextType
@@ -396,8 +454,11 @@ local function create_gui(player)
     index = 1,
     --- @type LuaRecipePrototype[]?
     recipes = nil,
+    pinned = false,
     player = player,
   }
+  global.gui[player.index] = self
+  return self
 end
 
 --- @param e EventData.on_player_created
@@ -407,6 +468,26 @@ local function on_player_created(e)
     return
   end
   create_gui(player)
+end
+
+--- @param e EventData.CustomInputEvent|EventData.on_lua_shortcut
+local function on_gui_toggle(e)
+  if e.prototype_name and e.prototype_name ~= "rbl-toggle-gui" then
+    return
+  end
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
+  local self = global.gui[e.player_index]
+  if not self then
+    self = create_gui(player)
+  end
+  self.elems.rbl_main_window.visible = true
+  if not self.pinned then
+    player.opened = self.elems.rbl_main_window
+  end
+  player.set_shortcut_toggled("rbl-toggle-gui", true)
 end
 
 local gui = {}
@@ -419,11 +500,16 @@ end
 gui.on_configuration_changed = util.build_dictionaries
 
 gui.events = {
+  [defines.events.on_lua_shortcut] = on_gui_toggle,
   [defines.events.on_player_created] = on_player_created,
+  ["rbl-toggle-gui"] = on_gui_toggle,
 }
 
 flib_gui.add_handlers({
-  on_back_to_search_clicked = on_back_to_search_clicked,
+  on_close_button_clicked = on_close_button_clicked,
+  on_main_window_closed = on_main_window_closed,
+  on_nav_backward_clicked = on_nav_backward_clicked,
+  on_pin_button_clicked = on_pin_button_clicked,
   on_recipe_nav_clicked = on_recipe_nav_clicked,
   on_search_result_clicked = on_search_result_clicked,
   on_search_textfield_changed = on_search_textfield_changed,

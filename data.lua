@@ -1,5 +1,27 @@
 data:extend({
   {
+    type = "custom-input",
+    name = "rbl-toggle-gui",
+    key_sequence = "CONTROL + B",
+  },
+  {
+    type = "shortcut",
+    name = "rbl-toggle-gui",
+    icon = {
+      filename = "__RecipeBookLite__/graphics/shortcut-x32-black.png",
+      size = 32,
+      flags = { "gui-icon" },
+    },
+    small_icon = {
+      filename = "__RecipeBookLite__/graphics/shortcut-x24-black.png",
+      size = 24,
+      flags = { "gui-icon" },
+    },
+    associated_control_input = "rbl-toggle-gui",
+    toggleable = true,
+    action = "lua",
+  },
+  {
     type = "sprite",
     name = "rbl_nav_backward_black",
     filename = "__RecipeBookLite__/graphics/nav-backward-black.png",
