@@ -90,7 +90,7 @@ return function(database, metadata)
         num_item_ingredients = num_item_ingredients + 1
       end
     end
-    for crafter_name in pairs(global.prototypes.crafter) do
+    for _, crafter_name in ipairs(metadata.crafter_names) do
       local crafter_data = database.entity[crafter_name]
       local fluidbox_counts = metadata.crafter_fluidbox_counts[crafter_name] or { inputs = 0, outputs = 0 }
       if

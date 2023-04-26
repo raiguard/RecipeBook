@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.3
 Date: ????
+  Features:
+    - Added character to "made in" list for recipes that are hand-craftable (again)
   Bugfixes:
     - Fixed a crash when migrating from before version 3.0
 ---------------------------------------------------------------------------------------------------

@@ -1,34 +1,7 @@
 local util = require("scripts.util")
 
 return function(database, metadata)
-  -- Characters as crafters
-  for name, prototype in pairs(global.prototypes.character) do
-    local ingredient_limit = prototype.ingredient_count
-    if ingredient_limit == 255 then
-      ingredient_limit = nil
-    end
-    database.entity[name] = {
-      accepted_modules = {}, -- Always empty
-      blueprintable = false,
-      can_burn = {}, -- Always empty
-      can_craft = {},
-      class = "entity",
-      crafting_speed = 1,
-      enabled = true,
-      entity_type = { class = "entity_type", name = prototype.type },
-      hidden = false,
-      ingredient_limit = ingredient_limit,
-      is_character = true,
-      placed_by = util.process_placed_by(prototype),
-      prototype_name = name,
-      recipe_categories_lookup = prototype.crafting_categories or {},
-      recipe_categories = util.convert_categories(prototype.crafting_categories or {}, "recipe_category"),
-      science_packs = {},
-      unlocked_by = {},
-    }
-    util.add_to_dictionary("entity", name, prototype.localised_name)
-    util.add_to_dictionary("entity_description", name, prototype.localised_description)
-  end
+  metadata.crafter_names = {}
 
   -- Actual crafters
   metadata.allowed_effects = {}
@@ -100,9 +73,40 @@ return function(database, metadata)
       size = util.get_size(prototype),
       unlocked_by = {},
     }
+    metadata.crafter_names[#metadata.crafter_names + 1] = name
     util.add_to_dictionary("entity", name, prototype.localised_name)
     util.add_to_dictionary("entity_description", name, prototype.localised_description)
   end
 
   metadata.rocket_silo_categories = rocket_silo_categories
+
+  -- Characters as crafters
+  for name, prototype in pairs(global.prototypes.character) do
+    local ingredient_limit = prototype.ingredient_count
+    if ingredient_limit == 255 then
+      ingredient_limit = nil
+    end
+    database.entity[name] = {
+      accepted_modules = {}, -- Always empty
+      blueprintable = false,
+      can_burn = {},         -- Always empty
+      can_craft = {},
+      class = "entity",
+      crafting_speed = 1,
+      enabled = true,
+      entity_type = { class = "entity_type", name = prototype.type },
+      hidden = false,
+      ingredient_limit = ingredient_limit,
+      is_character = true,
+      placed_by = util.process_placed_by(prototype),
+      prototype_name = name,
+      recipe_categories_lookup = prototype.crafting_categories or {},
+      recipe_categories = util.convert_categories(prototype.crafting_categories or {}, "recipe_category"),
+      science_packs = {},
+      unlocked_by = {},
+    }
+    metadata.crafter_names[#metadata.crafter_names + 1] = name
+    util.add_to_dictionary("entity", name, prototype.localised_name)
+    util.add_to_dictionary("entity_description", name, prototype.localised_description)
+  end
 end
