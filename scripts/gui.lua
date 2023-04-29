@@ -402,11 +402,14 @@ function gui.update_page(self, prototype_path)
   -- Update history
   local history = self.history
   if prototype_path then
+    for i = history.__index + 1, #history do
+      history[i] = nil
+    end
     local existing = table.find(history, path)
     if existing then
       table.remove(history, existing)
     end
-    table.insert(history, path)
+    history[#history+1] = path
     history.__index = #history
   end
   self.current_page = path
