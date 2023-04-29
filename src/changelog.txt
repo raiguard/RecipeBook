@@ -3,6 +3,7 @@ Version: 3.5.3
 Date: ????
   Bugfixes:
     - Fixed a crash when migrating from before version 3.0
+    - Fixed that characters were not showing as being able to craft recipes
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.2
 Date: 2023-01-16
