@@ -1,9 +1,9 @@
 local flib_gui = require("__flib__/gui-lite")
 local math = require("__flib__/math")
 
-local database = require("__RecipeBook__/database")
-local gui_templates = require("__RecipeBook__/gui-templates")
-local util = require("__RecipeBook__/util")
+local database = require("__RecipeBook__/scripts/database")
+local gui_templates = require("__RecipeBook__/scripts/gui-templates")
+local util = require("__RecipeBook__/scripts/util")
 
 --- @class GuiUtil
 local gui_util = {}

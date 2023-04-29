@@ -1,7 +1,7 @@
 local dictionary = require("__flib__/dictionary-lite")
 local table = require("__flib__/table")
 
-local util = require("__RecipeBook__/util")
+local util = require("__RecipeBook__/scripts/util")
 
 -- DESIGN GOALS:
 -- Find a balance between caching information and generating it on the fly

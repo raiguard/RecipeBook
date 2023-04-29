@@ -1,7 +1,7 @@
 local flib_gui = require("__flib__/gui-lite")
 
-local database = require("__RecipeBook__/database")
-local util = require("__RecipeBook__/util")
+local database = require("__RecipeBook__/scripts/database")
+local util = require("__RecipeBook__/scripts/util")
 
 --- @class GuiTemplates
 local gui_templates = {}

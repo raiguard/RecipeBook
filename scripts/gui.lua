@@ -4,10 +4,10 @@ local math = require("__flib__/math")
 local mod_gui = require("__core__/lualib/mod-gui")
 local table = require("__flib__/table")
 
-local database = require("__RecipeBook__/database")
-local gui_templates = require("__RecipeBook__/gui-templates")
-local gui_util = require("__RecipeBook__/gui-util")
-local util = require("__RecipeBook__/util")
+local database = require("__RecipeBook__/scripts/database")
+local gui_templates = require("__RecipeBook__/scripts/gui-templates")
+local gui_util = require("__RecipeBook__/scripts/gui-util")
+local util = require("__RecipeBook__/scripts/util")
 
 --- @class GuiMod
 local gui = {}
