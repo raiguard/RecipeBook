@@ -2,3 +2,4 @@
 pesticide.toml
 .vscode
 imgui.ini
+.luarc.json
