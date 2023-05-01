@@ -152,4 +152,14 @@ function util.is_hand_craftable(recipe)
   return true
 end
 
+util.refresh_guis_paused_event = script.generate_event_name()
+
+--- @param player LuaPlayer
+function util.schedule_gui_refresh(player)
+  global.refresh_gui[player.index] = true
+  if game.tick_paused then
+    script.raise_event(util.refresh_guis_paused_event, {})
+  end
+end
+
 return util

@@ -4,20 +4,19 @@ local flib_position = require("__flib__/position")
 
 local util = require("__RecipeBookLite__/scripts/util")
 
-local search_columns = 13
-local main_panel_width = 40 * search_columns + 12
-local materials_column_width = (main_panel_width - (12 * 3)) / 2
-
 --- @alias ContextType
 --- | "ingredient"
 --- | "product"
 
+local search_columns = 13
+local main_panel_width = 40 * search_columns + 12
+local materials_column_width = (main_panel_width - (12 * 3)) / 2
+--- @type GuiLocation
+local top_left_location = { x = 15, y = 58 + 15 }
+
 -- These are needed in update_info_page
 local on_prototype_button_clicked
 local on_prototype_button_hovered
-
---- @type GuiLocation
-local top_left_location = { x = 15, y = 58 + 15 }
 
 --- @param self GuiData
 local function reset_gui_location(self)
@@ -27,33 +26,30 @@ local function reset_gui_location(self)
 end
 
 --- @param self GuiData
-local function toggle_pinned(self)
-  local pin_button = self.elems.pin_button
-  self.pinned = not self.pinned
-  if self.pinned then
-    if self.player.opened == self.elems.rbl_main_window then
-      self.player.opened = nil
-    end
-    pin_button.style = "flib_selected_frame_action_button"
-    pin_button.sprite = "flib_pin_black"
-    self.elems.close_button.tooltip = { "gui.close" }
-  else
-    self.player.opened = self.elems.rbl_main_window
-    pin_button.style = "frame_action_button"
-    pin_button.sprite = "flib_pin_white"
-    self.elems.close_button.tooltip = { "gui.close-instruction" }
-  end
-end
-
---- @param self GuiData
 local function update_search_results(self)
   local query = self.search_query
   local show_hidden = self.show_hidden
+  local show_unresearched = self.show_unresearched
   local dictionary = flib_dictionary.get(self.player.index, "search") or {}
+  local researched = global.researched_objects[self.player.force_index]
   for _, button in pairs(self.elems.search_table.children) do
-    if show_hidden or not button.tags.is_hidden then
+    local is_researched = researched[
+      button.sprite --[[@as string]]
+    ]
+    local is_hidden = button.tags.is_hidden
+    if (show_hidden or not is_hidden) and (show_unresearched or is_researched) then
       local search_key = dictionary[button.sprite] or button.name
-      button.visible = not not string.find(string.lower(search_key), query, nil, true)
+      local search_matched = not not string.find(string.lower(search_key), query, nil, true)
+      button.visible = search_matched
+      if search_matched then
+        if is_hidden then
+          button.style = "flib_slot_button_grey"
+        elseif not is_researched then
+          button.style = "flib_slot_button_red"
+        else
+          button.style = "flib_slot_button_default"
+        end
+      end
     else
       button.visible = false
     end
@@ -62,6 +58,10 @@ end
 
 --- @param self GuiData
 local function update_info_page(self)
+  if not self.recipes then
+    return
+  end
+
   local recipe = self.recipes[self.index]
 
   self.elems.info_recipe_count_label.caption = "[" .. self.index .. "/" .. #self.recipes .. "]"
@@ -193,8 +193,8 @@ local function open_page(self, context, type, name)
     },
   })
   local recipes_array = {}
-  for _, recipe in pairs(recipes) do
-    recipes_array[#recipes_array + 1] = recipe
+  for _, recipe_prototype in pairs(recipes) do
+    recipes_array[#recipes_array + 1] = recipe_prototype
   end
   if not next(recipes_array) then
     self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
@@ -212,6 +212,35 @@ local function open_page(self, context, type, name)
   update_info_page(self)
 
   return true
+end
+
+--- @param self GuiData
+local function toggle_pinned(self)
+  local pin_button = self.elems.pin_button
+  self.pinned = not self.pinned
+  if self.pinned then
+    if self.player.opened == self.elems.rbl_main_window then
+      self.player.opened = nil
+    end
+    pin_button.style = "flib_selected_frame_action_button"
+    pin_button.sprite = "flib_pin_black"
+    self.elems.close_button.tooltip = { "gui.close" }
+  else
+    self.player.opened = self.elems.rbl_main_window
+    pin_button.style = "frame_action_button"
+    pin_button.sprite = "flib_pin_white"
+    self.elems.close_button.tooltip = { "gui.close-instruction" }
+  end
+end
+
+--- @param self GuiData
+local function toggle_show_unresearched(self)
+  self.show_unresearched = not self.show_unresearched
+  self.elems.show_unresearched_button.style = self.show_unresearched and "flib_selected_frame_action_button"
+    or "frame_action_button"
+  self.elems.show_unresearched_button.sprite = self.show_unresearched and "rbl_show_unresearched_black"
+    or "rbl_show_unresearched_white"
+  update_search_results(self)
 end
 
 --- @param e EventData.on_gui_text_changed
@@ -329,10 +358,7 @@ end
 --- @param e EventData.on_gui_click
 local function on_show_unresearched_clicked(e)
   local self = global.gui[e.player_index]
-  self.show_unresearched = not self.show_unresearched
-  e.element.style = self.show_unresearched and "flib_selected_frame_action_button" or "frame_action_button"
-  e.element.sprite = self.show_unresearched and "rbl_show_unresearched_black" or "rbl_show_unresearched_white"
-  update_search_results(self)
+  toggle_show_unresearched(self)
   -- TODO: Update context list
 end
 
@@ -648,10 +674,12 @@ local function create_gui(player)
     recipes = nil,
     search_query = "",
     show_hidden = false,
+    show_unresearched = false,
   }
   global.gui[player.index] = self
 
   reset_gui_location(self)
+  toggle_show_unresearched(self)
 
   return self
 end
@@ -731,11 +759,24 @@ local function on_gui_toggle(e)
   end
 end
 
+local function on_tick()
+  for player_index in pairs(global.refresh_gui) do
+    local self = global.gui[player_index]
+    if self then
+      update_search_results(self)
+      update_info_page(self)
+    end
+    global.refresh_gui[player_index] = nil
+  end
+end
+
 local gui = {}
 
 gui.on_init = function()
   --- @type table<uint, GuiData>
   global.gui = {}
+  --- @type Set<uint>
+  global.refresh_gui = {}
   util.build_dictionaries()
 end
 gui.on_configuration_changed = util.build_dictionaries
@@ -743,8 +784,10 @@ gui.on_configuration_changed = util.build_dictionaries
 gui.events = {
   [defines.events.on_lua_shortcut] = on_gui_toggle,
   [defines.events.on_player_created] = on_player_created,
+  [defines.events.on_tick] = on_tick,
   ["rbl-open-selected"] = on_open_selected,
   ["rbl-toggle-gui"] = on_gui_toggle,
+  [util.refresh_guis_paused_event] = on_tick,
 }
 
 flib_gui.add_handlers({
