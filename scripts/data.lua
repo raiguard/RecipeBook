@@ -25,7 +25,10 @@ local function unlock_mining_products(entity, researched)
       resource_categories[resource.resource_category]
       and (not required_fluid or filter == true or filter == required_fluid)
     then
-      unlock_products(resource.mineable_properties.products, researched)
+      local products = resource.mineable_properties.products
+      if products then
+        unlock_products(products, researched)
+      end
     end
   end
 end
