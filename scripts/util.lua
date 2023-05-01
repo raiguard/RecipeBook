@@ -91,7 +91,8 @@ function util.build_tooltip(player, type, name)
   if type == "recipe" then
     local main_product = prototype.main_product
     if main_product then
-      descriptions[#descriptions + 1] = game.item_prototypes[main_product.name].localised_description
+      descriptions[#descriptions + 1] =
+        game[main_product.type .. "_prototypes"][main_product.name].localised_description
     end
   end
   if type == "item" then
