@@ -56,11 +56,33 @@ local function update_search_results(self)
   end
 end
 
+--- @param obj Ingredient|Product
+--- @param researched Set<string>
+--- @return GuiElemDef
+local function build_list_box_item(obj, researched)
+  local path = obj.type .. "/" .. obj.name
+  local is_researched = researched[path]
+  local style = is_researched and "rbl_list_box_item" or "rbl_list_box_item_unresearched"
+  return {
+    type = "sprite-button",
+    style = style,
+    sprite = obj.type .. "/" .. obj.name,
+    caption = util.build_caption(obj),
+    raise_hover_events = true,
+    handler = {
+      [defines.events.on_gui_click] = on_prototype_button_clicked,
+      [defines.events.on_gui_hover] = on_prototype_button_hovered,
+    },
+  }
+end
+
 --- @param self GuiData
 local function update_info_page(self)
   if not self.recipes then
     return
   end
+
+  local researched = global.researched_objects[self.player.force_index]
 
   local recipe = self.recipes[self.index]
 
@@ -72,6 +94,8 @@ local function update_info_page(self)
   self.elems.info_recipe_name_label.sprite = "recipe/" .. recipe.name
   self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
   self.elems.info_recipe_name_label.tooltip = ""
+  self.elems.info_recipe_name_label.style = researched["recipe/" .. recipe.name] and "rbl_subheader_caption_button"
+    or "rbl_subheader_caption_button_unresearched"
 
   local ingredients_frame = self.elems.info_ingredients_frame
   ingredients_frame.clear()
@@ -80,17 +104,7 @@ local function update_info_page(self)
     if ingredient.type == "item" then
       item_ingredients = item_ingredients + 1
     end
-    flib_gui.add(ingredients_frame, {
-      type = "sprite-button",
-      style = "rbl_list_box_item",
-      sprite = ingredient.type .. "/" .. ingredient.name,
-      caption = util.build_caption(ingredient),
-      raise_hover_events = true,
-      handler = {
-        [defines.events.on_gui_click] = on_prototype_button_clicked,
-        [defines.events.on_gui_hover] = on_prototype_button_hovered,
-      },
-    })
+    flib_gui.add(ingredients_frame, build_list_box_item(ingredient, researched))
   end
   self.elems.info_ingredients_count_label.caption = "[" .. #recipe.ingredients .. "]"
   self.elems.info_ingredients_energy_label.caption = "[img=quantity-time] " .. util.format_number(recipe.energy) .. " s"
@@ -98,17 +112,7 @@ local function update_info_page(self)
   local products_frame = self.elems.info_products_frame
   products_frame.clear()
   for _, product in pairs(recipe.products) do
-    flib_gui.add(products_frame, {
-      type = "sprite-button",
-      style = "rbl_list_box_item",
-      sprite = product.type .. "/" .. product.name,
-      caption = util.build_caption(product),
-      raise_hover_events = true,
-      handler = {
-        [defines.events.on_gui_click] = on_prototype_button_clicked,
-        [defines.events.on_gui_hover] = on_prototype_button_hovered,
-      },
-    })
+    flib_gui.add(products_frame, build_list_box_item(product, researched))
   end
   self.elems.info_products_count_label.caption = "[" .. #recipe.products .. "]"
 
