@@ -51,7 +51,7 @@ function util.build_dictionaries()
   end
 end
 
---- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaTechnologyPrototype
+--- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
 
 --- @param player LuaPlayer
 --- @param type string
@@ -86,11 +86,34 @@ function util.build_tooltip(player, type, name)
     control_hints = { "", "\n", { "gui.rbl-left-click-instruction" }, "\n", { "gui.rbl-right-click-instruction" } }
   end
 
+  --- @type LocalisedString
+  local descriptions = { "?", prototype.localised_description }
+  if type == "recipe" then
+    local main_product = prototype.main_product
+    if main_product then
+      descriptions[#descriptions + 1] = game.item_prototypes[main_product.name].localised_description
+    end
+  end
+  if type == "item" then
+    local place_result = prototype.place_result
+    if place_result then
+      descriptions[#descriptions + 1] = place_result.localised_description
+    end
+    local place_as_equipment_result = prototype.place_as_equipment_result
+    if place_as_equipment_result then
+      descriptions[#descriptions + 1] = place_as_equipment_result.localised_description
+    end
+    local place_as_tile_result = prototype.place_as_tile_result
+    if place_as_tile_result then
+      descriptions[#descriptions + 1] = place_as_tile_result.result.localised_description
+    end
+  end
+
   return {
     "",
     { "gui.rbl-tooltip-title", prototype.localised_name, { "gui.rbl-" .. type } },
     prototype_history,
-    { "?", { "", "\n", prototype.localised_description }, "" },
+    { "?", { "", "\n", descriptions }, "" },
     control_hints,
   }
 end
