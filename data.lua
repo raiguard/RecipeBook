@@ -48,6 +48,13 @@ data:extend({
     size = 32,
     flags = { "gui-icon" },
   },
+  {
+    type = "sprite",
+    name = "rbl_show_unresearched_white",
+    filename = "__RecipeBookLite__/graphics/show-unresearched-white.png",
+    size = 32,
+    flags = { "gui-icon" },
+  },
 })
 
 local styles = data.raw["gui-style"]["default"]

@@ -207,7 +207,6 @@ local function open_page(self, context, type, name)
 
   self.elems.search_pane.visible = false
   self.elems.info_pane.visible = true
-  self.elems.nav_backward_button.visible = true
   self.context = type .. "/" .. name
 
   update_info_page(self)
@@ -247,7 +246,6 @@ end
 
 --- @param self GuiData
 local function return_to_search(self)
-  self.elems.nav_backward_button.visible = false
   self.elems.info_pane.visible = false
   self.elems.search_pane.visible = true
   if self.player.mod_settings["rbl-auto-focus-search-box"].value then
@@ -329,6 +327,16 @@ local function on_nav_backward_clicked(e)
 end
 
 --- @param e EventData.on_gui_click
+local function on_show_unresearched_clicked(e)
+  local self = global.gui[e.player_index]
+  self.show_unresearched = not self.show_unresearched
+  e.element.style = self.show_unresearched and "flib_selected_frame_action_button" or "frame_action_button"
+  e.element.sprite = self.show_unresearched and "rbl_show_unresearched_black" or "rbl_show_unresearched_white"
+  update_search_results(self)
+  -- TODO: Update context list
+end
+
+--- @param e EventData.on_gui_click
 local function on_recipe_nav_clicked(e)
   local self = global.gui[e.player_index]
   self.index = self.index + e.element.tags.nav_offset
@@ -394,14 +402,13 @@ local function create_gui(player)
       { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
       {
         type = "sprite-button",
-        name = "nav_backward_button",
+        name = "show_unresearched_button",
         style = "frame_action_button",
-        sprite = "flib_nav_backward_white",
-        hovered_sprite = "flib_nav_backward_black",
-        clicked_sprite = "flib_nav_backward_black",
-        tooltip = { "gui.rbl-go-back" },
-        visible = false,
-        handler = on_nav_backward_clicked,
+        sprite = "rbl_show_unresearched_white",
+        hovered_sprite = "rbl_show_unresearched_black",
+        clicked_sprite = "rbl_show_unresearched_black",
+        tooltip = { "gui.rbl-show-unresearched" },
+        handler = on_show_unresearched_clicked,
       },
       {
         type = "sprite-button",
@@ -413,6 +420,28 @@ local function create_gui(player)
         tooltip = { "gui.rbl-show-hidden" },
         handler = on_show_hidden_clicked,
       },
+      { type = "line", style = "flib_titlebar_separator_line", direction = "vertical", ignored_by_interaction = true },
+      {
+        type = "sprite-button",
+        name = "nav_backward_button",
+        style = "frame_action_button",
+        sprite = "flib_nav_backward_white",
+        hovered_sprite = "flib_nav_backward_black",
+        clicked_sprite = "flib_nav_backward_black",
+        tooltip = { "gui.rbl-go-back" },
+        handler = on_nav_backward_clicked,
+      },
+      {
+        type = "sprite-button",
+        name = "nav_forward_button",
+        style = "frame_action_button",
+        sprite = "flib_nav_forward_white",
+        hovered_sprite = "flib_nav_forward_black",
+        clicked_sprite = "flib_nav_forward_black",
+        tooltip = { "gui.rbl-go-forward" },
+        handler = on_nav_forward_clicked,
+      },
+      { type = "line", style = "flib_titlebar_separator_line", direction = "vertical", ignored_by_interaction = true },
       {
         type = "sprite-button",
         name = "pin_button",
@@ -728,6 +757,7 @@ flib_gui.add_handlers({
   on_recipe_nav_clicked = on_recipe_nav_clicked,
   on_search_textfield_changed = on_search_textfield_changed,
   on_show_hidden_clicked = on_show_hidden_clicked,
+  on_show_unresearched_clicked = on_show_unresearched_clicked,
   on_titlebar_clicked = on_titlebar_clicked,
 })
 
