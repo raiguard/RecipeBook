@@ -17,6 +17,7 @@ local top_left_location = { x = 15, y = 58 + 15 }
 -- These are needed in update_info_page
 local on_prototype_button_clicked
 local on_prototype_button_hovered
+local on_prototype_button_left
 
 --- @param self GuiData
 local function reset_gui_location(self)
@@ -72,6 +73,7 @@ local function build_list_box_item(obj, researched)
     handler = {
       [defines.events.on_gui_click] = on_prototype_button_clicked,
       [defines.events.on_gui_hover] = on_prototype_button_hovered,
+      [defines.events.on_gui_leave] = on_prototype_button_left,
     },
   }
 end
@@ -145,6 +147,7 @@ local function update_info_page(self)
         handler = {
           [defines.events.on_gui_click] = on_prototype_button_clicked,
           [defines.events.on_gui_hover] = on_prototype_button_hovered,
+          [defines.events.on_gui_leave] = on_prototype_button_left,
         },
       })
     end
@@ -163,6 +166,7 @@ local function update_info_page(self)
       handler = {
         [defines.events.on_gui_click] = on_prototype_button_clicked,
         [defines.events.on_gui_hover] = on_prototype_button_hovered,
+        [defines.events.on_gui_leave] = on_prototype_button_left,
       },
     })
   end
@@ -267,14 +271,17 @@ on_prototype_button_clicked = function(e)
   open_page(self, e.button == defines.mouse_button_type.left and "product" or "ingredient", type, name)
 end
 
+--- @param e EventData.on_gui_hover
 on_prototype_button_hovered = function(e)
   local elem = e.element
-  if elem.tooltip ~= "" then
-    return
-  end
   --- @type string, string
   local type, name = string.match(elem.sprite, "(.-)/(.*)")
   elem.tooltip = util.build_tooltip(global.gui[e.player_index].player, type, name)
+end
+
+--- @param e EventData.on_gui_leave
+on_prototype_button_left = function(e)
+  e.element.tooltip = ""
 end
 
 --- @param self GuiData
