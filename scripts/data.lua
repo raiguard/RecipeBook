@@ -5,8 +5,8 @@ local util = require("__RecipeBookLite__/scripts/util")
 local unlock_products
 
 --- @param entity LuaEntityPrototype
---- @param force_index uint
-local function unlock_mining_products(entity, force_index)
+--- @param researched Set<string>
+local function unlock_mining_products(entity, researched)
   --- @type string|boolean?
   local filter
   for _, fluidbox_prototype in pairs(entity.fluidbox_prototypes) do
@@ -25,85 +25,105 @@ local function unlock_mining_products(entity, force_index)
       resource_categories[resource.resource_category]
       and (not required_fluid or filter == true or filter == required_fluid)
     then
-      unlock_products(resource.mineable_properties.products, force_index)
+      unlock_products(resource.mineable_properties.products, researched)
     end
   end
 end
 
---- @param entity LuaEntityPrototype
---- @param force_index uint
-local function unlock_entity(entity, force_index)
-  global.researched_objects[force_index]["entity/" .. entity.name] = true
+--- @param fluid LuaFluidPrototype
+--- @param researched Set<string>
+local function unlock_fluid(fluid, researched)
+  local key = "fluid/" .. fluid.name
+  if researched[key] then
+    return
+  end
+  researched[key] = true
+end
 
-  if entity.type == "mining-drill" then
-    unlock_mining_products(entity, force_index)
+--- @param entity LuaEntityPrototype
+--- @param researched Set<string>
+local function unlock_entity(entity, researched)
+  local key = "entity/" .. entity.name
+  if researched[key] then
+    return
+  end
+  researched[key] = true
+
+  if entity.type == "boiler" then
+    local output_fluid = entity.fluidbox_prototypes[2].filter
+    if output_fluid then
+      unlock_fluid(output_fluid, researched)
+    end
+  elseif entity.type == "mining-drill" then
+    unlock_mining_products(entity, researched)
   elseif entity.type == "offshore-pump" then
     local fluid = entity.fluid --[[@as LuaFluidPrototype]]
     global.researched_objects["fluid/" .. fluid.name] = true
   end
 end
 
---- @param fluid LuaFluidPrototype
---- @param force_index uint
-local function unlock_fluid(fluid, force_index)
-  global.researched_objects[force_index]["fluid/" .. fluid.name] = true
-end
-
 --- @param item LuaItemPrototype
---- @param force_index uint
-local function unlock_item(item, force_index)
-  global.researched_objects[force_index]["item/" .. item.name] = true
+--- @param researched Set<string>
+local function unlock_item(item, researched)
+  local key = "item/" .. item.name
+  if researched[key] then
+    return
+  end
+  researched[key] = true
 
   for _, product in pairs(item.rocket_launch_products) do
     local product_prototype = game.item_prototypes[product.name]
-    unlock_item(product_prototype, force_index)
+    unlock_item(product_prototype, researched)
   end
 
   local place_result = item.place_result
   if place_result then
-    unlock_entity(place_result, force_index)
+    unlock_entity(place_result, researched)
   end
 
   local burnt_result = item.burnt_result
   if burnt_result then
-    unlock_item(burnt_result, force_index)
+    unlock_item(burnt_result, researched)
   end
 end
 
 --- @param products Product[]
---- @param force_index uint
-function unlock_products(products, force_index)
+--- @param researched Set<string>
+function unlock_products(products, researched)
   for _, product in pairs(products) do
     if product.type == "fluid" then
-      unlock_fluid(game.fluid_prototypes[product.name], force_index)
+      unlock_fluid(game.fluid_prototypes[product.name], researched)
     else
-      unlock_item(game.item_prototypes[product.name], force_index)
+      unlock_item(game.item_prototypes[product.name], researched)
     end
   end
 end
 
 --- @param recipe LuaRecipe
---- @param force_index uint
-local function unlock_recipe(recipe, force_index)
-  global.researched_objects[force_index]["recipe/" .. recipe.name] = true
+--- @param researched Set<string>
+local function unlock_recipe(recipe, researched)
+  local key = "recipe/" .. recipe.name
+  if researched[key] then
+    return
+  end
+  researched[key] = true
 
   local recipe_prototype = recipe.prototype
   if not recipe_prototype.unlock_results then
     return
   end
 
-  unlock_products(recipe.products, force_index)
+  unlock_products(recipe.products, researched)
 end
 
 --- @param e EventData.on_research_finished
 local function on_research_finished(e)
   local research = e.research
   local recipes = research.force.recipes
-  local force_index = research.force.index
+  local researched = global.researched_objects[research.force.index]
   for _, effect in pairs(research.effects) do
     if effect.type == "unlock-recipe" then
-      local recipe = recipes[effect.recipe]
-      unlock_recipe(recipe, force_index)
+      unlock_recipe(recipes[effect.recipe], researched)
     end
   end
   for _, player in pairs(research.force.players) do
@@ -113,13 +133,13 @@ end
 
 --- @param force LuaForce
 local function refresh_force(force)
-  local force_index = force.index
-  global.researched_objects[force_index] = {}
+  local researched = {}
   for _, recipe in pairs(force.recipes) do
     if recipe.enabled then
-      unlock_recipe(recipe, force_index)
+      unlock_recipe(recipe, researched)
     end
   end
+  global.researched_objects[force.index] = researched
 end
 
 --- @param e EventData.on_force_created
