@@ -40,7 +40,8 @@ function util.build_caption(obj)
     local temperature = obj.temperature
     local temperature_min = obj.minimum_temperature
     local temperature_max = obj.maximum_temperature
-    local temperature_string = ""
+    --- @type string?
+    local temperature_string
     if temperature then
       temperature_string = flib_format.number(temperature)
     elseif temperature_min and temperature_max then
