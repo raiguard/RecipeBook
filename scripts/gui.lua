@@ -2,7 +2,7 @@ local flib_dictionary = require("__flib__/dictionary-lite")
 local flib_gui = require("__flib__/gui-lite")
 local flib_position = require("__flib__/position")
 
-local util = require("__RecipeBookLite__/util")
+local util = require("__RecipeBookLite__/scripts/util")
 
 local search_columns = 13
 local main_panel_width = 40 * search_columns + 12
