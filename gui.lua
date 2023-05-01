@@ -135,36 +135,27 @@ local function update_info_page(self)
   self.elems.info_unlocked_by_flow.visible = #unlocked_by_frame.children > 0
 end
 
---- @param e EventData.on_gui_text_changed
-local function on_search_textfield_changed(e)
-  local self = global.gui[e.player_index]
-  self.search_query = string.lower(e.text)
-  update_search_results(self)
-end
+--- @param self GuiData
+--- @param context ContextType
+--- @param type string
+--- @param name string
+local function open_page(self, context, type, name)
+  if type == "entity" then
+    local item_name = util.get_item_to_place(name)
+    if not item_name then
+      return
+    end
+    type = "item"
+    name = item_name
+  end
 
---- @param e EventData.on_gui_click
-on_prototype_button_clicked = function(e)
-  local result = e.element.sprite
-  local result_type, result_name = string.match(result, "(.-)/(.*)")
-  if result_type == "entity" then
-    result_name = util.get_item_to_place(result_name)
-    result_type = "item"
-  end
-  if not result_name then
-    return
-  end
-  local self = global.gui[e.player_index]
-  if result_type == "technology" then
-    self.player.open_technology_gui(result_name)
-    return
-  end
-  self.context_type = e.button == defines.mouse_button_type.left and "product" or "ingredient"
+  self.context_type = context
 
   local recipes = game.get_filtered_recipe_prototypes({
     {
-      filter = "has-" .. self.context_type .. "-" .. result_type,
+      filter = "has-" .. self.context_type .. "-" .. type,
       elem_filters = {
-        { filter = "name", name = result_name },
+        { filter = "name", name = name },
       },
     },
   })
@@ -184,9 +175,29 @@ on_prototype_button_clicked = function(e)
   self.elems.search_pane.visible = false
   self.elems.info_pane.visible = true
   self.elems.nav_backward_button.visible = true
-  self.context = result
+  self.context = type .. "/" .. name
 
   update_info_page(self)
+end
+
+--- @param e EventData.on_gui_text_changed
+local function on_search_textfield_changed(e)
+  local self = global.gui[e.player_index]
+  self.search_query = string.lower(e.text)
+  update_search_results(self)
+end
+
+--- @param e EventData.on_gui_click
+on_prototype_button_clicked = function(e)
+  local self = global.gui[e.player_index]
+  local to_open = e.element.sprite
+  local type, name = string.match(to_open, "(.-)/(.*)")
+  if type == "technology" then
+    self.player.open_technology_gui(name)
+    return
+  end
+
+  open_page(self, e.button == defines.mouse_button_type.left and "product" or "ingredient", type, name)
 end
 
 on_prototype_button_hovered = function(e)
@@ -588,6 +599,43 @@ local function on_player_created(e)
   create_gui(player)
 end
 
+local allowed_types = {
+  entity = true,
+  fluid = true,
+  item = true,
+}
+
+--- @param e EventData.CustomInputEvent
+local function on_open_selected(e)
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
+  local selected = e.selected_prototype
+  if not selected then
+    return
+  end
+
+  local type = selected.base_type
+  --- @type string?
+  local name = selected.name
+  if selected.base_type == "entity" then
+    type = "item"
+    name = util.get_item_to_place(selected.name)
+  end
+
+  if not name or not allowed_types[type] then
+    return
+  end
+
+  local self = global.gui[e.player_index]
+  if not self then
+    self = create_gui(player)
+  end
+  show_gui(self)
+  open_page(self, "product", type, name)
+end
+
 --- @param e EventData.CustomInputEvent|EventData.on_lua_shortcut
 local function on_gui_toggle(e)
   if e.prototype_name and e.prototype_name ~= "rbl-toggle-gui" then
@@ -620,6 +668,7 @@ gui.on_configuration_changed = util.build_dictionaries
 gui.events = {
   [defines.events.on_lua_shortcut] = on_gui_toggle,
   [defines.events.on_player_created] = on_player_created,
+  ["rbl-open-selected"] = on_open_selected,
   ["rbl-toggle-gui"] = on_gui_toggle,
 }
 

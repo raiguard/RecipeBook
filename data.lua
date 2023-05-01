@@ -5,6 +5,12 @@ data:extend({
     key_sequence = "CONTROL + B",
   },
   {
+    type = "custom-input",
+    name = "rbl-open-selected",
+    key_sequence = "ALT + mouse-button-1",
+    include_selected_prototype = true,
+  },
+  {
     type = "shortcut",
     name = "rbl-toggle-gui",
     icon = {
