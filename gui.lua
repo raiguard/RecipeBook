@@ -262,6 +262,7 @@ local function show_gui(self, after_open_selected)
   self.player.set_shortcut_toggled("rbl-toggle-gui", true)
   local window = self.elems.rbl_main_window
   window.visible = true
+  window.bring_to_front()
   if not self.pinned then
     self.player.opened = window
   end
