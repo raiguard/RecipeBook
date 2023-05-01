@@ -97,3 +97,22 @@ styles.rbl_list_box_item_unresearched = {
   parent = "rbl_list_box_item",
   default_font_color = red_body_text_color,
 }
+
+styles.rbl_search_scroll_pane = {
+  type = "scroll_pane_style",
+  parent = "flib_naked_scroll_pane_no_padding",
+  background_graphical_set = {
+    position = { 282, 17 },
+    corner_size = 8,
+    overall_tiling_vertical_size = 32,
+    overall_tiling_vertical_spacing = 8,
+    overall_tiling_vertical_padding = 4,
+    overall_tiling_horizontal_size = 32,
+    overall_tiling_horizontal_spacing = 8,
+    overall_tiling_horizontal_padding = 4,
+  },
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    vertical_spacing = 0,
+  },
+}

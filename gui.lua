@@ -455,7 +455,7 @@ local function create_gui(player)
       },
       {
         type = "scroll-pane",
-        style = "flib_naked_scroll_pane_no_padding",
+        style = "rbl_search_scroll_pane",
         style_mods = { maximal_height = main_panel_width, width = main_panel_width },
         {
           type = "table",
