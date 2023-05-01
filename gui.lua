@@ -27,6 +27,25 @@ local function reset_gui_location(self)
 end
 
 --- @param self GuiData
+local function toggle_pinned(self)
+  local pin_button = self.elems.pin_button
+  self.pinned = not self.pinned
+  if self.pinned then
+    if self.player.opened == self.elems.rbl_main_window then
+      self.player.opened = nil
+    end
+    pin_button.style = "flib_selected_frame_action_button"
+    pin_button.sprite = "flib_pin_black"
+    self.elems.close_button.tooltip = { "gui.close" }
+  else
+    self.player.opened = self.elems.rbl_main_window
+    pin_button.style = "frame_action_button"
+    pin_button.sprite = "flib_pin_white"
+    self.elems.close_button.tooltip = { "gui.close-instruction" }
+  end
+end
+
+--- @param self GuiData
 local function update_search_results(self)
   local query = self.search_query
   local show_hidden = self.show_hidden
@@ -150,11 +169,14 @@ end
 --- @param context ContextType
 --- @param type string
 --- @param name string
+--- @return boolean
 local function open_page(self, context, type, name)
   if type == "entity" then
     local item_name = util.get_item_to_place(name)
     if not item_name then
-      return
+      self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
+      self.player.play_sound({ path = "utility/cannot_build" })
+      return false
     end
     type = "item"
     name = item_name
@@ -177,7 +199,7 @@ local function open_page(self, context, type, name)
   if not next(recipes_array) then
     self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
     self.player.play_sound({ path = "utility/cannot_build" })
-    return
+    return false
   end
 
   self.recipes = recipes_array
@@ -189,6 +211,8 @@ local function open_page(self, context, type, name)
   self.context = type .. "/" .. name
 
   update_info_page(self)
+
+  return true
 end
 
 --- @param e EventData.on_gui_text_changed
@@ -233,14 +257,15 @@ local function return_to_search(self)
 end
 
 --- @param self GuiData
-local function show_gui(self)
+--- @param after_open_selected boolean?
+local function show_gui(self, after_open_selected)
   self.player.set_shortcut_toggled("rbl-toggle-gui", true)
   local window = self.elems.rbl_main_window
   window.visible = true
   if not self.pinned then
     self.player.opened = window
   end
-  if self.player.mod_settings["rbl-always-open-search"].value then
+  if not after_open_selected and self.player.mod_settings["rbl-always-open-search"].value then
     return_to_search(self)
   end
 end
@@ -283,18 +308,7 @@ end
 --- @param e EventData.on_gui_click
 local function on_pin_button_clicked(e)
   local self = global.gui[e.player_index]
-  self.pinned = not self.pinned
-  if self.pinned then
-    self.player.opened = nil
-    e.element.style = "flib_selected_frame_action_button"
-    e.element.sprite = "flib_pin_black"
-    self.elems.close_button.tooltip = { "gui.close" }
-  else
-    self.player.opened = self.elems.rbl_main_window
-    e.element.style = "frame_action_button"
-    e.element.sprite = "flib_pin_white"
-    self.elems.close_button.tooltip = { "gui.close-instruction" }
-  end
+  toggle_pinned(self)
 end
 
 --- @param e EventData.on_gui_click
@@ -654,8 +668,17 @@ local function on_open_selected(e)
   if not self then
     self = create_gui(player)
   end
-  show_gui(self)
-  open_page(self, "product", type, name)
+  -- Auto-pin if another GUI is already open
+  if
+    player.opened_gui_type ~= defines.gui_type.none
+    and player.opened ~= self.elems.rbl_main_window
+    and not self.pinned
+  then
+    toggle_pinned(self)
+  end
+  if open_page(self, "product", type, name) then
+    show_gui(self, true)
+  end
 end
 
 --- @param e EventData.CustomInputEvent|EventData.on_lua_shortcut
