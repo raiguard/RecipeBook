@@ -36,7 +36,27 @@ function util.build_caption(obj)
   end
   caption[#caption + 1] = game[obj.type .. "_prototypes"][obj.name].localised_name
 
-  -- TODO: Temperatures
+  if obj.type == "fluid" then
+    local temperature = obj.temperature
+    local temperature_min = obj.minimum_temperature
+    local temperature_max = obj.maximum_temperature
+    local temperature_string = ""
+    if temperature then
+      temperature_string = flib_format.number(temperature)
+    elseif temperature_min and temperature_max then
+      if temperature_min == flib_math.min_double then
+        temperature_string = "≤" .. flib_format.number(temperature_max)
+      elseif temperature_max == flib_math.max_double then
+        temperature_string = "≥" .. flib_format.number(temperature_min)
+      else
+        temperature_string = "" .. flib_format.number(temperature_min) .. "-" .. flib_format.number(temperature_max)
+      end
+    end
+
+    if temperature_string then
+      caption[#caption + 1] = { "", " (", { "format-degrees-c-compact", temperature_string }, ")" }
+    end
+  end
 
   return caption
 end
