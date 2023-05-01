@@ -1,5 +1,6 @@
 local flib_dictionary = require("__flib__/dictionary-lite")
 local flib_gui = require("__flib__/gui-lite")
+local flib_position = require("__flib__/position")
 
 local util = require("__RecipeBookLite__/util")
 
@@ -14,6 +15,16 @@ local materials_column_width = (main_panel_width - (12 * 3)) / 2
 -- These are needed in update_info_page
 local on_prototype_button_clicked
 local on_prototype_button_hovered
+
+--- @type GuiLocation
+local top_left_location = { x = 15, y = 58 + 15 }
+
+--- @param self GuiData
+local function reset_gui_location(self)
+  local window = self.elems.rbl_main_window
+  local scale = self.player.display_scale
+  window.location = flib_position.mul(top_left_location, { x = scale, y = scale })
+end
 
 --- @param self GuiData
 local function update_search_results(self)
@@ -255,6 +266,15 @@ local function on_main_window_closed(e)
 end
 
 --- @param e EventData.on_gui_click
+local function on_titlebar_clicked(e)
+  if e.button ~= defines.mouse_button_type.middle then
+    return
+  end
+  local self = global.gui[e.player_index]
+  reset_gui_location(self)
+end
+
+--- @param e EventData.on_gui_click
 local function on_close_button_clicked(e)
   local self = global.gui[e.player_index]
   hide_gui(self)
@@ -271,7 +291,6 @@ local function on_pin_button_clicked(e)
     self.elems.close_button.tooltip = { "gui.close" }
   else
     self.player.opened = self.elems.rbl_main_window
-    self.elems.rbl_main_window.force_auto_center()
     e.element.style = "frame_action_button"
     e.element.sprite = "flib_pin_white"
     self.elems.close_button.tooltip = { "gui.close-instruction" }
@@ -344,13 +363,13 @@ local function create_gui(player)
     type = "frame",
     name = "rbl_main_window",
     direction = "vertical",
-    elem_mods = { auto_center = true },
     visible = false,
     handler = { [defines.events.on_gui_closed] = on_main_window_closed },
     {
       type = "flow",
       style = "flib_titlebar_flow",
       drag_target = "rbl_main_window",
+      handler = { [defines.events.on_gui_click] = on_titlebar_clicked },
       {
         type = "label",
         style = "frame_title",
@@ -587,6 +606,9 @@ local function create_gui(player)
     show_hidden = false,
   }
   global.gui[player.index] = self
+
+  reset_gui_location(self)
+
   return self
 end
 
@@ -682,6 +704,7 @@ flib_gui.add_handlers({
   on_recipe_nav_clicked = on_recipe_nav_clicked,
   on_search_textfield_changed = on_search_textfield_changed,
   on_show_hidden_clicked = on_show_hidden_clicked,
+  on_titlebar_clicked = on_titlebar_clicked,
 })
 
 return gui
