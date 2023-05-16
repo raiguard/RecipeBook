@@ -8,6 +8,12 @@ local util = require("__RecipeBookLite__/scripts/util")
 --- | "ingredient"
 --- | "product"
 
+--- @class GuiHistoryEntry
+--- @field context string?
+--- @field context_type ContextType
+--- @field index integer
+--- @field recipes LuaRecipePrototype[]
+
 local search_columns = 13
 local main_panel_width = 40 * search_columns + 12
 local materials_column_width = (main_panel_width - (12 * 3)) / 2
@@ -80,18 +86,22 @@ end
 
 --- @param self GuiData
 local function update_info_page(self)
-  if not self.recipes then
+  local entry = self.history[self.history_index]
+  if not entry then
     return
   end
 
+  self.elems.search_pane.visible = false
+  self.elems.info_pane.visible = true
+
   local researched = global.researched_objects[self.player.force_index]
 
-  local recipe = self.recipes[self.index]
+  local recipe = entry.recipes[entry.index]
 
-  self.elems.info_recipe_count_label.caption = "[" .. self.index .. "/" .. #self.recipes .. "]"
-  self.elems.info_context_label.sprite = self.context
+  self.elems.info_recipe_count_label.caption = "[" .. entry.index .. "/" .. #entry.recipes .. "]"
+  self.elems.info_context_label.sprite = entry.context
   self.elems.info_context_label.caption =
-    { "", "            ", self.context_type == "product" and { "gui.rbl-product-of" } or { "gui.rbl-ingredient-in" } }
+    { "", "            ", entry.context_type == "product" and { "gui.rbl-product-of" } or { "gui.rbl-ingredient-in" } }
   self.elems.info_context_label.tooltip = ""
   self.elems.info_recipe_name_label.sprite = "recipe/" .. recipe.name
   self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
@@ -174,11 +184,11 @@ local function update_info_page(self)
 end
 
 --- @param self GuiData
---- @param context ContextType
+--- @param context_type ContextType
 --- @param type string
 --- @param name string
 --- @return boolean
-local function open_page(self, context, type, name)
+local function open_page(self, context_type, type, name)
   if type == "entity" then
     local item_name = util.get_item_to_place(name)
     if not item_name then
@@ -190,11 +200,9 @@ local function open_page(self, context, type, name)
     name = item_name
   end
 
-  self.context_type = context
-
   local recipes = game.get_filtered_recipe_prototypes({
     {
-      filter = "has-" .. self.context_type .. "-" .. type,
+      filter = "has-" .. context_type .. "-" .. type,
       elem_filters = {
         { filter = "name", name = name },
       },
@@ -210,12 +218,12 @@ local function open_page(self, context, type, name)
     return false
   end
 
-  self.recipes = recipes_array
-  self.index = 1
-
-  self.elems.search_pane.visible = false
-  self.elems.info_pane.visible = true
-  self.context = type .. "/" .. name
+  self.history_index = self.history_index + 1
+  for i = self.history_index, #self.history do
+    self.history[i] = nil
+  end
+  self.history[self.history_index] =
+    { context = type .. "/" .. name, context_type = context_type, index = 1, recipes = recipes_array }
 
   update_info_page(self)
 
@@ -363,7 +371,23 @@ end
 --- @param e EventData.on_gui_click
 local function on_nav_backward_clicked(e)
   local self = global.gui[e.player_index]
-  return_to_search(self)
+  if self.history_index <= 1 then
+    self.history_index = 0
+    return_to_search(self)
+    return
+  end
+  self.history_index = self.history_index - 1
+  update_info_page(self)
+end
+
+--- @param e EventData.on_gui_click
+local function on_nav_forward_clicked(e)
+  local self = global.gui[e.player_index]
+  if self.history_index >= #self.history then
+    return
+  end
+  self.history_index = self.history_index + 1
+  update_info_page(self)
 end
 
 --- @param e EventData.on_gui_click
@@ -376,11 +400,15 @@ end
 --- @param e EventData.on_gui_click
 local function on_recipe_nav_clicked(e)
   local self = global.gui[e.player_index]
-  self.index = self.index + e.element.tags.nav_offset
-  if self.index == 0 then
-    self.index = #self.recipes --[[@as uint]]
-  elseif self.index > #self.recipes then
-    self.index = 1
+  local entry = self.history[self.history_index]
+  if not entry then
+    return
+  end
+  entry.index = entry.index + e.element.tags.nav_offset
+  if entry.index == 0 then
+    entry.index = #entry.recipes --[[@as uint]]
+  elseif entry.index > #entry.recipes then
+    entry.index = 1
   end
   update_info_page(self)
 end
@@ -672,17 +700,12 @@ local function create_gui(player)
 
   --- @class GuiData
   local self = {
-    --- @type string?
-    context = nil,
-    --- @type ContextType
-    context_type = "product",
     elems = elems,
-    --- @type uint
-    index = 1,
+    --- @type GuiHistoryEntry[]
+    history = {},
+    history_index = 0,
     pinned = false,
     player = player,
-    --- @type LuaRecipePrototype[]?
-    recipes = nil,
     search_query = "",
     show_hidden = false,
     show_unresearched = false,
@@ -805,6 +828,7 @@ flib_gui.add_handlers({
   on_close_button_clicked = on_close_button_clicked,
   on_main_window_closed = on_main_window_closed,
   on_nav_backward_clicked = on_nav_backward_clicked,
+  on_nav_forward_clicked = on_nav_forward_clicked,
   on_pin_button_clicked = on_pin_button_clicked,
   on_prototype_button_clicked = on_prototype_button_clicked,
   on_prototype_button_hovered = on_prototype_button_hovered,
