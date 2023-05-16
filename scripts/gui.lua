@@ -296,6 +296,7 @@ end
 local function return_to_search(self)
   self.elems.info_pane.visible = false
   self.elems.search_pane.visible = true
+  self.history_index = 0
   if self.player.mod_settings["rbl-auto-focus-search-box"].value then
     self.elems.search_textfield.focus()
     self.elems.search_textfield.select_all()
@@ -372,7 +373,6 @@ end
 local function on_nav_backward_clicked(e)
   local self = global.gui[e.player_index]
   if self.history_index <= 1 then
-    self.history_index = 0
     return_to_search(self)
     return
   end
