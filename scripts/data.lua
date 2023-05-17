@@ -62,7 +62,7 @@ local function unlock_entity(entity, researched)
     unlock_mining_drill_products(entity, researched)
   elseif entity.type == "offshore-pump" then
     local fluid = entity.fluid --[[@as LuaFluidPrototype]]
-    global.researched_objects["fluid/" .. fluid.name] = true
+    unlock_fluid(fluid, researched)
   end
 end
 
