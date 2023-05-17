@@ -10,8 +10,8 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field type string
 
 --- @alias ContextKind
---- | "ingredient"
---- | "product"
+--- | "usage"
+--- | "recipes"
 
 --- @class RecipeDefinition
 --- @field name string
@@ -21,6 +21,12 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field context Context
 --- @field index integer
 --- @field recipes LuaRecipePrototype[]
+
+--- @type table<ContextKind, string>
+local context_kind_filter = {
+  usage = "has-ingredient-",
+  recipes = "has-product-",
+}
 
 local search_columns = 13
 local main_panel_width = 40 * search_columns + 12
@@ -110,7 +116,7 @@ local function update_info_page(self)
   self.elems.info_recipe_count_label.caption = "[" .. entry.index .. "/" .. #entry.recipes .. "]"
   self.elems.info_context_label.sprite = context.type .. "/" .. context.name
   self.elems.info_context_label.caption =
-    { "", "            ", context.kind == "product" and { "gui.rb-product-of" } or { "gui.rb-ingredient-in" } }
+    { "", "            ", context.kind == "recipes" and { "gui.rb-recipes" } or { "gui.rb-usage" } }
   self.elems.info_context_label.tooltip = ""
   self.elems.info_recipe_name_label.sprite = "recipe/" .. recipe.name
   self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
@@ -210,7 +216,7 @@ local function open_page(self, context, recipe)
 
   local recipes = game.get_filtered_recipe_prototypes({
     {
-      filter = "has-" .. context.kind .. "-" .. context.type,
+      filter = context_kind_filter[context.kind] .. context.type,
       elem_filters = {
         { filter = "name", name = context.name },
       },
@@ -289,7 +295,7 @@ on_prototype_button_clicked = function(e)
     return
   end
 
-  local kind = e.button == defines.mouse_button_type.left and "product" or "ingredient"
+  local kind = e.button == defines.mouse_button_type.left and "recipes" or "usage"
   open_page(self, { kind = kind, name = name, type = type })
 end
 
@@ -793,7 +799,7 @@ local function on_open_selected(e)
   then
     toggle_pinned(self)
   end
-  if open_page(self, { kind = "product", name = name, type = type }, recipe_name) then
+  if open_page(self, { kind = "recipes", name = name, type = type }, recipe_name) then
     show_gui(self, true)
   end
 end
