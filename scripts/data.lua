@@ -1,12 +1,12 @@
 local util = require("__RecipeBookLite__/scripts/util")
 
--- TODO: Gatherable materials (wood, stone, hand-mineable ores)
+--- @alias ForceIndex uint
 
 local unlock_products
 
 --- @param entity LuaEntityPrototype
 --- @param researched Set<string>
-local function unlock_mining_products(entity, researched)
+local function unlock_mining_drill_products(entity, researched)
   --- @type string|boolean?
   local filter
   for _, fluidbox_prototype in pairs(entity.fluidbox_prototypes) do
@@ -16,6 +16,7 @@ local function unlock_mining_products(entity, researched)
       break
     end
   end
+  -- TODO: Handle if the required fluid is not unlocked
   local resource_categories = entity.resource_categories
   --- @cast resource_categories Set<string>
   for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
@@ -58,7 +59,7 @@ local function unlock_entity(entity, researched)
       unlock_fluid(output_fluid, researched)
     end
   elseif entity.type == "mining-drill" then
-    unlock_mining_products(entity, researched)
+    unlock_mining_drill_products(entity, researched)
   elseif entity.type == "offshore-pump" then
     local fluid = entity.fluid --[[@as LuaFluidPrototype]]
     global.researched_objects["fluid/" .. fluid.name] = true
@@ -74,6 +75,7 @@ local function unlock_item(item, researched)
   end
   researched[key] = true
 
+  -- TODO: Handle Exotic Industries' scripted rocket launch products
   for _, product in pairs(item.rocket_launch_products) do
     local product_prototype = game.item_prototypes[product.name]
     unlock_item(product_prototype, researched)
@@ -142,6 +144,20 @@ local function refresh_force(force)
       unlock_recipe(recipe, researched)
     end
   end
+  -- Trees and rocks
+  local flora = game.get_filtered_entity_prototypes({
+    { filter = "type", type = "simple-entity" },
+    { filter = "type", type = "tree" },
+  })
+  for _, entity in pairs(flora) do
+    local mineable_properties = entity.mineable_properties
+    local products = mineable_properties.products
+    if products and not mineable_properties.required_fluid then
+      -- TODO: Character mining categories?
+      unlock_products(products, researched)
+    end
+    -- TODO: "Gathered from" lists
+  end
   global.researched_objects[force.index] = researched
 end
 
@@ -159,7 +175,7 @@ end
 local data = {}
 
 data.on_init = function()
-  --- @type table<uint, Set<string>>
+  --- @type table<ForceIndex, Set<string>>
   global.researched_objects = {}
   refresh_all_forces()
 end
