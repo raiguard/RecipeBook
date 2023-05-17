@@ -4,13 +4,21 @@ local flib_position = require("__flib__/position")
 
 local util = require("__RecipeBookLite__/scripts/util")
 
---- @alias ContextType
+--- @class Context
+--- @field kind ContextKind
+--- @field name string
+--- @field type string
+
+--- @alias ContextKind
 --- | "ingredient"
 --- | "product"
 
+--- @class RecipeDefinition
+--- @field name string
+--- @field type string
+
 --- @class GuiHistoryEntry
---- @field context string?
---- @field context_type ContextType
+--- @field context Context
 --- @field index integer
 --- @field recipes LuaRecipePrototype[]
 
@@ -97,11 +105,12 @@ local function update_info_page(self)
   local researched = global.researched_objects[self.player.force_index]
 
   local recipe = entry.recipes[entry.index]
+  local context = entry.context
 
   self.elems.info_recipe_count_label.caption = "[" .. entry.index .. "/" .. #entry.recipes .. "]"
-  self.elems.info_context_label.sprite = entry.context
+  self.elems.info_context_label.sprite = context.type .. "/" .. context.name
   self.elems.info_context_label.caption =
-    { "", "            ", entry.context_type == "product" and { "gui.rbl-product-of" } or { "gui.rbl-ingredient-in" } }
+    { "", "            ", context.kind == "product" and { "gui.rbl-product-of" } or { "gui.rbl-ingredient-in" } }
   self.elems.info_context_label.tooltip = ""
   self.elems.info_recipe_name_label.sprite = "recipe/" .. recipe.name
   self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
@@ -184,35 +193,40 @@ local function update_info_page(self)
 end
 
 --- @param self GuiData
---- @param context_type ContextType
---- @param type string
---- @param name string
+--- @param context Context
+--- @param recipe string?
 --- @return boolean
-local function open_page(self, context_type, type, name)
-  if type == "entity" then
-    local item_name = util.get_item_to_place(name)
+local function open_page(self, context, recipe)
+  if context.type == "entity" then
+    local item_name = util.get_item_to_place(context.name)
     if not item_name then
       self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
       self.player.play_sound({ path = "utility/cannot_build" })
       return false
     end
-    type = "item"
-    name = item_name
+    context.type = "item"
+    context.name = item_name
   end
 
   local recipes = game.get_filtered_recipe_prototypes({
     {
-      filter = "has-" .. context_type .. "-" .. type,
+      filter = "has-" .. context.kind .. "-" .. context.type,
       elem_filters = {
-        { filter = "name", name = name },
+        { filter = "name", name = context.name },
       },
     },
   })
+  local index = 1
   local recipes_array = {}
-  for _, recipe_prototype in pairs(recipes) do
+  local i = 0
+  for recipe_name, recipe_prototype in pairs(recipes) do
+    i = i + 1
     recipes_array[#recipes_array + 1] = recipe_prototype
+    if recipe_name == recipe then
+      index = i
+    end
   end
-  if not next(recipes_array) then
+  if not recipes_array[1] then
     self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
     self.player.play_sound({ path = "utility/cannot_build" })
     return false
@@ -222,8 +236,7 @@ local function open_page(self, context_type, type, name)
   for i = self.history_index, #self.history do
     self.history[i] = nil
   end
-  self.history[self.history_index] =
-    { context = type .. "/" .. name, context_type = context_type, index = 1, recipes = recipes_array }
+  self.history[self.history_index] = { context = context, index = index, recipes = recipes_array }
 
   update_info_page(self)
 
@@ -276,7 +289,8 @@ on_prototype_button_clicked = function(e)
     return
   end
 
-  open_page(self, e.button == defines.mouse_button_type.left and "product" or "ingredient", type, name)
+  local kind = e.button == defines.mouse_button_type.left and "product" or "ingredient"
+  open_page(self, { kind = kind, name = name, type = type })
 end
 
 --- @param e EventData.on_gui_hover
@@ -747,9 +761,16 @@ local function on_open_selected(e)
   local type = selected.base_type
   --- @type string?
   local name = selected.name
-  if selected.base_type == "entity" then
-    type = "item"
-    name = util.get_item_to_place(selected.name)
+  local recipe_name
+  if type == "recipe" then
+    recipe_name = selected.name
+    local recipe = game.recipe_prototypes[recipe_name]
+    local product = recipe.main_product or recipe.products[1]
+    if not product then
+      return
+    end
+    type = product.type
+    name = product.name
   end
 
   if not name or not allowed_types[type] then
@@ -768,7 +789,7 @@ local function on_open_selected(e)
   then
     toggle_pinned(self)
   end
-  if open_page(self, "product", type, name) then
+  if open_page(self, { kind = "product", name = name, type = type }, recipe_name) then
     show_gui(self, true)
   end
 end
