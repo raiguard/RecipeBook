@@ -126,6 +126,9 @@ local function on_research_finished(e)
   local research = e.research
   local recipes = research.force.recipes
   local researched = global.researched_objects[research.force.index]
+  if not researched then
+    return
+  end
   for _, effect in pairs(research.effects) do
     if effect.type == "unlock-recipe" then
       unlock_recipe(recipes[effect.recipe], researched)
