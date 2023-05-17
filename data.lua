@@ -1,57 +1,57 @@
 data:extend({
   {
     type = "custom-input",
-    name = "rbl-toggle-gui",
+    name = "rb-toggle-gui",
     key_sequence = "CONTROL + B",
   },
   {
     type = "custom-input",
-    name = "rbl-open-selected",
+    name = "rb-open-selected",
     key_sequence = "ALT + mouse-button-1",
     include_selected_prototype = true,
   },
   {
     type = "shortcut",
-    name = "rbl-toggle-gui",
+    name = "rb-toggle-gui",
     icon = {
-      filename = "__RecipeBookLite__/graphics/shortcut-x32-black.png",
+      filename = "__RecipeBook__/graphics/shortcut-x32-black.png",
       size = 32,
       flags = { "gui-icon" },
     },
     small_icon = {
-      filename = "__RecipeBookLite__/graphics/shortcut-x24-black.png",
+      filename = "__RecipeBook__/graphics/shortcut-x24-black.png",
       size = 24,
       flags = { "gui-icon" },
     },
-    associated_control_input = "rbl-toggle-gui",
+    associated_control_input = "rb-toggle-gui",
     toggleable = true,
     action = "lua",
   },
   {
     type = "sprite",
-    name = "rbl_show_hidden_black",
-    filename = "__RecipeBookLite__/graphics/show-hidden-black.png",
+    name = "rb_show_hidden_black",
+    filename = "__RecipeBook__/graphics/show-hidden-black.png",
     size = 32,
     flags = { "gui-icon" },
   },
   {
     type = "sprite",
-    name = "rbl_show_hidden_white",
-    filename = "__RecipeBookLite__/graphics/show-hidden-white.png",
+    name = "rb_show_hidden_white",
+    filename = "__RecipeBook__/graphics/show-hidden-white.png",
     size = 32,
     flags = { "gui-icon" },
   },
   {
     type = "sprite",
-    name = "rbl_show_unresearched_black",
-    filename = "__RecipeBookLite__/graphics/show-unresearched-black.png",
+    name = "rb_show_unresearched_black",
+    filename = "__RecipeBook__/graphics/show-unresearched-black.png",
     size = 32,
     flags = { "gui-icon" },
   },
   {
     type = "sprite",
-    name = "rbl_show_unresearched_white",
-    filename = "__RecipeBookLite__/graphics/show-unresearched-white.png",
+    name = "rb_show_unresearched_white",
+    filename = "__RecipeBook__/graphics/show-unresearched-white.png",
     size = 32,
     flags = { "gui-icon" },
   },
@@ -59,7 +59,7 @@ data:extend({
 
 local styles = data.raw["gui-style"]["default"]
 
-styles.rbl_subheader_caption_button = {
+styles.rb_subheader_caption_button = {
   type = "button_style",
   disabled_graphical_set = {},
   disabled_font_color = bold_font_color,
@@ -72,19 +72,19 @@ styles.rbl_subheader_caption_button = {
   draw_shadow_under_picture = true,
 }
 
-styles.rbl_subheader_caption_button_hidden = {
+styles.rb_subheader_caption_button_hidden = {
   type = "button_style",
-  parent = "rbl_subheader_caption_button",
+  parent = "rb_subheader_caption_button",
   disabled_font_color = hidden_font_color,
 }
 
-styles.rbl_subheader_caption_button_unresearched = {
+styles.rb_subheader_caption_button_unresearched = {
   type = "button_style",
-  parent = "rbl_subheader_caption_button",
+  parent = "rb_subheader_caption_button",
   disabled_font_color = red_body_text_color,
 }
 
-styles.rbl_list_box_item = {
+styles.rb_list_box_item = {
   type = "button_style",
   parent = "list_box_item",
   height = 36,
@@ -93,19 +93,19 @@ styles.rbl_list_box_item = {
   icon_horizontal_align = "left",
 }
 
-styles.rbl_list_box_item_hidden = {
+styles.rb_list_box_item_hidden = {
   type = "button_style",
-  parent = "rbl_list_box_item",
+  parent = "rb_list_box_item",
   default_font_color = hidden_font_color,
 }
 
-styles.rbl_list_box_item_unresearched = {
+styles.rb_list_box_item_unresearched = {
   type = "button_style",
-  parent = "rbl_list_box_item",
+  parent = "rb_list_box_item",
   default_font_color = red_body_text_color,
 }
 
-styles.rbl_search_scroll_pane = {
+styles.rb_search_scroll_pane = {
   type = "scroll_pane_style",
   parent = "flib_naked_scroll_pane_no_padding",
   background_graphical_set = {

@@ -2,7 +2,7 @@ local flib_dictionary = require("__flib__/dictionary-lite")
 local flib_gui = require("__flib__/gui-lite")
 local flib_position = require("__flib__/position")
 
-local util = require("__RecipeBookLite__/scripts/util")
+local util = require("__RecipeBook__/scripts/util")
 
 --- @class Context
 --- @field kind ContextKind
@@ -35,7 +35,7 @@ local on_prototype_button_left
 
 --- @param self GuiData
 local function reset_gui_location(self)
-  local window = self.elems.rbl_main_window
+  local window = self.elems.rb_main_window
   local scale = self.player.display_scale
   window.location = flib_position.mul(top_left_location, { x = scale, y = scale })
 end
@@ -77,7 +77,7 @@ end
 local function build_list_box_item(obj, researched)
   local path = obj.type .. "/" .. obj.name
   local is_researched = researched[path]
-  local style = is_researched and "rbl_list_box_item" or "rbl_list_box_item_unresearched"
+  local style = is_researched and "rb_list_box_item" or "rb_list_box_item_unresearched"
   return {
     type = "sprite-button",
     style = style,
@@ -110,13 +110,13 @@ local function update_info_page(self)
   self.elems.info_recipe_count_label.caption = "[" .. entry.index .. "/" .. #entry.recipes .. "]"
   self.elems.info_context_label.sprite = context.type .. "/" .. context.name
   self.elems.info_context_label.caption =
-    { "", "            ", context.kind == "product" and { "gui.rbl-product-of" } or { "gui.rbl-ingredient-in" } }
+    { "", "            ", context.kind == "product" and { "gui.rb-product-of" } or { "gui.rb-ingredient-in" } }
   self.elems.info_context_label.tooltip = ""
   self.elems.info_recipe_name_label.sprite = "recipe/" .. recipe.name
   self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
   self.elems.info_recipe_name_label.tooltip = ""
-  self.elems.info_recipe_name_label.style = researched["recipe/" .. recipe.name] and "rbl_subheader_caption_button"
-    or "rbl_subheader_caption_button_unresearched"
+  self.elems.info_recipe_name_label.style = researched["recipe/" .. recipe.name] and "rb_subheader_caption_button"
+    or "rb_subheader_caption_button_unresearched"
 
   local ingredients_frame = self.elems.info_ingredients_frame
   ingredients_frame.clear()
@@ -147,7 +147,7 @@ local function update_info_page(self)
       hovered_sprite = "utility/hand_black",
       clicked_sprite = "utility/hand_black",
       number = recipe.energy,
-      tooltip = { "gui.rbl-handcraft" },
+      tooltip = { "gui.rb-handcraft" },
     })
   end
   for _, machine in
@@ -248,14 +248,14 @@ local function toggle_pinned(self)
   local pin_button = self.elems.pin_button
   self.pinned = not self.pinned
   if self.pinned then
-    if self.player.opened == self.elems.rbl_main_window then
+    if self.player.opened == self.elems.rb_main_window then
       self.player.opened = nil
     end
     pin_button.style = "flib_selected_frame_action_button"
     pin_button.sprite = "flib_pin_black"
     self.elems.close_button.tooltip = { "gui.close" }
   else
-    self.player.opened = self.elems.rbl_main_window
+    self.player.opened = self.elems.rb_main_window
     pin_button.style = "frame_action_button"
     pin_button.sprite = "flib_pin_white"
     self.elems.close_button.tooltip = { "gui.close-instruction" }
@@ -267,8 +267,8 @@ local function toggle_show_unresearched(self)
   self.show_unresearched = not self.show_unresearched
   self.elems.show_unresearched_button.style = self.show_unresearched and "flib_selected_frame_action_button"
     or "frame_action_button"
-  self.elems.show_unresearched_button.sprite = self.show_unresearched and "rbl_show_unresearched_black"
-    or "rbl_show_unresearched_white"
+  self.elems.show_unresearched_button.sprite = self.show_unresearched and "rb_show_unresearched_black"
+    or "rb_show_unresearched_white"
   update_search_results(self)
 end
 
@@ -311,7 +311,7 @@ local function return_to_search(self)
   self.elems.info_pane.visible = false
   self.elems.search_pane.visible = true
   self.history_index = 0
-  if self.player.mod_settings["rbl-auto-focus-search-box"].value then
+  if self.player.mod_settings["rb-auto-focus-search-box"].value then
     self.elems.search_textfield.focus()
     self.elems.search_textfield.select_all()
   end
@@ -320,27 +320,27 @@ end
 --- @param self GuiData
 --- @param after_open_selected boolean?
 local function show_gui(self, after_open_selected)
-  self.player.set_shortcut_toggled("rbl-toggle-gui", true)
-  local window = self.elems.rbl_main_window
+  self.player.set_shortcut_toggled("rb-toggle-gui", true)
+  local window = self.elems.rb_main_window
   window.visible = true
   window.bring_to_front()
   if not self.pinned then
     self.player.opened = window
   end
-  if not after_open_selected and self.player.mod_settings["rbl-always-open-search"].value then
+  if not after_open_selected and self.player.mod_settings["rb-always-open-search"].value then
     return_to_search(self)
   end
 end
 
 --- @param self GuiData
 local function hide_gui(self)
-  self.player.set_shortcut_toggled("rbl-toggle-gui", false)
-  local window = self.elems.rbl_main_window
+  self.player.set_shortcut_toggled("rb-toggle-gui", false)
+  local window = self.elems.rb_main_window
   window.visible = false
   if self.player.opened == window then
     self.player.opened = nil
   end
-  self.player.set_shortcut_toggled("rbl-toggle-gui", false)
+  self.player.set_shortcut_toggled("rb-toggle-gui", false)
 end
 
 --- @param e EventData.on_gui_closed
@@ -378,7 +378,7 @@ local function on_show_hidden_clicked(e)
   local self = global.gui[e.player_index]
   self.show_hidden = not self.show_hidden
   e.element.style = self.show_hidden and "flib_selected_frame_action_button" or "frame_action_button"
-  e.element.sprite = self.show_hidden and "rbl_show_hidden_black" or "rbl_show_hidden_white"
+  e.element.sprite = self.show_hidden and "rb_show_hidden_black" or "rb_show_hidden_white"
   update_search_results(self)
   -- TODO: Update context list
 end
@@ -467,19 +467,19 @@ local function create_gui(player)
   end
   local elems = flib_gui.add(player.gui.screen, {
     type = "frame",
-    name = "rbl_main_window",
+    name = "rb_main_window",
     direction = "vertical",
     visible = false,
     handler = { [defines.events.on_gui_closed] = on_main_window_closed },
     {
       type = "flow",
       style = "flib_titlebar_flow",
-      drag_target = "rbl_main_window",
+      drag_target = "rb_main_window",
       handler = { [defines.events.on_gui_click] = on_titlebar_clicked },
       {
         type = "label",
         style = "frame_title",
-        caption = { "mod-name.RecipeBookLite" },
+        caption = { "mod-name.RecipeBook" },
         ignored_by_interaction = true,
       },
       { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
@@ -487,20 +487,20 @@ local function create_gui(player)
         type = "sprite-button",
         name = "show_unresearched_button",
         style = "frame_action_button",
-        sprite = "rbl_show_unresearched_white",
-        hovered_sprite = "rbl_show_unresearched_black",
-        clicked_sprite = "rbl_show_unresearched_black",
-        tooltip = { "gui.rbl-show-unresearched" },
+        sprite = "rb_show_unresearched_white",
+        hovered_sprite = "rb_show_unresearched_black",
+        clicked_sprite = "rb_show_unresearched_black",
+        tooltip = { "gui.rb-show-unresearched" },
         handler = on_show_unresearched_clicked,
       },
       {
         type = "sprite-button",
         name = "show_hidden_button",
         style = "frame_action_button",
-        sprite = "rbl_show_hidden_white",
-        hovered_sprite = "rbl_show_hidden_black",
-        clicked_sprite = "rbl_show_hidden_black",
-        tooltip = { "gui.rbl-show-hidden" },
+        sprite = "rb_show_hidden_white",
+        hovered_sprite = "rb_show_hidden_black",
+        clicked_sprite = "rb_show_hidden_black",
+        tooltip = { "gui.rb-show-hidden" },
         handler = on_show_hidden_clicked,
       },
       { type = "line", style = "flib_titlebar_separator_line", direction = "vertical", ignored_by_interaction = true },
@@ -511,7 +511,7 @@ local function create_gui(player)
         sprite = "flib_nav_backward_white",
         hovered_sprite = "flib_nav_backward_black",
         clicked_sprite = "flib_nav_backward_black",
-        tooltip = { "gui.rbl-go-back" },
+        tooltip = { "gui.rb-go-back" },
         handler = on_nav_backward_clicked,
       },
       {
@@ -521,7 +521,7 @@ local function create_gui(player)
         sprite = "flib_nav_forward_white",
         hovered_sprite = "flib_nav_forward_black",
         clicked_sprite = "flib_nav_forward_black",
-        tooltip = { "gui.rbl-go-forward" },
+        tooltip = { "gui.rb-go-forward" },
         handler = on_nav_forward_clicked,
       },
       { type = "line", style = "flib_titlebar_separator_line", direction = "vertical", ignored_by_interaction = true },
@@ -555,7 +555,7 @@ local function create_gui(player)
         type = "frame",
         style = "subheader_frame",
         style_mods = { horizontally_stretchable = true },
-        { type = "label", style = "subheader_caption_label", caption = { "gui.rbl-search" } },
+        { type = "label", style = "subheader_caption_label", caption = { "gui.rb-search" } },
         { type = "empty-widget", style = "flib_horizontal_pusher" },
         {
           type = "textfield",
@@ -567,7 +567,7 @@ local function create_gui(player)
       },
       {
         type = "scroll-pane",
-        style = "rbl_search_scroll_pane",
+        style = "rb_search_scroll_pane",
         style_mods = { maximal_height = main_panel_width, width = main_panel_width },
         {
           type = "table",
@@ -592,7 +592,7 @@ local function create_gui(player)
         {
           type = "sprite-button",
           name = "info_recipe_name_label",
-          style = "rbl_subheader_caption_button",
+          style = "rb_subheader_caption_button",
           style_mods = { horizontally_squashable = true },
           enabled = false,
           raise_hover_events = true,
@@ -602,7 +602,7 @@ local function create_gui(player)
         {
           type = "sprite-button",
           name = "info_context_label",
-          style = "rbl_subheader_caption_button",
+          style = "rb_subheader_caption_button",
           enabled = false,
           raise_hover_events = true,
           handler = { [defines.events.on_gui_hover] = on_prototype_button_hovered },
@@ -650,7 +650,7 @@ local function create_gui(player)
             direction = "vertical",
             {
               type = "flow",
-              { type = "label", style = "caption_label", caption = { "gui.rbl-ingredients" } },
+              { type = "label", style = "caption_label", caption = { "gui.rb-ingredients" } },
               {
                 type = "label",
                 name = "info_ingredients_count_label",
@@ -674,7 +674,7 @@ local function create_gui(player)
             direction = "vertical",
             {
               type = "flow",
-              { type = "label", style = "caption_label", caption = { "gui.rbl-products" } },
+              { type = "label", style = "caption_label", caption = { "gui.rb-products" } },
               {
                 type = "label",
                 name = "info_products_count_label",
@@ -694,7 +694,7 @@ local function create_gui(player)
         {
           type = "flow",
           style_mods = { vertical_align = "center", horizontal_spacing = 12 },
-          { type = "label", style = "caption_label", caption = { "gui.rbl-made-in" } },
+          { type = "label", style = "caption_label", caption = { "gui.rb-made-in" } },
           {
             type = "frame",
             style = "slot_button_deep_frame",
@@ -705,7 +705,7 @@ local function create_gui(player)
           type = "flow",
           name = "info_unlocked_by_flow",
           style_mods = { vertical_align = "center", horizontal_spacing = 12 },
-          { type = "label", style = "caption_label", caption = { "gui.rbl-unlocked-by" } },
+          { type = "label", style = "caption_label", caption = { "gui.rb-unlocked-by" } },
           {
             type = "frame",
             style = "slot_button_deep_frame",
@@ -788,7 +788,7 @@ local function on_open_selected(e)
   -- Auto-pin if another GUI is already open
   if
     player.opened_gui_type ~= defines.gui_type.none
-    and player.opened ~= self.elems.rbl_main_window
+    and player.opened ~= self.elems.rb_main_window
     and not self.pinned
   then
     toggle_pinned(self)
@@ -800,7 +800,7 @@ end
 
 --- @param e EventData.CustomInputEvent|EventData.on_lua_shortcut
 local function on_gui_toggle(e)
-  if e.prototype_name and e.prototype_name ~= "rbl-toggle-gui" then
+  if e.prototype_name and e.prototype_name ~= "rb-toggle-gui" then
     return
   end
   local player = game.get_player(e.player_index)
@@ -811,7 +811,7 @@ local function on_gui_toggle(e)
   if not self then
     self = create_gui(player)
   end
-  if self.elems.rbl_main_window.visible then
+  if self.elems.rb_main_window.visible then
     hide_gui(self)
   else
     show_gui(self)
@@ -844,8 +844,8 @@ gui.events = {
   [defines.events.on_lua_shortcut] = on_gui_toggle,
   [defines.events.on_player_created] = on_player_created,
   [defines.events.on_tick] = on_tick,
-  ["rbl-open-selected"] = on_open_selected,
-  ["rbl-toggle-gui"] = on_gui_toggle,
+  ["rb-open-selected"] = on_open_selected,
+  ["rb-toggle-gui"] = on_gui_toggle,
   [util.refresh_guis_paused_event] = on_tick,
 }
 

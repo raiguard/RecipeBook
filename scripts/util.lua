@@ -98,13 +98,13 @@ function util.build_tooltip(player, type, name)
     for _, mod_name in pairs(history.changed) do
       items[#items + 1] = { "", " › ", { "?", { "mod-name." .. mod_name }, mod_name } }
     end
-    prototype_history = { "", "\n", { "gui.rbl-info-color", items } }
+    prototype_history = { "", "\n", { "gui.rb-info-color", items } }
   end
 
   --- @type LocalisedString
   local control_hints = { "" }
-  if player.mod_settings["rbl-show-control-hints"].value then
-    control_hints = { "", "\n", { "gui.rbl-left-click-instruction" }, "\n", { "gui.rbl-right-click-instruction" } }
+  if player.mod_settings["rb-show-control-hints"].value then
+    control_hints = { "", "\n", { "gui.rb-left-click-instruction" }, "\n", { "gui.rb-right-click-instruction" } }
   end
 
   --- @type LocalisedString
@@ -133,7 +133,7 @@ function util.build_tooltip(player, type, name)
 
   return {
     "",
-    { "gui.rbl-tooltip-title", prototype.localised_name, { "gui.rbl-" .. type } },
+    { "gui.rb-tooltip-title", prototype.localised_name, { "gui.rb-" .. type } },
     prototype_history,
     { "?", { "", "\n", descriptions }, "" },
     control_hints,
