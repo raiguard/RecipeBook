@@ -175,19 +175,19 @@ local function refresh_all_forces()
   end
 end
 
-local data = {}
+local researched = {}
 
-data.on_init = function()
+researched.on_init = function()
   --- @type table<ForceIndex, Set<string>>
   global.researched_objects = {}
   refresh_all_forces()
 end
 
-data.on_configuration_changed = refresh_all_forces
+researched.on_configuration_changed = refresh_all_forces
 
-data.events = {
+researched.events = {
   [defines.events.on_force_created] = on_force_created,
   [defines.events.on_research_finished] = on_research_finished,
 }
 
-return data
+return researched
