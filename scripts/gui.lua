@@ -3,6 +3,7 @@ local flib_gui = require("__flib__/gui-lite")
 local flib_position = require("__flib__/position")
 local flib_table = require("__flib__/table")
 
+local list = require("__RecipeBook__/scripts/list")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class Context
@@ -22,12 +23,6 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field context Context
 --- @field index integer
 --- @field recipes LuaRecipePrototype[]
-
---- @type table<ContextKind, string>
-local context_kind_filter = {
-  usage = "has-ingredient-",
-  recipes = "has-product-",
-}
 
 local search_columns = 13
 local main_panel_width = 40 * search_columns + 12
@@ -220,25 +215,8 @@ local function open_page(self, context, recipe)
     return true
   end
 
-  local recipes = game.get_filtered_recipe_prototypes({
-    {
-      filter = context_kind_filter[context.kind] .. context.type,
-      elem_filters = {
-        { filter = "name", name = context.name },
-      },
-    },
-  })
-  local index = 1
-  local recipes_array = {}
-  local i = 0
-  for recipe_name, recipe_prototype in pairs(recipes) do
-    i = i + 1
-    recipes_array[#recipes_array + 1] = recipe_prototype
-    if recipe_name == recipe then
-      index = i
-    end
-  end
-  if not recipes_array[1] then
+  local list = list.get(context)
+  if not list then
     self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
     self.player.play_sound({ path = "utility/cannot_build" })
     return false
@@ -248,7 +226,7 @@ local function open_page(self, context, recipe)
   for i = self.history_index, #self.history do
     self.history[i] = nil
   end
-  self.history[self.history_index] = { context = context, index = index, recipes = recipes_array }
+  self.history[self.history_index] = { context = context, index = 1, recipes = list }
 
   update_info_page(self)
 
