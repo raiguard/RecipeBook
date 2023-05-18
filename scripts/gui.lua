@@ -1,6 +1,7 @@
 local flib_dictionary = require("__flib__/dictionary-lite")
 local flib_gui = require("__flib__/gui-lite")
 local flib_position = require("__flib__/position")
+local flib_table = require("__flib__/table")
 
 local util = require("__RecipeBook__/scripts/util")
 
@@ -212,6 +213,11 @@ local function open_page(self, context, recipe)
     end
     context.type = "item"
     context.name = item_name
+  end
+
+  local current = self.history[self.history_index]
+  if current and flib_table.deep_compare(current.context, context) then
+    return true
   end
 
   local recipes = game.get_filtered_recipe_prototypes({
