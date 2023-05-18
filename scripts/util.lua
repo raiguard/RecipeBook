@@ -104,7 +104,17 @@ function util.build_tooltip(player, type, name)
   --- @type LocalisedString
   local control_hints = { "" }
   if player.mod_settings["rb-show-control-hints"].value then
-    control_hints = { "", "\n", { "gui.rb-left-click-instruction" }, "\n", { "gui.rb-right-click-instruction" } }
+    if type == "technology" then
+      control_hints = { "", "\n", { "gui.rb-left-click-instruction", { "gui.rb-view-technology" } } }
+    else
+      control_hints = {
+        "",
+        "\n",
+        { "gui.rb-left-click-instruction", { "gui.rb-view-recipes" } },
+        "\n",
+        { "gui.rb-right-click-instruction", { "gui.rb-view-usage" } },
+      }
+    end
   end
 
   --- @type LocalisedString
