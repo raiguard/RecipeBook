@@ -2,6 +2,7 @@ local flib_dictionary = require("__flib__/dictionary-lite")
 local flib_gui = require("__flib__/gui-lite")
 local flib_position = require("__flib__/position")
 local flib_table = require("__flib__/table")
+local mod_gui = require("__core__/lualib/mod-gui")
 
 local list = require("__RecipeBook__/scripts/list")
 local util = require("__RecipeBook__/scripts/util")
@@ -759,15 +760,6 @@ local function create_gui(player)
   return self
 end
 
---- @param e EventData.on_player_created
-local function on_player_created(e)
-  local player = game.get_player(e.player_index)
-  if not player then
-    return
-  end
-  create_gui(player)
-end
-
 local allowed_types = {
   entity = true,
   fluid = true,
@@ -821,7 +813,7 @@ local function on_open_selected(e)
   end
 end
 
---- @param e EventData.CustomInputEvent|EventData.on_lua_shortcut
+--- @param e EventData.CustomInputEvent|EventData.on_lua_shortcut|EventData.on_gui_click
 local function on_gui_toggle(e)
   if e.prototype_name and e.prototype_name ~= "rb-toggle-gui" then
     return
@@ -852,6 +844,49 @@ local function on_tick()
   end
 end
 
+--- @param player LuaPlayer
+local function refresh_mod_gui_button(player)
+  local button_flow = mod_gui.get_button_flow(player)
+  local existing = button_flow.rb_mod_gui_button
+  if existing then
+    existing.destroy()
+  end
+  if not player.mod_settings["rb-show-overhead-button"].value then
+    return
+  end
+  flib_gui.add(button_flow, {
+    type = "sprite-button",
+    name = "rb_mod_gui_button",
+    style = mod_gui.button_style,
+    style_mods = { padding = 8 },
+    sprite = "rb_mod_gui_icon",
+    tooltip = { "gui.rb-mod-gui-button-tooltip" },
+    handler = { [defines.events.on_gui_click] = on_gui_toggle },
+  })
+end
+
+--- @param e EventData.on_player_created
+local function on_player_created(e)
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
+  -- create_gui(player)
+  refresh_mod_gui_button(player)
+end
+
+--- @param e EventData.on_runtime_mod_setting_changed
+local function on_runtime_mod_setting_changed(e)
+  if e.setting ~= "rb-show-overhead-button" then
+    return
+  end
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
+  refresh_mod_gui_button(player)
+end
+
 local gui = {}
 
 gui.on_init = function()
@@ -860,22 +895,33 @@ gui.on_init = function()
   --- @type Set<uint>
   global.refresh_gui = {}
   util.build_dictionaries()
+
+  for _, player in pairs(game.players) do
+    refresh_mod_gui_button(player)
+  end
 end
-gui.on_configuration_changed = util.build_dictionaries
+gui.on_configuration_changed = function()
+  util.build_dictionaries()
+  for _, player in pairs(game.players) do
+    refresh_mod_gui_button(player)
+  end
+end
 
 gui.events = {
   [defines.events.on_lua_shortcut] = on_gui_toggle,
   [defines.events.on_player_created] = on_player_created,
+  [defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed,
   [defines.events.on_tick] = on_tick,
-  ["rb-open-selected"] = on_open_selected,
-  ["rb-toggle-gui"] = on_gui_toggle,
   ["rb-go-back"] = on_go_back_clicked,
   ["rb-go-forward"] = on_go_forward_clicked,
+  ["rb-open-selected"] = on_open_selected,
+  ["rb-toggle-gui"] = on_gui_toggle,
   [util.refresh_guis_paused_event] = on_tick,
 }
 
 flib_gui.add_handlers({
   on_close_button_clicked = on_close_button_clicked,
+  on_gui_toggle = on_gui_toggle,
   on_main_window_closed = on_main_window_closed,
   on_nav_backward_clicked = on_go_back_clicked,
   on_nav_forward_clicked = on_go_forward_clicked,

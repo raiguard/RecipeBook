@@ -65,6 +65,14 @@ data:extend({
     size = 32,
     flags = { "gui-icon" },
   },
+  {
+    type = "sprite",
+    name = "rb_mod_gui_icon",
+    filename = "__RecipeBook__/graphics/shortcut-x32-black.png",
+    size = 32,
+    mipmap_count = 2,
+    flags = { "gui-icon" },
+  },
 })
 
 local styles = data.raw["gui-style"]["default"]
