@@ -216,8 +216,8 @@ local function open_page(self, context, recipe)
     return true
   end
 
-  local list = list.get(context)
-  if not list then
+  local list, index = list.get(context, recipe)
+  if not list or not index then
     self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
     self.player.play_sound({ path = "utility/cannot_build" })
     return false
@@ -227,7 +227,7 @@ local function open_page(self, context, recipe)
   for i = self.history_index, #self.history do
     self.history[i] = nil
   end
-  self.history[self.history_index] = { context = context, index = 1, recipes = list }
+  self.history[self.history_index] = { context = context, index = index, recipes = list }
 
   update_info_page(self)
 
