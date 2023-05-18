@@ -281,6 +281,9 @@ end
 --- @param e EventData.on_gui_text_changed
 local function on_search_textfield_changed(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   self.search_query = string.lower(e.text)
   update_search_results(self)
 end
@@ -288,6 +291,9 @@ end
 --- @param e EventData.on_gui_click
 on_prototype_button_clicked = function(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   local to_open = e.element.sprite
   local type, name = string.match(to_open, "(.-)/(.*)")
   if type == "technology" then
@@ -352,6 +358,9 @@ end
 --- @param e EventData.on_gui_closed
 local function on_main_window_closed(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   if self.pinned then
     return
   end
@@ -364,24 +373,36 @@ local function on_titlebar_clicked(e)
     return
   end
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   reset_gui_location(self)
 end
 
 --- @param e EventData.on_gui_click
 local function on_close_button_clicked(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   hide_gui(self)
 end
 
 --- @param e EventData.on_gui_click
 local function on_pin_button_clicked(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   toggle_pinned(self)
 end
 
 --- @param e EventData.on_gui_click
 local function on_show_hidden_clicked(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   self.show_hidden = not self.show_hidden
   e.element.style = self.show_hidden and "flib_selected_frame_action_button" or "frame_action_button"
   e.element.sprite = self.show_hidden and "rb_show_hidden_black" or "rb_show_hidden_white"
@@ -389,9 +410,12 @@ local function on_show_hidden_clicked(e)
   -- TODO: Update context list
 end
 
---- @param e EventData.on_gui_click
-local function on_nav_backward_clicked(e)
+--- @param e EventData.CustomInputEvent|EventData.on_gui_click
+local function on_go_back_clicked(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   if self.history_index <= 1 then
     return_to_search(self)
     return
@@ -400,9 +424,12 @@ local function on_nav_backward_clicked(e)
   update_info_page(self)
 end
 
---- @param e EventData.on_gui_click
-local function on_nav_forward_clicked(e)
+--- @param e EventData.CustomInputEvent|EventData.on_gui_click
+local function on_go_forward_clicked(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   if self.history_index >= #self.history then
     return
   end
@@ -413,6 +440,9 @@ end
 --- @param e EventData.on_gui_click
 local function on_show_unresearched_clicked(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   toggle_show_unresearched(self)
   -- TODO: Update context list
 end
@@ -420,6 +450,9 @@ end
 --- @param e EventData.on_gui_click
 local function on_recipe_nav_clicked(e)
   local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
   local entry = self.history[self.history_index]
   if not entry then
     return
@@ -512,23 +545,23 @@ local function create_gui(player)
       { type = "line", style = "flib_titlebar_separator_line", direction = "vertical", ignored_by_interaction = true },
       {
         type = "sprite-button",
-        name = "nav_backward_button",
+        name = "go_back_button",
         style = "frame_action_button",
         sprite = "flib_nav_backward_white",
         hovered_sprite = "flib_nav_backward_black",
         clicked_sprite = "flib_nav_backward_black",
         tooltip = { "gui.rb-go-back" },
-        handler = on_nav_backward_clicked,
+        handler = on_go_back_clicked,
       },
       {
         type = "sprite-button",
-        name = "nav_forward_button",
+        name = "go_forward_button",
         style = "frame_action_button",
         sprite = "flib_nav_forward_white",
         hovered_sprite = "flib_nav_forward_black",
         clicked_sprite = "flib_nav_forward_black",
         tooltip = { "gui.rb-go-forward" },
-        handler = on_nav_forward_clicked,
+        handler = on_go_forward_clicked,
       },
       { type = "line", style = "flib_titlebar_separator_line", direction = "vertical", ignored_by_interaction = true },
       {
@@ -838,7 +871,7 @@ end
 local gui = {}
 
 gui.on_init = function()
-  --- @type table<uint, GuiData>
+  --- @type table<uint, GuiData?>
   global.gui = {}
   --- @type Set<uint>
   global.refresh_gui = {}
@@ -852,14 +885,16 @@ gui.events = {
   [defines.events.on_tick] = on_tick,
   ["rb-open-selected"] = on_open_selected,
   ["rb-toggle-gui"] = on_gui_toggle,
+  ["rb-go-back"] = on_go_back_clicked,
+  ["rb-go-forward"] = on_go_forward_clicked,
   [util.refresh_guis_paused_event] = on_tick,
 }
 
 flib_gui.add_handlers({
   on_close_button_clicked = on_close_button_clicked,
   on_main_window_closed = on_main_window_closed,
-  on_nav_backward_clicked = on_nav_backward_clicked,
-  on_nav_forward_clicked = on_nav_forward_clicked,
+  on_nav_backward_clicked = on_go_back_clicked,
+  on_nav_forward_clicked = on_go_forward_clicked,
   on_pin_button_clicked = on_pin_button_clicked,
   on_prototype_button_clicked = on_prototype_button_clicked,
   on_prototype_button_hovered = on_prototype_button_hovered,

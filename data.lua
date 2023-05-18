@@ -11,6 +11,16 @@ data:extend({
     include_selected_prototype = true,
   },
   {
+    type = "custom-input",
+    name = "rb-go-back",
+    key_sequence = "mouse-button-4",
+  },
+  {
+    type = "custom-input",
+    name = "rb-go-forward",
+    key_sequence = "mouse-button-5",
+  },
+  {
     type = "shortcut",
     name = "rb-toggle-gui",
     icon = {
