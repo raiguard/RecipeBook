@@ -4,7 +4,7 @@ local flib_position = require("__flib__/position")
 local flib_table = require("__flib__/table")
 local mod_gui = require("__core__/lualib/mod-gui")
 
-local list = require("__RecipeBook__/scripts/list")
+local database = require("__RecipeBook__/scripts/database")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class Context
@@ -115,7 +115,10 @@ local function update_info_page(self)
   self.elems.info_context_label.caption =
     { "", "            ", context.kind == "recipes" and { "gui.rb-recipes" } or { "gui.rb-usage" } }
   self.elems.info_context_label.tooltip = ""
-  self.elems.info_recipe_name_label.sprite = "recipe/" .. recipe.name
+
+  local sprite = recipe.object_name == "LuaRecipePrototype" and "recipe/" .. recipe.name or recipe.sprite_path
+
+  self.elems.info_recipe_name_label.sprite = sprite
   self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
   self.elems.info_recipe_name_label.tooltip = ""
   self.elems.info_recipe_name_label.style = researched["recipe/" .. recipe.name] and "rb_subheader_caption_button"
@@ -153,18 +156,33 @@ local function update_info_page(self)
       tooltip = { "gui.rb-handcraft" },
     })
   end
-  for _, machine in
-    pairs(game.get_filtered_entity_prototypes({
-      { filter = "crafting-category", crafting_category = recipe.category },
-    }))
-  do
-    local ingredient_count = machine.ingredient_count
-    if ingredient_count == 0 or ingredient_count >= item_ingredients then
-      flib_gui.add(made_in_frame, {
+  local machines = database.get_made_in(recipe, item_ingredients)
+  for _, machine in pairs(machines) do
+    flib_gui.add(made_in_frame, {
+      type = "sprite-button",
+      style = "slot_button",
+      sprite = machine.type .. "/" .. machine.name,
+      number = machine.amount,
+      raise_hover_events = true,
+      handler = {
+        [defines.events.on_gui_click] = on_prototype_button_clicked,
+        [defines.events.on_gui_hover] = on_prototype_button_hovered,
+        [defines.events.on_gui_leave] = on_prototype_button_left,
+      },
+    })
+  end
+  self.elems.info_made_in_flow.visible = #made_in_frame.children > 0
+
+  local unlocked_by_frame = self.elems.info_unlocked_by_frame
+  unlocked_by_frame.clear()
+  if recipe.object_name == "LuaRecipePrototype" then
+    for _, technology in
+      pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
+    do
+      flib_gui.add(unlocked_by_frame, {
         type = "sprite-button",
         style = "slot_button",
-        sprite = "entity/" .. machine.name,
-        number = recipe.energy / machine.crafting_speed,
+        sprite = "technology/" .. technology.name,
         raise_hover_events = true,
         handler = {
           [defines.events.on_gui_click] = on_prototype_button_clicked,
@@ -173,24 +191,6 @@ local function update_info_page(self)
         },
       })
     end
-  end
-
-  local unlocked_by_frame = self.elems.info_unlocked_by_frame
-  unlocked_by_frame.clear()
-  for _, technology in
-    pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
-  do
-    flib_gui.add(unlocked_by_frame, {
-      type = "sprite-button",
-      style = "slot_button",
-      sprite = "technology/" .. technology.name,
-      raise_hover_events = true,
-      handler = {
-        [defines.events.on_gui_click] = on_prototype_button_clicked,
-        [defines.events.on_gui_hover] = on_prototype_button_hovered,
-        [defines.events.on_gui_leave] = on_prototype_button_left,
-      },
-    })
   end
   self.elems.info_unlocked_by_flow.visible = #unlocked_by_frame.children > 0
 end
@@ -216,7 +216,7 @@ local function open_page(self, context, recipe)
     return true
   end
 
-  local list, index = list.get(context, recipe)
+  local list, index = database.get_list(context, recipe)
   if not list or not index then
     self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
     self.player.play_sound({ path = "utility/cannot_build" })
@@ -717,6 +717,7 @@ local function create_gui(player)
         },
         {
           type = "flow",
+          name = "info_made_in_flow",
           style_mods = { vertical_align = "center", horizontal_spacing = 12 },
           { type = "label", style = "caption_label", caption = { "gui.rb-made-in" } },
           {
