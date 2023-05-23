@@ -95,6 +95,27 @@ local function get_made_in(recipe, item_ingredients)
       end
     end
     return output
+  elseif recipe.object_name == "rb-pseudo-mining" then
+    local output = {}
+    local resource_category = recipe.category
+    for drill_name, drill in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
+      if not drill.resource_categories[resource_category] then
+        goto continue
+      end
+      local required_fluid = recipe.ingredients[2]
+      if required_fluid then
+        local fluidbox = drill.fluidbox_prototypes[1]
+        if not fluidbox then
+          goto continue
+        end
+        if fluidbox.filter and fluidbox.filter.name ~= required_fluid.name then
+          goto continue
+        end
+      end
+      output[#output + 1] = { type = "entity", name = drill_name, amount = recipe.energy / drill.mining_speed }
+      ::continue::
+    end
+    return output
   end
   return {}
 end
@@ -136,6 +157,36 @@ local function create_burning_recipe(item, item_name, burnt_result)
   table.insert(flib_table.get_or_insert(global.pseudo_recipes, "item/" .. burnt_result.name, {}), pseudo)
 end
 
+--- @param resource LuaEntityPrototype
+--- @param resource_name string
+--- @param mineable_properties LuaEntityPrototype.mineable_properties
+local function create_mining_recipe(resource, resource_name, mineable_properties)
+  local products = mineable_properties.products
+  if not products then
+    return
+  end
+
+  local pseudo = {
+    name = "rb-pseudo-" .. resource_name .. "-mining",
+    localised_name = { "recipe-name.rb-pseudo-mining", resource.localised_name },
+    energy = mineable_properties.mining_time,
+    ingredients = { { type = "entity", name = resource_name } },
+    products = products,
+    category = resource.resource_category,
+    sprite_path = "entity/" .. resource_name,
+    object_name = "rb-pseudo-mining",
+  }
+  if mineable_properties.required_fluid then
+    table.insert(
+      pseudo.ingredients,
+      { type = "fluid", name = mineable_properties.required_fluid, amount = mineable_properties.fluid_amount }
+    )
+  end
+  for _, product in pairs(products) do
+    table.insert(flib_table.get_or_insert(global.pseudo_recipes, product.type .. "/" .. product.name, {}), pseudo)
+  end
+end
+
 local function refresh_database()
   for item_name, item in pairs(game.item_prototypes) do
     local launch_products = item.rocket_launch_products
@@ -145,6 +196,12 @@ local function refresh_database()
     local burnt_result = item.burnt_result
     if burnt_result then
       create_burning_recipe(item, item_name, burnt_result)
+    end
+  end
+  for resource_name, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+    local mineable_properties = resource.mineable_properties
+    if mineable_properties then
+      create_mining_recipe(resource, resource_name, mineable_properties)
     end
   end
 end

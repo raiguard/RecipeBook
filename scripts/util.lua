@@ -163,7 +163,11 @@ function util.get_item_to_place(entity_name)
   if not prototype then
     return
   end
-  local _, item = next(prototype.items_to_place_this)
+  local items_to_place_this = prototype.items_to_place_this
+  if not items_to_place_this then
+    return
+  end
+  local _, item = next(items_to_place_this)
   if item then
     return item.name
   end
@@ -173,7 +177,15 @@ end
 --- @return boolean
 function util.is_hand_craftable(recipe)
   -- TODO: Account for other characters and god controller?
-  if not game.entity_prototypes["character"].crafting_categories[recipe.category] then
+  if
+    recipe.object_name == "LuaRecipePrototype"
+    and not game.entity_prototypes["character"].crafting_categories[recipe.category]
+  then
+    return false
+  elseif
+    recipe.object_name == "rb-pseudo-mining"
+    and not game.entity_prototypes["character"].resource_categories[recipe.category]
+  then
     return false
   end
   for _, ingredient in pairs(recipe.ingredients) do
