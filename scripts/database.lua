@@ -84,7 +84,7 @@ local function get_made_in(recipe, item_ingredients)
     local fuel = game.item_prototypes[recipe.ingredients[1].name]
     local buildings = game.get_filtered_entity_prototypes({ { filter = "building" } })
     local output = {}
-    local fuel_category = recipe.fuel_category
+    local fuel_category = recipe.category
     for _, machine in pairs(buildings) do
       if machine.burner_prototype and machine.burner_prototype.fuel_categories[fuel_category] then
         output[#output + 1] = {
@@ -149,7 +149,7 @@ local function create_burning_recipe(item, item_name, burnt_result)
     energy = 1,
     ingredients = { { type = "item", name = item_name, amount = 1 } },
     products = { { type = "item", name = burnt_result.name, amount = 1 } },
-    fuel_category = item.fuel_category,
+    category = item.fuel_category,
     sprite_path = "item/" .. item_name,
     object_name = "rb-pseudo-burning",
   }

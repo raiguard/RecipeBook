@@ -187,6 +187,8 @@ function util.is_hand_craftable(recipe)
     and not game.entity_prototypes["character"].resource_categories[recipe.category]
   then
     return false
+  elseif recipe.object_name == "rb-pseudo-rocket-launch" or recipe.object_name == "rb-pseudo-burning" then
+    return false
   end
   for _, ingredient in pairs(recipe.ingredients) do
     if ingredient.type == "fluid" then
