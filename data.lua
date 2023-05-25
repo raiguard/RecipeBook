@@ -2,12 +2,12 @@ data:extend({
   {
     type = "custom-input",
     name = "rb-toggle-gui",
-    key_sequence = "CONTROL + B",
+    key_sequence = "CONTROL + E",
   },
   {
     type = "custom-input",
     name = "rb-open-selected",
-    key_sequence = "ALT + mouse-button-1",
+    key_sequence = "ALT + mouse-button-3",
     include_selected_prototype = true,
   },
   {
