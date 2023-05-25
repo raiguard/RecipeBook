@@ -767,15 +767,23 @@ local allowed_types = {
   item = true,
 }
 
---- @param player LuaPlayer
---- @param selected_prototype SelectedPrototypeData
-local function open_selected_prototype(player, selected_prototype)
-  local type = selected_prototype.base_type
+--- @param e EventData.CustomInputEvent
+local function on_open_selected(e)
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
+  local selected = e.selected_prototype
+  if not selected then
+    return
+  end
+
+  local type = selected.base_type
   --- @type string?
-  local name = selected_prototype.name
+  local name = selected.name
   local recipe_name
   if type == "recipe" then
-    recipe_name = selected_prototype.name
+    recipe_name = selected.name
     local recipe = game.recipe_prototypes[recipe_name]
     local product = recipe.main_product or recipe.products[1]
     if not product then
@@ -789,7 +797,7 @@ local function open_selected_prototype(player, selected_prototype)
     return
   end
 
-  local self = global.gui[player.index]
+  local self = global.gui[e.player_index]
   if not self then
     self = create_gui(player)
   end
@@ -813,11 +821,6 @@ local function on_gui_toggle(e)
   end
   local player = game.get_player(e.player_index)
   if not player then
-    return
-  end
-  local selected_prototype = e.selected_prototype
-  if selected_prototype then
-    open_selected_prototype(player, selected_prototype)
     return
   end
   local self = global.gui[e.player_index]
@@ -912,6 +915,7 @@ gui.events = {
   [defines.events.on_tick] = on_tick,
   ["rb-go-back"] = on_go_back_clicked,
   ["rb-go-forward"] = on_go_forward_clicked,
+  ["rb-open-selected"] = on_open_selected,
   ["rb-toggle-gui"] = on_gui_toggle,
   [util.refresh_guis_paused_event] = on_tick,
 }
