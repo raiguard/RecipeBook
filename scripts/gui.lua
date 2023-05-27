@@ -789,6 +789,7 @@ local function create_gui(player)
   global.gui[player.index] = self
 
   reset_gui_location(self)
+  update_search_results(self)
 
   return self
 end
