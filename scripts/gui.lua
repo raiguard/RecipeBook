@@ -22,8 +22,7 @@ local util = require("__RecipeBook__/scripts/util")
 
 --- @class GuiHistoryEntry
 --- @field context Context
---- @field index integer
---- @field recipes LuaRecipePrototype[]
+--- @field recipe string
 
 local search_columns = 13
 local main_panel_width = 40 * search_columns + 12
@@ -111,10 +110,10 @@ local function update_info_page(self)
 
   local researched = global.researched_objects[self.player.force_index]
 
-  local recipe = entry.recipes[entry.index]
+  local recipe = self.current_list[self.current_list_index]
   local context = entry.context
 
-  self.elems.info_recipe_count_label.caption = "[" .. entry.index .. "/" .. #entry.recipes .. "]"
+  self.elems.info_recipe_count_label.caption = "[" .. self.current_list_index .. "/" .. #self.current_list .. "]"
   self.elems.info_context_label.sprite = context.type .. "/" .. context.name
   self.elems.info_context_label.caption =
     { "", "            ", context.kind == "recipes" and { "gui.rb-recipes" } or { "gui.rb-usage" } }
@@ -206,10 +205,32 @@ local function update_info_page(self)
 end
 
 --- @param self GuiData
+--- @param context Context?
+--- @param recipe string?
+--- @return boolean
+local function update_list(self, context, recipe)
+  if not context then
+    local entry = self.history[self.history_index]
+    if not entry then
+      return false
+    end
+    context = entry.context
+    recipe = entry.recipe
+  end
+  local list, index = database.get_list(self, context, recipe)
+  if not list or not index then
+    return false
+  end
+  self.current_list = list
+  self.current_list_index = index
+  return true
+end
+
+--- @param self GuiData
 --- @param context Context
 --- @param recipe string?
 --- @return boolean
-local function open_page(self, context, recipe)
+local function show_info(self, context, recipe)
   if context.type == "entity" then
     local item_name = util.get_item_to_place(context.name)
     if not item_name then
@@ -226,8 +247,7 @@ local function open_page(self, context, recipe)
     return true
   end
 
-  local list, index = database.get_list(context, recipe)
-  if not list or not index then
+  if not update_list(self, context, recipe) then
     self.player.create_local_flying_text({ text = "No recipes to display", create_at_cursor = true })
     self.player.play_sound({ path = "utility/cannot_build" })
     return false
@@ -237,7 +257,7 @@ local function open_page(self, context, recipe)
   for i = self.history_index, #self.history do
     self.history[i] = nil
   end
-  self.history[self.history_index] = { context = context, index = index, recipes = list }
+  self.history[self.history_index] = { context = context, self.current_list[self.current_list_index].name }
 
   update_info_page(self)
 
@@ -261,16 +281,6 @@ local function toggle_pinned(self)
     pin_button.sprite = "flib_pin_white"
     self.elems.close_button.tooltip = { "gui.close-instruction" }
   end
-end
-
---- @param self GuiData
-local function toggle_show_unresearched(self)
-  self.show_unresearched = not self.show_unresearched
-  self.elems.show_unresearched_button.style = self.show_unresearched and "flib_selected_frame_action_button"
-    or "frame_action_button"
-  self.elems.show_unresearched_button.sprite = self.show_unresearched and "rb_show_unresearched_black"
-    or "rb_show_unresearched_white"
-  update_search_results(self)
 end
 
 --- @param e EventData.on_gui_text_changed
@@ -297,7 +307,7 @@ on_prototype_button_clicked = function(e)
   end
 
   local kind = e.button == defines.mouse_button_type.left and "recipes" or "usage"
-  open_page(self, { kind = kind, name = name, type = type })
+  show_info(self, { kind = kind, name = name, type = type })
 end
 
 --- @param e EventData.on_gui_hover
@@ -392,19 +402,6 @@ local function on_pin_button_clicked(e)
   toggle_pinned(self)
 end
 
---- @param e EventData.on_gui_click
-local function on_show_hidden_clicked(e)
-  local self = global.gui[e.player_index]
-  if not self then
-    return
-  end
-  self.show_hidden = not self.show_hidden
-  e.element.style = self.show_hidden and "flib_selected_frame_action_button" or "frame_action_button"
-  e.element.sprite = self.show_hidden and "rb_show_hidden_black" or "rb_show_hidden_white"
-  update_search_results(self)
-  -- TODO: Update context list
-end
-
 --- @param e EventData.CustomInputEvent|EventData.on_gui_click
 local function on_go_back_clicked(e)
   local self = global.gui[e.player_index]
@@ -416,6 +413,7 @@ local function on_go_back_clicked(e)
     return
   end
   self.history_index = self.history_index - 1
+  update_list(self)
   update_info_page(self)
 end
 
@@ -429,6 +427,21 @@ local function on_go_forward_clicked(e)
     return
   end
   self.history_index = self.history_index + 1
+  update_list(self)
+  update_info_page(self)
+end
+
+--- @param e EventData.on_gui_click
+local function on_show_hidden_clicked(e)
+  local self = global.gui[e.player_index]
+  if not self then
+    return
+  end
+  self.show_hidden = not self.show_hidden
+  e.element.style = self.show_hidden and "flib_selected_frame_action_button" or "frame_action_button"
+  e.element.sprite = self.show_hidden and "rb_show_hidden_black" or "rb_show_hidden_white"
+  update_search_results(self)
+  update_list(self)
   update_info_page(self)
 end
 
@@ -438,26 +451,33 @@ local function on_show_unresearched_clicked(e)
   if not self then
     return
   end
-  toggle_show_unresearched(self)
-  -- TODO: Update context list
+  self.show_unresearched = not self.show_unresearched
+  self.elems.show_unresearched_button.style = self.show_unresearched and "flib_selected_frame_action_button"
+    or "frame_action_button"
+  self.elems.show_unresearched_button.sprite = self.show_unresearched and "rb_show_unresearched_black"
+    or "rb_show_unresearched_white"
+  update_search_results(self)
+  update_list(self)
+  update_info_page(self)
 end
 
 --- @param e EventData.on_gui_click
 local function on_recipe_nav_clicked(e)
   local self = global.gui[e.player_index]
-  if not self then
+  if not self or not self.current_list then
     return
   end
   local entry = self.history[self.history_index]
   if not entry then
     return
   end
-  entry.index = entry.index + e.element.tags.nav_offset
-  if entry.index == 0 then
-    entry.index = #entry.recipes --[[@as uint]]
-  elseif entry.index > #entry.recipes then
-    entry.index = 1
+  self.current_list_index = self.current_list_index + e.element.tags.nav_offset
+  if self.current_list_index == 0 then
+    self.current_list_index = #self.current_list --[[@as uint]]
+  elseif self.current_list_index > #self.current_list then
+    self.current_list_index = 1
   end
+  entry.recipe = self.current_list[self.current_list_index].name
   update_info_page(self)
 end
 
@@ -520,8 +540,8 @@ local function create_gui(player)
       {
         type = "sprite-button",
         name = "show_unresearched_button",
-        style = "frame_action_button",
-        sprite = "rb_show_unresearched_white",
+        style = "flib_selected_frame_action_button",
+        sprite = "rb_show_unresearched_black",
         hovered_sprite = "rb_show_unresearched_black",
         clicked_sprite = "rb_show_unresearched_black",
         tooltip = { "gui.rb-show-unresearched" },
@@ -753,6 +773,9 @@ local function create_gui(player)
 
   --- @class GuiData
   local self = {
+    --- @type LuaRecipePrototype[]?
+    current_list = nil,
+    current_list_index = 0,
     elems = elems,
     --- @type GuiHistoryEntry[]
     history = {},
@@ -761,12 +784,11 @@ local function create_gui(player)
     player = player,
     search_query = "",
     show_hidden = false,
-    show_unresearched = false,
+    show_unresearched = true,
   }
   global.gui[player.index] = self
 
   reset_gui_location(self)
-  toggle_show_unresearched(self)
 
   return self
 end
@@ -819,7 +841,7 @@ local function on_open_selected(e)
   then
     toggle_pinned(self)
   end
-  if open_page(self, { kind = "recipes", name = name, type = type }, recipe_name) then
+  if show_info(self, { kind = "recipes", name = name, type = type }, recipe_name) then
     show_gui(self, true)
   end
 end
