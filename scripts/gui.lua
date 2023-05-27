@@ -79,12 +79,16 @@ end
 --- @return GuiElemDef
 local function build_list_box_item(obj, researched)
   local path = obj.type .. "/" .. obj.name
-  local is_researched = researched[path]
-  local style = is_researched and "rb_list_box_item" or "rb_list_box_item_unresearched"
+  local style = "rb_list_box_item"
+  if util.is_hidden(obj) then
+    style = "rb_list_box_item_hidden"
+  elseif not researched[path] then
+    style = "rb_list_box_item_unresearched"
+  end
   return {
     type = "sprite-button",
     style = style,
-    sprite = obj.type .. "/" .. obj.name,
+    sprite = path,
     caption = util.build_caption(obj),
     raise_hover_events = true,
     handler = {
@@ -118,11 +122,17 @@ local function update_info_page(self)
 
   local sprite = recipe.object_name == "LuaRecipePrototype" and "recipe/" .. recipe.name or recipe.sprite_path
 
-  self.elems.info_recipe_name_label.sprite = sprite
-  self.elems.info_recipe_name_label.caption = { "", "            ", recipe.localised_name }
-  self.elems.info_recipe_name_label.tooltip = ""
-  self.elems.info_recipe_name_label.style = researched["recipe/" .. recipe.name] and "rb_subheader_caption_button"
-    or "rb_subheader_caption_button_unresearched"
+  local recipe_name_label = self.elems.info_recipe_name_label
+  recipe_name_label.sprite = sprite
+  recipe_name_label.caption = { "", "            ", recipe.localised_name }
+  recipe_name_label.tooltip = ""
+  if recipe.hidden then
+    recipe_name_label.style = "rb_subheader_caption_button_hidden"
+  elseif not researched["recipe/" .. recipe.name] then
+    recipe_name_label.style = "rb_subheader_caption_button_unresearched"
+  else
+    recipe_name_label.style = "rb_subheader_caption_button"
+  end
 
   local ingredients_frame = self.elems.info_ingredients_frame
   ingredients_frame.clear()

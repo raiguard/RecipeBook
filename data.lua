@@ -90,6 +90,8 @@ styles.rb_subheader_caption_button = {
   draw_shadow_under_picture = true,
 }
 
+local hidden_font_color = { r = 1, g = 1, b = 1, a = 0.6 }
+
 styles.rb_subheader_caption_button_hidden = {
   type = "button_style",
   parent = "rb_subheader_caption_button",

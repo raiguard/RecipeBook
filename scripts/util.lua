@@ -198,6 +198,17 @@ function util.is_hand_craftable(recipe)
   return true
 end
 
+--- @param obj GenericObject
+function util.is_hidden(obj)
+  --- @type GenericPrototype
+  local prototype = game[obj.type .. "_prototypes"][obj.name]
+  if obj.type == "item" then
+    return prototype.has_flag("hidden")
+  else
+    return prototype.hidden
+  end
+end
+
 util.refresh_guis_paused_event = script.generate_event_name()
 
 --- @param player LuaPlayer
