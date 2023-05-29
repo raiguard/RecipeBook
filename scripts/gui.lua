@@ -437,8 +437,7 @@ local function on_show_hidden_clicked(e)
   if not self then
     return
   end
-  self.show_hidden = not self.show_hidden
-  e.element.style = self.show_hidden and "flib_selected_frame_action_button" or "frame_action_button"
+  self.show_hidden = e.element.toggled
   e.element.sprite = self.show_hidden and "rb_show_hidden_black" or "rb_show_hidden_white"
   update_search_results(self)
   update_list(self)
@@ -451,9 +450,7 @@ local function on_show_unresearched_clicked(e)
   if not self then
     return
   end
-  self.show_unresearched = not self.show_unresearched
-  self.elems.show_unresearched_button.style = self.show_unresearched and "flib_selected_frame_action_button"
-    or "frame_action_button"
+  self.show_unresearched = e.element.toggled
   self.elems.show_unresearched_button.sprite = self.show_unresearched and "rb_show_unresearched_black"
     or "rb_show_unresearched_white"
   update_search_results(self)
@@ -540,11 +537,13 @@ local function create_gui(player)
       {
         type = "sprite-button",
         name = "show_unresearched_button",
-        style = "flib_selected_frame_action_button",
+        style = "frame_action_button",
         sprite = "rb_show_unresearched_black",
         hovered_sprite = "rb_show_unresearched_black",
         clicked_sprite = "rb_show_unresearched_black",
         tooltip = { "gui.rb-show-unresearched" },
+        auto_toggle = true,
+        toggled = true,
         handler = on_show_unresearched_clicked,
       },
       {
@@ -555,6 +554,7 @@ local function create_gui(player)
         hovered_sprite = "rb_show_hidden_black",
         clicked_sprite = "rb_show_hidden_black",
         tooltip = { "gui.rb-show-hidden" },
+        auto_toggle = true,
         handler = on_show_hidden_clicked,
       },
       { type = "line", style = "flib_titlebar_separator_line", direction = "vertical", ignored_by_interaction = true },
