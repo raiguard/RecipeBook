@@ -1,10 +1,11 @@
 local handler = require("__core__/lualib/event_handler")
 
-handler.add_lib(require("__flib__/dictionary-lite"))
-handler.add_lib(require("__flib__/gui-lite"))
-
-handler.add_lib(require("__RecipeBook__/scripts/database"))
-handler.add_lib(require("__RecipeBook__/scripts/gui"))
-handler.add_lib(require("__RecipeBook__/scripts/researched"))
+handler.add_libraries({
+  require("__flib__/dictionary-lite"),
+  require("__flib__/gui-lite"),
+  require("__RecipeBook__/scripts/database"),
+  require("__RecipeBook__/scripts/gui"),
+  require("__RecipeBook__/scripts/researched"),
+})
 
 --- @class Set<T> { [T]: boolean }
