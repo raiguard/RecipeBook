@@ -526,7 +526,7 @@ local function create_gui(player)
       type = "flow",
       style = "flib_titlebar_flow",
       drag_target = "rb_main_window",
-      handler = { [defines.events.on_gui_click] = on_titlebar_clicked },
+      handler = on_titlebar_clicked,
       {
         type = "label",
         style = "frame_title",
