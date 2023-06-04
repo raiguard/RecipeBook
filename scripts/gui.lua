@@ -478,16 +478,12 @@ local function on_recipe_nav_clicked(e)
   update_info_page(self)
 end
 
-local hidden_item_groups = {
-  ["ee-tools"] = true,
-}
-
 --- @param player LuaPlayer
 --- @return GuiData
 local function create_gui(player)
   local buttons = {}
   for _, item in pairs(game.item_prototypes) do
-    local is_hidden = item.has_flag("hidden") or item.has_flag("spawnable") or hidden_item_groups[item.group.name]
+    local is_hidden = item.has_flag("hidden") or item.has_flag("spawnable")
     table.insert(buttons, {
       type = "sprite-button",
       style = is_hidden and "flib_slot_button_grey" or "slot_button",
