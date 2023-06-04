@@ -30,30 +30,35 @@ local context_kind_filter = {
 local function get_list(gui, context, recipe)
   local recipes_array = {}
   local pseudo = context.kind == "recipes" and global.pseudo_recipes or global.pseudo_usage
+  local recipe_index = 1
   for _, pseudo_recipe in pairs(pseudo[context.type .. "/" .. context.name] or {}) do
     recipes_array[#recipes_array + 1] = pseudo_recipe
-  end
-  local filters = {
-    {
-      filter = context_kind_filter[context.kind] .. context.type,
-      elem_filters = { { filter = "name", name = context.name } },
-    },
-  }
-  if not gui.show_hidden then
-    filters[#filters + 1] = { mode = "and", filter = "hidden", invert = true }
-  end
-  local recipes = game.get_filtered_recipe_prototypes(filters)
-  local recipe_index = 1
-  local force_recipes = gui.player.force.recipes
-  for recipe_name, recipe_prototype in pairs(recipes) do
-    if not gui.show_unresearched and not force_recipes[recipe_name].enabled then
-      goto continue
-    end
-    recipes_array[#recipes_array + 1] = recipe_prototype
-    if recipe_name == recipe then
+    if pseudo_recipe.name == recipe then
       recipe_index = #recipes_array
     end
-    ::continue::
+  end
+  if context.type ~= "entity" then
+    local filters = {
+      {
+        filter = context_kind_filter[context.kind] .. context.type,
+        elem_filters = { { filter = "name", name = context.name } },
+      },
+    }
+    if not gui.show_hidden then
+      filters[#filters + 1] = { mode = "and", filter = "hidden", invert = true }
+    end
+    local recipes = game.get_filtered_recipe_prototypes(filters)
+    local force_recipes = gui.player.force.recipes
+    for recipe_name, recipe_prototype in pairs(recipes) do
+      if not gui.show_unresearched and not force_recipes[recipe_name].enabled then
+        goto continue
+      end
+      recipes_array[#recipes_array + 1] = recipe_prototype
+      if recipe_name == recipe then
+        recipe_index = #recipes_array
+      end
+      ::continue::
+    end
   end
   if not recipes_array[1] then
     return nil
@@ -195,6 +200,7 @@ local function create_mining_recipe(resource, resource_name, mineable_properties
   for _, product in pairs(products) do
     table.insert(flib_table.get_or_insert(global.pseudo_recipes, product.type .. "/" .. product.name, {}), pseudo)
   end
+  table.insert(flib_table.get_or_insert(global.pseudo_usage, "entity/" .. resource_name, {}), pseudo)
 end
 
 local function refresh_database()
