@@ -204,6 +204,8 @@ function util.is_hidden(obj)
   local prototype = game[obj.type .. "_prototypes"][obj.name]
   if obj.type == "item" then
     return prototype.has_flag("hidden")
+  elseif obj.type == "entity" then
+    return false
   else
     return prototype.hidden
   end
