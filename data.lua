@@ -23,6 +23,7 @@ data:extend({
   {
     type = "shortcut",
     name = "rb-toggle-gui",
+    order = "p[panels]-r[recipe-book]",
     icon = {
       filename = "__RecipeBook__/graphics/shortcut-x32-black.png",
       size = 32,
