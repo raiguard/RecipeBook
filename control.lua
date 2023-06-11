@@ -105,12 +105,15 @@ end)
 -- Debug commands
 
 commands.add_command("rb-print-object", nil, function(e)
+  if not e.parameter then
+    return
+  end
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if not player.admin then
     player.print({ "cant-run-command-not-admin", "rb-dump-data" })
     return
   end
-  local _, _, class, name = string.find(e.parameter, "^(.+) (.+)$")
+  local class, name = string.match(e.parameter, "^(.+) (.+)$")
   if not class or not name then
     player.print("Invalid arguments format")
     return
