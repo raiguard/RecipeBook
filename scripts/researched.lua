@@ -123,6 +123,9 @@ end
 
 --- @param e EventData.on_research_finished
 local function on_research_finished(e)
+  if not global.researched_objects then
+    return
+  end
   local research = e.research
   local recipes = research.force.recipes
   local researched = global.researched_objects[research.force.index]
@@ -166,6 +169,9 @@ end
 
 --- @param e EventData.on_force_created
 local function on_force_created(e)
+  if not global.researched_objects then
+    return
+  end
   refresh_force(e.force)
 end
 
