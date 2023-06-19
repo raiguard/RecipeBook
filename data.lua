@@ -7,7 +7,7 @@ data:extend({
   {
     type = "custom-input",
     name = "rb-open-selected",
-    key_sequence = "ALT + mouse-button-3",
+    key_sequence = "ALT + mouse-button-1",
     include_selected_prototype = true,
   },
   {
