@@ -16,6 +16,7 @@ local flib_table = require("__flib__/table")
 --- @field products Product[]
 --- @field sprite_path SpritePath
 --- @field object_name RBRecipePrototypeObjectName
+--- @field made_in GenericObject[]
 
 --- @type table<ContextKind, string>
 local context_kind_filter = {
@@ -131,6 +132,8 @@ local function get_made_in(recipe, item_ingredients)
       ::continue::
     end
     return output
+  elseif recipe.object_name == "rb-pseudo-boiling" then
+    return recipe.made_in
   end
   return {}
 end
@@ -203,6 +206,32 @@ local function create_mining_recipe(resource, resource_name, mineable_properties
   table.insert(flib_table.get_or_insert(global.pseudo_usage, "entity/" .. resource_name, {}), pseudo)
 end
 
+--- @param boiler LuaEntityPrototype
+--- @param boiler_name string
+local function create_boiler_recipe(boiler, boiler_name)
+  local fluidbox = boiler.fluidbox_prototypes
+
+  local input = fluidbox[1].filter
+  local output = fluidbox[2].filter
+  if not (input and output) then
+    return
+  end
+
+  local pseudo = {
+    name = "rb-pseudo-" .. input.name .. "-boiling",
+    localised_name = { "recipe-name.rb-pseudo-boiling", input.localised_name },
+    energy = 1, -- TODO:
+    ingredients = { { type = "fluid", name = input.name } },
+    products = { { type = "fluid", name = output.name } }, -- TODO: Temperature
+    category = "rb-pseudo-boiling",
+    sprite_path = "fluid/" .. output.name, -- TODO: Super special icons for these?
+    object_name = "rb-pseudo-boiling",
+    made_in = { { type = "entity", name = boiler_name } },
+  }
+  table.insert(flib_table.get_or_insert(global.pseudo_usage, "fluid/" .. input.name, {}), pseudo)
+  table.insert(flib_table.get_or_insert(global.pseudo_recipes, "fluid/" .. output.name, {}), pseudo)
+end
+
 local function refresh_database()
   for item_name, item in pairs(game.item_prototypes) do
     local launch_products = item.rocket_launch_products
@@ -219,6 +248,9 @@ local function refresh_database()
     if mineable_properties then
       create_mining_recipe(resource, resource_name, mineable_properties)
     end
+  end
+  for boiler_name, boiler in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
+    create_boiler_recipe(boiler, boiler_name)
   end
 end
 
