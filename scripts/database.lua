@@ -140,6 +140,9 @@ function database.handle_research_updated(technology, to_value)
 end
 
 function database.check_force(force)
+  if not force.valid then
+    return
+  end
   for _, technology in pairs(force.technologies) do
     if technology.enabled and technology.researched then
       database.handle_research_updated(technology, true)
