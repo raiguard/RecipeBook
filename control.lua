@@ -127,7 +127,7 @@ commands.add_command("rb-print-object", nil, function(e)
     __DebugAdapter.print(obj)
     player.print("Object data has been printed to the debug console.")
   else
-    log(serpent.block(obj))
+    log(game.table_to_json(obj))
     player.print("Object data has been printed to the log file.")
   end
 end)
