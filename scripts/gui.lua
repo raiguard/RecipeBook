@@ -969,25 +969,9 @@ flib_gui.add_handlers({
   on_titlebar_clicked = on_titlebar_clicked,
 })
 
+-- Placeholder for now
 remote.add_interface("RecipeBook", {
-  --- @param player_index uint
-  --- @param context_kind ContextKind
-  --- @param context_type string
-  --- @param context_name string
-  --- @param recipe_name string?
-  open_page = function(player_index, context_kind, context_type, context_name, recipe_name)
-    local player = game.get_player(player_index)
-    if not player then
-      return
-    end
-    local self = global.gui[player_index]
-    if not self then
-      self = create_gui(player)
-    end
-    if show_info(self, { kind = context_kind, type = context_type, name = context_name }, recipe_name) then
-      show_gui(self, true)
-    end
-  end,
+  open_page = function() end,
 })
 
 return gui
