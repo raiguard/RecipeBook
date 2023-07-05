@@ -194,6 +194,7 @@ local function update_info_page(self)
       type = "sprite-button",
       style = global.researched_objects[self.player.force_index][technology_path] and "flib_slot_button_green"
         or "flib_slot_button_red",
+      style_mods = { size = 60 },
       sprite = technology_path,
       raise_hover_events = true,
       handler = {
