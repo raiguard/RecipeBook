@@ -4,7 +4,7 @@ local flib_math = require("__flib__/math")
 
 local util = {}
 
---- @param obj Ingredient|Product
+--- @param obj Ingredient|Product|DatabaseObjectDef
 --- @return LocalisedString
 function util.build_caption(obj)
   --- @type LocalisedString

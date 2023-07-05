@@ -121,32 +121,44 @@ local function unlock_recipe(recipe, researched)
   unlock_products(recipe.products, researched)
 end
 
+--- @param technology LuaTechnology
+--- @param researched Set<string>
+local function unlock_technology(technology, researched)
+  local recipes = technology.force.recipes
+  researched["technology/" .. technology.name] = true
+  for _, effect in pairs(technology.effects) do
+    if effect.type == "unlock-recipe" then
+      unlock_recipe(recipes[effect.recipe], researched)
+    end
+  end
+  for _, player in pairs(technology.force.players) do
+    util.schedule_gui_refresh(player)
+  end
+end
+
 --- @param e EventData.on_research_finished
 local function on_research_finished(e)
   if not global.researched_objects then
     return
   end
-  local research = e.research
-  local recipes = research.force.recipes
-  local researched = global.researched_objects[research.force.index]
+  local technology = e.research
+  local researched = global.researched_objects[technology.force.index]
   if not researched then
     return
   end
-  for _, effect in pairs(research.effects) do
-    if effect.type == "unlock-recipe" then
-      unlock_recipe(recipes[effect.recipe], researched)
-    end
-  end
-  for _, player in pairs(research.force.players) do
-    util.schedule_gui_refresh(player)
-  end
+  unlock_technology(technology, researched)
 end
 
 --- @param force LuaForce
 local function refresh_force(force)
   local researched = {}
+  for _, technology in pairs(force.technologies) do
+    if technology.researched then
+      unlock_technology(technology, researched)
+    end
+  end
   for _, recipe in pairs(force.recipes) do
-    if recipe.enabled then
+    if recipe.enabled and not researched["recipe/" .. recipe.name] then
       unlock_recipe(recipe, researched)
     end
   end

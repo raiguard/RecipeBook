@@ -78,8 +78,9 @@ end
 --- @return GuiElemDef
 local function build_list_box_item(obj, researched)
   local path = obj.type .. "/" .. obj.name
+  local obj_data = global.database[path]
   local style = "rb_list_box_item"
-  if util.is_hidden(obj) then
+  if obj_data and obj_data.hidden then
     style = "rb_list_box_item_hidden"
   elseif not researched[path] then
     style = "rb_list_box_item_unresearched"
@@ -119,10 +120,8 @@ local function update_info_page(self)
     { "", "            ", context.kind == "recipes" and { "gui.rb-recipes" } or { "gui.rb-usage" } }
   self.elems.info_context_label.tooltip = ""
 
-  local sprite = recipe.object_name == "LuaRecipePrototype" and "recipe/" .. recipe.name or recipe.sprite_path
-
   local recipe_name_label = self.elems.info_recipe_name_label
-  recipe_name_label.sprite = sprite
+  recipe_name_label.sprite = recipe.sprite_path
   recipe_name_label.caption = { "", "            ", recipe.localised_name }
   recipe_name_label.tooltip = ""
   if recipe.hidden then
@@ -135,26 +134,32 @@ local function update_info_page(self)
 
   local ingredients_frame = self.elems.info_ingredients_frame
   ingredients_frame.clear()
+  local num_ingredients = 0
   local item_ingredients = 0
   for _, ingredient in pairs(recipe.ingredients) do
     if ingredient.type == "item" then
       item_ingredients = item_ingredients + 1
     end
+    num_ingredients = num_ingredients + 1
     flib_gui.add(ingredients_frame, build_list_box_item(ingredient, researched))
   end
-  self.elems.info_ingredients_count_label.caption = "[" .. #recipe.ingredients .. "]"
+  self.elems.info_ingredients_count_label.caption = "[" .. num_ingredients .. "]"
   self.elems.info_ingredients_energy_label.caption = "[img=quantity-time] " .. util.format_number(recipe.energy) .. " s"
 
   local products_frame = self.elems.info_products_frame
   products_frame.clear()
+  local num_products = 0
   for _, product in pairs(recipe.products) do
+    num_products = num_products + 1
     flib_gui.add(products_frame, build_list_box_item(product, researched))
   end
-  self.elems.info_products_count_label.caption = "[" .. #recipe.products .. "]"
+  self.elems.info_products_count_label.caption = "[" .. num_products .. "]"
 
   local made_in_frame = self.elems.info_made_in_frame
   made_in_frame.clear()
-  if util.is_hand_craftable(recipe) then
+  local num_made_in = 0
+  if recipe.is_hand_craftable then
+    num_made_in = num_made_in + 1
     flib_gui.add(made_in_frame, {
       type = "sprite-button",
       style = "slot_button",
@@ -165,8 +170,8 @@ local function update_info_page(self)
       tooltip = { "gui.rb-handcraft" },
     })
   end
-  local machines = database.get_made_in(recipe, item_ingredients)
-  for _, machine in pairs(machines) do
+  for _, machine in pairs(recipe.made_in or {}) do
+    num_made_in = num_made_in + 1
     flib_gui.add(made_in_frame, {
       type = "sprite-button",
       style = "slot_button",
@@ -180,26 +185,23 @@ local function update_info_page(self)
       },
     })
   end
-  self.elems.info_made_in_flow.visible = #made_in_frame.children > 0
+  self.elems.info_made_in_flow.visible = num_made_in > 0
 
   local unlocked_by_frame = self.elems.info_unlocked_by_frame
   unlocked_by_frame.clear()
-  if recipe.object_name == "LuaRecipePrototype" then
-    for _, technology in
-      pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
-    do
-      flib_gui.add(unlocked_by_frame, {
-        type = "sprite-button",
-        style = "slot_button",
-        sprite = "technology/" .. technology.name,
-        raise_hover_events = true,
-        handler = {
-          [defines.events.on_gui_click] = on_prototype_button_clicked,
-          [defines.events.on_gui_hover] = on_prototype_button_hovered,
-          [defines.events.on_gui_leave] = on_prototype_button_left,
-        },
-      })
-    end
+  for technology_path in pairs(recipe.unlocked_by or {}) do
+    flib_gui.add(unlocked_by_frame, {
+      type = "sprite-button",
+      style = global.researched_objects[self.player.force_index][technology_path] and "flib_slot_button_green"
+        or "flib_slot_button_red",
+      sprite = technology_path,
+      raise_hover_events = true,
+      handler = {
+        [defines.events.on_gui_click] = on_prototype_button_clicked,
+        [defines.events.on_gui_hover] = on_prototype_button_hovered,
+        [defines.events.on_gui_leave] = on_prototype_button_left,
+      },
+    })
   end
   self.elems.info_unlocked_by_flow.visible = #unlocked_by_frame.children > 0
 end
@@ -217,8 +219,8 @@ local function update_list(self, context, recipe)
     context = entry.context
     recipe = entry.recipe
   end
-  local list, index = database.get_list(self, context, recipe)
-  if not list or not index then
+  local list, index = database.get_recipes(self, context, recipe)
+  if not list[1] or not index then
     return false
   end
   self.current_list = list
@@ -773,7 +775,7 @@ local function create_gui(player)
 
   --- @class GuiData
   local self = {
-    --- @type LuaRecipePrototype[]?
+    --- @type DatabaseRecipe[]?
     current_list = nil,
     current_list_index = 0,
     elems = elems,
