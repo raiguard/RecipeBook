@@ -408,7 +408,7 @@ end
 --- @param e EventData.CustomInputEvent|EventData.on_gui_click
 local function on_go_back_clicked(e)
   local self = global.gui[e.player_index]
-  if not self then
+  if not self or not self.elems.rb_main_window.visible then
     return
   end
   if self.history_index <= 1 then
@@ -423,7 +423,7 @@ end
 --- @param e EventData.CustomInputEvent|EventData.on_gui_click
 local function on_go_forward_clicked(e)
   local self = global.gui[e.player_index]
-  if not self then
+  if not self or not self.elems.rb_main_window.visible then
     return
   end
   if self.history_index >= #self.history then
