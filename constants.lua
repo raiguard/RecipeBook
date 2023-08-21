@@ -183,6 +183,11 @@ constants.disabled_categories = {
     ["py-incineration"] = 1,
     ["py-runoff"] = 1,
     ["py-venting"] = 1,
+    -- Reverse factory
+    ["recycle-intermediates"] = 0,
+    ["recycle-productivity"] = 0,
+    ["recycle-products"] = 0,
+    ["recycle-with-fluids"] = 0,
     -- Transport drones
     ["fuel-depot"] = 0,
     ["transport-drone-request"] = 0,
