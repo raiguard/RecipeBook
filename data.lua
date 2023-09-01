@@ -85,8 +85,10 @@ styles.rb_subheader_caption_button = {
   font = "default-bold",
   icon_horizontal_align = "left",
   padding = 0,
+  top_padding = -4,
+  bottom_padding = -4,
   left_margin = 4,
-  height = 36,
+  height = 28,
   minimal_width = 0,
   draw_shadow_under_picture = true,
 }
