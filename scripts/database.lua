@@ -4,19 +4,16 @@
 --- @field localised_name LocalisedString
 --- @field sprite_path SpritePath
 --- @field hidden boolean?
---- @field category string
 --- @field energy double
 --- @field ingredients table<SpritePath, Ingredient>
 --- @field products table<SpritePath, Product>
 --- @field is_hand_craftable boolean?
---- @field made_in table<SpritePath, DatabaseObjectDef>?
+--- @field made_in table<SpritePath, DatabaseRecipeDefinition>?
 --- @field unlocked_by Set<SpritePath>?
 
 --- @alias MaterialType "fluid"|"item"
 
---- @alias DatabaseObject DatabaseRecipe
-
---- @class DatabaseObjectDef
+--- @class DatabaseRecipeDefinition
 --- @field type string
 --- @field name string
 --- @field amount double?
@@ -66,7 +63,7 @@ end
 --- @param item LuaItemPrototype
 --- @param item_name string
 --- @param launch_products Product[]
-local function create_launch_recipe(item, item_name, launch_products)
+local function add_launch_recipe(item, item_name, launch_products)
   local machines = game.get_filtered_entity_prototypes({ filter = { filter = "type", type = "rocket-silo" } })
   local made_in = {}
   for _, machine in pairs(machines) do
@@ -89,7 +86,7 @@ end
 --- @param item LuaItemPrototype
 --- @param item_name string
 --- @param burnt_result LuaItemPrototype
-local function create_burning_recipe(item, item_name, burnt_result)
+local function add_burning_recipe(item, item_name, burnt_result)
   local name = "rb-pseudo-" .. item_name .. "-burning"
 
   local buildings = game.get_filtered_entity_prototypes({ { filter = "building" } })
@@ -110,19 +107,17 @@ local function create_burning_recipe(item, item_name, burnt_result)
     name = name,
     localised_name = { "recipe-name.rb-pseudo-burning", item.localised_name },
     sprite_path = "item/" .. item_name,
-    category = item.fuel_category,
     energy = 1,
     ingredients = make_sprite_path_lookup({ { type = "item", name = item_name, amount = 1 } }),
     products = make_sprite_path_lookup({ { type = "item", name = burnt_result.name, amount = 1 } }),
     made_in = made_in,
-    -- TODO: Unlocked by
   }
 end
 
 --- @param resource LuaEntityPrototype
 --- @param resource_name string
 --- @param mineable_properties LuaEntityPrototype.mineable_properties
-local function create_mining_recipe(resource, resource_name, mineable_properties)
+local function add_mining_recipe(resource, resource_name, mineable_properties)
   local products = mineable_properties.products
   if not products then
     return
@@ -163,19 +158,17 @@ local function create_mining_recipe(resource, resource_name, mineable_properties
     name = name,
     localised_name = { "recipe-name.rb-pseudo-mining", resource.localised_name },
     sprite_path = "entity/" .. resource_name,
-    category = resource.resource_category,
     energy = mineable_properties.mining_time,
     ingredients = make_sprite_path_lookup({ { type = "entity", name = resource_name }, required_fluid }),
     products = make_sprite_path_lookup(products),
     made_in = made_in,
-    -- TODO: Unlocked by
   }
   global.database["recipe/" .. name] = recipe
 end
 
 --- @param boiler LuaEntityPrototype
 --- @param boiler_name string
-local function create_boiler_recipe(boiler, boiler_name)
+local function add_boiler_recipe(boiler, boiler_name)
   local fluidbox = boiler.fluidbox_prototypes
 
   local input = fluidbox[1].filter
@@ -196,7 +189,6 @@ local function create_boiler_recipe(boiler, boiler_name)
     name = name,
     localised_name = { "recipe-name.rb-pseudo-boiling", input.localised_name },
     sprite_path = "fluid/" .. output.name, -- TODO: Super special icons for these?
-    category = "rb-pseudo-boiling",
     energy = 1, -- TODO:
     ingredients = make_sprite_path_lookup({ { type = "fluid", name = input.name } }),
     products = make_sprite_path_lookup({ { type = "fluid", name = output.name } }), -- TODO: Temperature
@@ -205,7 +197,7 @@ local function create_boiler_recipe(boiler, boiler_name)
 end
 
 --- @param recipe LuaRecipePrototype
-local function build_recipe(recipe)
+local function add_real_recipe(recipe)
   local unlocked_by = {}
   for name in pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } })) do
     unlocked_by["technology/" .. name] = true
@@ -233,7 +225,6 @@ local function build_recipe(recipe)
     localised_name = recipe.localised_name,
     sprite_path = "recipe/" .. recipe.name,
     hidden = recipe.hidden or nil,
-    category = recipe.category,
     energy = recipe.energy,
     ingredients = make_sprite_path_lookup(recipe.ingredients),
     products = make_sprite_path_lookup(recipe.products),
@@ -243,39 +234,39 @@ local function build_recipe(recipe)
   }
 end
 
-local function create_objects()
-  --- @type table<SpritePath, DatabaseObject>
+local function add_objects()
+  --- @type table<SpritePath, DatabaseRecipe?>
   global.database = {}
 
   for _, recipe in pairs(game.recipe_prototypes) do
-    build_recipe(recipe)
+    add_real_recipe(recipe)
   end
 
   for item_name, item in pairs(game.item_prototypes) do
     local launch_products = item.rocket_launch_products
     if launch_products[1] then
-      create_launch_recipe(item, item_name, launch_products)
+      add_launch_recipe(item, item_name, launch_products)
     end
     local burnt_result = item.burnt_result
     if burnt_result then
-      create_burning_recipe(item, item_name, burnt_result)
+      add_burning_recipe(item, item_name, burnt_result)
     end
   end
 
   for resource_name, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
     local mineable_properties = resource.mineable_properties
     if mineable_properties then
-      create_mining_recipe(resource, resource_name, mineable_properties)
+      add_mining_recipe(resource, resource_name, mineable_properties)
     end
   end
 
   for boiler_name, boiler in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
-    create_boiler_recipe(boiler, boiler_name)
+    add_boiler_recipe(boiler, boiler_name)
   end
 end
 
 local function refresh()
-  create_objects()
+  add_objects()
 end
 
 local database = {}

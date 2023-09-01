@@ -16,13 +16,25 @@ local util = require("__RecipeBook__/scripts/util")
 --- | "usage"
 --- | "recipes"
 
---- @class RecipeDefinition
---- @field name string
---- @field type string
+--- @class GuiData
+--- @field current_list DatabaseRecipe[]?
+--- @field current_list_index integer
+--- @field elems table<string, LuaGuiElement>
+--- @field history GuiHistoryEntry[]
+--- @field history_index integer
+--- @field pinned boolean
+--- @field player LuaPlayer
+--- @field search_query string
+--- @field show_hidden boolean
+--- @field show_unresearched boolean
 
 --- @class GuiHistoryEntry
 --- @field context Context
 --- @field recipe string
+
+--- @class RecipeDefinition
+--- @field name string
+--- @field type string
 
 local search_columns = 13
 local main_panel_width = 40 * search_columns + 12
@@ -774,13 +786,10 @@ local function create_gui(player)
     },
   })
 
-  --- @class GuiData
+  --- @type GuiData
   local self = {
-    --- @type DatabaseRecipe[]?
-    current_list = nil,
     current_list_index = 0,
     elems = elems,
-    --- @type GuiHistoryEntry[]
     history = {},
     history_index = 0,
     pinned = false,
