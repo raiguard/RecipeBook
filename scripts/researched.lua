@@ -6,7 +6,7 @@ local unlock_products
 
 --- @param entity LuaEntityPrototype
 --- @param researched Set<string>
-local function unlock_mining_drill_products(entity, researched)
+local function unlock_mining_drill(entity, researched)
   --- @type string|boolean?
   local filter
   for _, fluidbox_prototype in pairs(entity.fluidbox_prototypes) do
@@ -16,7 +16,6 @@ local function unlock_mining_drill_products(entity, researched)
       break
     end
   end
-  -- TODO: Handle if the required fluid is not unlocked
   local resource_categories = entity.resource_categories
   --- @cast resource_categories Set<string>
   for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
@@ -26,6 +25,7 @@ local function unlock_mining_drill_products(entity, researched)
       resource_categories[resource.resource_category]
       and (not required_fluid or filter == true or filter == required_fluid)
     then
+      researched["recipe/rb-pseudo-" .. resource.name .. "-mining"] = true
       local products = resource.mineable_properties.products
       if products then
         unlock_products(products, researched)
@@ -57,9 +57,13 @@ local function unlock_entity(entity, researched)
     local output_fluid = entity.fluidbox_prototypes[2].filter
     if output_fluid then
       unlock_fluid(output_fluid, researched)
+      local input_fluid = entity.fluidbox_prototypes[1].filter
+      if input_fluid then
+        researched["recipe/rb-pseudo-" .. input_fluid.name .. "-boiling"] = true
+      end
     end
   elseif entity.type == "mining-drill" then
-    unlock_mining_drill_products(entity, researched)
+    unlock_mining_drill(entity, researched)
   elseif entity.type == "offshore-pump" then
     local fluid = entity.fluid --[[@as LuaFluidPrototype]]
     unlock_fluid(fluid, researched)
@@ -75,10 +79,10 @@ local function unlock_item(item, researched)
   end
   researched[key] = true
 
-  -- TODO: Handle Exotic Industries' scripted rocket launch products
   for _, product in pairs(item.rocket_launch_products) do
     local product_prototype = game.item_prototypes[product.name]
     unlock_item(product_prototype, researched)
+    researched["recipe/rb-pseudo-" .. item.name .. "-rocket-launch"] = true
   end
 
   local place_result = item.place_result
@@ -89,6 +93,7 @@ local function unlock_item(item, researched)
   local burnt_result = item.burnt_result
   if burnt_result then
     unlock_item(burnt_result, researched)
+    researched["recipe/rb-pseudo-" .. item.name .. "-burning"] = true
   end
 end
 

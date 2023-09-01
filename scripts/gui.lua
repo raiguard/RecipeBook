@@ -501,6 +501,20 @@ local hidden_item_groups = {
 --- @return GuiData
 local function create_gui(player)
   local buttons = {}
+  -- for _, recipe in pairs(global.database) do
+  --   table.insert(buttons, {
+  --     type = "sprite-button",
+  --     style = recipe.hidden and "flib_slot_button_grey" or "slot_button",
+  --     sprite = recipe.sprite_path,
+  --     visible = not recipe.hidden,
+  --     tags = { is_hidden = recipe.hidden },
+  --     raise_hover_events = true,
+  --     handler = {
+  --       [defines.events.on_gui_click] = on_prototype_button_clicked,
+  --       [defines.events.on_gui_hover] = on_prototype_button_hovered,
+  --     },
+  --   })
+  -- end
   for _, item in pairs(game.item_prototypes) do
     local is_hidden = item.has_flag("hidden") or item.has_flag("spawnable") or hidden_item_groups[item.group.name]
     table.insert(buttons, {
