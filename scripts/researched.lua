@@ -176,6 +176,9 @@ local function refresh_force(force)
     end
     -- TODO: "Gathered from" lists
   end
+  for name in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+    researched["entity/" .. name] = true
+  end
   global.researched_objects[force.index] = researched
 end
 
