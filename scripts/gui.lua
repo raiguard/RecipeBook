@@ -186,7 +186,7 @@ local function update_info_page(self)
     num_made_in = num_made_in + 1
     flib_gui.add(made_in_frame, {
       type = "sprite-button",
-      style = "slot_button",
+      style = researched[machine.type .. "/" .. machine.name] and "slot_button" or "flib_slot_button_red",
       sprite = machine.type .. "/" .. machine.name,
       number = machine.amount,
       raise_hover_events = true,
