@@ -84,15 +84,8 @@ function util.build_tooltip(player, type, name)
 
   --- @type LocalisedString
   local prototype_history = { "" }
-  -- XXX: get_prototype_history errors if there is no history, but we cannot tell that ahead of time,
-  -- so a pcall is required for now
-  -- FIXME: Prototype history is not working all the time
-  local has_history, history = pcall(script.get_prototype_history, type, name)
-  if
-    has_history
-    and history
-    and (#history.changed > 0 or (history.created ~= "base" and history.created ~= "core"))
-  then
+  local history = script.get_prototype_history(prototype.type, name)
+  if history and (#history.changed > 0 or (history.created ~= "base" and history.created ~= "core")) then
     --- @type LocalisedString
     local items = { "", { "?", { "mod-name." .. history.created }, history.created } }
     for _, mod_name in pairs(history.changed) do
