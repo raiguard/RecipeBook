@@ -74,6 +74,11 @@ end
 
 --- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
 
+local has_derived_types = {
+  entity = true,
+  item = true,
+}
+
 --- @param player LuaPlayer
 --- @param type string
 --- @param name string
@@ -84,7 +89,11 @@ function util.build_tooltip(player, type, name)
 
   --- @type LocalisedString
   local prototype_history = { "" }
-  local history = script.get_prototype_history(prototype.type, name)
+  local derived_type = type
+  if has_derived_types[type] then
+    derived_type = prototype.type
+  end
+  local history = script.get_prototype_history(derived_type, name)
   if history and (#history.changed > 0 or (history.created ~= "base" and history.created ~= "core")) then
     --- @type LocalisedString
     local items = { "", { "?", { "mod-name." .. history.created }, history.created } }

@@ -976,6 +976,12 @@ gui.on_configuration_changed = function()
   for _, player in pairs(game.players) do
     refresh_mod_gui_button(player)
   end
+  for _, gui in pairs(global.gui) do
+    if gui.elems.rb_main_window.valid then
+      gui.elems.rb_main_window.destroy()
+    end
+  end
+  global.gui = {}
 end
 
 gui.events = {
