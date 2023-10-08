@@ -328,6 +328,12 @@ end
 --- @param e EventData.on_gui_hover
 on_prototype_button_hovered = function(e)
   local elem = e.element
+  local tags = elem.tags
+  if tags.hovering then
+    return
+  end
+  tags.hovering = true
+  elem.tags = tags
   --- @type string, string
   local type, name = string.match(elem.sprite, "(.-)/(.*)")
   elem.tooltip = util.build_tooltip(global.gui[e.player_index].player, type, name)
@@ -336,6 +342,9 @@ end
 --- @param e EventData.on_gui_leave
 on_prototype_button_left = function(e)
   e.element.tooltip = ""
+  local tags = e.element.tags
+  tags.hovering = false
+  e.element.tags = tags
 end
 
 --- @param self GuiData
