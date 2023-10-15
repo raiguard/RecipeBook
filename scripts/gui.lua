@@ -190,10 +190,10 @@ function gui.select_filter_group(self, group_name)
   local members = self.elems.filter_scroll_pane
   local previous_group = self.selected_filter_group
   if previous_group then
-    tabs[previous_group].enabled = true
+    tabs[previous_group].toggled = false
     members[previous_group].visible = false
   end
-  tabs[group_name].enabled = false
+  tabs[group_name].toggled = true
   members[group_name].visible = true
   self.selected_filter_group = group_name
 end
@@ -308,14 +308,16 @@ function gui.update_filter_panel(self)
     end
     local is_visible = filtered_count > 0
     local has_search_matches = searched_count > 0
-    local group_tab = tabs_table[group.name]
+    local group_tab = tabs_table[group.name] --[[@as LuaGuiElement]]
     tabs_table[group.name].visible = is_visible
     if is_visible and not has_search_matches then
-      group_tab.style = "rb_disabled_filter_group_button_tab"
       group_tab.enabled = false
+      group_tab.style.draw_grayscale_picture = true
+      group_tab.toggled = false
     else
-      group_tab.style = "rb_filter_group_button_tab"
-      group_tab.enabled = group.name ~= self.selected_filter_group
+      group_tab.enabled = true
+      group_tab.style.draw_grayscale_picture = false
+      group_tab.toggled = group.name == self.selected_filter_group
     end
     if is_visible and has_search_matches then
       first_valid = first_valid or group.name

@@ -87,18 +87,8 @@ styles.rb_filter_group_button_tab = {
   parent = "filter_group_button_tab",
   width = 0,
   horizontally_stretchable = "on",
-  disabled_graphical_set = styles.button.selected_graphical_set,
-}
-
-styles.rb_disabled_filter_group_button_tab = {
-  type = "button_style",
-  parent = "filter_group_button_tab",
-  width = 0,
-  horizontally_stretchable = "on",
-  draw_grayscale_picture = true,
-  default_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
-  hovered_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
-  clicked_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
+  -- TODO:
+  -- draw_grayscale_picture = true,
 }
 
 styles.rb_filter_frame = {
