@@ -32,8 +32,7 @@ function gui_templates.base(player, handlers)
       {
         type = "textfield",
         name = "search_textfield",
-        style = "long_number_textfield",
-        style_mods = { top_margin = -3 },
+        style = "flib_titlebar_search_textfield",
         lose_focus_on_confirm = true,
         clear_and_focus_on_right_click = true,
         visible = false,
