@@ -1,3 +1,5 @@
+--- @diagnostic disable missing-field
+
 local flib_gui = require("__flib__/gui-lite")
 
 local database = require("__RecipeBook__/scripts/database")
@@ -155,14 +157,25 @@ function gui_templates.base(player, handlers)
             type = "label",
             name = "page_header_type_label",
             style = "info_label",
-            style_mods = { font = "default-semibold", right_margin = 8 },
+            style_mods = {
+              font = "default-semibold",
+              right_margin = 8,
+              single_line = true,
+              horizontally_squashable = false,
+            },
           },
         },
         {
           type = "scroll-pane",
           name = "page_scroll_pane",
           style = "flib_naked_scroll_pane",
-          style_mods = { top_padding = 8, horizontally_stretchable = true, vertically_stretchable = true },
+          style_mods = {
+            -- width = (40 * 10) + 24 + 12,
+            top_padding = 8,
+            horizontally_stretchable = true,
+            vertically_stretchable = true,
+          },
+          horizontal_scroll_policy = "never",
           {
             type = "label",
             name = "welcome_label",

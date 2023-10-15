@@ -372,6 +372,7 @@ function gui.update_page(self, prototype_path)
     style = "rb_subheader_caption_button_unresearched"
   end
   header_title.style = style
+  header_title.style.horizontally_squashable = true
   local header_type = self.elems.page_header_type_label
   local type_caption = { "" }
   for _, type in pairs(properties.types) do
