@@ -93,18 +93,12 @@ handlers = {
 
   --- @param self Gui
   --- @param e EventData.on_gui_click
-  on_search_button_click = function(self, e)
-    gui.toggle_search(self, e.element.toggled)
-  end,
-
-  --- @param self Gui
-  --- @param e EventData.on_gui_click
   on_pin_button_click = function(self, e)
     self.pinned = e.element.toggled
     if self.pinned then
       self.elems.pin_button.sprite = "flib_pin_black"
       self.elems.close_button.tooltip = { "gui.close" }
-      self.elems.search_button.tooltip = { "gui.search" }
+      self.elems.search_textfield.tooltip = { "gui.search" }
       if self.player.opened == self.elems.rb_main_window then
         self.player.opened = nil
       end
@@ -113,7 +107,7 @@ handlers = {
       self.player.opened = self.elems.rb_main_window
       self.elems.rb_main_window.force_auto_center()
       self.elems.close_button.tooltip = { "gui.close-instruction" }
-      self.elems.search_button.tooltip = { "gui.flib-search-instruction" }
+      self.elems.search_textfield.tooltip = { "gui.flib-search-instruction" }
     end
   end,
 
@@ -122,6 +116,7 @@ handlers = {
   on_search_query_changed = function(self, e)
     -- TODO: Fuzzy search
     self.search_query = e.element.text
+    self.elems.search_textfield_placeholder.visible = #self.search_query == 0
     gui.update_filter_panel(self)
   end,
 
@@ -154,11 +149,6 @@ handlers = {
   --- @param self Gui
   on_window_closed = function(self)
     if self.pinned then
-      return
-    end
-    if self.search_open then
-      gui.toggle_search(self)
-      self.player.opened = self.elems.rb_main_window
       return
     end
     gui.hide(self)
@@ -230,28 +220,6 @@ function gui.toggle(self)
     gui.hide(self)
   else
     gui.show(self)
-  end
-end
-
---- @param self Gui
---- @param to_state boolean?
-function gui.toggle_search(self, to_state)
-  if to_state ~= nil then
-    self.search_open = to_state
-  else
-    self.search_open = not self.search_open
-  end
-  gui_util.update_frame_action_button(self.elems.search_button, self.search_open and "selected" or "default")
-  if self.search_open then
-    self.elems.search_textfield.visible = true
-    self.elems.search_textfield.focus()
-  else
-    self.elems.search_textfield.visible = false
-    if #self.search_query > 0 then
-      self.elems.search_textfield.text = ""
-      self.search_query = ""
-      gui.update_filter_panel(self)
-    end
   end
 end
 
@@ -580,11 +548,7 @@ local function on_focus_search(e)
   if not player_gui or player_gui.pinned or not player_gui.elems.rb_main_window.visible then
     return
   end
-  if player_gui.search_open then
-    gui.focus_search(player_gui)
-  else
-    gui.toggle_search(player_gui)
-  end
+  gui.focus_search(player_gui)
 end
 
 --- @param e EventData.CustomInputEvent

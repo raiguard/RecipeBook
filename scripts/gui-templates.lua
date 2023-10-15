@@ -29,22 +29,15 @@ function gui_templates.base(player, handlers)
         ignored_by_interaction = true,
       },
       { type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true },
-      {
-        type = "textfield",
-        name = "search_textfield",
-        style = "flib_titlebar_search_textfield",
-        lose_focus_on_confirm = true,
-        clear_and_focus_on_right_click = true,
-        visible = false,
-        handler = { [defines.events.on_gui_text_changed] = handlers.on_search_query_changed },
-      },
-      gui_templates.frame_action_button(
-        "search_button",
-        "utility/search",
-        { "gui.flib-search-instruction" },
-        handlers.on_search_button_click,
-        true
-      ),
+      -- {
+      --   type = "textfield",
+      --   name = "search_textfield",
+      --   style = "flib_titlebar_search_textfield",
+      --   lose_focus_on_confirm = true,
+      --   clear_and_focus_on_right_click = true,
+      --   visible = false,
+      --   handler = { [defines.events.on_gui_text_changed] = handlers.on_search_query_changed },
+      -- },
       gui_templates.frame_action_button(
         "show_unresearched_button",
         "rb_show_unresearched",
@@ -100,6 +93,25 @@ function gui_templates.base(player, handlers)
         name = "filter_outer_frame",
         style = "inside_deep_frame",
         direction = "vertical",
+        {
+          type = "frame",
+          style = "subheader_frame",
+          {
+            type = "textfield",
+            name = "search_textfield",
+            lose_focus_on_confirm = true,
+            clear_and_focus_on_right_click = true,
+            tooltip = { "gui.flib-search-instruction" },
+            handler = { [defines.events.on_gui_text_changed] = handlers.on_search_query_changed },
+            {
+              type = "label",
+              name = "search_textfield_placeholder",
+              style_mods = { font_color = { 0, 0, 0, 0.6 } },
+              caption = "Search...",
+              ignored_by_interaction = true,
+            },
+          },
+        },
         {
           type = "frame",
           name = "filter_warning_frame",
