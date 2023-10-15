@@ -88,15 +88,15 @@ function gui_util.update_frame_action_button(button, state)
   local sprite_base = string.match(button.sprite, "(.*)_[a-z]")
   if state == "default" then
     button.enabled = true
-    button.style = "frame_action_button"
+    button.toggled = false
     button.sprite = sprite_base .. "_white"
   elseif state == "selected" then
     button.enabled = true
-    button.style = "flib_selected_frame_action_button"
+    button.toggled = true
     button.sprite = sprite_base .. "_black"
   elseif state == "disabled" then
     button.enabled = false
-    button.style = "frame_action_button"
+    button.toggled = false
     button.sprite = sprite_base .. "_disabled"
   end
 end

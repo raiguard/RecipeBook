@@ -1,5 +1,3 @@
---- @diagnostic disable missing-field
-
 local flib_gui = require("__flib__/gui-lite")
 
 local database = require("__RecipeBook__/scripts/database")
@@ -44,19 +42,22 @@ function gui_templates.base(player, handlers)
         "search_button",
         "utility/search",
         { "gui.flib-search-instruction" },
-        handlers.on_search_button_click
+        handlers.on_search_button_click,
+        true
       ),
       gui_templates.frame_action_button(
         "show_unresearched_button",
         "rb_show_unresearched",
         { "gui.rb-show-unresearched-instruction" },
-        handlers.on_show_unresearched_button_click
+        handlers.on_show_unresearched_button_click,
+        true
       ),
       gui_templates.frame_action_button(
         "show_hidden_button",
         "rb_show_hidden",
         { "gui.rb-show-hidden-instruction" },
-        handlers.on_show_hidden_button_click
+        handlers.on_show_hidden_button_click,
+        true
       ),
       {
         type = "flow",
@@ -65,31 +66,35 @@ function gui_templates.base(player, handlers)
           "nav_backward_button",
           "flib_nav_backward",
           { "gui.rb-nav-backward-instruction" },
-          handlers.on_nav_button_click
+          handlers.on_nav_button_click,
+          false
         ),
         gui_templates.frame_action_button(
           "nav_forward_button",
           "flib_nav_forward",
           { "gui.rb-nav-forward-instruction" },
-          handlers.on_nav_button_click
+          handlers.on_nav_button_click,
+          false
         ),
       },
       gui_templates.frame_action_button(
         "pin_button",
         "flib_pin",
         { "gui.rb-pin-instruction" },
-        handlers.on_pin_button_click
+        handlers.on_pin_button_click,
+        true
       ),
       gui_templates.frame_action_button(
         "close_button",
         "utility/close",
         { "gui.close-instruction" },
-        handlers.on_close_button_click
+        handlers.on_close_button_click,
+        false
       ),
     },
     {
       type = "flow",
-      style_mods = { horizontal_spacing = 12 },
+      style = "inset_frame_container_horizontal_flow",
       {
         type = "frame",
         name = "filter_outer_frame",
@@ -248,9 +253,10 @@ end
 --- @param sprite string
 --- @param name string
 --- @param tooltip LocalisedString
---- @param handler GuiElemHandler?
+--- @param handler GuiElemHandler
+--- @param auto_toggle boolean
 --- @return GuiElemDef
-function gui_templates.frame_action_button(name, sprite, tooltip, handler)
+function gui_templates.frame_action_button(name, sprite, tooltip, handler, auto_toggle)
   return {
     type = "sprite-button",
     name = name,
@@ -260,6 +266,7 @@ function gui_templates.frame_action_button(name, sprite, tooltip, handler)
     clicked_sprite = sprite .. "_black",
     tooltip = tooltip,
     handler = { [defines.events.on_gui_click] = handler },
+    auto_toggle = auto_toggle,
   }
 end
 

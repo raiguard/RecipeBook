@@ -92,13 +92,29 @@ handlers = {
   end,
 
   --- @param self Gui
-  on_search_button_click = function(self)
-    gui.toggle_search(self)
+  --- @param e EventData.on_gui_click
+  on_search_button_click = function(self, e)
+    gui.toggle_search(self, e.element.toggled)
   end,
 
   --- @param self Gui
-  on_pin_button_click = function(self)
-    gui.toggle_pinned(self)
+  --- @param e EventData.on_gui_click
+  on_pin_button_click = function(self, e)
+    self.pinned = e.element.toggled
+    if self.pinned then
+      self.elems.pin_button.sprite = "flib_pin_black"
+      self.elems.close_button.tooltip = { "gui.close" }
+      self.elems.search_button.tooltip = { "gui.search" }
+      if self.player.opened == self.elems.rb_main_window then
+        self.player.opened = nil
+      end
+    else
+      self.elems.pin_button.sprite = "flib_pin_white"
+      self.player.opened = self.elems.rb_main_window
+      self.elems.rb_main_window.force_auto_center()
+      self.elems.close_button.tooltip = { "gui.close-instruction" }
+      self.elems.search_button.tooltip = { "gui.flib-search-instruction" }
+    end
   end,
 
   --- @param self Gui
@@ -110,20 +126,19 @@ handlers = {
   end,
 
   --- @param self Gui
-  on_show_hidden_button_click = function(self)
-    self.show_hidden = not self.show_hidden
-    gui_util.update_frame_action_button(self.elems.show_hidden_button, self.show_hidden and "selected" or "default")
+  --- @param e EventData.on_gui_click
+  on_show_hidden_button_click = function(self, e)
+    self.show_hidden = e.element.toggled
+    gui_util.update_frame_action_button(e.element, self.show_hidden and "selected" or "default")
     gui.update_filter_panel(self)
     gui.update_page(self)
   end,
 
   --- @param self Gui
-  on_show_unresearched_button_click = function(self)
-    self.show_unresearched = not self.show_unresearched
-    gui_util.update_frame_action_button(
-      self.elems.show_unresearched_button,
-      self.show_unresearched and "selected" or "default"
-    )
+  --- @param e EventData.on_gui_click
+  on_show_unresearched_button_click = function(self, e)
+    self.show_unresearched = e.element.toggled
+    gui_util.update_frame_action_button(e.element, self.show_unresearched and "selected" or "default")
     gui.update_filter_panel(self)
     gui.update_page(self)
   end,
@@ -219,37 +234,18 @@ function gui.toggle(self)
 end
 
 --- @param self Gui
-function gui.toggle_pinned(self)
-  self.pinned = not self.pinned
-  if self.pinned then
-    self.elems.pin_button.style = "flib_selected_frame_action_button"
-    self.elems.pin_button.sprite = "flib_pin_black"
-    self.elems.close_button.tooltip = { "gui.close" }
-    self.elems.search_button.tooltip = { "gui.search" }
-    if self.player.opened == self.elems.rb_main_window then
-      self.player.opened = nil
-    end
+--- @param to_state boolean?
+function gui.toggle_search(self, to_state)
+  if to_state ~= nil then
+    self.search_open = to_state
   else
-    self.elems.pin_button.style = "frame_action_button"
-    self.elems.pin_button.sprite = "flib_pin_white"
-    self.player.opened = self.elems.rb_main_window
-    self.elems.rb_main_window.force_auto_center()
-    self.elems.close_button.tooltip = { "gui.close-instruction" }
-    self.elems.search_button.tooltip = { "gui.flib-search-instruction" }
+    self.search_open = not self.search_open
   end
-end
-
---- @param self Gui
-function gui.toggle_search(self)
-  self.search_open = not self.search_open
+  gui_util.update_frame_action_button(self.elems.search_button, self.search_open and "selected" or "default")
   if self.search_open then
-    self.elems.search_button.style = "flib_selected_frame_action_button"
-    self.elems.search_button.sprite = "utility/search_black"
     self.elems.search_textfield.visible = true
     self.elems.search_textfield.focus()
   else
-    self.elems.search_button.style = "frame_action_button"
-    self.elems.search_button.sprite = "utility/search_white"
     self.elems.search_textfield.visible = false
     if #self.search_query > 0 then
       self.elems.search_textfield.text = ""
