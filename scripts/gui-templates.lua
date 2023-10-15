@@ -42,7 +42,7 @@ function gui_templates.base(player, handlers)
       gui_templates.frame_action_button(
         "search_button",
         "utility/search",
-        { "gui.rb-search-instruction" },
+        { "gui.flib-search-instruction" },
         handlers.on_search_button_click
       ),
       gui_templates.frame_action_button(
@@ -62,20 +62,20 @@ function gui_templates.base(player, handlers)
         style = "packed_horizontal_flow",
         gui_templates.frame_action_button(
           "nav_backward_button",
-          "rb_nav_backward",
+          "flib_nav_backward",
           { "gui.rb-nav-backward-instruction" },
           handlers.on_nav_button_click
         ),
         gui_templates.frame_action_button(
           "nav_forward_button",
-          "rb_nav_forward",
+          "flib_nav_forward",
           { "gui.rb-nav-forward-instruction" },
           handlers.on_nav_button_click
         ),
       },
       gui_templates.frame_action_button(
         "pin_button",
-        "rb_pin",
+        "flib_pin",
         { "gui.rb-pin-instruction" },
         handlers.on_pin_button_click
       ),

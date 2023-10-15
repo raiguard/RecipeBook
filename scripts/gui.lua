@@ -159,7 +159,7 @@ function gui.hide(self)
   if self.player.opened == self.elems.rb_main_window then
     self.player.opened = nil
   end
-  self.player.set_shortcut_toggled("RecipeBook", false)
+  self.player.set_shortcut_toggled("rb-toggle", false)
 end
 
 --- @param self Gui
@@ -194,7 +194,7 @@ function gui.show(self)
     self.player.opened = self.elems.rb_main_window
     self.elems.rb_main_window.force_auto_center()
   end
-  self.player.set_shortcut_toggled("RecipeBook", true)
+  self.player.set_shortcut_toggled("rb-toggle", true)
 end
 
 --- @param self Gui
@@ -211,7 +211,7 @@ function gui.toggle_pinned(self)
   self.pinned = not self.pinned
   if self.pinned then
     self.elems.pin_button.style = "flib_selected_frame_action_button"
-    self.elems.pin_button.sprite = "rb_pin_black"
+    self.elems.pin_button.sprite = "flib_pin_black"
     self.elems.close_button.tooltip = { "gui.close" }
     self.elems.search_button.tooltip = { "gui.search" }
     if self.player.opened == self.elems.rb_main_window then
@@ -219,11 +219,11 @@ function gui.toggle_pinned(self)
     end
   else
     self.elems.pin_button.style = "frame_action_button"
-    self.elems.pin_button.sprite = "rb_pin_white"
+    self.elems.pin_button.sprite = "flib_pin_white"
     self.player.opened = self.elems.rb_main_window
     self.elems.rb_main_window.force_auto_center()
     self.elems.close_button.tooltip = { "gui.close-instruction" }
-    self.elems.search_button.tooltip = { "gui.rb-search-instruction" }
+    self.elems.search_button.tooltip = { "gui.flib-search-instruction" }
   end
 end
 
@@ -487,16 +487,16 @@ end
 --- @param player LuaPlayer
 function gui.refresh_overhead_button(player)
   local button_flow = mod_gui.get_button_flow(player)
-  if button_flow.RecipeBook then
-    button_flow.RecipeBook.destroy()
+  if button_flow.rb_toggle then
+    button_flow.rb_toggle.destroy()
   end
   if player.mod_settings["rb-show-overhead-button"].value then
     flib_gui.add(button_flow, {
       type = "sprite-button",
-      name = "RecipeBook",
+      name = "rb_toggle",
       style = mod_gui.button_style,
       style_mods = { padding = 8 },
-      tooltip = { "mod-name.RecipeBook" },
+      tooltip = { "", { "shortcut-name.rb-toggle" }, " (", { "gui.rb-toggle-instruction" }, ")" },
       sprite = "rb_logo",
       handler = { [defines.events.on_gui_click] = handlers.on_overhead_button_click },
     })
@@ -604,7 +604,7 @@ end
 
 --- @param e EventData.on_lua_shortcut
 local function on_lua_shortcut(e)
-  if e.prototype_name ~= "RecipeBook" then
+  if e.prototype_name ~= "rb-toggle" then
     return
   end
   local self = gui.get(e.player_index)
