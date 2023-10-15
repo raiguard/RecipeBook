@@ -686,8 +686,8 @@ end
 --- @class EntryProperties
 --- @field entry PrototypeEntry
 --- @field types string[]
---- @field hidden boolean
---- @field researched boolean
+--- @field hidden boolean?
+--- @field researched boolean?
 --- @field crafting_time double?
 --- @field ingredients GenericObject[]?
 --- @field products GenericObject[]?

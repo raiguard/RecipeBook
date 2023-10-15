@@ -9,6 +9,18 @@ local gui_templates = require("__RecipeBook__/scripts/gui-templates")
 local gui_util = require("__RecipeBook__/scripts/gui-util")
 local util = require("__RecipeBook__/scripts/util")
 
+--- @class Gui
+--- @field current_page string?
+--- @field elems table<string, LuaGuiElement>,
+--- @field history  {[integer]: string, __index: integer}
+--- @field pinned boolean
+--- @field player LuaPlayer
+--- @field search_open boolean
+--- @field search_query string
+--- @field selected_filter_group string?
+--- @field show_hidden boolean
+--- @field show_unresearched boolean
+
 --- @class GuiMod
 local gui = {}
 
@@ -445,7 +457,7 @@ function gui.new(player)
   gui_util.update_frame_action_button(elems.nav_forward_button, "disabled")
   gui_util.update_frame_action_button(elems.show_unresearched_button, "selected")
 
-  --- @class Gui
+  --- @type Gui
   local self = {
     --- @type string?
     current_page = nil,
