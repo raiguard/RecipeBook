@@ -58,28 +58,20 @@ function gui_templates.base(player, handlers)
         handlers.on_show_hidden_button_click
       ),
       {
-        type = "line",
-        style_mods = { top_margin = -2, bottom_margin = 2 },
-        direction = "vertical",
-        ignored_by_interaction = true,
-      },
-      gui_templates.frame_action_button(
-        "nav_backward_button",
-        "rb_nav_backward",
-        { "gui.rb-nav-backward-instruction" },
-        handlers.on_nav_button_click
-      ),
-      gui_templates.frame_action_button(
-        "nav_forward_button",
-        "rb_nav_forward",
-        { "gui.rb-nav-forward-instruction" },
-        handlers.on_nav_button_click
-      ),
-      {
-        type = "line",
-        style_mods = { top_margin = -2, bottom_margin = 2 },
-        direction = "vertical",
-        ignored_by_interaction = true,
+        type = "flow",
+        style = "packed_horizontal_flow",
+        gui_templates.frame_action_button(
+          "nav_backward_button",
+          "rb_nav_backward",
+          { "gui.rb-nav-backward-instruction" },
+          handlers.on_nav_button_click
+        ),
+        gui_templates.frame_action_button(
+          "nav_forward_button",
+          "rb_nav_forward",
+          { "gui.rb-nav-forward-instruction" },
+          handlers.on_nav_button_click
+        ),
       },
       gui_templates.frame_action_button(
         "pin_button",
@@ -147,7 +139,7 @@ function gui_templates.base(player, handlers)
       {
         type = "frame",
         style = "inside_shallow_frame",
-        style_mods = { width = (40 * 12) + 24 + 12 },
+        style_mods = { width = (40 * 10) + 24 + 12 },
         direction = "vertical",
         {
           type = "frame",
@@ -171,8 +163,7 @@ function gui_templates.base(player, handlers)
           type = "scroll-pane",
           name = "page_scroll_pane",
           style = "flib_naked_scroll_pane",
-          style_mods = { horizontally_stretchable = true, vertically_stretchable = true },
-          vertical_scroll_policy = "always",
+          style_mods = { top_padding = 8, horizontally_stretchable = true, vertically_stretchable = true },
           {
             type = "label",
             name = "welcome_label",
@@ -201,7 +192,7 @@ function gui_templates.base(player, handlers)
     local group_flow = {
       type = "flow",
       name = group_name,
-      style = "rb_filter_group_flow",
+      style = "packed_vertical_flow",
       direction = "vertical",
       visible = false,
     }

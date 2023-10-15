@@ -409,7 +409,7 @@ function gui.update_page(self, prototype_path)
     if existing then
       table.remove(history, existing)
     end
-    history[#history+1] = path
+    history[#history + 1] = path
     history.__index = #history
   end
   self.current_page = path

@@ -202,14 +202,10 @@ styles.rb_filter_scroll_pane = {
   },
 }
 
-styles.rb_filter_group_flow = {
-  type = "vertical_flow_style",
-  vertical_spacing = 0,
-}
-
 styles.rb_list_box_caption = {
   type = "checkbox_style",
   font = "default-bold",
+  font_color = styles.caption_label.font_color,
   default_graphical_set = {
     filename = "__RecipeBook__/graphics/list-expanded-white.png",
     size = 16,
