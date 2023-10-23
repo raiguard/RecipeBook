@@ -1,5 +1,5 @@
 local dictionary = require("__flib__/dictionary-lite")
-local table = require("__flib__/table")
+local flib_table = require("__flib__/table")
 
 local util = require("__RecipeBook__/scripts/util")
 
@@ -26,9 +26,8 @@ local excluded_categories = {
 
 --- @param a GenericPrototype
 --- @param b GenericPrototype
-local function compare_icons(a, b)
-  -- return table.deep_compare(a.icons, b.icons)
-  return a.name == b.name
+local function compare_names(a, b)
+  return flib_table.deep_compare(a.localised_name --[[@as table]], b.localised_name --[[@as table]])
 end
 
 --- @param entry PrototypeEntry
@@ -252,7 +251,7 @@ local function build_database()
       if group_with then
         local parent_path = util.get_path(group_with)
         local parent_entry = db[parent_path]
-        if parent_entry and not parent_entry[type] and compare_icons(prototype, group_with) then
+        if parent_entry and not parent_entry[type] and compare_names(prototype, group_with) then
           parent_entry[type] = prototype -- Add this prototype to the parent
           db[path] = parent_entry -- Associate this prototype with the group's data
           return entry
@@ -337,7 +336,7 @@ local function build_database()
           -- Only add resources whose products have an entry (and therefore, a recipe)
           if db[product_path] then
             should_add = true
-            if compare_icons(prototype, product_prototype) then
+            if compare_names(prototype, product_prototype) then
               grouped_material = product_prototype
               break
             end
@@ -533,7 +532,7 @@ local function add_fluid_properties(properties, fluid)
         pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe_name } }))
       do
         if
-          not table.for_each(properties.unlocked_by, function(obj)
+          not flib_table.for_each(properties.unlocked_by, function(obj)
             return obj.name == technology_name
           end)
         then
@@ -574,7 +573,7 @@ local function add_item_properties(properties, item)
         pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe_name } }))
       do
         if
-          not table.for_each(properties.unlocked_by, function(obj)
+          not flib_table.for_each(properties.unlocked_by, function(obj)
             return obj.name == technology_name
           end)
         then
