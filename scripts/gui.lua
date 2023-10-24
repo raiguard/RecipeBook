@@ -36,6 +36,7 @@ local gui = {}
 --- @field close_button LuaGuiElement
 --- @field filter_group_table LuaGuiElement
 --- @field filter_scroll_pane LuaGuiElement
+--- @field result_buttons table<string, LuaGuiElement?>
 --- @field page_header_title LuaGuiElement
 --- @field page_header_type_label LuaGuiElement
 --- @field page_scroll_pane LuaGuiElement
@@ -58,9 +59,7 @@ handlers = {
   --- @param self Gui
   --- @param e EventData.on_gui_click
   on_filter_group_button_click = function(self, e)
-    if e.element.style.name ~= "rb_disabled_filter_group_button_tab" then
-      gui.select_filter_group(self, e.element.name)
-    end
+    gui.select_filter_group(self, e.element.name)
   end,
 
   --- @param self Gui
@@ -88,7 +87,7 @@ handlers = {
       self.player.open_technology_gui(name)
       return
     end
-    gui.update_page(self, prototype)
+    gui.update_page(self, prototype, false)
   end,
 
   --- @param self Gui
@@ -184,8 +183,7 @@ end
 function gui.nav_history(self, delta)
   local history = self.history
   history.__index = math.clamp(history.__index + delta, 1, #history)
-  self.current_page = history[history.__index]
-  gui.update_page(self)
+  gui.update_page(self, history[history.__index], true)
 end
 
 --- @param self Gui
@@ -257,11 +255,11 @@ function gui.update_filter_panel(self)
           button.visible = query_match
           if query_match then
             searched_count = searched_count + 1
-            local style = "flib_slot_button_default"
+            local style = "slot_button"
             if is_hidden then
-              style = "flib_slot_button_grey"
+              style = "yellow_slot_button"
             elseif not is_researched then
-              style = "flib_slot_button_red"
+              style = "red_slot_button"
             end
             button.style = style
           end
@@ -305,17 +303,15 @@ function gui.update_filter_panel(self)
 end
 
 --- @param self Gui
---- @param prototype_path string?
+--- @param prototype_path string
+--- @param from_history boolean
 --- @return boolean?
-function gui.update_page(self, prototype_path)
-  if prototype_path then
-    prototype_path = database.get_base_path(prototype_path)
-  end
-  local path = prototype_path or self.current_page
+function gui.update_page(self, prototype_path, from_history)
+  local path = database.get_base_path(prototype_path)
   if not path then
     return
   end
-  if prototype_path and path == self.current_page then
+  if path == self.current_page then
     return true
   end
 
@@ -378,9 +374,25 @@ function gui.update_page(self, prototype_path)
   gui_util.update_list_box(self, handlers, scroll_pane.can_burn, properties.can_burn)
   gui_util.update_list_box(self, handlers, scroll_pane.unlocked_by, properties.unlocked_by)
 
+  -- Update filter result
+  if self.current_page then
+    local previous_result = self.elems.result_buttons[self.current_page]
+    if previous_result then
+      previous_result.toggled = false
+    end
+  end
+  local new_result = self.elems.result_buttons[path]
+  if new_result then
+    new_result.toggled = true
+    if new_result.visible then
+      gui.select_filter_group(self, global.database[path].base.group.name)
+      self.elems.filter_scroll_pane.scroll_to_element(new_result)
+    end
+  end
+
   -- Update history
   local history = self.history
-  if prototype_path then
+  if not from_history then
     for i = history.__index + 1, #history do
       history[i] = nil
     end

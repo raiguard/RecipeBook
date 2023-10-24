@@ -204,46 +204,49 @@ function gui_templates.base(player, handlers)
     },
   })
 
+  local result_buttons = {}
+  local filter_group_table = elems.filter_group_table
+  local filter_scroll_pane = elems.filter_scroll_pane
   -- Create tables for each subgroup
-  local group_tabs = {}
-  local group_flows = {}
   for group_name, subgroups in pairs(global.search_tree) do
     -- Tab button
-    table.insert(group_tabs, {
+    filter_group_table.add({
       type = "sprite-button",
       name = group_name,
       style = "rb_filter_group_button_tab",
       sprite = "item-group/" .. group_name,
       tooltip = game.item_group_prototypes[group_name].localised_name,
-      handler = { [defines.events.on_gui_click] = handlers.on_filter_group_button_click },
+      tags = { __RecipeBook_handler = { [tostring(defines.events.on_gui_click)] = "on_filter_group_button_click" } },
     })
     -- Base flow
-    local group_flow = {
+    local group_flow = filter_scroll_pane.add({
       type = "flow",
       name = group_name,
       style = "packed_vertical_flow",
       direction = "vertical",
       visible = false,
-    }
-    table.insert(group_flows, group_flow)
+    })
     -- Assemble subgroups
     for subgroup_name, subgroup in pairs(subgroups) do
-      local subgroup_table = { type = "table", name = subgroup_name, style = "slot_table", column_count = 10 }
-      table.insert(group_flow, subgroup_table)
+      local subgroup_table =
+        group_flow.add({ type = "table", name = subgroup_name, style = "slot_table", column_count = 10 })
       for _, path in pairs(subgroup) do
         local type, name = string.match(path, "(.*)/(.*)")
-        table.insert(subgroup_table, {
+        local button = subgroup_table.add({
           type = "sprite-button",
           style = "flib_slot_button_default",
           sprite = path,
           tooltip = gui_templates.tooltip({ type = type, name = name }),
-          handler = { [defines.events.on_gui_click] = handlers.on_prototype_button_click },
+          tags = { __RecipeBook_handler = { [tostring(defines.events.on_gui_click)] = "on_prototype_button_click" } },
         })
+        if result_buttons[path] then
+          error("Duplicate button ID: " .. path)
+        end
+        result_buttons[path] = button
       end
     end
   end
-  flib_gui.add(elems.filter_group_table, group_tabs)
-  flib_gui.add(elems.filter_scroll_pane, group_flows)
+  elems.result_buttons = result_buttons
 
   -- Add components to page
   local page_scroll_pane = elems.page_scroll_pane
@@ -259,7 +262,7 @@ function gui_templates.base(player, handlers)
   gui_templates.list_box(page_scroll_pane, handlers, "can_burn", { "description.rb-can-burn" })
   gui_templates.list_box(page_scroll_pane, handlers, "unlocked_by", { "description.rb-unlocked-by" })
 
-  return elems
+  return elems, result_buttons
 end
 
 --- @param sprite string
