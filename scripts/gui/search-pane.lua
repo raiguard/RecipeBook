@@ -4,11 +4,6 @@ local flib_gui = require("__flib__/gui-lite")
 local gui_util = require("__RecipeBook__/scripts/gui/util")
 local util = require("__RecipeBook__/scripts/util")
 
---- @class MainGuiContext
---- @field show_hidden boolean
---- @field show_unresearched boolean
---- @field player LuaPlayer
-
 --- @class SearchPane
 --- @field textfield LuaGuiElement
 --- @field groups_table LuaGuiElement

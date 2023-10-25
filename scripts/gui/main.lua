@@ -30,6 +30,11 @@ local function frame_action_button(name, sprite, tooltip, handler, auto_toggle)
   }
 end
 
+--- @class MainGuiContext
+--- @field show_hidden boolean
+--- @field show_unresearched boolean
+--- @field player LuaPlayer
+
 --- @class MainGui
 --- @field context MainGuiContext
 --- @field window LuaGuiElement
@@ -66,7 +71,7 @@ function main_gui.build(player)
   local header = window.add({
     type = "flow",
     style = "flib_titlebar_flow",
-    tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = main_gui.on_titlebar_click }),
+    tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = main_gui.on_titlebar_clicked }),
   })
   header.add({
     type = "label",
@@ -80,7 +85,7 @@ function main_gui.build(player)
       "show_unresearched_button",
       "rb_show_unresearched",
       { "gui.rb-show-unresearched-instruction" },
-      main_gui.on_show_unresearched_button_click,
+      main_gui.on_show_unresearched_button_clicked,
       true
     )
   )
@@ -89,7 +94,7 @@ function main_gui.build(player)
       "show_hidden_button",
       "rb_show_hidden",
       { "gui.rb-show-hidden-instruction" },
-      main_gui.on_show_hidden_button_click,
+      main_gui.on_show_hidden_button_clicked,
       true
     )
   )
@@ -112,7 +117,7 @@ function main_gui.build(player)
     )
   )
   header.add(
-    frame_action_button("pin_button", "flib_pin", { "gui.rb-pin-instruction" }, main_gui.on_pin_button_click, true)
+    frame_action_button("pin_button", "flib_pin", { "gui.rb-pin-instruction" }, main_gui.on_pin_button_clicked, true)
   )
   header.add(frame_action_button("close_button", "utility/close", { "gui.close-instruction" }, main_gui.hide, false))
 
@@ -153,80 +158,6 @@ function main_gui.destroy(player_index)
   global.guis[player_index] = nil
 end
 
---- @param e EventData.on_gui_checked_state_changed
-function main_gui:collapse_list_box(e)
-  local state = e.element.state
-  e.element.parent.parent.list_frame.style.height = state and 1 or 0
-  -- TODO: Keep track of collapsed states
-end
-
---- @param e EventData.on_gui_click
-function main_gui:on_prototype_button_click(e)
-  local path = e.element.sprite --[[@as string?]]
-  if not path then
-    return
-  end
-  local type, name = string.match(path, "(.*)/(.*)")
-  if type == "technology" then
-    -- TODO: Keep-open logic
-    self.context.player.open_technology_gui(name)
-    return
-  end
-  self.history:push(path)
-  self:update()
-end
-
---- @param e EventData.on_gui_click
-function main_gui:on_pin_button_click(e)
-  self.pinned = e.element.toggled
-  if self.pinned then
-    self.header.pin_button.sprite = "flib_pin_black"
-    self.header.close_button.tooltip = { "gui.close" }
-    self.search_pane.textfield.tooltip = { "gui.search" }
-    if self.context.player.opened == self.window then
-      self.context.player.opened = nil
-    end
-  else
-    self.header.pin_button.sprite = "flib_pin_white"
-    self.context.player.opened = self.window
-    self.window.force_auto_center()
-    self.header.close_button.tooltip = { "gui.close-instruction" }
-    self.search_pane.textfield.tooltip = { "gui.flib-search-instruction" }
-  end
-end
-
---- @param e EventData.on_gui_click
-function main_gui:on_show_hidden_button_click(e)
-  self.context.show_hidden = e.element.toggled
-  gui_util.update_frame_action_button(e.element, self.context.show_hidden and "selected" or "default")
-  self.search_pane:update()
-  self:update()
-end
-
---- @param e EventData.on_gui_click
-function main_gui:on_show_unresearched_button_click(e)
-  self.context.show_unresearched = e.element.toggled
-  gui_util.update_frame_action_button(e.element, self.context.show_unresearched and "selected" or "default")
-  self.search_pane:update()
-  self:update()
-end
-
---- @param e EventData.on_gui_click?
-function main_gui:on_titlebar_click(e)
-  if not e or e.button == defines.mouse_button_type.middle then
-    self.window.force_auto_center()
-  end
-end
-
-function main_gui:on_window_closed()
-  if self.pinned then
-    return
-  end
-  main_gui.hide(self)
-end
-
--- Methods
-
 function main_gui:hide()
   self.window.visible = false
   if self.context.player.opened == self.window then
@@ -237,12 +168,12 @@ end
 
 function main_gui:prev()
   self.history:prev()
-  self:update()
+  self:update_info()
 end
 
 function main_gui:next()
   self.history:next()
-  self:update()
+  self:update_info()
 end
 
 function main_gui:show()
@@ -263,7 +194,7 @@ function main_gui:toggle()
   end
 end
 
-function main_gui:update()
+function main_gui:update_info()
   gui_util.update_frame_action_button(
     self.header.nav_backward_button,
     self.history:at_front() and "disabled" or "default"
@@ -275,6 +206,11 @@ function main_gui:update()
 
   self.search_pane:select_result(self.history:current())
   self.info_pane:show(self.history:current())
+end
+
+function main_gui:update()
+  self.search_pane:update()
+  self:update()
 end
 
 --- @param player LuaPlayer
@@ -313,18 +249,80 @@ function main_gui.get(player_index)
   return self
 end
 
+--- @param e EventData.on_gui_click
+function main_gui:on_pin_button_clicked(e)
+  self.pinned = e.element.toggled
+  if self.pinned then
+    self.header.pin_button.sprite = "flib_pin_black"
+    self.header.close_button.tooltip = { "gui.close" }
+    self.search_pane.textfield.tooltip = { "gui.search" }
+    if self.context.player.opened == self.window then
+      self.context.player.opened = nil
+    end
+  else
+    self.header.pin_button.sprite = "flib_pin_white"
+    self.context.player.opened = self.window
+    self.window.force_auto_center()
+    self.header.close_button.tooltip = { "gui.close-instruction" }
+    self.search_pane.textfield.tooltip = { "gui.flib-search-instruction" }
+  end
+end
+
+--- @param e EventData.on_gui_click
+function main_gui:on_show_hidden_button_clicked(e)
+  self.context.show_hidden = e.element.toggled
+  gui_util.update_frame_action_button(e.element, self.context.show_hidden and "selected" or "default")
+  self:update()
+end
+
+--- @param e EventData.on_gui_click
+function main_gui:on_show_unresearched_button_clicked(e)
+  self.context.show_unresearched = e.element.toggled
+  gui_util.update_frame_action_button(e.element, self.context.show_unresearched and "selected" or "default")
+  self:update()
+end
+
+--- @param e EventData.on_gui_click?
+function main_gui:on_titlebar_clicked(e)
+  if not e or e.button == defines.mouse_button_type.middle then
+    self.window.force_auto_center()
+  end
+end
+
+--- @param e EventData.on_gui_click
+function main_gui:on_result_clicked(e)
+  local path = e.element.sprite --[[@as string?]]
+  if not path then
+    return
+  end
+  local type, name = string.match(path, "(.*)/(.*)")
+  if type == "technology" then
+    -- TODO: Keep-open logic
+    self.context.player.open_technology_gui(name)
+    return
+  end
+  self.history:push(path)
+  self:update_info()
+end
+
+function main_gui:on_window_closed()
+  if self.pinned then
+    return
+  end
+  main_gui.hide(self)
+end
+
+-- Events
+
 --- @param force LuaForce
 local function update_force_guis(force)
   for _, player in pairs(force.players) do
     local player_gui = main_gui.get(player.index)
     if player_gui then
-      player_gui.search_pane:update()
-      player_gui.info_pane:show(player_gui.history[player_gui.history.__index])
+      player_gui:update()
     end
   end
 end
-
--- Events
 
 local function on_runtime_mod_setting_changed(e)
   if e.setting ~= "rb-show-overhead-button" then
@@ -357,12 +355,14 @@ local function on_open_selected(e)
   if not player_gui then
     return
   end
-  local updated = player_gui.info_pane:show(selected_prototype.base_type .. "/" .. selected_prototype.name)
-  if not updated then
+  local path = selected_prototype.base_type .. "/" .. selected_prototype.name
+  if not global.database[path] then
     util.flying_text(player_gui.context.player, { "message.rb-no-info" })
     return
   end
-  main_gui.show(player_gui)
+  player_gui.history:push(path)
+  player_gui:update_info()
+  player_gui:show()
 end
 
 --- @param e EventData.CustomInputEvent
@@ -449,7 +449,7 @@ function main_gui.add_remote_interface()
       local player_gui = main_gui.get(player_index)
       if player_gui then
         main_gui.history:push(path)
-        main_gui:update()
+        main_gui:update_info()
       end
       return true
     end,
@@ -468,8 +468,8 @@ flib_gui.add_handlers(main_gui, function(e, handler)
 end, "main")
 
 -- TODO: This sucks
-info_pane.on_result_clicked = main_gui.on_prototype_button_click
-list_box.on_result_clicked = main_gui.on_prototype_button_click
-search_pane.on_result_clicked = main_gui.on_prototype_button_click
+info_pane.on_result_clicked = main_gui.on_result_clicked
+list_box.on_result_clicked = main_gui.on_result_clicked
+search_pane.on_result_clicked = main_gui.on_result_clicked
 
 return main_gui

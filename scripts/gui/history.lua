@@ -12,7 +12,7 @@ function history:push(path)
   for i = self.index + 1, #self do
     self[i] = nil
   end
-  for i = self.index - 1, 1, -1 do
+  for i = self.index, 1, -1 do
     if self[i] == path then
       table.remove(self, i)
     end
