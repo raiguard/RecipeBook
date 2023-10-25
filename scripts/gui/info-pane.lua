@@ -2,6 +2,7 @@ local database = require("__RecipeBook__/scripts/database")
 local util = require("__RecipeBook__/scripts/util")
 
 local list_box = require("__RecipeBook__/scripts/gui/list-box")
+local slot_table = require("__RecipeBook__/scripts/gui/slot-table")
 
 --- @class InfoPane
 --- @field context MainGuiContext
@@ -41,8 +42,12 @@ function info_pane.build(parent, context)
   })
   type_label.style.right_margin = 8
 
-  local content_pane =
-    frame.add({ type = "scroll-pane", style = "flib_naked_scroll_pane", horizontal_scroll_policy = "never" })
+  local content_pane = frame.add({
+    type = "scroll-pane",
+    style = "flib_naked_scroll_pane",
+    horizontal_scroll_policy = "never",
+    vertical_scroll_policy = "always",
+  })
   content_pane.style.top_padding = 8
   content_pane.style.horizontally_stretchable = true
   content_pane.style.vertically_stretchable = true
@@ -124,14 +129,14 @@ function info_pane:show(path)
   end
   list_box.build(content_pane, self.context, { "description.ingredients" }, properties.ingredients, crafting_time)
   list_box.build(content_pane, self.context, { "description.products" }, properties.products)
-  list_box.build(content_pane, self.context, { "description.made-in" }, properties.made_in)
-  list_box.build(content_pane, self.context, { "description.rb-ingredient-in" }, properties.ingredient_in)
-  list_box.build(content_pane, self.context, { "description.rb-product-of" }, properties.product_of)
-  list_box.build(content_pane, self.context, { "description.rb-can-craft" }, properties.can_craft)
-  list_box.build(content_pane, self.context, { "description.rb-mined-by" }, properties.mined_by)
-  list_box.build(content_pane, self.context, { "description.rb-can-mine" }, properties.can_mine)
-  list_box.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
-  list_box.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
+  slot_table.build(content_pane, self.context, { "description.made-in" }, properties.made_in)
+  slot_table.build(content_pane, self.context, { "description.rb-ingredient-in" }, properties.ingredient_in)
+  slot_table.build(content_pane, self.context, { "description.rb-product-of" }, properties.product_of)
+  slot_table.build(content_pane, self.context, { "description.rb-can-craft" }, properties.can_craft)
+  slot_table.build(content_pane, self.context, { "description.rb-mined-by" }, properties.mined_by)
+  slot_table.build(content_pane, self.context, { "description.rb-can-mine" }, properties.can_mine)
+  slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
+  slot_table.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
   list_box.build(content_pane, self.context, { "description.rb-unlocked-by" }, properties.unlocked_by)
 
   profiler.stop()

@@ -5,6 +5,7 @@ local history = require("__RecipeBook__/scripts/gui/history")
 local info_pane = require("__RecipeBook__/scripts/gui/info-pane")
 local list_box = require("__RecipeBook__/scripts/gui/list-box")
 local search_pane = require("__RecipeBook__/scripts/gui/search-pane")
+local slot_table = require("__RecipeBook__/scripts/gui/slot-table")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @param name string
@@ -438,5 +439,6 @@ end, "main")
 info_pane.on_result_clicked = main_gui.on_result_clicked
 list_box.on_result_clicked = main_gui.on_result_clicked
 search_pane.on_result_clicked = main_gui.on_result_clicked
+slot_table.on_result_clicked = main_gui.on_result_clicked
 
 return main_gui
