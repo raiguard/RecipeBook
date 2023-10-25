@@ -208,7 +208,7 @@ end
 
 function main_gui:update()
   self.search_pane:update()
-  self:update()
+  self:update_info()
 end
 
 --- Get the player's GUI or create it if it does not exist
