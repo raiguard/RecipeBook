@@ -1,0 +1,143 @@
+local database = require("__RecipeBook__/scripts/database")
+local util = require("__RecipeBook__/scripts/util")
+
+local list_box = require("__RecipeBook__/scripts/gui/list-box")
+
+--- @class InfoPane
+--- @field context MainGuiContext
+--- @field title_label LuaGuiElement
+--- @field type_label LuaGuiElement
+--- @field content_pane LuaGuiElement
+local info_pane = {}
+local mt = { __index = info_pane }
+script.register_metatable("info_pane", mt)
+
+--- @type function?
+info_pane.on_result_clicked = nil
+
+--- @param parent LuaGuiElement
+--- @param context MainGuiContext
+function info_pane.build(parent, context)
+  local frame = parent.add({
+    type = "frame",
+    style = "inside_shallow_frame",
+    direction = "vertical",
+  })
+  frame.style.width = (40 * 10) + 24 + 12
+
+  local subheader = frame.add({ type = "frame", style = "subheader_frame" })
+  local title_label = subheader.add({
+    type = "sprite-button",
+    name = "page_header_title",
+    style = "rb_subheader_caption_button",
+    enabled = false,
+    caption = { "gui.rb-welcome-title" },
+  })
+  subheader.add({ type = "empty-widget", style = "flib_horizontal_pusher" })
+  local type_label = subheader.add({
+    type = "label",
+    name = "page_header_type_label",
+    style = "rb_info_label",
+  })
+  type_label.style.right_margin = 8
+
+  local content_pane =
+    frame.add({ type = "scroll-pane", style = "flib_naked_scroll_pane", horizontal_scroll_policy = "never" })
+  content_pane.style.top_padding = 8
+  content_pane.style.horizontally_stretchable = true
+  content_pane.style.vertically_stretchable = true
+
+  -- Will be deleted when the first page is shown
+  content_pane.add({
+    type = "label",
+    name = "welcome_label",
+    caption = { "gui.rb-welcome-text" },
+  }).style.single_line =
+    false
+
+  local self = {
+    context = context,
+    title_label = title_label,
+    type_label = type_label,
+    content_pane = content_pane,
+  }
+  setmetatable(self, mt)
+  return self
+end
+
+--- @param path string
+--- @return boolean? updated
+function info_pane:show(path)
+  local profiler = game.create_profiler()
+
+  local path = database.get_base_path(path)
+  if not path then
+    return
+  end
+
+  local properties = database.get_properties(path, self.context.player.force.index)
+  if not properties then
+    return
+  end
+  local entry = properties.entry
+
+  -- Subheader
+  local title_label = self.title_label
+  title_label.caption = { "", "            ", entry.base.localised_name }
+  title_label.sprite = entry.base_path
+  local style = "rb_subheader_caption_button"
+  if util.is_hidden(entry.base) then
+    style = "rb_subheader_caption_button_hidden"
+  elseif util.is_unresearched(entry, self.context.player.force.index) then
+    style = "rb_subheader_caption_button_unresearched"
+  end
+  title_label.style = style
+  title_label.style.horizontally_squashable = true
+  local type_label = self.type_label
+  local type_caption = { "" }
+  for _, type in pairs(properties.types) do
+    table.insert(type_caption, util.type_locale[type])
+    table.insert(type_caption, "/")
+  end
+  type_caption[#type_caption] = nil
+  type_label.caption = type_caption
+
+  -- Contents
+
+  local content_pane = self.content_pane
+  content_pane.clear()
+  content_pane.scroll_to_top()
+  if content_pane.welcome_label then
+    content_pane.welcome_label.destroy()
+  end
+
+  --- @type LocalisedString?
+  local crafting_time
+  if properties.crafting_time then
+    crafting_time = {
+      "",
+      "[img=quantity-time][font=default-bold]",
+      { "time-symbol-seconds", properties.crafting_time },
+      "[/font] ",
+      { "description.crafting-time" },
+    }
+  end
+  list_box.build(content_pane, self.context, { "description.ingredients" }, properties.ingredients, crafting_time)
+  list_box.build(content_pane, self.context, { "description.products" }, properties.products)
+  list_box.build(content_pane, self.context, { "description.made-in" }, properties.made_in)
+  list_box.build(content_pane, self.context, { "description.rb-ingredient-in" }, properties.ingredient_in)
+  list_box.build(content_pane, self.context, { "description.rb-product-of" }, properties.product_of)
+  list_box.build(content_pane, self.context, { "description.rb-can-craft" }, properties.can_craft)
+  list_box.build(content_pane, self.context, { "description.rb-mined-by" }, properties.mined_by)
+  list_box.build(content_pane, self.context, { "description.rb-can-mine" }, properties.can_mine)
+  list_box.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
+  list_box.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
+  list_box.build(content_pane, self.context, { "description.rb-unlocked-by" }, properties.unlocked_by)
+
+  profiler.stop()
+  log({ "", "[", path, "] ", profiler })
+
+  return true
+end
+
+return info_pane

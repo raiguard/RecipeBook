@@ -7,5 +7,5 @@ handler.add_libraries({
   require("__flib__/gui-lite"),
 
   require("__RecipeBook__/scripts/database"),
-  require("__RecipeBook__/scripts/gui"),
+  require("__RecipeBook__/scripts/gui/main"),
 })

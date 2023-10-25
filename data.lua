@@ -233,3 +233,11 @@ styles.rb_caption_label_unresearched = {
   parent = "caption_label",
   font_color = red_body_text_color,
 }
+
+styles.rb_info_label = {
+  type = "label_style",
+  parent = "info_label",
+  font = "default-semibold",
+  horizontally_squashable = "off",
+  single_line = true,
+}

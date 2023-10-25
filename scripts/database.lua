@@ -226,7 +226,7 @@ local function build_database()
 
   log("Search tree")
   --- Each top-level prototype sorted into groups and subgroups for the search_interface
-  --- @type table<string, table<string, GenericPrototype>>
+  --- @type table<string, table<string, SpritePath[]>>
   local search_tree = {}
   global.search_tree = search_tree
   for group_name, group_prototype in pairs(game.item_group_prototypes) do
