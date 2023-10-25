@@ -1,13 +1,11 @@
 local flib_gui = require("__flib__/gui-lite")
-local mod_gui = require("__core__/lualib/mod-gui")
 
 local gui_util = require("__RecipeBook__/scripts/gui/util")
 local history = require("__RecipeBook__/scripts/gui/history")
-local util = require("__RecipeBook__/scripts/util")
-
-local list_box = require("__RecipeBook__/scripts/gui/list-box")
 local info_pane = require("__RecipeBook__/scripts/gui/info-pane")
+local list_box = require("__RecipeBook__/scripts/gui/list-box")
 local search_pane = require("__RecipeBook__/scripts/gui/search-pane")
+local util = require("__RecipeBook__/scripts/util")
 
 --- @param name string
 --- @param sprite string
@@ -213,24 +211,6 @@ function main_gui:update()
   self:update()
 end
 
---- @param player LuaPlayer
-function main_gui.refresh_overhead_button(player)
-  local button_flow = mod_gui.get_button_flow(player)
-  if button_flow.rb_toggle then
-    button_flow.rb_toggle.destroy()
-  end
-  if player.mod_settings["rb-show-overhead-button"].value then
-    flib_gui.add(button_flow, {
-      type = "sprite-button",
-      name = "rb_toggle",
-      style = mod_gui.button_style,
-      tooltip = { "", { "shortcut-name.rb-toggle" }, " (", { "gui.rb-toggle-instruction" }, ")" },
-      sprite = "rb_logo",
-      handler = { [defines.events.on_gui_click] = main_gui.toggle },
-    })
-  end
-end
-
 --- Get the player's GUI or create it if it does not exist
 --- @param player_index uint
 --- @return MainGui?
@@ -324,17 +304,6 @@ local function update_force_guis(force)
   end
 end
 
-local function on_runtime_mod_setting_changed(e)
-  if e.setting ~= "rb-show-overhead-button" then
-    return
-  end
-  local player = game.get_player(e.player_index)
-  if not player then
-    return
-  end
-  main_gui.refresh_overhead_button(player)
-end
-
 local function on_tick()
   for force_index in pairs(global.update_force_guis) do
     local force = game.forces[force_index]
@@ -418,13 +387,11 @@ end
 function main_gui.on_configuration_changed()
   for _, player in pairs(game.players) do
     main_gui.build(player)
-    main_gui.refresh_overhead_button(player)
   end
 end
 
 main_gui.events = {
   [defines.events.on_lua_shortcut] = on_lua_shortcut,
-  [defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed,
   [defines.events.on_tick] = on_tick,
   ["rb-linked-focus-search"] = on_focus_search,
   ["rb-next"] = on_next,

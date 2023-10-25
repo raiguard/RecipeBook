@@ -8,4 +8,5 @@ handler.add_libraries({
 
   require("__RecipeBook__/scripts/database"),
   require("__RecipeBook__/scripts/gui/main"),
+  require("__RecipeBook__/scripts/gui/overhead-button"),
 })
