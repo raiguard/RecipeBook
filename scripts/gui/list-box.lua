@@ -21,21 +21,26 @@ function list_box.build(parent, context, title, members, remark)
   end
   local outer = parent.add({ type = "flow", direction = "vertical" })
   local header = outer.add({ type = "flow", style = "centering_horizontal_flow" })
-  header.add({ type = "label", style = "caption_label", caption = title })
-  -- header.add({
-  --   type = "checkbox",
-  --   style = "rb_list_box_caption",
-  --   caption = title,
-  --   state = false,
-  --   tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = list_box.toggle_collapsed }),
-  -- })
+  -- header.add({ type = "label", style = "caption_label", caption = title })
+  header.add({
+    type = "checkbox",
+    style = "rb_list_box_caption",
+    caption = title,
+    state = false,
+    tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = list_box.toggle_collapsed }),
+  })
   local count_label = header.add({ type = "label", style = "rb_info_label" })
   if remark then
     header.add({ type = "empty-widget", style = "flib_horizontal_pusher" })
     header.add({ type = "label", caption = remark })
   end
 
-  local list_frame = outer.add({ type = "frame", style = "deep_frame_in_shallow_frame", direction = "vertical" })
+  local frame = outer.add({
+    type = "frame",
+    name = "frame",
+    style = "deep_frame_in_shallow_frame",
+    direction = "vertical",
+  })
 
   local show_hidden = context.show_hidden
   local show_unresearched = context.show_unresearched
@@ -64,7 +69,7 @@ function list_box.build(parent, context, title, members, remark)
     elseif is_unresearched then
       style = "rb_list_box_item_unresearched"
     end
-    list_frame.add({
+    frame.add({
       type = "sprite-button",
       style = style,
       sprite = entry.base_path,
@@ -84,5 +89,15 @@ function list_box.build(parent, context, title, members, remark)
 
   count_label.caption = { "", "[", result_count, "]" }
 end
+
+--- @param e EventData.on_gui_click
+function list_box.toggle_collapsed(e)
+  local frame = e.element.parent.parent.frame
+  if frame then
+    frame.style.height = e.element.state and 1 or 0
+  end
+end
+
+flib_gui.add_handlers(list_box, nil, "list_box")
 
 return list_box
