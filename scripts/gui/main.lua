@@ -42,6 +42,7 @@ end
 --- @field info_pane InfoPane
 --- @field history History
 --- @field pinned boolean
+--- @field opening_technology_gui boolean
 local main_gui = {}
 local mt = { __index = main_gui }
 script.register_metatable("main_gui", mt)
@@ -129,6 +130,7 @@ function main_gui.build(player)
   gui_util.update_frame_action_button(header.nav_forward_button, "disabled")
   gui_util.update_frame_action_button(header.show_unresearched_button, "selected")
 
+  --- @type MainGui
   local self = {
     context = context,
     window = window,
@@ -138,6 +140,7 @@ function main_gui.build(player)
     current_page = nil,
     history = history.new(),
     pinned = false,
+    opening_technology_gui = false,
   }
   setmetatable(self, mt)
   global.guis[player.index] = self
@@ -278,7 +281,10 @@ function main_gui:on_result_clicked(e)
   end
   local type, name = string.match(path, "(.*)/(.*)")
   if type == "technology" then
-    -- TODO: Keep-open logic
+    if not self.pinned then
+      self.opening_technology_gui = true
+      self:hide()
+    end
     self.context.player.open_technology_gui(name)
     return
   end
@@ -343,6 +349,18 @@ local function on_toggle(e)
   end
 end
 
+--- @param e EventData.on_gui_closed
+local function on_gui_closed(e)
+  if e.gui_type ~= defines.gui_type.research then
+    return
+  end
+  local self = global.guis[e.player_index]
+  if self and self.window.valid and self.opening_technology_gui then
+    self.opening_technology_gui = false
+    self:show()
+  end
+end
+
 --- @param e EventData.on_lua_shortcut
 local function on_lua_shortcut(e)
   if e.prototype_name ~= "rb-toggle" then
@@ -392,6 +410,7 @@ function main_gui.on_configuration_changed()
 end
 
 main_gui.events = {
+  [defines.events.on_gui_closed] = on_gui_closed,
   [defines.events.on_lua_shortcut] = on_lua_shortcut,
   [defines.events.on_tick] = on_tick,
   ["rb-linked-focus-search"] = on_focus_search,
