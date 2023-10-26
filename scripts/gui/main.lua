@@ -391,7 +391,7 @@ end
 --- @param e EventData.CustomInputEvent
 local function on_focus_search(e)
   local self = global.guis[e.player_index]
-  if self and self.window.valid and not self.pinned then
+  if self and self.window.valid and not self.pinned and self.window.visible then
     self.search_pane:focus_search()
   end
 end
