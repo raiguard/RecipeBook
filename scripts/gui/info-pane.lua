@@ -48,7 +48,7 @@ function info_pane.build(parent, context)
     horizontal_scroll_policy = "never",
     vertical_scroll_policy = "always",
   })
-  content_pane.style.top_padding = 8
+  -- content_pane.style.top_padding = 8
   content_pane.style.horizontally_stretchable = true
   content_pane.style.vertically_stretchable = true
 
@@ -127,6 +127,22 @@ function info_pane:show(path)
       { "description.crafting-time" },
     }
   end
+
+  local description = { "?" }
+  for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
+    local prototype = entry[key]
+    if prototype and prototype.localised_description then
+      description[#description + 1] = prototype.localised_description
+    end
+  end
+  description[#description + 1] = ""
+  local description_frame =
+    content_pane.add({ type = "frame", style = "deep_frame_in_shallow_frame", horizontal_scroll_policy = "never" })
+  description_frame.style.horizontally_stretchable = true
+  local description_label = description_frame.add({ type = "label", caption = description })
+  description_label.style.padding = 8
+  description_label.style.single_line = false
+
   list_box.build(content_pane, self.context, { "description.ingredients" }, properties.ingredients, crafting_time)
   list_box.build(content_pane, self.context, { "description.products" }, properties.products)
   slot_table.build(content_pane, self.context, { "description.made-in" }, properties.made_in)
