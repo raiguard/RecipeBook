@@ -73,6 +73,7 @@ function main_gui.build(player)
     style = "flib_titlebar_flow",
     tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = main_gui.on_titlebar_clicked }),
   })
+  header.drag_target = window
   header.add({
     type = "label",
     style = "frame_title",
