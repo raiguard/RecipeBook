@@ -11,7 +11,7 @@ local gui_util = {}
 --- @return LocalisedString
 function gui_util.build_caption(obj, include_icon)
   --- @type LocalisedString
-  local caption = { "", "            " }
+  local caption = { "", "              " }
   if include_icon then
     caption[#caption + 1] = "[img=" .. obj.type .. "/" .. obj.name .. "]  "
   end
