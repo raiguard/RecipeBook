@@ -114,12 +114,15 @@ function search_pane.build(parent, context)
       for _, path in pairs(subgroup) do
         local type, name = string.match(path, "(.*)/(.*)")
         local button = subgroup_table.add({
-          type = "sprite-button",
+          type = "choose-elem-button",
           style = "flib_slot_button_default",
-          sprite = path,
-          tooltip = gui_util.build_tooltip({ type = type, name = name }),
+          elem_type = type,
+          [type] = name,
+          -- sprite = path,
+          -- tooltip = gui_util.build_tooltip({ type = type, name = name }),
           tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = search_pane.on_result_clicked }),
         })
+        button.locked = true
         if result_buttons[path] then
           error("Duplicate button ID: " .. path)
         end
@@ -249,7 +252,7 @@ function search_pane:select_result(result_path)
   if previous_result then
     local previous_button = self.result_buttons[previous_result]
     if previous_button then
-      previous_button.toggled = false
+      previous_button.enabled = true
     end
   end
   self.selected_result = result_path
@@ -258,7 +261,7 @@ function search_pane:select_result(result_path)
   end
   local new_button = self.result_buttons[result_path]
   if new_button then
-    new_button.toggled = true
+    new_button.enabled = false
     self:select_group(global.database[result_path].base.group.name)
     self.results_pane.scroll_to_element(new_button)
   end

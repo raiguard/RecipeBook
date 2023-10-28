@@ -67,12 +67,15 @@ function slot_table.build(parent, context, title, members, remark)
       style = "red_slot_button"
     end
     tbl.add({
-      type = "sprite-button",
+      type = "choose-elem-button",
       style = style,
-      sprite = entry.base_path,
-      tooltip = gui_util.build_tooltip(member),
+      elem_type = member.type,
+      [member.type] = member.name,
+      -- sprite = entry.base_path,
+      -- tooltip = gui_util.build_tooltip(member),
       tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = slot_table.on_result_clicked }),
-    })
+    }).locked =
+      true
     -- button.remark.caption = gui_util.build_remark(member)
     result_count = result_count + 1
     ::continue::
