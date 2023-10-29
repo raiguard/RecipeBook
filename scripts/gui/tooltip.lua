@@ -1,6 +1,27 @@
 local database = require("__RecipeBook__/scripts/database")
 local gui_util = require("__RecipeBook__/scripts/gui/util")
 
+--- @param prototype LuaRecipePrototype
+--- @return LocalisedString
+local function recipe_details(prototype)
+  --- @type LocalisedString
+  local ingredients = { "", { "gui.rb-tooltip-title", { "", { "description.ingredients" }, ":" } }, "\n" }
+  for _, ingredient in pairs(prototype.ingredients) do
+    ingredients[#ingredients + 1] = { "", "    ", gui_util.build_caption(ingredient, true), "\n" }
+  end
+  ingredients[#ingredients + 1] = { "", "    ", gui_util.format_crafting_time(prototype.energy) }
+  --- @type LocalisedString
+  local products = { "", { "gui.rb-tooltip-title", { "", { "description.products" }, ":" } }, "\n" }
+  for i, product in pairs(prototype.products) do
+    if i > 1 then
+      table.insert(products[i + 2], "\n")
+    end
+    products[#products + 1] = { "", "    ", gui_util.build_caption(product, true) }
+  end
+
+  return { "", "\n", ingredients, "\n", products }
+end
+
 --- @class GuiTooltip
 local gui_tooltip = {}
 
@@ -21,7 +42,7 @@ function gui_tooltip.from_member(member)
     end
 
     tooltip[#tooltip + 1] = gui_tooltip.from_prototype(prototype)
-    tooltip[#tooltip + 1] = "\n────────────────────────\n"
+    tooltip[#tooltip + 1] = "\n─────────────────────────\n"
 
     ::continue::
   end
@@ -58,6 +79,9 @@ function gui_tooltip.from_prototype(prototype)
   end
 
   tooltip[#tooltip + 1] = { "?", { "", "\n", prototype.localised_description }, "" }
+  if prototype.object_name == "LuaRecipePrototype" then
+    tooltip[#tooltip + 1] = recipe_details(prototype)
+  end
   return tooltip
 end
 

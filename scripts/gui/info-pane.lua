@@ -116,18 +116,7 @@ function info_pane:show(path)
     content_pane.welcome_label.destroy()
   end
 
-  --- @type LocalisedString?
-  local crafting_time
-  if properties.crafting_time then
-    crafting_time = {
-      "",
-      "[img=quantity-time][font=default-bold]",
-      { "time-symbol-seconds", properties.crafting_time },
-      "[/font] ",
-      { "description.crafting-time" },
-    }
-  end
-
+  -- FIXME: Separate descriptions
   local description = { "?" }
   for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
     local prototype = entry[key]
@@ -143,7 +132,13 @@ function info_pane:show(path)
   description_label.style.padding = 8
   description_label.style.single_line = false
 
-  list_box.build(content_pane, self.context, { "description.ingredients" }, properties.ingredients, crafting_time)
+  list_box.build(
+    content_pane,
+    self.context,
+    { "description.ingredients" },
+    properties.ingredients,
+    gui_util.format_crafting_time(properties.crafting_time)
+  )
   list_box.build(content_pane, self.context, { "description.products" }, properties.products)
   slot_table.build(content_pane, self.context, { "description.made-in" }, properties.made_in)
   slot_table.build(content_pane, self.context, { "description.rb-ingredient-in" }, properties.ingredient_in)

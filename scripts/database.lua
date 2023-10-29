@@ -1,4 +1,4 @@
-local dictionary = require("__flib__/dictionary-lite")
+local flib_dictionary = require("__flib__/dictionary-lite")
 local flib_table = require("__flib__/table")
 
 local util = require("__RecipeBook__/scripts/util")
@@ -226,7 +226,7 @@ local function build_database()
   log("Generating database")
   local profiler = game.create_profiler()
 
-  dictionary.new("search")
+  flib_dictionary.new("search")
 
   log("Search tree")
   --- Each top-level prototype sorted into groups and subgroups for the search_interface
@@ -278,7 +278,7 @@ local function build_database()
       table.insert(subgroup, path)
       local prototype_type = util.prototype_type[prototype.object_name]
       local prototype_path = prototype_type .. "/" .. prototype.name
-      dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
+      flib_dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
 
       return db[path]
     end

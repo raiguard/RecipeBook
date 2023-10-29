@@ -1,6 +1,5 @@
 local math = require("__flib__/math")
 
-local database = require("__RecipeBook__/scripts/database")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class GuiUtil
@@ -11,7 +10,10 @@ local gui_util = {}
 --- @return LocalisedString
 function gui_util.build_caption(obj, include_icon)
   --- @type LocalisedString
-  local caption = { "", "              " }
+  local caption = { "" }
+  if not include_icon then
+    caption[#caption + 1] = "              "
+  end
   if include_icon then
     caption[#caption + 1] = "[img=" .. obj.type .. "/" .. obj.name .. "]  "
   end
@@ -91,6 +93,21 @@ end
 --   end
 --   return remark
 -- end
+
+--- @param crafting_time double?
+--- @return LocalisedString?
+function gui_util.format_crafting_time(crafting_time)
+  if not crafting_time then
+    return nil
+  end
+  return {
+    "",
+    "[img=quantity-time][font=default-bold]",
+    { "time-symbol-seconds", crafting_time },
+    "[/font] ",
+    { "description.crafting-time" },
+  }
+end
 
 --- @alias FabState
 --- | "default"
