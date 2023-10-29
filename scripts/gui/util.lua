@@ -116,11 +116,6 @@ function gui_util.update_frame_action_button(button, state)
   end
 end
 
--- local has_derived_types = {
---   entity = true,
---   item = true,
--- }
-
 --- @param obj GenericObject
 --- @return LocalisedString
 function gui_util.build_tooltip(obj)
@@ -154,14 +149,42 @@ end
 --- @return LocalisedString
 function gui_util.build_prototype_tooltip(prototype)
   --- @type LocalisedString
-  local tt = { "" }
-  tt[#tt + 1] = {
+  local tooltip = { "" }
+  tooltip[#tooltip + 1] = {
     "gui.rb-tooltip-title",
     { "", prototype.localised_name, " (", gui_util.type_locale[prototype.object_name], ")" },
   }
-  tt[#tt + 1] = { "?", { "", "\n", prototype.localised_description }, "" }
-  return tt
+
+  local type = gui_util.type_string[prototype.object_name]
+  if not type then
+    type = prototype.type
+  end
+  local history = script.get_prototype_history(type, prototype.name)
+  if history and (#history.changed > 0 or (history.created ~= "base" and history.created ~= "core")) then
+    --- @type LocalisedString
+    local items = { "", { "?", { "mod-name." .. history.created }, history.created } }
+    for _, mod_name in pairs(history.changed) do
+      items[#items + 1] = { "", " › ", { "?", { "mod-name." .. mod_name }, mod_name } }
+    end
+    tooltip[#tooltip + 1] = { "", "\n[color=128, 206, 240]", items, "[/color]" }
+  end
+
+  tooltip[#tooltip + 1] = { "?", { "", "\n", prototype.localised_description }, "" }
+  return tooltip
 end
+
+gui_util.has_derived_types = {
+  LuaEntityPrototype = true,
+  LuaItemPrototype = true,
+}
+
+gui_util.type_string = {
+  -- LuaEntityPrototype = "entity",
+  LuaFluidPrototype = "fluid",
+  -- LuaItemPrototype = "item",
+  LuaRecipePrototype = "recipe",
+  LuaTechnologyPrototype = "technology",
+}
 
 --- @type table<string, LocalisedString>
 gui_util.type_locale = {
