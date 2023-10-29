@@ -276,13 +276,7 @@ end
 
 --- @param e EventData.on_gui_click
 function main_gui:on_result_clicked(e)
-  local path
-  log(e.element.type)
-  if e.element.type == "choose-elem-button" then
-    path = e.element.elem_type .. "/" .. e.element.elem_value
-  else
-    path = e.element.sprite --[[@as string?]]
-  end
+  local path = e.element.sprite --[[@as string?]]
   if not path then
     return
   end

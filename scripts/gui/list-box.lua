@@ -70,16 +70,13 @@ function list_box.build(parent, context, title, members, remark)
       style = "rb_list_box_item_unresearched"
     end
     frame.add({
-      type = "choose-elem-button",
+      type = "sprite-button",
       style = style,
-      elem_type = member.type,
-      [member.type] = member.name,
-      -- sprite = entry.base_path,
+      sprite = entry.base_path,
       caption = gui_util.build_caption(member),
-      -- tooltip = gui_util.build_tooltip(member),
+      tooltip = gui_util.build_tooltip(member),
       tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = list_box.on_result_clicked }),
-    }).locked =
-      true
+    })
     -- button.remark.caption = gui_util.build_remark(member)
     result_count = result_count + 1
     ::continue::
