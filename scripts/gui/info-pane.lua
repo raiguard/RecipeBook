@@ -13,9 +13,6 @@ local info_pane = {}
 local mt = { __index = info_pane }
 script.register_metatable("info_pane", mt)
 
---- @type function?
-info_pane.on_result_clicked = nil
-
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
 function info_pane.build(parent, context)

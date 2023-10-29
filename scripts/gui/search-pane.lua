@@ -1,7 +1,6 @@
 local flib_dictionary = require("__flib__/dictionary-lite")
 local flib_gui = require("__flib__/gui-lite")
 
-local gui_tooltip = require("__RecipeBook__/scripts/gui/tooltip")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class SearchPane
@@ -21,6 +20,8 @@ script.register_metatable("search_pane", mt)
 
 --- @type function?
 search_pane.on_result_clicked = nil
+--- @type function?
+search_pane.on_result_hovered = nil
 
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
@@ -112,13 +113,15 @@ function search_pane.build(parent, context)
       local subgroup_table =
         group_flow.add({ type = "table", name = subgroup_name, style = "slot_table", column_count = 10 })
       for _, path in pairs(subgroup) do
-        local type, name = string.match(path, "(.*)/(.*)")
         local button = subgroup_table.add({
           type = "sprite-button",
           style = "flib_slot_button_default",
           sprite = path,
-          tooltip = gui_tooltip.from_member({ type = type, name = name }),
-          tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = search_pane.on_result_clicked }),
+          tags = flib_gui.format_handlers({
+            [defines.events.on_gui_click] = search_pane.on_result_clicked,
+            [defines.events.on_gui_hover] = search_pane.on_result_hovered,
+          }),
+          raise_hover_events = true,
         })
         if result_buttons[path] then
           error("Duplicate button ID: " .. path)

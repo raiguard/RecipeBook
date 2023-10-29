@@ -1,5 +1,7 @@
 local flib_gui = require("__flib__/gui-lite")
 
+local database = require("__RecipeBook__/scripts/database")
+local gui_tooltip = require("__RecipeBook__/scripts/gui/tooltip")
 local gui_util = require("__RecipeBook__/scripts/gui/util")
 local history = require("__RecipeBook__/scripts/gui/history")
 local info_pane = require("__RecipeBook__/scripts/gui/info-pane")
@@ -293,6 +295,16 @@ function main_gui:on_result_clicked(e)
   self:update_info()
 end
 
+--- @param e EventData.on_gui_hover
+function main_gui:on_result_hovered(e)
+  local tooltip = e.element.tooltip
+  if tooltip ~= "" then
+    return
+  end
+  local type, name = string.match(e.element.sprite, "(.*)/(.*)")
+  e.element.tooltip = gui_tooltip.from_object({ type = type, name = name })
+end
+
 function main_gui:on_window_closed()
   if self.pinned then
     return
@@ -456,9 +468,11 @@ flib_gui.add_handlers(main_gui, function(e, handler)
 end, "main")
 
 -- TODO: This sucks
-info_pane.on_result_clicked = main_gui.on_result_clicked
 list_box.on_result_clicked = main_gui.on_result_clicked
 search_pane.on_result_clicked = main_gui.on_result_clicked
 slot_table.on_result_clicked = main_gui.on_result_clicked
+list_box.on_result_hovered = main_gui.on_result_hovered
+search_pane.on_result_hovered = main_gui.on_result_hovered
+slot_table.on_result_hovered = main_gui.on_result_hovered
 
 return main_gui

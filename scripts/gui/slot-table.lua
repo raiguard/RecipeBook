@@ -1,7 +1,6 @@
 local flib_gui = require("__flib__/gui-lite")
 
 local database = require("__RecipeBook__/scripts/database")
-local gui_tooltip = require("__RecipeBook__/scripts/gui/tooltip")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class SlotTable
@@ -9,6 +8,8 @@ local slot_table = {}
 
 --- @type function?
 slot_table.on_result_clicked = nil
+--- @type function?
+slot_table.on_result_hovered = nil
 
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
@@ -71,8 +72,11 @@ function slot_table.build(parent, context, title, members, remark)
       style = style,
       sprite = entry.base_path,
       number = member.duration,
-      tooltip = gui_tooltip.from_member(member),
-      tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = slot_table.on_result_clicked }),
+      tags = flib_gui.format_handlers({
+        [defines.events.on_gui_click] = slot_table.on_result_clicked,
+        [defines.events.on_gui_hover] = slot_table.on_result_hovered,
+      }),
+      raise_hover_events = true,
     })
     -- button.remark.caption = gui_util.build_remark(member)
     result_count = result_count + 1

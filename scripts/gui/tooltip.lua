@@ -25,10 +25,10 @@ end
 --- @class GuiTooltip
 local gui_tooltip = {}
 
---- @param member GenericObject
+--- @param obj GenericObject
 --- @return LocalisedString
-function gui_tooltip.from_member(member)
-  local entry = database.get_entry(member)
+function gui_tooltip.from_object(obj)
+  local entry = database.get_entry(obj)
   if not entry then
     return ""
   end
