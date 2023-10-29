@@ -188,6 +188,9 @@ function search_pane:update()
               button.style = "slot_button"
             end
           end
+          if query_match and self.selected_result == path and self.selected_group ~= group_name then
+            self:select_result(path)
+          end
         else
           button.visible = false
         end
@@ -259,8 +262,10 @@ function search_pane:select_result(result_path)
   local new_button = self.result_buttons[result_path]
   if new_button then
     new_button.toggled = true
-    self:select_group(global.database[result_path].base.group.name)
-    self.results_pane.scroll_to_element(new_button)
+    if new_button.visible then
+      self:select_group(global.database[result_path].base.group.name)
+      self.results_pane.scroll_to_element(new_button)
+    end
   end
 end
 
