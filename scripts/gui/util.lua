@@ -40,25 +40,12 @@ function gui_util.build_caption(obj, include_icon)
       " ×[/font]  ",
     }
   end
+
   -- TODO: Optimize this
   caption[#caption + 1] = game[obj.type .. "_prototypes"][obj.name].localised_name
 
-  return caption
-end
-
---- @param obj GenericObject
---- @return LocalisedString
-function gui_util.build_remark(obj)
-  --- @type LocalisedString
-  local remark = { "" }
-  if obj.required_fluid then
-    remark[#remark + 1] = { "", gui_util.build_caption(obj.required_fluid, true) }
-  end
-  if obj.duration then
-    remark[#remark + 1] = { "", "  [img=quantity-time] ", { "time-symbol-seconds", math.round(obj.duration, 0.01) } }
-  end
   if obj.temperature then
-    remark[#remark + 1] = { "", "  ", { "format-degrees-c-compact", math.round(obj.temperature, 0.01) } }
+    caption[#caption + 1] = { "", "  (", { "format-degrees-c-compact", math.round(obj.temperature, 0.01) }, ")" }
   elseif obj.minimum_temperature and obj.maximum_temperature then
     local temperature_min = obj.minimum_temperature --[[@as number]]
     local temperature_max = obj.maximum_temperature --[[@as number]]
@@ -70,10 +57,40 @@ function gui_util.build_remark(obj)
     else
       temperature_string = "" .. math.round(temperature_min, 0.01) .. " - " .. math.round(temperature_max, 0.01)
     end
-    remark[#remark + 1] = { "", "  ", { "format-degrees-c-compact", temperature_string } }
+    caption[#caption + 1] = { "", "  (", { "format-degrees-c-compact", temperature_string }, ")" }
   end
-  return remark
+
+  return caption
 end
+
+-- --- @param obj GenericObject
+-- --- @return LocalisedString
+-- function gui_util.build_remark(obj)
+--   --- @type LocalisedString
+--   local remark = { "" }
+--   if obj.required_fluid then
+--     remark[#remark + 1] = { "", gui_util.build_caption(obj.required_fluid, true) }
+--   end
+--   if obj.duration then
+--     remark[#remark + 1] = { "", "  [img=quantity-time] ", { "time-symbol-seconds", math.round(obj.duration, 0.01) } }
+--   end
+--   if obj.temperature then
+--     remark[#remark + 1] = { "", "  ", { "format-degrees-c-compact", math.round(obj.temperature, 0.01) } }
+--   elseif obj.minimum_temperature and obj.maximum_temperature then
+--     local temperature_min = obj.minimum_temperature --[[@as number]]
+--     local temperature_max = obj.maximum_temperature --[[@as number]]
+--     local temperature_string
+--     if temperature_min == math.min_double then
+--       temperature_string = "≤ " .. math.round(temperature_max, 0.01)
+--     elseif temperature_max == math.max_double then
+--       temperature_string = "≥ " .. math.round(temperature_min, 0.01)
+--     else
+--       temperature_string = "" .. math.round(temperature_min, 0.01) .. " - " .. math.round(temperature_max, 0.01)
+--     end
+--     remark[#remark + 1] = { "", "  ", { "format-degrees-c-compact", temperature_string } }
+--   end
+--   return remark
+-- end
 
 --- @alias FabState
 --- | "default"

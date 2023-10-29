@@ -70,6 +70,7 @@ function slot_table.build(parent, context, title, members, remark)
       type = "sprite-button",
       style = style,
       sprite = entry.base_path,
+      number = member.duration,
       tooltip = gui_util.build_tooltip(member),
       tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = slot_table.on_result_clicked }),
     })
