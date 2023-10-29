@@ -309,7 +309,7 @@ function main_gui:on_window_closed()
   if self.pinned then
     return
   end
-  main_gui.hide(self)
+  self:hide()
 end
 
 -- Events
