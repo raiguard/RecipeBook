@@ -1,6 +1,7 @@
 local flib_gui = require("__flib__/gui-lite")
 
 local database = require("__RecipeBook__/scripts/database")
+local gui_tooltip = require("__RecipeBook__/scripts/gui/tooltip")
 local gui_util = require("__RecipeBook__/scripts/gui/util")
 local util = require("__RecipeBook__/scripts/util")
 
@@ -74,7 +75,7 @@ function list_box.build(parent, context, title, members, remark)
       style = style,
       sprite = entry.base_path,
       caption = gui_util.build_caption(member),
-      tooltip = gui_util.build_tooltip(member),
+      tooltip = gui_tooltip.from_member(member),
       tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = list_box.on_result_clicked }),
     })
     -- button.remark.caption = gui_util.build_remark(member)

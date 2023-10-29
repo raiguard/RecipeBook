@@ -1,7 +1,7 @@
 local flib_dictionary = require("__flib__/dictionary-lite")
 local flib_gui = require("__flib__/gui-lite")
 
-local gui_util = require("__RecipeBook__/scripts/gui/util")
+local gui_tooltip = require("__RecipeBook__/scripts/gui/tooltip")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class SearchPane
@@ -117,7 +117,7 @@ function search_pane.build(parent, context)
           type = "sprite-button",
           style = "flib_slot_button_default",
           sprite = path,
-          tooltip = gui_util.build_tooltip({ type = type, name = name }),
+          tooltip = gui_tooltip.from_member({ type = type, name = name }),
           tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = search_pane.on_result_clicked }),
         })
         if result_buttons[path] then
