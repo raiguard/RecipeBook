@@ -99,10 +99,14 @@ function info_pane:show(path)
   title_label.style = style
   title_label.style.horizontally_squashable = true
   local type_label = self.type_label
+  --- @type LocalisedString
   local type_caption = { "" }
-  for _, type in pairs(properties.types) do
-    table.insert(type_caption, gui_util.type_locale[type])
-    table.insert(type_caption, "/")
+  for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
+    local prototype = entry[key]
+    if prototype then
+      type_caption[#type_caption + 1] = gui_util.type_locale[prototype.object_name]
+      type_caption[#type_caption + 1] = "/"
+    end
   end
   type_caption[#type_caption] = nil
   type_label.caption = type_caption

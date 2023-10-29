@@ -14,7 +14,7 @@ local function recipe_details(prototype)
   local products = { "", { "gui.rb-tooltip-title", { "", { "description.products" }, ":" } }, "\n" }
   for i, product in pairs(prototype.products) do
     if i > 1 then
-      table.insert(products[i + 2], "\n")
+      table.insert((products --[[@as table]])[i + 2], "\n")
     end
     products[#products + 1] = { "", "    ", gui_util.build_caption(product, true) }
   end

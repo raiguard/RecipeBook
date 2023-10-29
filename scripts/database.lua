@@ -456,6 +456,7 @@ local function add_recipe_properties(properties, recipe)
   properties.crafting_time = recipe.energy
 
   properties.made_in = {}
+  --- @diagnostic disable-next-line unused-fields
   for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
     if character.crafting_categories[recipe.category] then
       table.insert(properties.made_in, {
@@ -706,7 +707,6 @@ end
 
 --- @class EntryProperties
 --- @field entry PrototypeEntry
---- @field types string[]
 --- @field hidden boolean?
 --- @field researched boolean?
 --- @field crafting_time double?
@@ -744,32 +744,25 @@ function database.get_properties(path, force_index)
   end
 
   --- @type EntryProperties
-  local properties = {
-    entry = entry,
-    types = {},
-  }
+  local properties = { entry = entry }
 
   local recipe = entry.recipe
   if recipe then
-    properties.types[#properties.types + 1] = "recipe"
     add_recipe_properties(properties, recipe)
   end
 
   local fluid = entry.fluid
   if fluid then
-    properties.types[#properties.types + 1] = "fluid"
     add_fluid_properties(properties, fluid)
   end
 
   local item = entry.item
   if item then
-    properties.types[#properties.types + 1] = "item"
     add_item_properties(properties, item)
   end
 
   local entity = entry.entity
   if entity then
-    properties.types[#properties.types + 1] = "entity"
     add_entity_properties(properties, entity)
   end
 
