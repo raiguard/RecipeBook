@@ -10,9 +10,6 @@
 --- @alias GenericObject Ingredient|Product|CustomObject
 --- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
 
---- @class PlayerTable
---- @field gui Gui?
-
 --- @class PrototypeEntry
 --- @field base GenericPrototype
 --- @field base_path string

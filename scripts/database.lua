@@ -61,6 +61,7 @@ local function on_entity_unlocked(entity, force_index)
     local fluidbox = entity.fluidbox_prototypes[1]
     local fluidbox_filter = fluidbox and fluidbox.filter or nil
     for resource_name, resource in
+      --- @diagnostic disable-next-line unused-fields
       pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } }))
     do
       local mineable = resource.mineable_properties
@@ -177,7 +178,9 @@ local function refresh_researched(force)
   -- Gather-able items
   for _, entity in
     pairs(game.get_filtered_entity_prototypes({
+      --- @diagnostic disable-next-line unused-fields
       { filter = "type", type = "simple-entity" },
+      --- @diagnostic disable-next-line unused-fields
       { filter = "type", type = "tree" },
     }))
   do
@@ -210,6 +213,7 @@ local function refresh_researched(force)
   end
   -- Characters
   -- TODO: Gate some characters if mods "unlock" them (Nullius)?
+  --- @diagnostic disable-next-line unused-fields
   for name in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
     local entry = db["entity/" .. name]
     if entry then
@@ -259,6 +263,7 @@ local function build_database()
       end
 
       -- Add to database
+      --- @diagnostic disable-next-line unused-fields
       db[path] = { base = prototype, base_path = path, [type] = prototype }
       -- Add to filter panel and search dictionary
       local subgroup = search_tree[prototype.group.name][prototype.subgroup.name]
@@ -324,6 +329,7 @@ local function build_database()
   end
 
   log("Resources")
+  --- @diagnostic disable-next-line unused-fields
   for _, prototype in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
     local mineable = prototype.mineable_properties
     if mineable.minable then
@@ -350,6 +356,7 @@ local function build_database()
   end
 
   log("Characters")
+  --- @diagnostic disable-next-line unused-fields
   for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
     add_prototype(character)
   end
@@ -357,6 +364,7 @@ local function build_database()
   log("Technologies and research status")
   for name, technology in pairs(game.technology_prototypes) do
     local path = "technology/" .. name
+    --- @diagnostic disable-next-line unused-fields
     db[path] = { base = technology, base_path = path }
   end
   for _, force in pairs(game.forces) do
@@ -459,6 +467,7 @@ local function add_recipe_properties(properties, recipe)
   end
   for _, crafter in
     pairs(game.get_filtered_entity_prototypes({
+      --- @diagnostic disable-next-line unused-fields
       { filter = "crafting-category", crafting_category = recipe.category },
     }))
   do
@@ -474,6 +483,7 @@ local function add_recipe_properties(properties, recipe)
 
   properties.unlocked_by = {}
   for technology_name in
+    --- @diagnostic disable-next-line unused-fields
     pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
   do
     properties.unlocked_by[#properties.unlocked_by + 1] = { type = "technology", name = technology_name }
@@ -486,6 +496,7 @@ local function add_fluid_properties(properties, fluid)
   properties.ingredient_in = {}
   for _, recipe in
     pairs(game.get_filtered_recipe_prototypes({
+      --- @diagnostic disable-next-line unused-fields
       { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
     }))
   do
@@ -495,6 +506,7 @@ local function add_fluid_properties(properties, fluid)
   end
   properties.product_of = {}
   local product_of_recipes = game.get_filtered_recipe_prototypes({
+    --- @diagnostic disable-next-line unused-fields
     { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
   })
   for _, recipe in pairs(product_of_recipes) do
@@ -505,6 +517,7 @@ local function add_fluid_properties(properties, fluid)
 
   -- TODO: Fluid energy sources, boilers
   properties.burned_in = {}
+  --- @diagnostic disable-next-line unused-fields
   for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "generator" } })) do
     local fluid_box = entity.fluidbox_prototypes[1]
     if
@@ -513,6 +526,7 @@ local function add_fluid_properties(properties, fluid)
       table.insert(properties.burned_in, { type = "entity", name = entity_name })
     end
   end
+  --- @diagnostic disable-next-line unused-fields
   for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
     for _, fluidbox in pairs(entity.fluidbox_prototypes) do
       if
@@ -529,6 +543,7 @@ local function add_fluid_properties(properties, fluid)
   for recipe_name, recipe in pairs(product_of_recipes) do
     if recipe.unlock_results then
       for technology_name in
+        --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe_name } }))
       do
         if
@@ -549,6 +564,7 @@ local function add_item_properties(properties, item)
   properties.ingredient_in = properties.ingredient_in or {}
   for _, recipe in
     pairs(game.get_filtered_recipe_prototypes({
+      --- @diagnostic disable-next-line unused-fields
       { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = item.name } } },
     }))
   do
@@ -558,6 +574,7 @@ local function add_item_properties(properties, item)
   end
   properties.product_of = properties.product_of or {}
   local product_of_recipes = game.get_filtered_recipe_prototypes({
+    --- @diagnostic disable-next-line unused-fields
     { filter = "has-product-item", elem_filters = { { filter = "name", name = item.name } } },
   })
   for _, recipe in pairs(product_of_recipes) do
@@ -570,6 +587,7 @@ local function add_item_properties(properties, item)
   for recipe_name, recipe in pairs(product_of_recipes) do
     if recipe.unlock_results then
       for technology_name in
+        --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe_name } }))
       do
         if
@@ -622,6 +640,7 @@ local function add_entity_properties(properties, entity)
     local required_fluid = entity.mineable_properties.required_fluid
     local resource_category = entity.resource_category
     properties.mined_by = {}
+    --- @diagnostic disable-next-line unused-fields
     for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
       if entity.resource_categories[resource_category] and (not required_fluid or entity.fluidbox_prototypes[1]) then
         table.insert(properties.mined_by, { type = "entity", name = entity.name })
@@ -639,6 +658,7 @@ local function add_entity_properties(properties, entity)
     end
     local resource_categories = entity.resource_categories --[[@as table<string, _>]]
     properties.can_mine = {}
+    --- @diagnostic disable-next-line unused-fields
     for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
       local mineable = resource.mineable_properties
       local required_fluid = mineable.required_fluid
@@ -661,6 +681,7 @@ local function add_entity_properties(properties, entity)
   if burner then
     for category in pairs(burner.fuel_categories) do
       for item_name in
+        --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_item_prototypes({ { filter = "fuel-category", ["fuel-category"] = category } }))
       do
         properties.can_burn[#properties.can_burn + 1] = { type = "item", name = item_name }
@@ -674,6 +695,7 @@ local function add_entity_properties(properties, entity)
       properties.can_burn[#properties.can_burn + 1] = { type = "fluid", name = filter.name }
     else
       for fluid_name in
+        --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
       do
         properties.can_burn[#properties.can_burn + 1] = { type = "fluid", name = fluid_name }
