@@ -1,8 +1,8 @@
 local database = require("__RecipeBook__/scripts/database")
-local util = require("__RecipeBook__/scripts/util")
-
+local gui_util = require("__RecipeBook__/scripts/gui/util")
 local list_box = require("__RecipeBook__/scripts/gui/list-box")
 local slot_table = require("__RecipeBook__/scripts/gui/slot-table")
+local util = require("__RecipeBook__/scripts/util")
 
 --- @class InfoPane
 --- @field context MainGuiContext
@@ -101,7 +101,7 @@ function info_pane:show(path)
   local type_label = self.type_label
   local type_caption = { "" }
   for _, type in pairs(properties.types) do
-    table.insert(type_caption, util.type_locale[type])
+    table.insert(type_caption, gui_util.type_locale[type])
     table.insert(type_caption, "/")
   end
   type_caption[#type_caption] = nil

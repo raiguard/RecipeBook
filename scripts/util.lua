@@ -1,6 +1,7 @@
 local format = require("__flib__/format")
 local math = require("__flib__/math")
 
+--- @class Util
 local util = {}
 
 util.crafting_machine = {
@@ -69,14 +70,6 @@ util.prototype_type = {
   LuaItemPrototype = "item",
   LuaRecipePrototype = "recipe",
   LuaTechnologyPrototype = "technology",
-}
-
-util.type_locale = {
-  entity = { "description.rb-entity" },
-  fluid = { "gui-train.fluid" },
-  item = { "description.rb-item" },
-  recipe = { "description.recipe" },
-  technology = { "gui-map-generator.technology-difficulty-group-tile" },
 }
 
 return util

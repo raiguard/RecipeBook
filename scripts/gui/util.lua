@@ -116,6 +116,11 @@ function gui_util.update_frame_action_button(button, state)
   end
 end
 
+-- local has_derived_types = {
+--   entity = true,
+--   item = true,
+-- }
+
 --- @param obj GenericObject
 --- @return LocalisedString
 function gui_util.build_tooltip(obj)
@@ -123,24 +128,48 @@ function gui_util.build_tooltip(obj)
   if not entry then
     return ""
   end
-  local base = entry.base
+
   --- @type LocalisedString
-  local tooltip = {
-    "",
-    { "gui.rb-tooltip-title", { "", base.localised_name, " (", util.type_locale[obj.type], ")" } },
-  }
-  --- @type LocalisedString
-  local description = { "?" }
+  local tooltip = { "" }
   for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
-    local prototype = entry[key]
-    if prototype then
-      description[#description + 1] = { "", "\n", prototype.localised_description }
+    local prototype = entry[key] --[[@as GenericPrototype?]]
+    if not prototype then
+      goto continue
     end
+
+    tooltip[#tooltip + 1] = gui_util.build_prototype_tooltip(prototype)
+    tooltip[#tooltip + 1] = "\n────────────────────────\n"
+
+    ::continue::
   end
-  description[#description + 1] = ""
-  tooltip[#tooltip + 1] = description
+
+  if #tooltip > 2 then
+    tooltip[#tooltip] = nil
+  end
 
   return tooltip
 end
+
+--- @param prototype GenericPrototype
+--- @return LocalisedString
+function gui_util.build_prototype_tooltip(prototype)
+  --- @type LocalisedString
+  local tt = { "" }
+  tt[#tt + 1] = {
+    "gui.rb-tooltip-title",
+    { "", prototype.localised_name, " (", gui_util.type_locale[prototype.object_name], ")" },
+  }
+  tt[#tt + 1] = { "?", { "", "\n", prototype.localised_description }, "" }
+  return tt
+end
+
+--- @type table<string, LocalisedString>
+gui_util.type_locale = {
+  LuaEntityPrototype = { "description.rb-entity" },
+  LuaFluidPrototype = { "gui-train.fluid" },
+  LuaItemPrototype = { "description.rb-item" },
+  LuaRecipePrototype = { "description.recipe" },
+  LuaTechnologyPrototype = { "gui-map-generator.technology-difficulty-group-tile" },
+}
 
 return gui_util
