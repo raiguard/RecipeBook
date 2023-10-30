@@ -3,11 +3,45 @@ local flib_table = require("__flib__/table")
 
 local util = require("__RecipeBook__/scripts/util")
 
--- DESIGN GOALS:
--- Find a balance between caching information and generating it on the fly
--- Reduce complexity as much as possible
--- Don't rely on translated strings at all
--- Type annotations!!!
+--- @class CustomObject
+--- @field type string
+--- @field name string
+--- @field count double
+--- @field required_fluid Ingredient?
+
+--- @class EntryProperties
+--- @field entry PrototypeEntry
+--- @field hidden boolean?
+--- @field researched boolean?
+--- @field crafting_time double?
+--- @field ingredients GenericObject[]?
+--- @field products GenericObject[]?
+--- @field made_in GenericObject[]?
+--- @field ingredient_in GenericObject[]?
+--- @field product_of GenericObject[]?
+--- @field can_craft GenericObject[]?
+--- @field mined_by GenericObject[]?
+--- @field can_mine GenericObject[]?
+--- @field burned_in GenericObject[]?
+--- @field can_burn GenericObject[]?
+--- @field placeable_by GenericObject[]?
+--- @field unlocked_by GenericObject[]?
+
+--- @alias GenericObject Ingredient|Product|CustomObject
+--- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
+
+--- @class PrototypeEntry
+--- @field base GenericPrototype
+--- @field base_path string
+--- @field recipe LuaRecipePrototype?
+--- @field item LuaItemPrototype?
+--- @field fluid LuaFluidPrototype?
+--- @field entity LuaEntityPrototype?
+--- @field researched table<uint, boolean>?
+
+--- @class SubgroupData
+--- @field members GenericPrototype[]
+--- @field parent_name string
 
 -- TODO: Use data-stage properties instead of hardcoding
 local excluded_categories = {
@@ -39,10 +73,6 @@ local function add_researched(entry, force_index)
     entry.researched = { [force_index] = true }
   end
 end
-
---- @class SubgroupData
---- @field members GenericPrototype[]
---- @field parent_name string
 
 -- This and on_entity_unlocked are codependent
 local on_product_unlocked
@@ -161,7 +191,7 @@ local function on_technology_researched(technology, force_index)
   local technology_name = technology.name
   local technology_path = "technology/" .. technology_name
   if not db[technology_path] then
-    db[technology_path] = { researched = {} }
+    db[technology_path] = { base = technology.prototype, base_path = technology_path, researched = {} }
   end
   add_researched(db[technology_path], force_index)
   for _, effect in pairs(technology.effects) do
@@ -712,24 +742,6 @@ local function add_entity_properties(properties, entity, grouped_with_item)
     end
   end
 end
-
---- @class EntryProperties
---- @field entry PrototypeEntry
---- @field hidden boolean?
---- @field researched boolean?
---- @field crafting_time double?
---- @field ingredients GenericObject[]?
---- @field products GenericObject[]?
---- @field made_in GenericObject[]?
---- @field ingredient_in GenericObject[]?
---- @field product_of GenericObject[]?
---- @field can_craft GenericObject[]?
---- @field mined_by GenericObject[]?
---- @field can_mine GenericObject[]?
---- @field burned_in GenericObject[]?
---- @field can_burn GenericObject[]?
---- @field placeable_by GenericObject[]?
---- @field unlocked_by GenericObject[]?
 
 --- @type table<uint, table<string, EntryProperties>>
 local cache = {}
