@@ -18,4 +18,3 @@
 --- @field fluid LuaFluidPrototype?
 --- @field entity LuaEntityPrototype?
 --- @field researched table<uint, boolean>?
---- @field unlocked_by LuaTechnologyPrototype[]

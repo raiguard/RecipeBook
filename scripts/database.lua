@@ -263,7 +263,6 @@ local function build_database()
       end
 
       -- Add to database
-      --- @diagnostic disable-next-line unused-fields
       db[path] = { base = prototype, base_path = path, [type] = prototype }
       -- Add to filter panel and search dictionary
       local subgroup = search_tree[prototype.group.name][prototype.subgroup.name]
@@ -364,7 +363,6 @@ local function build_database()
   log("Technologies and research status")
   for name, technology in pairs(game.technology_prototypes) do
     local path = "technology/" .. name
-    --- @diagnostic disable-next-line unused-fields
     db[path] = { base = technology, base_path = path }
   end
   for _, force in pairs(game.forces) do
