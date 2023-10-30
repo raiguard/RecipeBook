@@ -462,7 +462,7 @@ local function add_recipe_properties(properties, recipe)
       table.insert(properties.made_in, {
         type = "entity",
         name = character.name,
-        duration = recipe.energy,
+        count = recipe.energy,
       })
     end
   end
@@ -477,7 +477,7 @@ local function add_recipe_properties(properties, recipe)
       table.insert(properties.made_in, {
         type = "entity",
         name = crafter.name,
-        duration = recipe.energy / crafter.crafting_speed,
+        count = recipe.energy / crafter.crafting_speed,
       })
     end
   end
@@ -617,7 +617,8 @@ end
 
 --- @param properties EntryProperties
 --- @param entity LuaEntityPrototype
-local function add_entity_properties(properties, entity)
+--- @param grouped_with_item string?
+local function add_entity_properties(properties, entity, grouped_with_item)
   if util.crafting_machine[entity.type] then
     properties.can_craft = {}
     local filters = {}
@@ -703,6 +704,15 @@ local function add_entity_properties(properties, entity)
       end
     end
   end
+
+  -- TODO: Alternate items
+  properties.placeable_by = {}
+  local placeable_by = entity.items_to_place_this
+  if not grouped_with_item and placeable_by then
+    for _, item in pairs(placeable_by) do
+      properties.placeable_by[#properties.placeable_by + 1] = { type = "item", name = item.name, count = item.count }
+    end
+  end
 end
 
 --- @class EntryProperties
@@ -720,6 +730,7 @@ end
 --- @field can_mine GenericObject[]?
 --- @field burned_in GenericObject[]?
 --- @field can_burn GenericObject[]?
+--- @field placeable_by GenericObject[]?
 --- @field unlocked_by GenericObject[]?
 
 --- @type table<uint, table<string, EntryProperties>>
@@ -763,7 +774,7 @@ function database.get_properties(path, force_index)
 
   local entity = entry.entity
   if entity then
-    add_entity_properties(properties, entity)
+    add_entity_properties(properties, entity, item and item.name or nil)
   end
 
   -- Don't show product of if it just shows this recipe

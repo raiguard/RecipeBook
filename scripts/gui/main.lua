@@ -467,7 +467,7 @@ flib_gui.add_handlers(main_gui, function(e, handler)
   end
 end, "main")
 
--- TODO: This sucks
+-- TODO: Perhaps pass these as function parameters when building
 list_box.on_result_clicked = main_gui.on_result_clicked
 search_pane.on_result_clicked = main_gui.on_result_clicked
 slot_table.on_result_clicked = main_gui.on_result_clicked

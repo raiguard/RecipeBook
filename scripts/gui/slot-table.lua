@@ -71,7 +71,7 @@ function slot_table.build(parent, context, title, members, remark)
       type = "sprite-button",
       style = style,
       sprite = entry.base_path,
-      number = member.duration,
+      number = member.count,
       tags = flib_gui.format_handlers({
         [defines.events.on_gui_click] = slot_table.on_result_clicked,
         [defines.events.on_gui_hover] = slot_table.on_result_hovered,
