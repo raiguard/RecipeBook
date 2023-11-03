@@ -749,6 +749,7 @@ local cache = {}
 --- @param path string
 --- @return EntryProperties?
 function database.get_properties(path, force_index)
+  local profiler = game.create_profiler()
   local force_cache = cache[force_index]
   if not force_cache then
     force_cache = {}
@@ -793,6 +794,9 @@ function database.get_properties(path, force_index)
   end
 
   force_cache[path] = properties
+
+  profiler.stop()
+  log({ "", "[" .. path .. "] Get properties ", profiler })
 
   return properties
 end

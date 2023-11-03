@@ -70,8 +70,6 @@ end
 --- @param path string
 --- @return boolean? updated
 function info_pane:show(path)
-  local profiler = game.create_profiler()
-
   local path = database.get_base_path(path)
   if not path then
     return
@@ -82,6 +80,8 @@ function info_pane:show(path)
     return
   end
   local entry = properties.entry
+
+  local profiler = game.create_profiler()
 
   -- Subheader
   local title_label = self.title_label
@@ -153,7 +153,7 @@ function info_pane:show(path)
   list_box.build(content_pane, self.context, { "description.rb-unlocked-by" }, properties.unlocked_by)
 
   profiler.stop()
-  log({ "", "[", path, "] ", profiler })
+  log({ "", "[", path, "] GUI update ", profiler })
 
   return true
 end
