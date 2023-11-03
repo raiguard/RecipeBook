@@ -544,7 +544,6 @@ local function add_fluid_properties(properties, fluid)
     end
   end
 
-  -- TODO: Fluid energy sources, boilers
   properties.burned_in = {}
   --- @diagnostic disable-next-line unused-fields
   for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "generator" } })) do
@@ -563,6 +562,15 @@ local function add_fluid_properties(properties, fluid)
         and fluidbox.filter
         and fluidbox.filter.name == fluid.name
       then
+        table.insert(properties.burned_in, { type = "entity", name = entity_name })
+      end
+    end
+  end
+  if fluid.fuel_value then
+    -- TODO: Add energy source entity prototype filter to the API
+    --- @diagnostic disable-next-line unused-fields
+    for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "building" } })) do
+      if entity.fluid_energy_source_prototype then
         table.insert(properties.burned_in, { type = "entity", name = entity_name })
       end
     end
@@ -729,6 +737,19 @@ local function add_entity_properties(properties, entity, grouped_with_item)
         pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
       do
         properties.can_burn[#properties.can_burn + 1] = { type = "fluid", name = fluid_name }
+      end
+    end
+  end
+  if entity.type == "generator" then
+    local fluid_box = entity.fluidbox_prototypes[1]
+    if fluid_box.filter then
+      table.insert(properties.can_burn, { type = "fluid", name = fluid_box.filter.name })
+    else
+      for fluid_name in
+        --- @diagnostic disable-next-line unused-fields
+        pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
+      do
+        table.insert(properties.can_burn, { type = "fluid", name = fluid_name })
       end
     end
   end
