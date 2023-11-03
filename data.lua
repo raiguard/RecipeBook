@@ -87,8 +87,6 @@ styles.rb_filter_group_button_tab = {
   parent = "filter_group_button_tab",
   width = 0,
   horizontally_stretchable = "on",
-  -- TODO:
-  -- draw_grayscale_picture = true,
 }
 
 styles.rb_filter_frame = {
