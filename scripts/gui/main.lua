@@ -1,6 +1,5 @@
 local flib_gui = require("__flib__/gui-lite")
 
-local database = require("__RecipeBook__/scripts/database")
 local gui_tooltip = require("__RecipeBook__/scripts/gui/tooltip")
 local gui_util = require("__RecipeBook__/scripts/gui/util")
 local history = require("__RecipeBook__/scripts/gui/history")
