@@ -1,6 +1,7 @@
 local flib_dictionary = require("__flib__/dictionary-lite")
 local flib_table = require("__flib__/table")
 
+local researched = require("__RecipeBook__/scripts/database/researched")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class CustomObject
@@ -64,191 +65,41 @@ local function compare_names(a, b)
   return flib_table.deep_compare(a.localised_name --[[@as table]], b.localised_name --[[@as table]])
 end
 
---- @param entry PrototypeEntry
---- @param force_index uint
-local function add_researched(entry, force_index)
-  if entry.researched then
-    entry.researched[force_index] = true
-  else
-    entry.researched = { [force_index] = true }
-  end
-end
-
--- This and on_entity_unlocked are codependent
-local on_product_unlocked
-
---- @param entity LuaEntityPrototype
---- @param force_index uint
-local function on_entity_unlocked(entity, force_index)
-  local db = global.database
-  local entry = db["entity/" .. entity.name]
-  if entry then
-    add_researched(entry, force_index)
-  end
-  if entity.type == "mining-drill" then
-    -- Resources
-    local categories = entity.resource_categories --[[@as table<string, _>]]
-    local fluidbox = entity.fluidbox_prototypes[1]
-    local fluidbox_filter = fluidbox and fluidbox.filter or nil
-    for resource_name, resource in
-      --- @diagnostic disable-next-line unused-fields
-      pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } }))
-    do
-      local mineable = resource.mineable_properties
-      if mineable.products and categories[resource.resource_category] then
-        -- Check fluid compatibility
-        local required_fluid = mineable.required_fluid
-        if not required_fluid or (fluidbox and (not fluidbox_filter or fluidbox_filter == required_fluid)) then
-          -- Add resource entry
-          local resource_entry = db["entity/" .. resource_name]
-          if resource_entry then
-            add_researched(resource_entry, force_index)
-          end
-          for _, product in pairs(mineable.products) do
-            on_product_unlocked(product, force_index)
-          end
-        end
-      end
-    end
-  elseif entity.type == "offshore-pump" then
-    -- Pumped fluid
-    local fluid = entity.fluid
-    if fluid then
-      local fluid_entry = db["fluid/" .. fluid.name]
-      if fluid_entry then
-        add_researched(fluid_entry, force_index)
-      end
-    end
-  elseif entity.type == "boiler" then
-    -- Produced fluid
-    for _, fluidbox in pairs(entity.fluidbox_prototypes) do
-      if fluidbox.production_type == "output" and fluidbox.filter then
-        on_product_unlocked({ type = "fluid", name = fluidbox.filter.name }, force_index)
-      end
-    end
-  end
-end
-
---- @param product Product
---- @param force_index uint
-function on_product_unlocked(product, force_index)
-  local db = global.database
-  local entry = db[product.type .. "/" .. product.name]
+--- @param prototype GenericPrototype
+--- @param group_with GenericPrototype?
+--- @return PrototypeEntry?
+local function add_prototype(prototype, group_with)
+  local path, type = util.get_path(prototype)
+  local entry = global.database[path]
   if not entry then
-    return
-  end
-  add_researched(entry, force_index)
-  local prototype
-  if product.type == "fluid" then
-    prototype = game.fluid_prototypes[product.name]
-  else
-    prototype = game.item_prototypes[product.name]
-  end
-  if product.type == "item" then
-    -- Rocket launch products
-    local rocket_launch_products = prototype.rocket_launch_products
-    if rocket_launch_products then
-      for _, product in pairs(rocket_launch_products) do
-        on_product_unlocked(product, force_index)
+    if group_with then
+      local parent_path = util.get_path(group_with)
+      local parent_entry = global.database[parent_path]
+      if parent_entry and not parent_entry[type] and compare_names(prototype, group_with) then
+        parent_entry[type] = prototype -- Add this prototype to the parent
+        global.database[path] = parent_entry -- Associate this prototype with the group's data
+        return entry
       end
     end
-    -- Burnt results
-    local burnt_result = prototype.burnt_result
-    if burnt_result then
-      on_product_unlocked({ type = "item", name = burnt_result.name }, force_index)
-    end
-    -- Place result
-    local place_result = prototype.place_result
-    if place_result then
-      on_entity_unlocked(place_result, force_index)
-    end
-  end
-end
 
---- @param recipe LuaRecipe
---- @param force_index uint
-local function on_recipe_unlocked(recipe, force_index)
-  local db = global.database
-  local entry = db["recipe/" .. recipe.name]
-  if not entry then
-    return
-  end
-  add_researched(entry, force_index)
-  if recipe.prototype.unlock_results then
-    for _, product in pairs(recipe.products) do
-      on_product_unlocked(product, force_index)
-    end
-  end
-end
-
---- @param technology LuaTechnology
---- @param force_index uint
-local function on_technology_researched(technology, force_index)
-  local db = global.database
-  if not db then
-    return
-  end
-  local technology_name = technology.name
-  local technology_path = "technology/" .. technology_name
-  if not db[technology_path] then
-    db[technology_path] = { base = technology.prototype, base_path = technology_path, researched = {} }
-  end
-  add_researched(db[technology_path], force_index)
-  for _, effect in pairs(technology.effects) do
-    if effect.type == "unlock-recipe" then
-      local recipe = technology.force.recipes[effect.recipe]
-      on_recipe_unlocked(recipe, force_index)
-    end
-  end
-end
-
---- @param force LuaForce
-local function refresh_researched(force)
-  local force_index = force.index
-  -- Gather-able items
-  for _, entity in
-    pairs(game.get_filtered_entity_prototypes({
-      --- @diagnostic disable-next-line unused-fields
-      { filter = "type", type = "simple-entity" },
-      --- @diagnostic disable-next-line unused-fields
-      { filter = "type", type = "tree" },
-    }))
-  do
-    if entity.type == "tree" or entity.count_as_rock_for_filtered_deconstruction then
-      local mineable = entity.mineable_properties
-      if mineable.minable and mineable.products then
-        for _, product in pairs(mineable.products) do
-          on_product_unlocked(product, force_index)
-        end
+    -- Add to database
+    global.database[path] = { base = prototype, base_path = path, [type] = prototype }
+    -- Add to filter panel and search dictionary
+    local subgroup = global.search_tree[prototype.group.name][prototype.subgroup.name]
+    local order = prototype.order
+    -- TODO: Binary search
+    for i, other_entry in pairs(subgroup) do
+      if order <= global.database[other_entry].base.order then
+        table.insert(subgroup, i, path)
+        return
       end
     end
-  end
-  -- Technologies
-  for _, technology in pairs(force.technologies) do
-    if technology.researched then
-      on_technology_researched(technology, force_index)
-    end
-  end
-  -- Recipes (some may be enabled without technologies)
-  local db = global.database
-  for _, recipe in pairs(force.recipes) do
-    -- Some recipes will be enabled from the start, but will only be craftable in machines
-    if recipe.enabled and not (recipe.prototype.enabled and recipe.prototype.hidden_from_player_crafting) then
-      local entry = db["recipe/" .. recipe.name]
-      if entry and not (entry.researched or {})[force_index] then
-        add_researched(entry, force_index)
-        on_recipe_unlocked(recipe, force_index)
-      end
-    end
-  end
-  -- Characters
-  -- TODO: Gate some characters if mods "unlock" them (Nullius)?
-  --- @diagnostic disable-next-line unused-fields
-  for name in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
-    local entry = db["entity/" .. name]
-    if entry then
-      add_researched(entry, force_index)
-    end
+    table.insert(subgroup, path)
+    local prototype_type = util.prototype_type[prototype.object_name]
+    local prototype_path = prototype_type .. "/" .. prototype.name
+    flib_dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
+
+    return global.database[path]
   end
 end
 
@@ -259,7 +110,7 @@ local function build_database()
   flib_dictionary.new("search")
 
   log("Search tree")
-  --- Each top-level prototype sorted into groups and subgroups for the search_interface
+  --- Each top-level prototype sorted into groups and subgroups for the search panel
   --- @type table<string, table<string, SpritePath[]>>
   local search_tree = {}
   global.search_tree = search_tree
@@ -275,69 +126,31 @@ local function build_database()
   local db = {}
   global.database = db
 
-  --- @param prototype GenericPrototype
-  --- @param group_with GenericPrototype?
-  --- @return PrototypeEntry?
-  local function add_prototype(prototype, group_with)
-    local path, type = util.get_path(prototype)
-    local entry = db[path]
-    if not entry then
-      if group_with then
-        local parent_path = util.get_path(group_with)
-        local parent_entry = db[parent_path]
-        if parent_entry and not parent_entry[type] and compare_names(prototype, group_with) then
-          parent_entry[type] = prototype -- Add this prototype to the parent
-          db[path] = parent_entry -- Associate this prototype with the group's data
-          return entry
-        end
-      end
-
-      -- Add to database
-      db[path] = { base = prototype, base_path = path, [type] = prototype }
-      -- Add to filter panel and search dictionary
-      local subgroup = search_tree[prototype.group.name][prototype.subgroup.name]
-      local order = prototype.order
-      -- TODO: Binary search
-      for i, other_entry in pairs(subgroup) do
-        if order <= db[other_entry].base.order then
-          table.insert(subgroup, i, path)
-          return
-        end
-      end
-      table.insert(subgroup, path)
-      local prototype_type = util.prototype_type[prototype.object_name]
-      local prototype_path = prototype_type .. "/" .. prototype.name
-      flib_dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
-
-      return db[path]
-    end
-  end
-
   -- Recipes determine what is actually attainable in the game
   -- All other objects will only be added if they are related to a recipe
   log("Recipes")
   --- @type table<string, GenericPrototype>
   local materials_to_add = {}
-  for _, recipe_prototype in pairs(game.recipe_prototypes) do
-    if not excluded_categories[recipe_prototype.category] and #recipe_prototype.products > 0 then
-      add_prototype(recipe_prototype)
-      -- Group with the main product if the icons match
-      local main_product = recipe_prototype.main_product
+  for _, prototype in pairs(game.recipe_prototypes) do
+    if not excluded_categories[prototype.category] and #prototype.products > 0 then
+      add_prototype(prototype)
+      -- Attempt to group with the main product
+      local main_product = prototype.main_product
       if not main_product then
-        local products = recipe_prototype.products
+        local products = prototype.products
         if #products == 1 then
           main_product = products[1]
         end
       end
       if main_product then
         local product_prototype = util.get_prototype(main_product)
-        add_prototype(product_prototype, recipe_prototype)
+        add_prototype(product_prototype, prototype)
       end
       -- Mark all ingredients and products for adding in the next step
-      for _, ingredient in pairs(recipe_prototype.ingredients) do
+      for _, ingredient in pairs(prototype.ingredients) do
         materials_to_add[ingredient.type .. "/" .. ingredient.name] = util.get_prototype(ingredient)
       end
-      for _, product in pairs(recipe_prototype.products) do
+      for _, product in pairs(prototype.products) do
         materials_to_add[product.type .. "/" .. product.name] = util.get_prototype(product)
       end
     end
@@ -396,7 +209,7 @@ local function build_database()
     db[path] = { base = technology, base_path = path }
   end
   for _, force in pairs(game.forces) do
-    refresh_researched(force)
+    researched.refresh(force)
   end
 
   log("Search tree cleanup")
@@ -828,7 +641,7 @@ end
 local function on_research_finished(e)
   local profiler = game.create_profiler()
   local technology = e.research
-  on_technology_researched(technology, technology.force.index)
+  researched.on_technology_researched(technology, technology.force.index)
   profiler.stop()
   log({ "", "Unlock Tech ", profiler })
   if global.update_force_guis then
