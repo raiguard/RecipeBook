@@ -1,4 +1,4 @@
---- @class Researched
+--- @class researched
 local researched = {}
 
 --- @param entry PrototypeEntry
