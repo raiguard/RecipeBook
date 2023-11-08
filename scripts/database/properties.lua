@@ -48,11 +48,11 @@ local function add_recipe_properties(properties, recipe)
   --- @diagnostic disable-next-line unused-fields
   for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
     if character.crafting_categories[recipe.category] then
-      table.insert(properties.made_in, {
+      properties.made_in[#properties.made_in + 1] = {
         type = "entity",
         name = character.name,
         count = recipe.energy,
-      })
+      }
     end
   end
   for _, crafter in
@@ -63,11 +63,11 @@ local function add_recipe_properties(properties, recipe)
   do
     local ingredient_count = crafter.ingredient_count
     if get_entry(crafter) and (ingredient_count == 0 or ingredient_count >= item_ingredients) then
-      table.insert(properties.made_in, {
+      properties.made_in[#properties.made_in + 1] = {
         type = "entity",
         name = crafter.name,
         count = recipe.energy / crafter.crafting_speed,
-      })
+      }
     end
   end
 
@@ -91,7 +91,7 @@ local function add_fluid_properties(properties, fluid)
     }))
   do
     if get_entry(recipe) then
-      table.insert(properties.ingredient_in, { type = "recipe", name = recipe.name })
+      properties.ingredient_in[#properties.ingredient_in + 1] = { type = "recipe", name = recipe.name }
     end
   end
   properties.product_of = {}
@@ -101,7 +101,7 @@ local function add_fluid_properties(properties, fluid)
   })
   for _, recipe in pairs(product_of_recipes) do
     if get_entry(recipe) then
-      table.insert(properties.product_of, { type = "recipe", name = recipe.name })
+      properties.product_of[#properties.product_of + 1] = { type = "recipe", name = recipe.name }
     end
   end
 
@@ -112,7 +112,7 @@ local function add_fluid_properties(properties, fluid)
     if
       (fluid_box.filter and fluid_box.filter.name == fluid.name) or (not fluid_box.filter and fluid.fuel_value > 0)
     then
-      table.insert(properties.burned_in, { type = "entity", name = entity_name })
+      properties.burned_in[#properties.burned_in + 1] = { type = "entity", name = entity_name }
     end
   end
   --- @diagnostic disable-next-line unused-fields
@@ -123,7 +123,7 @@ local function add_fluid_properties(properties, fluid)
         and fluidbox.filter
         and fluidbox.filter.name == fluid.name
       then
-        table.insert(properties.burned_in, { type = "entity", name = entity_name })
+        properties.burned_in[#properties.burned_in + 1] = { type = "entity", name = entity_name }
       end
     end
   end
@@ -132,7 +132,7 @@ local function add_fluid_properties(properties, fluid)
     --- @diagnostic disable-next-line unused-fields
     for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "building" } })) do
       if entity.fluid_energy_source_prototype then
-        table.insert(properties.burned_in, { type = "entity", name = entity_name })
+        properties.burned_in[#properties.burned_in + 1] = { type = "entity", name = entity_name }
       end
     end
   end
@@ -168,7 +168,7 @@ local function add_item_properties(properties, item)
     }))
   do
     if get_entry(recipe) then
-      table.insert(properties.ingredient_in, { type = "recipe", name = recipe.name })
+      properties.ingredient_in[#properties.ingredient_in + 1] = { type = "recipe", name = recipe.name }
     end
   end
   properties.product_of = properties.product_of or {}
@@ -178,7 +178,7 @@ local function add_item_properties(properties, item)
   })
   for _, recipe in pairs(product_of_recipes) do
     if get_entry(recipe) then
-      table.insert(properties.product_of, { type = "recipe", name = recipe.name })
+      properties.product_of[#properties.product_of + 1] = { type = "recipe", name = recipe.name }
     end
   end
 
@@ -221,8 +221,8 @@ local function add_entity_properties(properties, entity, grouped_with_item)
     properties.can_craft = {}
     local filters = {}
     for category in pairs(entity.crafting_categories) do
-      table.insert(filters, { filter = "category", category = category })
-      table.insert(filters, { mode = "and", filter = "hidden-from-player-crafting", invert = true })
+      filters[#filters + 1] = { filter = "category", category = category }
+      filters[#filters + 1] = { mode = "and", filter = "hidden-from-player-crafting", invert = true }
     end
     for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
       local item_ingredients = 0
@@ -233,7 +233,7 @@ local function add_entity_properties(properties, entity, grouped_with_item)
       end
       local ingredient_count = entity.ingredient_count or 0
       if ingredient_count == 0 or ingredient_count >= item_ingredients then
-        table.insert(properties.can_craft, { type = "recipe", name = recipe.name })
+        properties.can_craft[#properties.can_craft + 1] = { type = "recipe", name = recipe.name }
       end
     end
   elseif entity.type == "resource" then
@@ -243,7 +243,7 @@ local function add_entity_properties(properties, entity, grouped_with_item)
     --- @diagnostic disable-next-line unused-fields
     for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
       if entity.resource_categories[resource_category] and (not required_fluid or entity.fluidbox_prototypes[1]) then
-        table.insert(properties.mined_by, { type = "entity", name = entity.name })
+        properties.mined_by[#properties.mined_by + 1] = { type = "entity", name = entity.name }
       end
     end
   elseif entity.type == "mining-drill" then
@@ -266,12 +266,12 @@ local function add_entity_properties(properties, entity, grouped_with_item)
         resource_categories[resource.resource_category]
         and (not required_fluid or filter == true or filter == required_fluid)
       then
-        table.insert(properties.can_mine, {
+        properties.can_mine[#properties.can_mine + 1] = {
           type = "entity",
           name = resource.name,
           required_fluid = required_fluid
             and { type = "fluid", name = required_fluid, amount = mineable.fluid_amount / 10 },
-        })
+        }
       end
     end
   end
@@ -305,13 +305,13 @@ local function add_entity_properties(properties, entity, grouped_with_item)
   if entity.type == "generator" then
     local fluid_box = entity.fluidbox_prototypes[1]
     if fluid_box.filter then
-      table.insert(properties.can_burn, { type = "fluid", name = fluid_box.filter.name })
+      properties.can_burn[#properties.can_burn + 1] = { type = "fluid", name = fluid_box.filter.name }
     else
       for fluid_name in
         --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
       do
-        table.insert(properties.can_burn, { type = "fluid", name = fluid_name })
+        properties.can_burn[#properties.can_burn + 1] = { type = "fluid", name = fluid_name }
       end
     end
   end
