@@ -29,7 +29,6 @@ function history:next()
   self.index = math.min(#self, self.index + 1)
 end
 
---- @return string
 function history:current()
   return self[self.index]
 end
