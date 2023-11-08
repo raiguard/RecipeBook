@@ -1,5 +1,5 @@
-local dictionary = require("__flib__/dictionary-lite")
-local migration = require("__flib__/migration")
+local flib_dictionary = require("__flib__/dictionary-lite")
+local flib_migration = require("__flib__/migration")
 
 local database = require("__RecipeBook__/scripts/database")
 local gui = require("__RecipeBook__/scripts/gui/main")
@@ -9,7 +9,7 @@ local by_version = {
     -- NUKE EVERYTHING
     global = {}
     -- Re-init
-    dictionary.on_init()
+    flib_dictionary.on_init()
     database.on_init()
     gui.on_init()
   end,
@@ -18,7 +18,7 @@ local by_version = {
 local migrations = {}
 
 migrations.on_configuration_changed = function(e)
-  migration.on_config_changed(e, by_version)
+  flib_migration.on_config_changed(e, by_version)
 end
 
 return migrations

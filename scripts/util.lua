@@ -1,5 +1,5 @@
-local format = require("__flib__/format")
-local math = require("__flib__/math")
+local flib_format = require("__flib__/format")
+local flib_math = require("__flib__/math")
 
 --- @class Util
 local util = {}
@@ -24,7 +24,7 @@ end
 --- @param num number
 --- @return string
 function util.format_number(num)
-  return format.number(math.round(num, 0.01))
+  return flib_format.number(flib_math.round(num, 0.01))
 end
 
 --- @param prototype GenericPrototype

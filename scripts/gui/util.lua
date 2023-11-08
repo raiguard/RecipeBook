@@ -1,4 +1,4 @@
-local math = require("__flib__/math")
+local flib_math = require("__flib__/math")
 
 local util = require("__RecipeBook__/scripts/util")
 
@@ -21,7 +21,7 @@ function gui_util.build_caption(obj, include_icon)
     caption[#caption + 1] = {
       "",
       "[font=default-semibold]",
-      { "format-percent", math.round(obj.probability * 100, 0.01) },
+      { "format-percent", flib_math.round(obj.probability * 100, 0.01) },
       "[/font] ",
     }
   end
@@ -47,17 +47,20 @@ function gui_util.build_caption(obj, include_icon)
   caption[#caption + 1] = game[obj.type .. "_prototypes"][obj.name].localised_name
 
   if obj.temperature then
-    caption[#caption + 1] = { "", "  (", { "format-degrees-c-compact", math.round(obj.temperature, 0.01) }, ")" }
+    caption[#caption + 1] = { "", "  (", { "format-degrees-c-compact", flib_math.round(obj.temperature, 0.01) }, ")" }
   elseif obj.minimum_temperature and obj.maximum_temperature then
     local temperature_min = obj.minimum_temperature --[[@as number]]
     local temperature_max = obj.maximum_temperature --[[@as number]]
     local temperature_string
-    if temperature_min == math.min_double then
-      temperature_string = "≤ " .. math.round(temperature_max, 0.01)
-    elseif temperature_max == math.max_double then
-      temperature_string = "≥ " .. math.round(temperature_min, 0.01)
+    if temperature_min == flib_math.min_double then
+      temperature_string = "≤ " .. flib_math.round(temperature_max, 0.01)
+    elseif temperature_max == flib_math.max_double then
+      temperature_string = "≥ " .. flib_math.round(temperature_min, 0.01)
     else
-      temperature_string = "" .. math.round(temperature_min, 0.01) .. " - " .. math.round(temperature_max, 0.01)
+      temperature_string = ""
+        .. flib_math.round(temperature_min, 0.01)
+        .. " - "
+        .. flib_math.round(temperature_max, 0.01)
     end
     caption[#caption + 1] = { "", "  (", { "format-degrees-c-compact", temperature_string }, ")" }
   end
