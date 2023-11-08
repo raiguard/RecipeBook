@@ -37,10 +37,31 @@ local excluded_categories = {
   ["void-crushing"] = true,
 }
 
+-- TODO: Remote interface
+local group_overrides = {
+  ["entity/coal"] = "item/coal",
+  ["entity/copper-ore"] = "item/copper-ore",
+  ["entity/iron-ore"] = "item/iron-ore",
+  ["entity/stone"] = "item/stone",
+  ["entity/uranium-ore"] = "item/uranium-ore",
+  ["entity/straight-rail"] = "item/rail",
+}
+
 --- @param a GenericPrototype
 --- @param b GenericPrototype
-local function compare_names(a, b)
+local function should_group(a, b)
+  local a_path = util.get_path(a)
+  local b_path = util.get_path(b)
+  if group_overrides[a_path] == b_path then
+    return true
+  end
   return flib_table.deep_compare(a.localised_name --[[@as table]], b.localised_name --[[@as table]])
+end
+
+--- @param obj GenericObject
+--- @return PrototypeEntry?
+local function get_entry(obj)
+  return global.database[obj.type .. "/" .. obj.name]
 end
 
 --- @param prototype GenericPrototype
@@ -53,7 +74,7 @@ local function add_prototype(prototype, group_with)
     if group_with then
       local parent_path = util.get_path(group_with)
       local parent_entry = global.database[parent_path]
-      if parent_entry and not parent_entry[type] and compare_names(prototype, group_with) then
+      if parent_entry and not parent_entry[type] and should_group(prototype, group_with) then
         parent_entry[type] = prototype -- Add this prototype to the parent
         global.database[path] = parent_entry -- Associate this prototype with the group's data
         return entry
@@ -157,12 +178,11 @@ local function build_database()
       if products and #products > 0 then
         local should_add, grouped_material
         for _, product in pairs(mineable.products) do
-          local product_prototype = util.get_prototype(product)
-          local product_path = util.get_path(product_prototype)
           -- Only add resources whose products have an entry (and therefore, a recipe)
-          if db[product_path] then
+          if get_entry(product) then
             should_add = true
-            if compare_names(prototype, product_prototype) then
+            local product_prototype = util.get_prototype(product)
+            if should_group(prototype, product_prototype) then
               grouped_material = product_prototype
               break
             end
@@ -242,12 +262,7 @@ function database.is_hidden(obj)
   return false
 end
 
---- @param obj GenericObject
---- @return PrototypeEntry?
-function database.get_entry(obj)
-  return global.database[obj.type .. "/" .. obj.name]
-end
-
+database.get_entry = get_entry
 database.get_properties = require("__RecipeBook__/scripts/database/properties")
 
 -- Events
