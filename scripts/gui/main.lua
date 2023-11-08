@@ -171,11 +171,17 @@ function main_gui:hide()
 end
 
 function main_gui:prev()
+  if not self.window.visible then
+    return
+  end
   self.history:prev()
   self:update_info()
 end
 
 function main_gui:next()
+  if not self.window.visible then
+    return
+  end
   self.history:next()
   self:update_info()
 end
