@@ -253,6 +253,21 @@ local function add_entity_properties(properties, entity, grouped_with_item)
         properties.mined_by[#properties.mined_by + 1] = { type = "entity", name = entity.name }
       end
     end
+    local mineable_properties = entity.mineable_properties
+    if mineable_properties and mineable_properties.minable then
+      local products = mineable_properties.products or {}
+      if
+        not (
+          #products == 1
+          and grouped_with_item
+          and products[1].type == "item"
+          and products[1].name == grouped_with_item.name
+        )
+      then
+        properties.crafting_time = mineable_properties.mining_time
+        properties.products = mineable_properties.products
+      end
+    end
   elseif entity.type == "mining-drill" then
     --- @type string|boolean?
     local filter
