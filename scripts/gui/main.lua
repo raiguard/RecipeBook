@@ -441,33 +441,6 @@ main_gui.events = {
   ["rb-toggle"] = on_toggle,
 }
 
-function main_gui.add_remote_interface()
-  remote.add_interface("RecipeBook", {
-    --- Open the given page in Recipe Book.
-    --- @param player_index uint
-    --- @param class string
-    --- @param name string
-    --- @return boolean success
-    open_page = function(player_index, class, name)
-      local path = class .. "/" .. name
-      local entry = global.database[path]
-      if not entry or not entry.base then
-        return false
-      end
-      local player_gui = main_gui.get(player_index)
-      if player_gui then
-        main_gui.history:push(path)
-        main_gui:update_info()
-      end
-      return true
-    end,
-    --- The current interface version.
-    version = function()
-      return 4
-    end,
-  })
-end
-
 flib_gui.add_handlers(main_gui, function(e, handler)
   local pgui = main_gui.get(e.player_index)
   if pgui then

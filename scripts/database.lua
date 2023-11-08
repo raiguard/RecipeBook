@@ -22,7 +22,7 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field entity LuaEntityPrototype?
 --- @field researched table<uint, boolean>?
 
--- TODO: Use data-stage properties instead of hardcoding
+-- TODO: Remote interface
 local excluded_categories = {
   ["big-turbine"] = true,
   ["condenser-turbine"] = true,
