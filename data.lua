@@ -192,12 +192,14 @@ styles.rb_list_box_item_hidden = {
 styles.rb_list_box_item_unresearched = {
   type = "button_style",
   parent = "rb_list_box_item",
+  --- @diagnostic disable-next-line undefined-global
   default_font_color = red_body_text_color,
 }
 
 styles.rb_subheader_caption_button = {
   type = "button_style",
   disabled_graphical_set = {},
+  --- @diagnostic disable-next-line undefined-global
   disabled_font_color = bold_font_color,
   font = "default-bold",
   icon_horizontal_align = "left",
@@ -217,6 +219,7 @@ styles.rb_subheader_caption_button_hidden = {
 styles.rb_subheader_caption_button_unresearched = {
   type = "button_style",
   parent = "rb_subheader_caption_button",
+  --- @diagnostic disable-next-line undefined-global
   disabled_font_color = red_body_text_color,
 }
 
@@ -229,6 +232,7 @@ styles.rb_caption_label_hidden = {
 styles.rb_caption_label_unresearched = {
   type = "label_style",
   parent = "caption_label",
+  --- @diagnostic disable-next-line undefined-global
   font_color = red_body_text_color,
 }
 
