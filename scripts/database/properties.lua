@@ -1,5 +1,3 @@
-local flib_table = require("__flib__/table")
-
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class EntryProperties
@@ -19,6 +17,7 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field can_burn GenericObject[]?
 --- @field placeable_by GenericObject[]?
 --- @field unlocked_by GenericObject[]?
+--- @field place_result GenericObject?
 
 --- @param prototype GenericPrototype
 --- @return PrototypeEntry?
@@ -27,6 +26,17 @@ local function get_entry(prototype)
   if type then
     return global.database[type .. "/" .. prototype.name]
   end
+end
+
+--- @param objects GenericObject[]
+--- @param name string
+local function contains_id(objects, name)
+  for i = 1, #objects do
+    if objects[i].name == name then
+      return true
+    end
+  end
+  return false
 end
 
 --- @param properties EntryProperties
@@ -144,12 +154,7 @@ local function add_fluid_properties(properties, fluid)
         --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe_name } }))
       do
-        -- TODO: This sucks
-        if
-          not flib_table.for_each(properties.unlocked_by, function(obj)
-            return obj.name == technology_name
-          end)
-        then
+        if not contains_id(properties.unlocked_by, technology_name) then
           properties.unlocked_by[#properties.unlocked_by + 1] = { type = "technology", name = technology_name }
         end
       end
@@ -159,7 +164,8 @@ end
 
 --- @param properties EntryProperties
 --- @param item LuaItemPrototype
-local function add_item_properties(properties, item)
+--- @param grouped_with_entity LuaEntityPrototype
+local function add_item_properties(properties, item, grouped_with_entity)
   properties.ingredient_in = properties.ingredient_in or {}
   for _, recipe in
     pairs(game.get_filtered_recipe_prototypes({
@@ -189,33 +195,34 @@ local function add_item_properties(properties, item)
         --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe_name } }))
       do
-        if
-          not flib_table.for_each(properties.unlocked_by, function(obj)
-            return obj.name == technology_name
-          end)
-        then
+        if not contains_id(properties.unlocked_by, technology_name) then
           properties.unlocked_by[#properties.unlocked_by + 1] = { type = "technology", name = technology_name }
         end
       end
     end
   end
 
-  if not item.fuel_value then
-    return
-  end
-  local fuel_category = item.fuel_category
-  properties.burned_in = {}
-  for entity_name, entity_prototype in pairs(game.entity_prototypes) do
-    local burner = entity_prototype.burner_prototype
-    if burner and burner.fuel_categories[fuel_category] then
-      properties.burned_in[#properties.burned_in + 1] = { type = "entity", name = entity_name }
+  if item.fuel_value then
+    local fuel_category = item.fuel_category
+    properties.burned_in = {}
+    for entity_name, entity_prototype in pairs(game.entity_prototypes) do
+      local burner = entity_prototype.burner_prototype
+      if burner and burner.fuel_categories[fuel_category] then
+        properties.burned_in[#properties.burned_in + 1] = { type = "entity", name = entity_name }
+      end
     end
+  end
+
+  -- TODO: Display this
+  local place_result = item.place_result
+  if place_result and place_result ~= grouped_with_entity then
+    properties.place_result = { type = "entity", name = place_result.name }
   end
 end
 
 --- @param properties EntryProperties
 --- @param entity LuaEntityPrototype
---- @param grouped_with_item string?
+--- @param grouped_with_item LuaItemPrototype?
 local function add_entity_properties(properties, entity, grouped_with_item)
   if util.crafting_machine[entity.type] then
     properties.can_craft = {}
@@ -231,8 +238,8 @@ local function add_entity_properties(properties, entity, grouped_with_item)
           item_ingredients = item_ingredients + 1
         end
       end
-      local ingredient_count = entity.ingredient_count or 0
-      if ingredient_count == 0 or ingredient_count >= item_ingredients then
+      local ingredient_count = entity.ingredient_count
+      if not ingredient_count or ingredient_count >= item_ingredients then
         properties.can_craft[#properties.can_craft + 1] = { type = "recipe", name = recipe.name }
       end
     end
@@ -351,28 +358,29 @@ return function(path, force_index)
   --- @type EntryProperties
   local properties = { entry = entry }
 
-  local recipe = entry.recipe
-  if recipe then
-    add_recipe_properties(properties, recipe)
+  if entry.recipe then
+    add_recipe_properties(properties, entry.recipe)
   end
 
-  local fluid = entry.fluid
-  if fluid then
-    add_fluid_properties(properties, fluid)
+  if entry.fluid then
+    add_fluid_properties(properties, entry.fluid)
   end
 
-  local item = entry.item
-  if item then
-    add_item_properties(properties, item)
+  if entry.item then
+    add_item_properties(properties, entry.item, entry.entity)
   end
 
-  local entity = entry.entity
-  if entity then
-    add_entity_properties(properties, entity, item and item.name or nil)
+  if entry.entity then
+    add_entity_properties(properties, entry.entity, entry.item)
   end
 
   -- Don't show product of if it just shows this recipe
-  if recipe and item and #properties.product_of == 1 and properties.product_of[1].name == recipe.name then
+  if
+    entry.recipe
+    and entry.item
+    and #properties.product_of == 1
+    and properties.product_of[1].name == entry.recipe.name
+  then
     properties.product_of = nil
   end
 
