@@ -325,6 +325,9 @@ local function update_force_guis(force)
 end
 
 local function on_tick()
+  if not next(global.update_force_guis or {}) then
+    return
+  end
   for force_index in pairs(global.update_force_guis) do
     local force = game.forces[force_index]
     if force then
