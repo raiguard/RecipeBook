@@ -299,16 +299,6 @@ function main_gui:on_result_clicked(e)
   self:update_info()
 end
 
---- @param e EventData.on_gui_hover
-function main_gui:on_result_hovered(e)
-  local tooltip = e.element.tooltip
-  if tooltip ~= "" then
-    return
-  end
-  local type, name = string.match(e.element.sprite, "(.*)/(.*)")
-  e.element.tooltip = gui_tooltip.from_object({ type = type, name = name })
-end
-
 function main_gui:on_window_closed()
   if self.pinned then
     return
