@@ -58,7 +58,7 @@ local function should_group(a, b)
   if group_overrides[a_path] == b_path then
     return true
   end
-  if util.is_hidden(a) ~= util.is_hidden(b) then
+  if a.object_name ~= "LuaEntityPrototype" and util.is_hidden(a) ~= util.is_hidden(b) then
     return false
   end
   return flib_table.deep_compare(a.localised_name --[[@as table]], b.localised_name --[[@as table]])
