@@ -1,3 +1,5 @@
+local flib_table = require("__flib__/table")
+
 -- Make unbarreling recipes not unlock their corresponding fluids
 for _, recipe in pairs(data.raw["recipe"]) do
   if string.find(recipe.name, "empty%-.*%-barrel") then
@@ -7,8 +9,14 @@ end
 -- Make rocket part visible in RB
 data.raw["recipe"]["rocket-part"].hidden = false
 data.raw["recipe"]["rocket-part"].hide_from_player_crafting = true
+local flags = data.raw["item"]["rocket-part"].flags --[[@as data.ItemPrototypeFlags]]
+local index = flib_table.find(flags, "hidden")
+if index then
+  table.remove(flags, index)
+end
 -- Hide EEE from RB
 data.raw["recipe"]["electric-energy-interface"].hidden = true
+table.insert(data.raw["item"]["electric-energy-interface"].flags, "hidden")
 
 -- -- Testing recipe
 -- local recipe = table.deepcopy(data.raw["recipe"]["advanced-oil-processing"])
