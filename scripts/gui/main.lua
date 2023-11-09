@@ -442,4 +442,29 @@ list_box.on_result_clicked = main_gui.on_result_clicked
 search_pane.on_result_clicked = main_gui.on_result_clicked
 slot_table.on_result_clicked = main_gui.on_result_clicked
 
+commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book info page", function(e)
+  local gui = main_gui.get(e.player_index)
+  if not gui then
+    return
+  end
+  log("TESTING ALL INFO PAGES")
+  local tested = {}
+  local tested_count = 0
+  local profiler = game.create_profiler()
+  for _, entry in pairs(global.database) do
+    local base_path = entry.base_path
+    if not tested[base_path] and not string.find(base_path, "technology/") then
+      tested[base_path] = true
+      tested_count = tested_count + 1
+      gui.history:push(base_path)
+      gui:update_info()
+    end
+  end
+  profiler.stop()
+  log({ "", "Overall test ", profiler })
+  log("Number of pages: " .. tested_count)
+  profiler.divide(tested_count)
+  log({ "", "Average test ", profiler })
+end)
+
 return main_gui
