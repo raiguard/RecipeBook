@@ -35,6 +35,9 @@ local excluded_categories = {
   ["transport-drone-request"] = true,
   ["transport-fluid-request"] = true,
   ["void-crushing"] = true,
+  ["scrapping"] = true,
+  ["barreling"] = true,
+  ["unbarreling"] = true,
 }
 
 -- TODO: Remote interface

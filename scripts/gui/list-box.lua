@@ -9,8 +9,6 @@ local list_box = {}
 
 --- @type function?
 list_box.on_result_clicked = nil
---- @type function?
-list_box.on_result_hovered = nil
 
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
@@ -76,13 +74,11 @@ function list_box.build(parent, context, title, members, remark)
       style = style,
       sprite = entry.base_path,
       caption = gui_util.build_caption(member),
+      elem_tooltip = member,
       tags = flib_gui.format_handlers({
         [defines.events.on_gui_click] = list_box.on_result_clicked,
-        [defines.events.on_gui_hover] = list_box.on_result_hovered,
       }),
-      raise_hover_events = true,
     })
-    -- button.remark.caption = gui_util.build_remark(member)
     result_count = result_count + 1
     ::continue::
   end

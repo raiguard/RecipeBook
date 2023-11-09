@@ -20,8 +20,6 @@ script.register_metatable("search_pane", mt)
 
 --- @type function?
 search_pane.on_result_clicked = nil
---- @type function?
-search_pane.on_result_hovered = nil
 
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
@@ -89,18 +87,15 @@ function search_pane.build(parent, context)
     8
 
   local result_buttons = {}
-  -- Create tables for each subgroup
   for group_name, subgroups in pairs(global.search_tree) do
-    -- Tab button
     groups_table.add({
       type = "sprite-button",
       name = group_name,
       style = "rb_filter_group_button_tab",
       sprite = "item-group/" .. group_name,
-      tooltip = game.item_group_prototypes[group_name].localised_name,
+      elem_tooltip = { type = "item-group", name = group_name },
       tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = search_pane.on_group_clicked }),
     })
-    -- Base flow
     local group_flow = results_pane.add({
       type = "flow",
       name = group_name,
@@ -108,20 +103,19 @@ function search_pane.build(parent, context)
       direction = "vertical",
       visible = false,
     })
-    -- Assemble subgroups
     for subgroup_name, subgroup in pairs(subgroups) do
       local subgroup_table =
         group_flow.add({ type = "table", name = subgroup_name, style = "slot_table", column_count = 10 })
       for _, path in pairs(subgroup) do
+        local type, name = string.match(path, "(.*)/(.*)")
         local button = subgroup_table.add({
           type = "sprite-button",
           style = "flib_slot_button_default",
           sprite = path,
+          elem_tooltip = { type = type, name = name },
           tags = flib_gui.format_handlers({
             [defines.events.on_gui_click] = search_pane.on_result_clicked,
-            [defines.events.on_gui_hover] = search_pane.on_result_hovered,
           }),
-          raise_hover_events = true,
         })
         if result_buttons[path] then
           error("Duplicate button ID: " .. path)

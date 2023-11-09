@@ -1,6 +1,5 @@
 local flib_gui = require("__flib__/gui-lite")
 
-local gui_tooltip = require("__RecipeBook__/scripts/gui/tooltip")
 local gui_util = require("__RecipeBook__/scripts/gui/util")
 local history = require("__RecipeBook__/scripts/gui/history")
 local info_pane = require("__RecipeBook__/scripts/gui/info-pane")
@@ -452,8 +451,5 @@ end, "main")
 list_box.on_result_clicked = main_gui.on_result_clicked
 search_pane.on_result_clicked = main_gui.on_result_clicked
 slot_table.on_result_clicked = main_gui.on_result_clicked
-list_box.on_result_hovered = main_gui.on_result_hovered
-search_pane.on_result_hovered = main_gui.on_result_hovered
-slot_table.on_result_hovered = main_gui.on_result_hovered
 
 return main_gui

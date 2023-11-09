@@ -8,8 +8,6 @@ local slot_table = {}
 
 --- @type function?
 slot_table.on_result_clicked = nil
---- @type function?
-slot_table.on_result_hovered = nil
 
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
@@ -71,14 +69,12 @@ function slot_table.build(parent, context, title, members, remark)
       type = "sprite-button",
       style = style,
       sprite = entry.base_path,
+      elem_tooltip = member,
       number = member.count,
       tags = flib_gui.format_handlers({
         [defines.events.on_gui_click] = slot_table.on_result_clicked,
-        [defines.events.on_gui_hover] = slot_table.on_result_hovered,
       }),
-      raise_hover_events = true,
     })
-    -- button.remark.caption = gui_util.build_remark(member)
     result_count = result_count + 1
     ::continue::
   end
