@@ -150,6 +150,18 @@ function info_pane:show(path)
   slot_table.build(content_pane, self.context, { "description.rb-can-mine" }, properties.can_mine)
   slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
   slot_table.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
+  slot_table.build(
+    content_pane,
+    self.context,
+    { "description.rocket-launch-products" },
+    properties.rocket_launch_products
+  )
+  slot_table.build(
+    content_pane,
+    self.context,
+    { "description.rb-rocket-launch-product-of" },
+    properties.rocket_launch_product_of
+  )
   slot_table.build(content_pane, self.context, { "description.rb-placeable-by" }, properties.placeable_by)
   technology_slot_table.build(content_pane, self.context, { "description.rb-unlocked-by" }, properties.unlocked_by)
 

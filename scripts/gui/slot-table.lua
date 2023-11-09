@@ -70,7 +70,8 @@ function slot_table.build(parent, context, title, members, remark)
       style = style,
       sprite = entry.base_path,
       elem_tooltip = member,
-      number = member.count,
+      -- TODO: Probabilities, ranges, fluid temperatures
+      number = member.amount,
       tags = flib_gui.format_handlers({
         [defines.events.on_gui_click] = slot_table.on_result_clicked,
       }),

@@ -1,3 +1,5 @@
+local flib_table = require("__flib__/table")
+
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class EntryProperties
@@ -15,6 +17,8 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field can_mine GenericObject[]?
 --- @field burned_in GenericObject[]?
 --- @field can_burn GenericObject[]?
+--- @field rocket_launch_products GenericObject[]?
+--- @field rocket_launch_product_of GenericObject[]?
 --- @field placeable_by GenericObject[]?
 --- @field unlocked_by GenericObject[]?
 --- @field place_result GenericObject?
@@ -61,7 +65,7 @@ local function add_recipe_properties(properties, recipe)
       properties.made_in[#properties.made_in + 1] = {
         type = "entity",
         name = character.name,
-        count = recipe.energy,
+        amount = recipe.energy,
       }
     end
   end
@@ -76,7 +80,7 @@ local function add_recipe_properties(properties, recipe)
       properties.made_in[#properties.made_in + 1] = {
         type = "entity",
         name = crafter.name,
-        count = recipe.energy / crafter.crafting_speed,
+        amount = recipe.energy / crafter.crafting_speed,
       }
     end
   end
@@ -218,6 +222,48 @@ local function add_item_properties(properties, item, grouped_with_entity)
   if place_result and place_result ~= grouped_with_entity then
     properties.place_result = { type = "entity", name = place_result.name }
   end
+
+  local rocket_launch_products = item.rocket_launch_products
+  if #rocket_launch_products > 0 then
+    properties.rocket_launch_products = {}
+    for i = 1, #rocket_launch_products do
+      properties.rocket_launch_products[i] =
+        { type = "item", name = rocket_launch_products[i].name, amount = rocket_launch_products[i].amount }
+    end
+  end
+
+  properties.rocket_launch_product_of = {}
+  -- TODO: Refactor database to contain class functions in separate files to deduplicate all of this garbage
+  --- @diagnostic disable-next-line unused-fields
+  for _, other_item in pairs(game.get_filtered_item_prototypes({ { filter = "has-rocket-launch-products" } })) do
+    for _, product in pairs(other_item.rocket_launch_products) do
+      if product.name == item.name then
+        properties.rocket_launch_product_of[#properties.rocket_launch_product_of + 1] =
+          { type = "item", name = other_item.name }
+        for recipe_name in
+          pairs(game.get_filtered_recipe_prototypes({
+            --- @diagnostic disable-next-line unused-fields
+            { filter = "has-product-item", elem_filters = { { filter = "name", name = other_item.name } } },
+          }))
+        do
+          for technology_name in
+            --- @diagnostic disable-next-line unused-fields
+            pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe_name } }))
+          do
+            if
+              not flib_table.for_each(properties.unlocked_by, function(obj)
+                return obj.name == technology_name
+              end)
+            then
+              properties.unlocked_by[#properties.unlocked_by + 1] = { type = "technology", name = technology_name }
+            end
+          end
+        end
+
+        break
+      end
+    end
+  end
 end
 
 --- @param properties EntryProperties
@@ -343,7 +389,7 @@ local function add_entity_properties(properties, entity, grouped_with_item)
   local placeable_by = entity.items_to_place_this
   if not grouped_with_item and placeable_by then
     for _, item in pairs(placeable_by) do
-      properties.placeable_by[#properties.placeable_by + 1] = { type = "item", name = item.name, count = item.count }
+      properties.placeable_by[#properties.placeable_by + 1] = { type = "item", name = item.name, amount = item.count }
     end
   end
 end
