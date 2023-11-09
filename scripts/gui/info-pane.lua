@@ -2,6 +2,7 @@ local database = require("__RecipeBook__/scripts/database")
 local gui_util = require("__RecipeBook__/scripts/gui/util")
 local list_box = require("__RecipeBook__/scripts/gui/list-box")
 local slot_table = require("__RecipeBook__/scripts/gui/slot-table")
+local technology_slot_table = require("__RecipeBook__/scripts/gui/technology-slot-table")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class InfoPane
@@ -150,7 +151,7 @@ function info_pane:show(path)
   slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
   slot_table.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
   slot_table.build(content_pane, self.context, { "description.rb-placeable-by" }, properties.placeable_by)
-  list_box.build(content_pane, self.context, { "description.rb-unlocked-by" }, properties.unlocked_by)
+  technology_slot_table.build(content_pane, self.context, { "description.rb-unlocked-by" }, properties.unlocked_by)
 
   profiler.stop()
   log({ "", "[", path, "] GUI update ", profiler })
