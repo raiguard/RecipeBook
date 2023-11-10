@@ -59,11 +59,11 @@ function slot_table.build(parent, context, title, members, remark)
       goto continue
     end
     -- Style
-    local style = "slot_button"
+    local style = "flib_slot_button_default"
     if is_hidden then
-      style = "yellow_slot_button"
+      style = "flib_slot_button_grey"
     elseif is_unresearched then
-      style = "red_slot_button"
+      style = "flib_slot_button_red"
     end
     tbl.add({
       type = "sprite-button",

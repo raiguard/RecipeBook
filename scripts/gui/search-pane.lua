@@ -179,11 +179,11 @@ function search_pane:update()
           if query_match then
             searched_count = searched_count + 1
             if is_hidden then
-              button.style = "yellow_slot_button"
+              button.style = "flib_slot_button_grey"
             elseif not is_researched then
-              button.style = "red_slot_button"
+              button.style = "flib_slot_button_red"
             else
-              button.style = "slot_button"
+              button.style = "flib_slot_button_default"
             end
           end
           if query_match and self.selected_result == path and self.selected_group ~= group_name then
