@@ -23,7 +23,6 @@ local util = require("__RecipeBook__/scripts/util")
 
 -- TODO: Remote interface
 local excluded_categories = {
-  ["barreling"] = true,
   ["big-turbine"] = true,
   ["condenser-turbine"] = true,
   ["delivery-cannon"] = true,
@@ -35,7 +34,6 @@ local excluded_categories = {
   ["spaceship-rocket-engine"] = true,
   ["transport-drone-request"] = true,
   ["transport-fluid-request"] = true,
-  ["unbarreling"] = true,
   ["void-crushing"] = true,
 }
 
@@ -123,8 +121,7 @@ local function build_database()
   local db = {}
   global.database = db
 
-  -- Recipes determine what is actually attainable in the game
-  -- All other objects will only be added if they are related to a recipe
+  -- Recipes determine most of what is actually attainable in the game.
   log("Recipes")
   --- @type table<string, GenericPrototype>
   local materials_to_add = {}
@@ -132,16 +129,12 @@ local function build_database()
     if not excluded_categories[prototype.category] and #prototype.products > 0 then
       add_prototype(prototype)
       -- Attempt to group with the main product
-      local main_product = prototype.main_product
-      if not main_product then
-        local products = prototype.products
-        if #products == 1 then
-          main_product = products[1]
-        end
-      end
+      local main_product = prototype.main_product or prototype.products[1]
       if main_product then
         local product_prototype = util.get_prototype(main_product)
-        add_prototype(product_prototype, prototype)
+        if should_group(prototype, product_prototype) then
+          add_prototype(product_prototype, prototype)
+        end
       end
       -- Mark all ingredients and products for adding in the next step
       for _, ingredient in pairs(prototype.ingredients) do
