@@ -70,6 +70,7 @@ function slot_table.build(parent, context, title, members, remark)
       style = style,
       sprite = entry.base_path,
       elem_tooltip = member,
+      tooltip = { "gui.rb-control-hint" },
       -- TODO: Probabilities, ranges, fluid temperatures
       number = member.amount,
       tags = flib_gui.format_handlers({

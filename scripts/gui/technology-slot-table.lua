@@ -61,13 +61,14 @@ function technology_slot_table.build(parent, context, title, members, remark)
       research_state = flib_technology.research_state.researched
     end
     local technology = context.player.force.technologies[member.name]
-    flib_gui_templates.technology_slot(
+    local slot = flib_gui_templates.technology_slot(
       tbl,
       technology,
       technology.level,
       research_state,
       technology_slot_table.on_result_clicked
     )
+    slot.tooltip = { "gui.rb-control-hint" }
     result_count = result_count + 1
     ::continue::
   end

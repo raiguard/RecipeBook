@@ -113,6 +113,7 @@ function search_pane.build(parent, context)
           style = "flib_slot_button_default",
           sprite = path,
           elem_tooltip = { type = type, name = name },
+          tooltip = { "gui.rb-control-hint" },
           tags = flib_gui.format_handlers({
             [defines.events.on_gui_click] = search_pane.on_result_clicked,
           }),

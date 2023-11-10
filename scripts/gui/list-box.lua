@@ -75,6 +75,7 @@ function list_box.build(parent, context, title, members, remark)
       sprite = entry.base_path,
       caption = gui_util.build_caption(member),
       elem_tooltip = member,
+      tooltip = { "gui.rb-control-hint" },
       tags = flib_gui.format_handlers({
         [defines.events.on_gui_click] = list_box.on_result_clicked,
       }),
