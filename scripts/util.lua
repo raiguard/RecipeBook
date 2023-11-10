@@ -28,6 +28,16 @@ function util.format_number(num)
 end
 
 --- @param prototype GenericPrototype
+--- @return string group
+--- @return string subgroup
+function util.get_group(prototype)
+  if prototype.object_name == "LuaEquipmentPrototype" then
+    return "combat", "rb-uncategorized-equipment"
+  end
+  return prototype.group.name, prototype.subgroup.name
+end
+
+--- @param prototype GenericPrototype
 --- @return string path
 --- @return string type
 function util.get_path(prototype)

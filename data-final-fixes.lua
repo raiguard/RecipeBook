@@ -18,6 +18,11 @@ end
 data.raw["recipe"]["electric-energy-interface"].hidden = true
 table.insert(data.raw["item"]["electric-energy-interface"].flags, "hidden")
 
+-- TEMPORARY: Nullius
+if mods["nullius"] then
+  data.raw["resource"]["nullius-fumarole"].subgroup = "raw-resource"
+end
+
 -- -- Testing recipe
 -- local recipe = table.deepcopy(data.raw["recipe"]["advanced-oil-processing"])
 -- if not recipe.ingredients then

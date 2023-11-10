@@ -261,7 +261,7 @@ function search_pane:select_result(result_path)
   if new_button then
     new_button.toggled = true
     if new_button.visible then
-      self:select_group(global.database[result_path].base.group.name)
+      self:select_group(util.get_group(global.database[result_path].base))
       self.results_pane.scroll_to_element(new_button)
     end
   end

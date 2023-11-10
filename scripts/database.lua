@@ -40,8 +40,12 @@ local excluded_categories = {
 
 -- TODO: Remote interface
 local group_overrides = {
+  ["entity/character"] = "item/nullius-android-1",
+  ["entity/coal"] = "item/nullius-coal",
   ["entity/red-inserter"] = "item/long-handed-inserter",
   ["entity/straight-rail"] = "item/rail",
+  ["item/express-transport-belt"] = "recipe/nullius-conveyor-belt-3",
+  ["item/fast-transport-belt"] = "recipe/nullius-conveyor-belt-2",
   ["item/iron-chest"] = "recipe/nullius-small-chest-2",
   ["item/logistic-chest-active-provider"] = "recipe/nullius-small-dispatch-chest-2",
   ["item/logistic-chest-buffer"] = "recipe/nullius-small-buffer-chest-2",
@@ -51,11 +55,9 @@ local group_overrides = {
   ["item/pipe-to-ground"] = "recipe/nullius-underground-pipe-1",
   ["item/rail"] = "recipe/nullius-rail",
   ["item/steel-chest"] = "recipe/nullius-small-chest-3",
-  ["item/wooden-chest"] = "recipe/nullius-small-chest-1",
   ["item/transport-belt"] = "recipe/nullius-conveyor-belt-1",
-  ["item/fast-transport-belt"] = "recipe/nullius-conveyor-belt-2",
-  ["item/express-transport-belt"] = "recipe/nullius-conveyor-belt-3",
   ["item/ultimate-transport-belt"] = "recipe/nullius-conveyor-belt-4",
+  ["item/wooden-chest"] = "recipe/nullius-small-chest-1",
 }
 
 -- TODO: Remote interface
@@ -110,15 +112,8 @@ local function add_prototype(prototype, group_with)
 
   global.database[path] = { base = prototype, base_path = path, [type] = prototype }
 
-  local group, subgroup
-  if prototype.object_name == "LuaEquipmentPrototype" then
-    group = "other"
-    subgroup = "other"
-  else
-    group = prototype.group.name
-    subgroup = prototype.subgroup.name
-  end
-  local subgroup = global.search_tree[group][subgroup]
+  local group_name, subgroup_name = util.get_group(prototype)
+  local subgroup = global.search_tree[group_name][subgroup_name]
   local order = prototype.order
   for i = 1, #subgroup + 1 do
     local other_entry = subgroup[i]

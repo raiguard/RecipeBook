@@ -29,6 +29,12 @@ data:extend({
     linked_game_control = "focus-search",
   },
   {
+    type = "item-subgroup",
+    name = "rb-uncategorized-equipment",
+    group = "combat",
+    order = "z[rb-uncategorized-equipment]",
+  },
+  {
     type = "shortcut",
     name = "rb-toggle",
     action = "lua",
