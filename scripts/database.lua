@@ -58,6 +58,9 @@ local group_overrides = {
   ["item/transport-belt"] = "recipe/nullius-conveyor-belt-1",
   ["item/ultimate-transport-belt"] = "recipe/nullius-conveyor-belt-4",
   ["item/wooden-chest"] = "recipe/nullius-small-chest-1",
+  ["entity/nullius-turbine-open-standard-1"] = "item/nullius-turbine-open-1",
+  ["entity/nullius-turbine-open-standard-2"] = "item/nullius-turbine-open-2",
+  ["entity/nullius-turbine-open-standard-3"] = "item/nullius-turbine-open-3",
 }
 
 -- TODO: Remote interface

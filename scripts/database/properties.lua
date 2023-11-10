@@ -311,7 +311,7 @@ local function add_entity_properties(properties, entity, grouped_with_item)
     local filters = {}
     for category in pairs(entity.crafting_categories) do
       filters[#filters + 1] = { filter = "category", category = category }
-      filters[#filters + 1] = { mode = "and", filter = "hidden-from-player-crafting", invert = true }
+      -- filters[#filters + 1] = { mode = "and", filter = "hidden-from-player-crafting", invert = true }
     end
     for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
       local item_ingredients = 0
