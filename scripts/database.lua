@@ -22,53 +22,10 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field entity LuaEntityPrototype?
 --- @field researched table<uint, boolean>?
 
--- TODO: Remote interface
-local excluded_categories = {
-  ["big-turbine"] = true,
-  ["condenser-turbine"] = true,
-  ["delivery-cannon"] = true,
-  ["ee-testing-tool"] = true,
-  ["fuel-depot"] = true,
-  ["scrapping"] = true,
-  ["spaceship-antimatter-engine"] = true,
-  ["spaceship-ion-engine"] = true,
-  ["spaceship-rocket-engine"] = true,
-  ["transport-drone-request"] = true,
-  ["transport-fluid-request"] = true,
-  ["void-crushing"] = true,
-}
-
--- TODO: Remote interface
-local group_overrides = {
-  ["entity/character"] = "item/nullius-android-1",
-  ["entity/coal"] = "item/nullius-coal",
-  ["entity/red-inserter"] = "item/long-handed-inserter",
-  ["entity/straight-rail"] = "item/rail",
-  ["item/express-transport-belt"] = "recipe/nullius-conveyor-belt-3",
-  ["item/fast-transport-belt"] = "recipe/nullius-conveyor-belt-2",
-  ["item/iron-chest"] = "recipe/nullius-small-chest-2",
-  ["item/logistic-chest-active-provider"] = "recipe/nullius-small-dispatch-chest-2",
-  ["item/logistic-chest-buffer"] = "recipe/nullius-small-buffer-chest-2",
-  ["item/logistic-chest-passive-provider"] = "recipe/nullius-small-supply-chest-2",
-  ["item/logistic-chest-requester"] = "recipe/nullius-small-demand-chest-2",
-  ["item/logistic-chest-storage"] = "recipe/nullius-small-storage-chest-2",
-  ["item/pipe-to-ground"] = "recipe/nullius-underground-pipe-1",
-  ["item/rail"] = "recipe/nullius-rail",
-  ["item/steel-chest"] = "recipe/nullius-small-chest-3",
-  ["item/transport-belt"] = "recipe/nullius-conveyor-belt-1",
-  ["item/ultimate-transport-belt"] = "recipe/nullius-conveyor-belt-4",
-  ["item/wooden-chest"] = "recipe/nullius-small-chest-1",
-  ["entity/nullius-turbine-open-standard-1"] = "item/nullius-turbine-open-1",
-  ["entity/nullius-turbine-open-standard-2"] = "item/nullius-turbine-open-2",
-  ["entity/nullius-turbine-open-standard-3"] = "item/nullius-turbine-open-3",
-}
-
--- TODO: Remote interface
-local alternatives = {
-  ["entity/nullius-turbine-open-backup-2"] = "entity/nullius-turbine-open-standard-2",
-  ["entity/nullius-turbine-open-exhaust-2"] = "entity/nullius-turbine-open-standard-2",
-  ["entity/curved-rail"] = "entity/straight-rail",
-}
+-- TODO: Smuggle from data stage
+local excluded_categories = {}
+local group_overrides = {}
+local alternatives = {}
 
 --- @param a GenericPrototype
 --- @param b GenericPrototype
