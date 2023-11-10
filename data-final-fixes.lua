@@ -18,6 +18,19 @@ end
 data.raw["recipe"]["electric-energy-interface"].hidden = true
 table.insert(data.raw["item"]["electric-energy-interface"].flags, "hidden")
 
+-- Potential properties layout:
+-- {
+--   type = "item",
+--   name = "foo",
+--   recipe_book = {
+--     hidden = true, -- Will show as "hidden" even if it's really not. Clicking "show hidden" will still make this appear.
+--     hidden_from_search = true, -- Will not show up in search results by default, but will show in info panes.
+--     exclude = true, -- Will not show up in recipe book whatsoever.
+--     alternative = "item/bar", -- Alt+clicking this recipe will open the bar item's page instead.
+--     group_with = "recipe/bar-smelting", -- Force a grouping even if internal names don't match.
+--   }
+-- }
+
 -- -- Testing recipe
 -- local recipe = table.deepcopy(data.raw["recipe"]["advanced-oil-processing"])
 -- if not recipe.ingredients then
