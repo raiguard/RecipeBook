@@ -1,4 +1,5 @@
 local flib_table = require("__flib__/table")
+local flib_technology = require("__flib__/technology")
 
 local util = require("__RecipeBook__/scripts/util")
 
@@ -482,6 +483,13 @@ return function(path, force_index)
     and properties.product_of[1].name == entry.recipe.name
   then
     properties.product_of = nil
+  end
+
+  if properties.unlocked_by then
+    local prototypes = game.technology_prototypes
+    table.sort(properties.unlocked_by, function(tech_a, tech_b)
+      return flib_technology.sort_predicate(prototypes[tech_a.name], prototypes[tech_b.name])
+    end)
   end
 
   force_cache[path] = properties
