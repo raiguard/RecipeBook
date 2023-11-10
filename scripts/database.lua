@@ -1,5 +1,4 @@
 local flib_dictionary = require("__flib__/dictionary-lite")
-local flib_table = require("__flib__/table")
 
 local researched = require("__RecipeBook__/scripts/database/researched")
 local util = require("__RecipeBook__/scripts/util")
@@ -24,29 +23,24 @@ local util = require("__RecipeBook__/scripts/util")
 
 -- TODO: Remote interface
 local excluded_categories = {
+  ["barreling"] = true,
   ["big-turbine"] = true,
   ["condenser-turbine"] = true,
   ["delivery-cannon"] = true,
-  ["fuel-depot"] = true,
   ["ee-testing-tool"] = true,
+  ["fuel-depot"] = true,
+  ["scrapping"] = true,
   ["spaceship-antimatter-engine"] = true,
   ["spaceship-ion-engine"] = true,
   ["spaceship-rocket-engine"] = true,
   ["transport-drone-request"] = true,
   ["transport-fluid-request"] = true,
-  ["void-crushing"] = true,
-  ["scrapping"] = true,
-  ["barreling"] = true,
   ["unbarreling"] = true,
+  ["void-crushing"] = true,
 }
 
 -- TODO: Remote interface
 local group_overrides = {
-  ["entity/coal"] = "item/coal",
-  ["entity/copper-ore"] = "item/copper-ore",
-  ["entity/iron-ore"] = "item/iron-ore",
-  ["entity/stone"] = "item/stone",
-  ["entity/uranium-ore"] = "item/uranium-ore",
   ["entity/straight-rail"] = "item/rail",
 }
 
@@ -61,7 +55,7 @@ local function should_group(a, b)
   if a.object_name ~= "LuaEntityPrototype" and util.is_hidden(a) ~= util.is_hidden(b) then
     return false
   end
-  return flib_table.deep_compare(a.localised_name --[[@as table]], b.localised_name --[[@as table]])
+  return a.name == b.name
 end
 
 --- @param obj GenericObject
