@@ -66,40 +66,38 @@ end
 
 --- @param prototype GenericPrototype
 --- @param group_with GenericPrototype?
---- @return PrototypeEntry?
 local function add_prototype(prototype, group_with)
   local path, type = util.get_path(prototype)
   local entry = global.database[path]
-  if not entry then
-    if group_with then
-      local parent_path = util.get_path(group_with)
-      local parent_entry = global.database[parent_path]
-      if parent_entry and not parent_entry[type] and should_group(prototype, group_with) then
-        parent_entry[type] = prototype -- Add this prototype to the parent
-        global.database[path] = parent_entry -- Associate this prototype with the group's data
-        return entry
-      end
-    end
-
-    -- Add to database
-    global.database[path] = { base = prototype, base_path = path, [type] = prototype }
-    -- Add to filter panel and search dictionary
-    local subgroup = global.search_tree[prototype.group.name][prototype.subgroup.name]
-    local order = prototype.order
-    -- TODO: Binary search
-    for i, other_entry in pairs(subgroup) do
-      if order <= global.database[other_entry].base.order then
-        table.insert(subgroup, i, path)
-        return
-      end
-    end
-    table.insert(subgroup, path)
-    local prototype_type = util.prototype_type[prototype.object_name]
-    local prototype_path = prototype_type .. "/" .. prototype.name
-    flib_dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
-
-    return global.database[path]
+  if entry then
+    return
   end
+
+  if group_with then
+    local parent_path = util.get_path(group_with)
+    local parent_entry = global.database[parent_path]
+    if parent_entry and not parent_entry[type] and should_group(prototype, group_with) then
+      parent_entry[type] = prototype -- Add this prototype to the parent
+      global.database[path] = parent_entry -- Associate this prototype with the group's data
+      return
+    end
+  end
+
+  global.database[path] = { base = prototype, base_path = path, [type] = prototype }
+
+  local subgroup = global.search_tree[prototype.group.name][prototype.subgroup.name]
+  local order = prototype.order
+  for i = 1, #subgroup + 1 do
+    local other_entry = subgroup[i]
+    if not other_entry or order <= global.database[other_entry].base.order then
+      table.insert(subgroup, i, path)
+      break
+    end
+  end
+
+  local prototype_type = util.prototype_type[prototype.object_name]
+  local prototype_path = prototype_type .. "/" .. prototype.name
+  flib_dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
 end
 
 local function build_database()
