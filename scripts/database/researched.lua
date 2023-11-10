@@ -63,6 +63,17 @@ function researched.on_entity_unlocked(entity, force_index)
   end
 end
 
+--- @param equipment LuaEquipmentPrototype
+--- @param force_index uint
+function researched.on_equipment_unlocked(equipment, force_index)
+  local db = global.database
+  local entry = db["entity/" .. equipment.name]
+  if not entry then
+    return
+  end
+  add_researched(entry, force_index)
+end
+
 --- @param product Product
 --- @param force_index uint
 function researched.on_product_unlocked(product, force_index)
@@ -95,6 +106,10 @@ function researched.on_product_unlocked(product, force_index)
     local place_result = prototype.place_result
     if place_result then
       researched.on_entity_unlocked(place_result, force_index)
+    end
+    local place_as_equipment_result = prototype.place_as_equipment_result
+    if place_as_equipment_result then
+      researched.on_equipment_unlocked(place_as_equipment_result, force_index)
     end
   end
 end

@@ -209,10 +209,17 @@ local function add_item_properties(properties, item, grouped_with_entity)
   if item.fuel_value then
     local fuel_category = item.fuel_category
     properties.burned_in = {}
+    -- TODO: Prototype filter for burners
     for entity_name, entity_prototype in pairs(game.entity_prototypes) do
       local burner = entity_prototype.burner_prototype
       if burner and burner.fuel_categories[fuel_category] then
         properties.burned_in[#properties.burned_in + 1] = { type = "entity", name = entity_name }
+      end
+    end
+    for equipment_name, equipment_prototype in pairs(game.equipment_prototypes) do
+      local burner = equipment_prototype.burner_prototype
+      if burner and burner.fuel_categories[fuel_category] then
+        properties.burned_in[#properties.burned_in + 1] = { type = "equipment", name = equipment_name }
       end
     end
   end
@@ -261,6 +268,34 @@ local function add_item_properties(properties, item, grouped_with_entity)
         end
 
         break
+      end
+    end
+  end
+end
+
+--- @param properties EntryProperties
+--- @param equipment LuaEquipmentPrototype
+--- @param grouped_with_item LuaItemPrototype?
+local function add_equipment_properties(properties, equipment, grouped_with_item)
+  properties.can_burn = {}
+  local burner = equipment.burner_prototype
+  if burner then
+    for category in pairs(burner.fuel_categories) do
+      for item_name in
+        --- @diagnostic disable-next-line unused-fields
+        pairs(game.get_filtered_item_prototypes({ { filter = "fuel-category", ["fuel-category"] = category } }))
+      do
+        properties.can_burn[#properties.can_burn + 1] = { type = "item", name = item_name }
+      end
+    end
+  end
+  if not grouped_with_item then
+    properties.placeable_by = {}
+    -- TODO: Add a name filter for equipment
+    --- @diagnostic disable-next-line unused-fields
+    for item_name, item in pairs(game.get_filtered_item_prototypes({ { filter = "placed-as-equipment-result" } })) do
+      if item.place_as_equipment_result == equipment then
+        properties.placeable_by[#properties.placeable_by + 1] = { type = "item", name = item_name }
       end
     end
   end
@@ -429,6 +464,10 @@ return function(path, force_index)
 
   if entry.item then
     add_item_properties(properties, entry.item, entry.entity)
+  end
+
+  if entry.equipment then
+    add_equipment_properties(properties, entry.equipment, entry.item)
   end
 
   if entry.entity then

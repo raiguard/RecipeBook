@@ -66,6 +66,7 @@ end
 
 util.prototype_type = {
   LuaEntityPrototype = "entity",
+  LuaEquipmentPrototype = "equipment",
   LuaFluidPrototype = "fluid",
   LuaItemPrototype = "item",
   LuaRecipePrototype = "recipe",

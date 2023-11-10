@@ -10,7 +10,7 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field required_fluid Ingredient?
 
 --- @alias GenericObject Ingredient|Product|CustomObject
---- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
+--- @alias GenericPrototype LuaEquipmentPrototype|LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
 
 --- @class PrototypeEntry
 --- @field base GenericPrototype
@@ -18,6 +18,7 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field recipe LuaRecipePrototype?
 --- @field item LuaItemPrototype?
 --- @field fluid LuaFluidPrototype?
+--- @field equipment LuaEquipmentPrototype?
 --- @field entity LuaEntityPrototype?
 --- @field researched table<uint, boolean>?
 
@@ -40,6 +41,9 @@ local excluded_categories = {
 -- TODO: Remote interface
 local group_overrides = {
   ["entity/straight-rail"] = "item/rail",
+  ["entity/red-inserter"] = "item/long-handed-inserter",
+  ["item/pipe-to-ground"] = "recipe/nullius-underground-pipe-1",
+  ["item/rail"] = "recipe/nullius-rail",
 }
 
 --- @param a GenericPrototype
@@ -50,7 +54,11 @@ local function should_group(a, b)
   if group_overrides[a_path] == b_path then
     return true
   end
-  if a.object_name ~= "LuaEntityPrototype" and util.is_hidden(a) ~= util.is_hidden(b) then
+  if
+    a.object_name ~= "LuaEntityPrototype"
+    and a.object_name ~= "LuaEquipmentPrototype"
+    and util.is_hidden(a) ~= util.is_hidden(b)
+  then
     return false
   end
   return a.name == b.name
@@ -83,7 +91,15 @@ local function add_prototype(prototype, group_with)
 
   global.database[path] = { base = prototype, base_path = path, [type] = prototype }
 
-  local subgroup = global.search_tree[prototype.group.name][prototype.subgroup.name]
+  local group, subgroup
+  if prototype.object_name == "LuaEquipmentPrototype" then
+    group = "other"
+    subgroup = "other"
+  else
+    group = prototype.group.name
+    subgroup = prototype.subgroup.name
+  end
+  local subgroup = global.search_tree[group][subgroup]
   local order = prototype.order
   for i = 1, #subgroup + 1 do
     local other_entry = subgroup[i]
@@ -130,11 +146,9 @@ local function build_database()
       add_prototype(prototype)
       -- Attempt to group with the main product
       local main_product = prototype.main_product or prototype.products[1]
-      if main_product then
-        local product_prototype = util.get_prototype(main_product)
-        if should_group(prototype, product_prototype) then
-          add_prototype(product_prototype, prototype)
-        end
+      local main_product_prototype = util.get_prototype(main_product)
+      if should_group(main_product_prototype, prototype) then
+        add_prototype(main_product_prototype, prototype)
       end
       -- Mark all ingredients and products for adding in the next step
       for _, ingredient in pairs(prototype.ingredients) do
@@ -153,6 +167,10 @@ local function build_database()
       local place_result = prototype.place_result
       if place_result then
         add_prototype(place_result, prototype)
+      end
+      local place_as_equipment_result = prototype.place_as_equipment_result
+      if place_as_equipment_result then
+        add_prototype(place_as_equipment_result, prototype)
       end
       for _, product in pairs(prototype.rocket_launch_products) do
         add_prototype(util.get_prototype(product))

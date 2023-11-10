@@ -152,6 +152,7 @@ gui_util.type_string = {
 --- @type table<string, LocalisedString>
 gui_util.type_locale = {
   LuaEntityPrototype = { "description.rb-entity" },
+  LuaEquipmentPrototype = { "gui-map-editor.character-equipment" },
   LuaFluidPrototype = { "gui-train.fluid" },
   LuaItemPrototype = { "description.rb-item" },
   LuaRecipePrototype = { "description.recipe" },

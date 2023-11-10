@@ -99,7 +99,7 @@ function info_pane:show(path)
   local type_label = self.type_label
   --- @type LocalisedString
   local type_caption = { "" }
-  for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
+  for _, key in pairs({ "recipe", "item", "fluid", "equipment", "entity" }) do
     local prototype = entry[key]
     if prototype then
       type_caption[#type_caption + 1] = gui_util.type_locale[prototype.object_name]
