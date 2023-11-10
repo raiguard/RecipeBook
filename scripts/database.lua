@@ -120,7 +120,7 @@ local function add_prototype(prototype, group_with)
   local order = prototype.order
   for i = 1, #subgroup + 1 do
     local other_entry = subgroup[i]
-    if not other_entry or order <= global.database[other_entry].base.order then
+    if not other_entry or order < global.database[other_entry].base.order then
       table.insert(subgroup, i, path)
       break
     end
