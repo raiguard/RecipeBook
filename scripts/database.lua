@@ -40,10 +40,29 @@ local excluded_categories = {
 
 -- TODO: Remote interface
 local group_overrides = {
-  ["entity/straight-rail"] = "item/rail",
   ["entity/red-inserter"] = "item/long-handed-inserter",
+  ["entity/straight-rail"] = "item/rail",
+  ["item/iron-chest"] = "recipe/nullius-small-chest-2",
+  ["item/logistic-chest-active-provider"] = "recipe/nullius-small-dispatch-chest-2",
+  ["item/logistic-chest-buffer"] = "recipe/nullius-small-buffer-chest-2",
+  ["item/logistic-chest-passive-provider"] = "recipe/nullius-small-supply-chest-2",
+  ["item/logistic-chest-requester"] = "recipe/nullius-small-demand-chest-2",
+  ["item/logistic-chest-storage"] = "recipe/nullius-small-storage-chest-2",
   ["item/pipe-to-ground"] = "recipe/nullius-underground-pipe-1",
   ["item/rail"] = "recipe/nullius-rail",
+  ["item/steel-chest"] = "recipe/nullius-small-chest-3",
+  ["item/wooden-chest"] = "recipe/nullius-small-chest-1",
+  ["item/transport-belt"] = "recipe/nullius-conveyor-belt-1",
+  ["item/fast-transport-belt"] = "recipe/nullius-conveyor-belt-2",
+  ["item/express-transport-belt"] = "recipe/nullius-conveyor-belt-3",
+  ["item/ultimate-transport-belt"] = "recipe/nullius-conveyor-belt-4",
+}
+
+-- TODO: Remote interface
+local alternatives = {
+  ["entity/nullius-turbine-open-backup-2"] = "entity/nullius-turbine-open-standard-2",
+  ["entity/nullius-turbine-open-exhaust-2"] = "entity/nullius-turbine-open-standard-2",
+  ["entity/curved-rail"] = "entity/straight-rail",
 }
 
 --- @param a GenericPrototype
@@ -217,6 +236,13 @@ local function build_database()
   end
   for _, force in pairs(game.forces) do
     researched.refresh(force)
+  end
+
+  log("Alternatives")
+  for from, to in pairs(alternatives) do
+    if db[to] then
+      db[from] = db[to]
+    end
   end
 
   log("Search tree cleanup")

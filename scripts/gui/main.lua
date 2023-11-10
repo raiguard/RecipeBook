@@ -1,5 +1,6 @@
 local flib_gui = require("__flib__/gui-lite")
 
+local database = require("__RecipeBook__/scripts/database")
 local gui_util = require("__RecipeBook__/scripts/gui/util")
 local history = require("__RecipeBook__/scripts/gui/history")
 local info_pane = require("__RecipeBook__/scripts/gui/info-pane")
@@ -341,12 +342,14 @@ local function on_open_selected(e)
   if not player_gui then
     return
   end
-  local path = selected_prototype.base_type .. "/" .. selected_prototype.name
-  if not global.database[path] then
+  local entry = database.get_entry({ type = selected_prototype.base_type, name = selected_prototype.name })
+  if not entry then
     util.flying_text(player_gui.context.player, { "message.rb-no-info" })
     return
   end
-  player_gui.history:push(path)
+  if player_gui.history:current() ~= entry.base_path then
+    player_gui.history:push(entry.base_path)
+  end
   player_gui:update_info()
   player_gui:show()
 end
