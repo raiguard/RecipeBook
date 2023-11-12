@@ -335,7 +335,8 @@ end
 --- @param e EventData.CustomInputEvent
 local function on_open_selected(e)
   local selected_prototype = e.selected_prototype
-  if not selected_prototype then
+  -- TODO: Technology pages (alt+click doesn't work properly in technology tree GUI)
+  if not selected_prototype or selected_prototype.base_type == "technology" then
     return
   end
   local player_gui = main_gui.get(e.player_index)
