@@ -88,6 +88,7 @@ local function add_recipe_properties(properties, recipe)
     end
   end
 
+  -- TODO: Recipes with no technologies to unlock them and are enabled by default should show as unlocked with their crafter
   properties.unlocked_by = {}
   for technology_name in
     --- @diagnostic disable-next-line unused-fields
