@@ -249,3 +249,20 @@ styles.rb_info_label = {
   horizontally_squashable = "off",
   single_line = true,
 }
+
+styles.rb_slot_label = {
+  type = "label_style",
+  parent = "count_label",
+  height = 36,
+  width = 35,
+  vertical_align = "bottom",
+  horizontal_align = "right",
+  right_padding = 3,
+}
+
+styles.rb_slot_label_top = {
+  type = "label_style",
+  parent = "rb_slot_label",
+  vertical_align = "top",
+  top_padding = 3,
+}

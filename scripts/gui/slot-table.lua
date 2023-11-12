@@ -1,6 +1,7 @@
 local flib_gui = require("__flib__/gui-lite")
 
 local database = require("__RecipeBook__/scripts/database")
+local gui_util = require("__RecipeBook__/scripts/gui/util")
 local util = require("__RecipeBook__/scripts/util")
 
 --- @class SlotTable
@@ -14,7 +15,8 @@ slot_table.on_result_clicked = nil
 --- @param title LocalisedString
 --- @param members GenericObject[]?
 --- @param remark LocalisedString?
-function slot_table.build(parent, context, title, members, remark)
+--- @param parent_fluid string?
+function slot_table.build(parent, context, title, members, remark, parent_fluid)
   if not members or #members == 0 then
     return
   end
@@ -65,7 +67,7 @@ function slot_table.build(parent, context, title, members, remark)
     elseif is_unresearched then
       style = "flib_slot_button_red"
     end
-    tbl.add({
+    local button = tbl.add({
       type = "sprite-button",
       style = style,
       sprite = entry.base_path,
@@ -77,6 +79,16 @@ function slot_table.build(parent, context, title, members, remark)
         [defines.events.on_gui_click] = slot_table.on_result_clicked,
       }),
     })
+    -- TODO: Custom tooltip titles with all the info?
+    if not member.amount and (member.temperature or member.minimum_temperature) then
+      local bottom, top = gui_util.build_temperature_strings(member)
+      if bottom then
+        button.add({ type = "label", style = "rb_slot_label", caption = bottom, ignored_by_interaction = true })
+      end
+      if top then
+        button.add({ type = "label", style = "rb_slot_label_top", caption = top, ignored_by_interaction = true })
+      end
+    end
     result_count = result_count + 1
     ::continue::
   end

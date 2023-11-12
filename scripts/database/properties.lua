@@ -109,8 +109,18 @@ local function add_fluid_properties(properties, fluid, grouped_with_entity)
       { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
     }))
   do
-    if get_entry(recipe) then
-      properties.ingredient_in[#properties.ingredient_in + 1] = { type = "recipe", name = recipe.name }
+    local entry = get_entry(recipe)
+    if entry then
+      local id = { type = "recipe", name = recipe.name }
+      properties.ingredient_in[#properties.ingredient_in + 1] = id
+      for _, ingredient in pairs(recipe.ingredients) do
+        -- minimum_temperature and maximum_temperature are mutually inclusive.
+        if ingredient.name == fluid.name and ingredient.minimum_temperature then
+          id.minimum_temperature = ingredient.minimum_temperature
+          id.maximum_temperature = ingredient.maximum_temperature
+          break
+        end
+      end
     end
   end
   properties.product_of = {}
@@ -119,8 +129,16 @@ local function add_fluid_properties(properties, fluid, grouped_with_entity)
     { filter = "has-product-fluid", elem_filters = { { filter = "name", name = fluid.name } } },
   })
   for _, recipe in pairs(product_of_recipes) do
-    if get_entry(recipe) then
-      properties.product_of[#properties.product_of + 1] = { type = "recipe", name = recipe.name }
+    local entry = get_entry(recipe)
+    if entry then
+      local id = { type = "recipe", name = recipe.name }
+      properties.product_of[#properties.product_of + 1] = id
+      for _, product in pairs(recipe.products) do
+        if product.name == fluid.name and product.temperature then
+          id.temperature = product.temperature
+          break
+        end
+      end
     end
   end
 

@@ -1,3 +1,4 @@
+local core_util = require("__core__/lualib/util")
 local flib_math = require("__flib__/math")
 
 local util = require("__RecipeBook__/scripts/util")
@@ -66,6 +67,33 @@ function gui_util.build_caption(obj, include_icon)
   end
 
   return caption
+end
+
+--- @param id GenericObject
+--- @return string? bottom
+--- @return string? top
+function gui_util.build_temperature_strings(id)
+  local temperature = id.temperature
+  local temperature_min = id.minimum_temperature
+  local temperature_max = id.maximum_temperature
+  local bottom
+  local top
+  if temperature then
+    bottom = core_util.format_number(temperature, true)
+    temperature_min = temperature
+    temperature_max = temperature
+  elseif temperature_min and temperature_max then
+    if temperature_min == flib_math.min_double then
+      bottom = "≤" .. core_util.format_number(temperature_max, true)
+    elseif temperature_max == flib_math.max_double then
+      bottom = "≥" .. core_util.format_number(temperature_min, true)
+    else
+      bottom = core_util.format_number(temperature_min, true)
+      top = core_util.format_number(temperature_max, true)
+    end
+  end
+
+  return bottom, top
 end
 
 -- --- @param obj GenericObject
