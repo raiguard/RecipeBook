@@ -161,7 +161,7 @@ local function add_fluid_properties(properties, fluid, grouped_with_entity)
     if not grouped_with_entity or grouped_with_entity.name ~= entity_name then
       local mineable_properties = entity.mineable_properties
       if mineable_properties.minable then
-        for _, product in pairs(mineable_properties.products) do
+        for _, product in pairs(mineable_properties.products or {}) do
           if product.type == "fluid" and product.name == fluid.name then
             properties.gathered_from[#properties.gathered_from + 1] = { type = "entity", name = entity_name }
           end
@@ -296,7 +296,7 @@ local function add_item_properties(properties, item, grouped_with_entity)
     if not grouped_with_entity or grouped_with_entity.name ~= entity_name then
       local mineable_properties = entity.mineable_properties
       if mineable_properties.minable then
-        for _, product in pairs(mineable_properties.products) do
+        for _, product in pairs(mineable_properties.products or {}) do
           if product.type == "item" and product.name == item.name then
             properties.gathered_from[#properties.gathered_from + 1] = { type = "entity", name = entity_name }
           end
