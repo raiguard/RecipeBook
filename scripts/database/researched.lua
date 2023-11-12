@@ -166,7 +166,8 @@ function researched.refresh(force)
     }))
   do
     -- TODO: Deduplicate all of this logic...
-    if entity.type == "tree" or entity.type == "fish" or entity.count_as_rock_for_filtered_deconstruction then
+    if entity.type ~= "simple-entity" or entity.count_as_rock_for_filtered_deconstruction then
+      researched.on_entity_unlocked(entity, force_index)
       local mineable = entity.mineable_properties
       if mineable.minable and mineable.products then
         for _, product in pairs(mineable.products) do

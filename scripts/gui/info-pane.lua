@@ -146,9 +146,11 @@ function info_pane:show(path)
   slot_table.build(content_pane, self.context, { "description.rb-ingredient-in" }, properties.ingredient_in)
   slot_table.build(content_pane, self.context, { "description.rb-product-of" }, properties.product_of)
   slot_table.build(content_pane, self.context, { "description.rb-can-craft" }, properties.can_craft)
+  list_box.build(content_pane, self.context, { "description.rb-yields" }, properties.yields)
   slot_table.build(content_pane, self.context, { "description.rb-mined-by" }, properties.mined_by)
   slot_table.build(content_pane, self.context, { "description.rb-can-mine" }, properties.can_mine)
   slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
+  slot_table.build(content_pane, self.context, { "description.rb-gathered-from" }, properties.gathered_from)
   slot_table.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
   slot_table.build(
     content_pane,

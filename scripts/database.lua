@@ -160,13 +160,8 @@ local function build_database()
     end
   end
 
-  log("Resources, fish")
-  --- @diagnostic disable-next-line unused-fields
-  for _, prototype in
-    pairs(
-      game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" }, { filter = "type", type = "fish" } })
-    )
-  do
+  log("Resources, fish, trees & rocks")
+  for _, prototype in pairs(util.get_natural_entities()) do
     local mineable = prototype.mineable_properties
     if mineable.minable then
       local products = mineable.products

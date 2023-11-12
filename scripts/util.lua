@@ -37,6 +37,19 @@ function util.get_group(prototype)
   return prototype.group.name, prototype.subgroup.name
 end
 
+function util.get_natural_entities()
+  return game.get_filtered_entity_prototypes({
+    --- @diagnostic disable-next-line unused-fields
+    { filter = "type", type = "resource" },
+    --- @diagnostic disable-next-line unused-fields
+    { filter = "type", type = "fish" },
+    --- @diagnostic disable-next-line unused-fields
+    { filter = "type", type = "tree" },
+    --- @diagnostic disable-next-line unused-fields
+    { filter = "type", type = "simple-entity" },
+  })
+end
+
 --- @param prototype GenericPrototype
 --- @return string path
 --- @return string type

@@ -16,6 +16,7 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field can_craft GenericObject[]?
 --- @field mined_by GenericObject[]?
 --- @field can_mine GenericObject[]?
+--- @field gathered_from GenericObject[]?
 --- @field burned_in GenericObject[]?
 --- @field can_burn GenericObject[]?
 --- @field rocket_launch_products GenericObject[]?
@@ -23,6 +24,7 @@ local util = require("__RecipeBook__/scripts/util")
 --- @field placeable_by GenericObject[]?
 --- @field unlocked_by GenericObject[]?
 --- @field place_result GenericObject?
+--- @field yields GenericObject[]?
 
 --- @param prototype GenericPrototype
 --- @return PrototypeEntry?
@@ -97,7 +99,8 @@ end
 
 --- @param properties EntryProperties
 --- @param fluid LuaFluidPrototype
-local function add_fluid_properties(properties, fluid)
+--- @param grouped_with_entity LuaEntityPrototype?
+local function add_fluid_properties(properties, fluid, grouped_with_entity)
   properties.ingredient_in = {}
   for _, recipe in
     pairs(game.get_filtered_recipe_prototypes({
@@ -148,6 +151,20 @@ local function add_fluid_properties(properties, fluid)
     for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "building" } })) do
       if entity.fluid_energy_source_prototype then
         properties.burned_in[#properties.burned_in + 1] = { type = "entity", name = entity_name }
+      end
+    end
+  end
+
+  properties.gathered_from = {}
+  for entity_name, entity in pairs(util.get_natural_entities()) do
+    if not grouped_with_entity or grouped_with_entity.name ~= entity_name then
+      local mineable_properties = entity.mineable_properties
+      if mineable_properties.minable then
+        for _, product in pairs(mineable_properties.products) do
+          if product.type == "fluid" and product.name == fluid.name then
+            properties.gathered_from[#properties.gathered_from + 1] = { type = "entity", name = entity_name }
+          end
+        end
       end
     end
   end
@@ -272,6 +289,20 @@ local function add_item_properties(properties, item, grouped_with_entity)
       end
     end
   end
+
+  properties.gathered_from = {}
+  for entity_name, entity in pairs(util.get_natural_entities()) do
+    if not grouped_with_entity or grouped_with_entity.name ~= entity_name then
+      local mineable_properties = entity.mineable_properties
+      if mineable_properties.minable then
+        for _, product in pairs(mineable_properties.products) do
+          if product.type == "item" and product.name == item.name then
+            properties.gathered_from[#properties.gathered_from + 1] = { type = "entity", name = entity_name }
+          end
+        end
+      end
+    end
+  end
 end
 
 --- @param properties EntryProperties
@@ -347,7 +378,23 @@ local function add_entity_properties(properties, entity, grouped_with_item)
         )
       then
         properties.crafting_time = mineable_properties.mining_time
-        properties.products = mineable_properties.products
+        properties.yields = mineable_properties.products
+      end
+    end
+  elseif entity.type == "fish" or entity.type == "tree" or entity.type == "simple-entity" then
+    local mineable_properties = entity.mineable_properties
+    if mineable_properties and mineable_properties.minable then
+      local products = mineable_properties.products or {}
+      if
+        not (
+          #products == 1
+          and grouped_with_item
+          and products[1].type == "item"
+          and products[1].name == grouped_with_item.name
+        )
+      then
+        properties.crafting_time = mineable_properties.mining_time
+        properties.yields = mineable_properties.products
       end
     end
   elseif entity.type == "mining-drill" then
@@ -460,7 +507,7 @@ return function(path, force_index)
   end
 
   if entry.fluid then
-    add_fluid_properties(properties, entry.fluid)
+    add_fluid_properties(properties, entry.fluid, entry.entity)
   end
 
   if entry.item then
