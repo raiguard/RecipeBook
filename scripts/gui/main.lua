@@ -450,7 +450,7 @@ commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book
   if not gui then
     return
   end
-  log("TESTING ALL INFO PAGES")
+  log("<< TESTING ALL INFO PAGES >>")
   local tested = {}
   local tested_count = 0
   local profiler = game.create_profiler()
@@ -468,6 +468,7 @@ commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book
   log("Number of pages: " .. tested_count)
   profiler.divide(tested_count)
   log({ "", "Average test ", profiler })
+  log("<< TEST COMPLETE >>")
 end)
 
 return main_gui
