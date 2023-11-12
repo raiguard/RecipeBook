@@ -161,9 +161,12 @@ function researched.refresh(force)
       { filter = "type", type = "simple-entity" },
       --- @diagnostic disable-next-line unused-fields
       { filter = "type", type = "tree" },
+      --- @diagnostic disable-next-line unused-fields
+      { filter = "type", type = "fish" },
     }))
   do
-    if entity.type == "tree" or entity.count_as_rock_for_filtered_deconstruction then
+    -- TODO: Deduplicate all of this logic...
+    if entity.type == "tree" or entity.type == "fish" or entity.count_as_rock_for_filtered_deconstruction then
       local mineable = entity.mineable_properties
       if mineable.minable and mineable.products then
         for _, product in pairs(mineable.products) do

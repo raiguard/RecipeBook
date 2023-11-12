@@ -24,8 +24,13 @@ local util = require("__RecipeBook__/scripts/util")
 
 -- TODO: Smuggle from data stage
 local excluded_categories = {}
-local group_overrides = {}
-local alternatives = {}
+local group_overrides = {
+  ["entity/fish"] = "item/raw-fish",
+  ["entity/straight-rail"] = "item/rail",
+}
+local alternatives = {
+  ["entity-curved-rail"] = "entity/straight-rail",
+}
 
 --- @param a GenericPrototype
 --- @param b GenericPrototype
@@ -57,6 +62,9 @@ local function add_prototype(prototype, group_with)
   local path, type = util.get_path(prototype)
   local entry = global.database[path]
   if entry then
+    return
+  end
+  if alternatives[path] then
     return
   end
 
@@ -152,9 +160,13 @@ local function build_database()
     end
   end
 
-  log("Resources")
+  log("Resources, fish")
   --- @diagnostic disable-next-line unused-fields
-  for _, prototype in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+  for _, prototype in
+    pairs(
+      game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" }, { filter = "type", type = "fish" } })
+    )
+  do
     local mineable = prototype.mineable_properties
     if mineable.minable then
       local products = mineable.products
