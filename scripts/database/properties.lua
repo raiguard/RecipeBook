@@ -1,7 +1,7 @@
-local flib_table = require("__flib__/table")
-local flib_technology = require("__flib__/technology")
+local flib_table = require("__flib__.table")
+local flib_technology = require("__flib__.technology")
 
-local util = require("__RecipeBook__/scripts/util")
+local util = require("scripts.util")
 
 --- @class EntryProperties
 --- @field entry PrototypeEntry

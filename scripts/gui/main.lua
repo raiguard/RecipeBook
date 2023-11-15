@@ -1,13 +1,13 @@
-local flib_gui = require("__flib__/gui-lite")
+local flib_gui = require("__flib__.gui-lite")
 
-local database = require("__RecipeBook__/scripts/database")
-local gui_util = require("__RecipeBook__/scripts/gui/util")
-local history = require("__RecipeBook__/scripts/gui/history")
-local info_pane = require("__RecipeBook__/scripts/gui/info-pane")
-local list_box = require("__RecipeBook__/scripts/gui/list-box")
-local search_pane = require("__RecipeBook__/scripts/gui/search-pane")
-local slot_table = require("__RecipeBook__/scripts/gui/slot-table")
-local util = require("__RecipeBook__/scripts/util")
+local database = require("scripts.database")
+local gui_util = require("scripts.gui.util")
+local history = require("scripts.gui.history")
+local info_pane = require("scripts.gui.info-pane")
+local list_box = require("scripts.gui.list-box")
+local search_pane = require("scripts.gui.search-pane")
+local slot_table = require("scripts.gui.slot-table")
+local util = require("scripts.util")
 
 --- @param name string
 --- @param sprite string

@@ -1,7 +1,7 @@
-local flib_dictionary = require("__flib__/dictionary-lite")
-local flib_gui = require("__flib__/gui-lite")
+local flib_dictionary = require("__flib__.dictionary-lite")
+local flib_gui = require("__flib__.gui-lite")
 
-local util = require("__RecipeBook__/scripts/util")
+local util = require("scripts.util")
 
 --- @class SearchPane
 --- @field textfield LuaGuiElement

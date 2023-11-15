@@ -1,7 +1,7 @@
-local flib_gui = require("__flib__/gui-lite")
-local mod_gui = require("__core__/lualib/mod-gui")
+local flib_gui = require("__flib__.gui-lite")
+local mod_gui = require("__core__.lualib.mod-gui")
 
-local main_gui = require("__RecipeBook__/scripts/gui/main")
+local main_gui = require("scripts.gui.main")
 
 --- @param player LuaPlayer
 local function refresh_button(player)

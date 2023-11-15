@@ -1,7 +1,7 @@
-local flib_dictionary = require("__flib__/dictionary-lite")
+local flib_dictionary = require("__flib__.dictionary-lite")
 
-local researched = require("__RecipeBook__/scripts/database/researched")
-local util = require("__RecipeBook__/scripts/util")
+local researched = require("scripts.database.researched")
+local util = require("scripts.util")
 
 --- @class CustomObject
 --- @field type string
@@ -260,7 +260,7 @@ function database.is_hidden(obj)
 end
 
 database.get_entry = get_entry
-database.get_properties = require("__RecipeBook__/scripts/database/properties")
+database.get_properties = require("scripts.database.properties")
 
 -- Events
 

@@ -1,9 +1,9 @@
-local flib_gui = require("__flib__/gui-lite")
-local flib_gui_templates = require("__flib__/gui-templates")
-local flib_technology = require("__flib__/technology")
+local flib_gui = require("__flib__.gui-lite")
+local flib_gui_templates = require("__flib__.gui-templates")
+local flib_technology = require("__flib__.technology")
 
-local database = require("__RecipeBook__/scripts/database")
-local util = require("__RecipeBook__/scripts/util")
+local database = require("scripts.database")
+local util = require("scripts.util")
 
 --- @class technology_slot_table
 local technology_slot_table = {}

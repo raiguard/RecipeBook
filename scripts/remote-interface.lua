@@ -1,4 +1,4 @@
-local main_gui = require("__RecipeBook__/scripts/gui/main")
+local main_gui = require("scripts.gui.main")
 
 local remote_interface = {}
 

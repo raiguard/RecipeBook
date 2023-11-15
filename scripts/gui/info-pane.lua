@@ -1,9 +1,9 @@
-local database = require("__RecipeBook__/scripts/database")
-local gui_util = require("__RecipeBook__/scripts/gui/util")
-local list_box = require("__RecipeBook__/scripts/gui/list-box")
-local slot_table = require("__RecipeBook__/scripts/gui/slot-table")
-local technology_slot_table = require("__RecipeBook__/scripts/gui/technology-slot-table")
-local util = require("__RecipeBook__/scripts/util")
+local database = require("scripts.database")
+local gui_util = require("scripts.gui.util")
+local list_box = require("scripts.gui.list-box")
+local slot_table = require("scripts.gui.slot-table")
+local technology_slot_table = require("scripts.gui.technology-slot-table")
+local util = require("scripts.util")
 
 --- @class InfoPane
 --- @field context MainGuiContext

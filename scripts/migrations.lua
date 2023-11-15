@@ -1,8 +1,8 @@
-local flib_dictionary = require("__flib__/dictionary-lite")
-local flib_migration = require("__flib__/migration")
+local flib_dictionary = require("__flib__.dictionary-lite")
+local flib_migration = require("__flib__.migration")
 
-local database = require("__RecipeBook__/scripts/database")
-local gui = require("__RecipeBook__/scripts/gui/main")
+local database = require("scripts.database")
+local gui = require("scripts.gui.main")
 
 local by_version = {
   ["4.0.0"] = function()

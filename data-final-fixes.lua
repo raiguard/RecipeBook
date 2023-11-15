@@ -1,4 +1,4 @@
-local flib_table = require("__flib__/table")
+local flib_table = require("__flib__.table")
 
 -- Make unbarreling recipes not unlock their corresponding fluids
 for _, recipe in pairs(data.raw["recipe"]) do

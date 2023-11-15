@@ -1,8 +1,8 @@
-local flib_gui = require("__flib__/gui-lite")
+local flib_gui = require("__flib__.gui-lite")
 
-local database = require("__RecipeBook__/scripts/database")
-local gui_util = require("__RecipeBook__/scripts/gui/util")
-local util = require("__RecipeBook__/scripts/util")
+local database = require("scripts.database")
+local gui_util = require("scripts.gui.util")
+local util = require("scripts.util")
 
 --- @class SlotTable
 local slot_table = {}

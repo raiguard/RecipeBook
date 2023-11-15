@@ -1,5 +1,5 @@
-local flib_format = require("__flib__/format")
-local flib_math = require("__flib__/math")
+local flib_format = require("__flib__.format")
+local flib_math = require("__flib__.math")
 
 --- @class Util
 local util = {}

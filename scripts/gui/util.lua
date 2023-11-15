@@ -1,7 +1,7 @@
-local core_util = require("__core__/lualib/util")
-local flib_math = require("__flib__/math")
+local core_util = require("__core__.lualib.util")
+local flib_math = require("__flib__.math")
 
-local util = require("__RecipeBook__/scripts/util")
+local util = require("scripts.util")
 
 --- @class GuiUtil
 local gui_util = {}
