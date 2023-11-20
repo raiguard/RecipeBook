@@ -88,7 +88,7 @@ local function update_launch_products(launch_products, force_index, to_value)
     if product_data.researched_forces then
       product_data.researched_forces[force_index] = to_value
     end
-    update_launch_products(database, product_data.rocket_launch_products, force_index)
+    update_launch_products(product_data.rocket_launch_products, force_index, to_value)
   end
 end
 
