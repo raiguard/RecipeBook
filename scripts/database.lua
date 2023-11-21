@@ -62,10 +62,11 @@ function database.build()
   mining_drill(database)
 
   fluid(database, metadata)
-  item(database, metadata)
 
   lab(database)
-  offshore_pump(database)
+  offshore_pump(database)     -- requires fluids
+
+  item(database, metadata)    -- requires all entities
 
   recipe(database, metadata)
   resource(database)
@@ -75,6 +76,7 @@ function database.build()
   fluid.process_temperatures(database, metadata)
   mining_drill.add_resources(database)
   fuel_category.check_fake_category(database)
+  lab.process_researched_in(database)
 
   burning(database)
   entity_state(database)
