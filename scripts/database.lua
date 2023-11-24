@@ -64,9 +64,9 @@ function database.build()
   fluid(database, metadata)
 
   lab(database)
-  offshore_pump(database)     -- requires fluids
+  offshore_pump(database) -- requires fluids
 
-  item(database, metadata)    -- requires all entities
+  item(database, metadata) -- requires all entities
 
   recipe(database, metadata)
   resource(database)
@@ -85,7 +85,7 @@ function database.build()
 end
 
 local function update_launch_products(launch_products, force_index, to_value)
-  for _, launch_product in ipairs(launch_products) do
+  for _, launch_product in pairs(launch_products) do
     local product_data = database.item[launch_product.name]
     if product_data.researched_forces then
       product_data.researched_forces[force_index] = to_value

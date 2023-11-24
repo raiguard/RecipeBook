@@ -68,11 +68,13 @@ return function(database, metadata)
           -- set enabled at start for its products and their placement results.
           if enabled_at_start then
             material_data.enabled_at_start = true
-            for _, property in ipairs({ "place_result", "place_as_equipment_result" }) do
+            for _, property in pairs({ "place_result", "place_as_equipment_result" }) do
               local placed_ident = material_data[property]
               if placed_ident then
                 local placed_data = database[placed_ident.class][placed_ident.name]
-                placed_data.enabled_at_start = true
+                if placed_data then
+                  placed_data.enabled_at_start = true
+                end
               end
             end
           end
