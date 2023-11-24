@@ -4,6 +4,7 @@ Date: ????
   Changes:
     - Show entities as available from the start if they are placed by items whose recipes are available at start. (#145)
   Bugfixes:
+    - Fixed crashes when table content elements somehow get invalidated. (#136)
     - Fixed labs not being shown as a placed result. (#145)
     - Fixed potential issues when recursively unlocking rocket launch products. (#144)
 ---------------------------------------------------------------------------------------------------
