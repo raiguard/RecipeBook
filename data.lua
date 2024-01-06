@@ -266,3 +266,14 @@ styles.rb_slot_label_top = {
   vertical_align = "top",
   top_padding = 3,
 }
+
+styles.rb_technology_slot_deep_frame = {
+  type = "frame_style",
+  parent = "deep_frame_in_shallow_frame",
+  background_graphical_set = {
+    position = { 282, 17 },
+    corner_size = 8,
+    overall_tiling_horizontal_size = 72,
+    overall_tiling_vertical_size = 100,
+  },
+}

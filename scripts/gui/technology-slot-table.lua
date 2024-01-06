@@ -19,7 +19,6 @@ function technology_slot_table.build(parent, context, title, members, remark)
   end
   local outer = parent.add({ type = "flow", direction = "vertical" })
   local header = outer.add({ type = "flow", style = "centering_horizontal_flow" })
-  -- header.add({ type = "label", style = "caption_label", caption = title })
   header.add({
     type = "checkbox",
     style = "rb_list_box_caption",
@@ -33,9 +32,8 @@ function technology_slot_table.build(parent, context, title, members, remark)
     header.add({ type = "label", caption = remark })
   end
 
-  local frame = outer.add({ type = "frame", name = "frame", style = "slot_button_deep_frame" })
-  -- frame.style.horizontally_stretchable = true
-  local tbl = frame.add({ type = "table", name = "table", style = "technology_slot_table", column_count = 5 })
+  local frame = outer.add({ type = "frame", name = "frame", style = "rb_technology_slot_deep_frame" })
+  local tbl = frame.add({ type = "table", name = "table", style = "slot_table", column_count = 5 })
 
   local show_hidden = context.show_hidden
   local force_index = context.player.force.index
