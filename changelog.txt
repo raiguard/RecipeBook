@@ -2,19 +2,20 @@
 Version: 4.0.0
 Date: ????
   Changes:
-    - Completely rewrote the mod from scratch (again)
+    - Completely rewrote the mod from scratch (again).
   Gui:
-    - GUI can now be opened before dictionary translations are complete
-      - Localised search will be unavailable
-    - Increased list box icon size and updated button styling to be more readable
-    - Related objects with the same icon will be grouped under one "entry"
-      - i.e. Assembling Machine 2 recipe, item, and entity will be shown as one result and on one page
-    - Removed multi-GUI system and re-unified under one GUI
-    - Search pane follows the style of other filter-select GUIs, and shows grouped objects under one entry
+    - The GUI no longer uses plain-text translations for its display, allowing it to be used immediately upon loading.
+    - Increased the list box icon size and updated button styling to be more readable.
+    - Related objects will be grouped together into a single page.
+      - Grouping is performed based on recipe -> main product -> placed entity/equipment/tile, and the internal prototype names.
+      - There WILL be issues with mods. Please report any issues on the dedicated GitHub issue so I can coordinate with mod authors.
+    - Removed the multi-window system - it caused more problems than it solved.
+    - Changed the default search interface to be icon-based.
+    - Changed most info pane lists to be icon-based.
   Optimizations:
-    - Significantly improved database generation time by cacheing fewer things in advance
-      - The GUI is slower to load pages as a result, but it should only be noticeable on absurdly large pages
-    - Significantly reduced the number of localised string translations the mod needs to perform
+    - Significantly improved the database generation time by caching fewer things in advance.
+      - The GUI is slower to load pages as a result, but it should only be noticeable on absurdly large pages.
+    - Significantly reduced the number of localised string translations the mod needs to perform.
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.4
 Date: ????
