@@ -1,16 +1,16 @@
+TODO:
+- Fix technology buttons not working.
+- Refactor the database.
+- Custom prototype properties for overrides etc.
+- Technology pages (tech screen pauses the game and prevents any nice logic).
+- Go through listboxes list below and implement those that are missing.
+- Search pane filtering by a specified list.
+
 API additions:
-- LuaPrototype::icons
-- LuaStyle::icon_horizontal_align
-- LuaGuiElement::remark
-- on_gui_hover_in, on_gui_hover_out
-- LuaGui::cursor
 - get_filtered_entity_prototypes:
     - ingredient_limit
     - add characters to crafting_category filter
     - energy source filters (type, fuel category, fluid, etc)
-
-Todo:
-- Show active page in filter panel
 
 All list boxes from 3.0 - not all will be re-added:
 accepted_equipment
