@@ -1,10 +1,9 @@
 TODO:
-- Fix technology buttons not working.
 - Refactor the database.
 - Custom prototype properties for overrides etc.
 - Technology pages (tech screen pauses the game and prevents any nice logic).
 - Go through listboxes list below and implement those that are missing.
-- Search pane filtering by a specified list.
+- Search pane filtering by a specified list and other filtering options.
 
 API additions:
 - get_filtered_entity_prototypes:
