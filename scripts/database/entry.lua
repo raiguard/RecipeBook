@@ -94,7 +94,6 @@ end
 
 -- PROPERTIES
 -- TODO: Memoization
--- TODO: Deduplication
 
 --- @return double?
 function entry:get_crafting_time()
@@ -133,8 +132,7 @@ function entry:get_made_in()
     return
   end
 
-  --- @type EntryID[]
-  local output = {}
+  local output = util.unique_id_array()
 
   --- @diagnostic disable-next-line unused-fields
   for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
@@ -177,8 +175,7 @@ function entry:get_ingredient_in()
     return
   end
 
-  --- @type EntryID[]
-  local output = {}
+  local output = util.unique_id_array()
   if self.fluid then
     for _, recipe in
       pairs(game.get_filtered_recipe_prototypes({
@@ -224,8 +221,7 @@ function entry:get_product_of()
     return
   end
 
-  --- @type EntryID[]
-  local output = {}
+  local output = util.unique_id_array()
   if self.fluid then
     for _, recipe in
       pairs(game.get_filtered_recipe_prototypes({
@@ -268,8 +264,7 @@ function entry:get_can_craft()
     return
   end
 
-  --- @type EntryID[]
-  local output = {}
+  local output = util.unique_id_array()
 
   local filters = {}
   for category in pairs(self.entity.crafting_categories) do
@@ -293,8 +288,7 @@ end
 
 --- @return EntryID[]?
 function entry:get_unlocked_by()
-  --- @type EntryID[]
-  local output = {}
+  local output = util.unique_id_array()
 
   -- TODO: Rocket launch products, unlock with crafting machines if no techs
 

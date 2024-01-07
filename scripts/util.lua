@@ -79,4 +79,23 @@ util.object_name_to_type = {
   LuaTechnologyPrototype = "technology",
 }
 
+--- @return EntryID[]
+function util.unique_id_array()
+  local hash = {}
+
+  return setmetatable({}, {
+    --- @param self EntryID[]
+    --- @param index integer
+    --- @param value EntryID
+    __newindex = function(self, index, value)
+      local key = value:get_path()
+      if hash[key] then
+        return
+      end
+      hash[key] = true
+      rawset(self, index, value)
+    end,
+  })
+end
+
 return util
