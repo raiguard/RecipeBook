@@ -1,7 +1,5 @@
 local flib_gui = require("__flib__.gui-lite")
 
-local gui_util = require("scripts.gui.util")
-
 --- @class SlotTable
 local slot_table = {}
 

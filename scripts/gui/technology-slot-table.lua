@@ -2,8 +2,6 @@ local flib_gui = require("__flib__.gui-lite")
 local flib_gui_templates = require("__flib__.gui-templates")
 local flib_technology = require("__flib__.technology")
 
-local util = require("scripts.util")
-
 --- @class technology_slot_table
 local technology_slot_table = {}
 
