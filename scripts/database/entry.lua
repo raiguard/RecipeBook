@@ -1,4 +1,5 @@
 local flib_table = require("__flib__.table")
+local flib_technology = require("__flib__.technology")
 
 local entry_id = require("scripts.database.entry-id")
 local util = require("scripts.util")
@@ -8,6 +9,7 @@ local util = require("scripts.util")
 --- @class Entry
 --- @field private database Database
 --- @field private base GenericPrototype
+--- @field private technology LuaTechnologyPrototype?
 --- @field private recipe LuaRecipePrototype?
 --- @field private item LuaItemPrototype?
 --- @field private fluid LuaFluidPrototype?
@@ -304,6 +306,11 @@ function entry:get_unlocked_by()
       end
     end
   end
+
+  local prototypes = game.technology_prototypes
+  table.sort(output, function(tech_a, tech_b)
+    return flib_technology.sort_predicate(prototypes[tech_a.name], prototypes[tech_b.name])
+  end)
 
   return output
 end
