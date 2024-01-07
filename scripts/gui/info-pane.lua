@@ -133,9 +133,9 @@ function info_pane:show(entry)
   slot_table.build(content_pane, self.context, { "description.rb-ingredient-in" }, entry:get_ingredient_in())
   slot_table.build(content_pane, self.context, { "description.rb-product-of" }, entry:get_product_of())
   slot_table.build(content_pane, self.context, { "description.rb-can-craft" }, entry:get_can_craft())
-  -- slot_table.build(content_pane, self.context, { "description.rb-mined-by" }, properties.mined_by)
-  -- slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
-  -- slot_table.build(content_pane, self.context, { "description.rb-gathered-from" }, properties.gathered_from)
+  slot_table.build(content_pane, self.context, { "description.rb-mined-by" }, entry:get_mined_by())
+  slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, entry:get_burned_in())
+  slot_table.build(content_pane, self.context, { "description.rb-gathered-from" }, entry:get_gathered_from())
   slot_table.build(
     content_pane,
     self.context,
@@ -149,9 +149,9 @@ function info_pane:show(entry)
     entry:get_rocket_launch_product_of()
   )
   slot_table.build(content_pane, self.context, { "description.rb-can-mine" }, entry:get_can_mine())
-  -- slot_table.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
+  slot_table.build(content_pane, self.context, { "description.rb-can-burn" }, entry:get_can_burn())
   list_box.build(content_pane, self.context, { "description.rb-yields" }, entry:get_yields())
-  -- slot_table.build(content_pane, self.context, { "description.rb-placeable-by" }, properties.placeable_by)
+  -- slot_table.build(content_pane, self.context, { "description.rb-placeable-by" }, properties.placeable_by) -- TODO: Is this actually needed?
   technology_slot_table.build(content_pane, self.context, { "description.rb-unlocked-by" }, entry:get_unlocked_by())
 
   profiler.stop()

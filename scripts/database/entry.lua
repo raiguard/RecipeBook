@@ -324,6 +324,161 @@ function entry:get_can_craft()
 end
 
 --- @return EntryID[]?
+function entry:get_mined_by()
+  local entity = self.entity
+  if not entity or entity.type ~= "resource" then
+    return
+  end
+
+  local output = util.unique_id_array()
+
+  local required_fluid = entity.mineable_properties.required_fluid
+  local resource_category = entity.resource_category
+  for _, drill in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
+    if
+      drill.resource_categories[resource_category]
+      and (not required_fluid or drill.fluidbox_prototypes[1])
+      and self.database:get_entry(drill)
+    then
+      output[#output + 1] = entry_id.new({ type = "entity", name = drill.name }, self.database)
+    end
+  end
+
+  return output
+end
+
+--- @return EntryID[]?
+function entry:get_burned_in()
+  local fluid, item = self.fluid, self.item
+  if not fluid and not item then
+    return
+  end
+
+  local output = util.unique_id_array()
+
+  if fluid then
+    --- @diagnostic disable-next-line unused-fields
+    for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "generator" } })) do
+      if self.database:get_entry(entity) then
+        local fluid_box = entity.fluidbox_prototypes[1]
+        if
+          (fluid_box.filter and fluid_box.filter.name == fluid.name) or (not fluid_box.filter and fluid.fuel_value > 0)
+        then
+          output[#output + 1] = entry_id.new({ type = "entity", name = entity_name }, self.database)
+        end
+      end
+    end
+    --- @diagnostic disable-next-line unused-fields
+    for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
+      if self.database:get_entry(entity) then
+        for _, fluidbox in pairs(entity.fluidbox_prototypes) do
+          if
+            (fluidbox.production_type == "input" or fluidbox.production_type == "input-output")
+            and fluidbox.filter
+            and fluidbox.filter.name == fluid.name
+          then
+            output[#output + 1] = entry_id.new({ type = "entity", name = entity_name }, self.database)
+          end
+        end
+      end
+    end
+    if fluid.fuel_value then
+      -- TODO: Add energy source entity prototype filter to the API
+      --- @diagnostic disable-next-line unused-fields
+      for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "building" } })) do
+        if self.database:get_entry(entity) and entity.fluid_energy_source_prototype then
+          output[#output + 1] = entry_id.new({ type = "entity", name = entity_name }, self.database)
+        end
+      end
+    end
+  end
+
+  if item then
+    local fuel_category = item.fuel_category
+    for entity_name, entity_prototype in pairs(game.entity_prototypes) do
+      if self.database:get_entry(entity_prototype) then
+        local burner = entity_prototype.burner_prototype
+        if burner and burner.fuel_categories[fuel_category] then
+          output[#output + 1] = entry_id.new({ type = "entity", name = entity_name }, self.database)
+        end
+      end
+    end
+    for equipment_name, equipment_prototype in pairs(game.equipment_prototypes) do
+      if self.database:get_entry(equipment_prototype) then
+        local burner = equipment_prototype.burner_prototype
+        if burner and burner.fuel_categories[fuel_category] then
+          output[#output + 1] = entry_id.new({ type = "equipment", name = equipment_name }, self.database)
+        end
+      end
+    end
+  end
+
+  return output
+end
+
+--- @return EntryID[]?
+function entry:get_gathered_from()
+  local item = self.item
+  if not item then
+    return
+  end
+
+  local output = util.unique_id_array()
+
+  for entity_name, entity in pairs(util.get_natural_entities()) do
+    if not self.entity or self.entity.name ~= entity_name then
+      local mineable_properties = entity.mineable_properties
+      if mineable_properties.minable then
+        for _, product in pairs(mineable_properties.products or {}) do
+          if product.type == "item" and product.name == item.name then
+            output[#output + 1] = entry_id.new({ type = "entity", name = entity_name }, self.database)
+          end
+        end
+      end
+    end
+  end
+
+  return output
+end
+
+--- @return EntryID[]?
+function entry:get_rocket_launch_products()
+  if not self.item then
+    return
+  end
+
+  local products = self.item.rocket_launch_products
+  if #products == 0 then
+    return
+  end
+
+  return flib_table.map(products, function(product)
+    return entry_id.new(product, self.database)
+  end)
+end
+
+--- @return EntryID[]?
+function entry:get_rocket_launch_product_of()
+  if not self.item then
+    return
+  end
+
+  local output = util.unique_id_array()
+
+  --- @diagnostic disable-next-line unused-fields
+  for _, other_item in pairs(game.get_filtered_item_prototypes({ { filter = "has-rocket-launch-products" } })) do
+    for _, product in pairs(other_item.rocket_launch_products) do
+      if product.name == self.item.name then
+        output[#output + 1] = entry_id.new({ type = "item", name = other_item.name }, self.database)
+        break
+      end
+    end
+  end
+
+  return output
+end
+
+--- @return EntryID[]?
 function entry:get_can_mine()
   local entity = self.entity
   if not entity or entity.type ~= "mining-drill" then
@@ -364,35 +519,49 @@ function entry:get_can_mine()
 end
 
 --- @return EntryID[]?
-function entry:get_rocket_launch_products()
-  if not self.item then
-    return
-  end
-
-  local products = self.item.rocket_launch_products
-  if #products == 0 then
-    return
-  end
-
-  return flib_table.map(products, function(product)
-    return entry_id.new(product, self.database)
-  end)
-end
-
---- @return EntryID[]?
-function entry:get_rocket_launch_product_of()
-  if not self.item then
+function entry:get_can_burn()
+  local entity = self.entity
+  if not entity then
     return
   end
 
   local output = util.unique_id_array()
 
-  --- @diagnostic disable-next-line unused-fields
-  for _, other_item in pairs(game.get_filtered_item_prototypes({ { filter = "has-rocket-launch-products" } })) do
-    for _, product in pairs(other_item.rocket_launch_products) do
-      if product.name == self.item.name then
-        output[#output + 1] = entry_id.new({ type = "item", name = other_item.name }, self.database)
-        break
+  local burner = entity.burner_prototype
+  if burner then
+    for category in pairs(burner.fuel_categories) do
+      for item_name in
+        --- @diagnostic disable-next-line unused-fields
+        pairs(game.get_filtered_item_prototypes({ { filter = "fuel-category", ["fuel-category"] = category } }))
+      do
+        output[#output + 1] = entry_id.new({ type = "item", name = item_name }, self.database)
+      end
+    end
+  end
+  local fluid_energy_source_prototype = entity.fluid_energy_source_prototype
+  if fluid_energy_source_prototype then
+    local filter = fluid_energy_source_prototype.fluid_box.filter
+    if filter then
+      output[#output + 1] = entry_id.new({ type = "fluid", name = filter.name }, self.database)
+    else
+      for fluid_name in
+        --- @diagnostic disable-next-line unused-fields
+        pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
+      do
+        output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_name }, self.database)
+      end
+    end
+  end
+  if entity.type == "generator" then
+    local fluid_box = entity.fluidbox_prototypes[1]
+    if fluid_box.filter then
+      output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_box.filter.name }, self.database)
+    else
+      for fluid_name in
+        --- @diagnostic disable-next-line unused-fields
+        pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
+      do
+        output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_name }, self.database)
       end
     end
   end
