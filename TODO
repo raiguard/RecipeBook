@@ -5,6 +5,9 @@ TODO:
 - Go through listboxes list below and implement those that are missing.
 - Search pane filtering by a specified list and other filtering options.
 
+BUGS:
+- Alt+click on item-on-ground doesn't work.
+
 API additions:
 - get_filtered_entity_prototypes:
     - ingredient_limit

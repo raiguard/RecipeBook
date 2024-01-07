@@ -27,16 +27,6 @@ function util.format_number(num)
   return flib_format.number(flib_math.round(num, 0.01))
 end
 
---- @param prototype GenericPrototype
---- @return string group
---- @return string subgroup
-function util.get_group(prototype)
-  if prototype.object_name == "LuaEquipmentPrototype" then
-    return "combat", "rb-uncategorized-equipment"
-  end
-  return prototype.group.name, prototype.subgroup.name
-end
-
 function util.get_natural_entities()
   return game.get_filtered_entity_prototypes({
     --- @diagnostic disable-next-line unused-fields
@@ -54,7 +44,7 @@ end
 --- @return string path
 --- @return string type
 function util.get_path(prototype)
-  local type = util.prototype_type[prototype.object_name]
+  local type = util.object_name_to_type[prototype.object_name]
   return type .. "/" .. prototype.name, type
 end
 
@@ -67,27 +57,20 @@ end
 --- @param prototype GenericPrototype
 --- @return boolean
 function util.is_hidden(prototype)
-  if prototype.object_name == "LuaFluidPrototype" then
+  local type = prototype.object_name
+  if type == "LuaFluidPrototype" then
     return prototype.hidden
-  elseif prototype.object_name == "LuaItemPrototype" then
+  elseif type == "LuaItemPrototype" then
     return prototype.has_flag("hidden")
-  elseif prototype.object_name == "LuaRecipePrototype" then
+  elseif type == "LuaRecipePrototype" then
     return prototype.hidden
-  elseif prototype.object_name == "LuaTechnologyPrototype" then
+  elseif type == "LuaTechnologyPrototype" then
     return prototype.hidden
   end
   return false
 end
 
---- @param entry PrototypeEntry
---- @param force_index uint
---- @return boolean
-function util.is_unresearched(entry, force_index)
-  local researched = entry.researched or {}
-  return not researched[force_index]
-end
-
-util.prototype_type = {
+util.object_name_to_type = {
   LuaEntityPrototype = "entity",
   LuaEquipmentPrototype = "equipment",
   LuaFluidPrototype = "fluid",

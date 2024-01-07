@@ -1,7 +1,7 @@
 --- @class researched
 local researched = {}
 
---- @param entry PrototypeEntry
+--- @param entry DatabaseEntry
 --- @param force_index uint
 local function add_researched(entry, force_index)
   if entry.researched then
@@ -14,7 +14,7 @@ end
 --- @param entity LuaEntityPrototype
 --- @param force_index uint
 function researched.on_entity_unlocked(entity, force_index)
-  local db = global.database
+  local db = global.database.entries
   local entry = db["entity/" .. entity.name]
   if entry then
     add_researched(entry, force_index)
@@ -66,7 +66,7 @@ end
 --- @param equipment LuaEquipmentPrototype
 --- @param force_index uint
 function researched.on_equipment_unlocked(equipment, force_index)
-  local db = global.database
+  local db = global.database.entries
   local entry = db["entity/" .. equipment.name]
   if not entry then
     return
@@ -77,7 +77,7 @@ end
 --- @param product Product
 --- @param force_index uint
 function researched.on_product_unlocked(product, force_index)
-  local db = global.database
+  local db = global.database.entries
   local entry = db[product.type .. "/" .. product.name]
   if not entry then
     return
@@ -117,7 +117,7 @@ end
 --- @param recipe LuaRecipe
 --- @param force_index uint
 function researched.on_recipe_unlocked(recipe, force_index)
-  local db = global.database
+  local db = global.database.entries
   local entry = db["recipe/" .. recipe.name]
   if not entry then
     return
@@ -133,7 +133,7 @@ end
 --- @param technology LuaTechnology
 --- @param force_index uint
 function researched.on_technology_researched(technology, force_index)
-  local db = global.database
+  local db = global.database.entries
   if not db then
     return
   end
@@ -183,7 +183,7 @@ function researched.refresh(force)
     end
   end
   -- Recipes (some may be enabled without technologies)
-  local db = global.database
+  local db = global.database.entries
   for _, recipe in pairs(force.recipes) do
     -- Some recipes will be enabled from the start, but will only be craftable in machines
     if recipe.enabled and not (recipe.prototype.enabled and recipe.prototype.hidden_from_player_crafting) then

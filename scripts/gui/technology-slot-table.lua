@@ -2,7 +2,6 @@ local flib_gui = require("__flib__.gui-lite")
 local flib_gui_templates = require("__flib__.gui-templates")
 local flib_technology = require("__flib__.technology")
 
-local database = require("scripts.database")
 local util = require("scripts.util")
 
 --- @class technology_slot_table
@@ -42,7 +41,7 @@ function technology_slot_table.build(parent, context, title, members, remark)
   local result_count = 0
   for member_index = 1, #members do
     local member = members[member_index]
-    local entry = database.get_entry(member)
+    local entry = global.database:get_entry(member)
     if not entry then
       goto continue
     end
@@ -53,7 +52,7 @@ function technology_slot_table.build(parent, context, title, members, remark)
       goto continue
     end
     local research_state
-    if util.is_unresearched(entry, force_index) then
+    if not entry:is_researched(force_index) then
       research_state = flib_technology.research_state.not_available
     else
       research_state = flib_technology.research_state.researched

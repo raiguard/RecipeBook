@@ -1,8 +1,6 @@
 local flib_gui = require("__flib__.gui-lite")
 
-local database = require("scripts.database")
 local gui_util = require("scripts.gui.util")
-local util = require("scripts.util")
 
 --- @class SlotTable
 local slot_table = {}
@@ -15,8 +13,7 @@ slot_table.on_result_clicked = nil
 --- @param title LocalisedString
 --- @param members GenericObject[]?
 --- @param remark LocalisedString?
---- @param parent_fluid string?
-function slot_table.build(parent, context, title, members, remark, parent_fluid)
+function slot_table.build(parent, context, title, members, remark)
   if not members or #members == 0 then
     return
   end
@@ -37,7 +34,6 @@ function slot_table.build(parent, context, title, members, remark, parent_fluid)
   end
 
   local frame = outer.add({ type = "frame", name = "frame", style = "slot_button_deep_frame" })
-  -- frame.style.horizontally_stretchable = true
   local tbl = frame.add({ type = "table", name = "table", style = "slot_table", column_count = 10 })
 
   local show_hidden = context.show_hidden
@@ -48,13 +44,13 @@ function slot_table.build(parent, context, title, members, remark, parent_fluid)
   local result_count = 0
   for member_index = 1, #members do
     local member = members[member_index]
-    local entry = database.get_entry(member)
+    local entry = global.database:get_entry(member)
     if not entry then
       goto continue
     end
     -- Validate visibility
-    local is_hidden = util.is_hidden(entry.base)
-    local is_unresearched = util.is_unresearched(entry, force_index)
+    local is_hidden = entry:is_hidden()
+    local is_unresearched = not entry:is_researched(force_index)
     if is_hidden and not show_hidden then
       goto continue
     elseif is_unresearched and not show_unresearched then
@@ -70,7 +66,7 @@ function slot_table.build(parent, context, title, members, remark, parent_fluid)
     local button = tbl.add({
       type = "sprite-button",
       style = style,
-      sprite = entry.base_path,
+      sprite = entry:get_path(),
       elem_tooltip = member,
       tooltip = { "gui.rb-control-hint" },
       -- TODO: Probabilities, ranges, fluid temperatures

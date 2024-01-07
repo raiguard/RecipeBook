@@ -1,6 +1,5 @@
 local flib_gui = require("__flib__.gui-lite")
 
-local database = require("scripts.database")
 local gui_util = require("scripts.gui.util")
 local history = require("scripts.gui.history")
 local info_pane = require("scripts.gui.info-pane")
@@ -343,13 +342,13 @@ local function on_open_selected(e)
   if not player_gui then
     return
   end
-  local entry = database.get_entry({ type = selected_prototype.base_type, name = selected_prototype.name })
+  local entry = global.database:get_entry({ type = selected_prototype.base_type, name = selected_prototype.name })
   if not entry then
     util.flying_text(player_gui.context.player, { "message.rb-no-info" })
     return
   end
-  if player_gui.history:current() ~= entry.base_path then
-    player_gui.history:push(entry.base_path)
+  if player_gui.history:current() ~= entry:get_path() then
+    player_gui.history:push(entry:get_path())
   end
   player_gui:update_info()
   player_gui:show()
@@ -455,8 +454,8 @@ commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book
   local tested = {}
   local tested_count = 0
   local profiler = game.create_profiler()
-  for _, entry in pairs(global.database) do
-    local base_path = entry.base_path
+  for _, entry in pairs(global.database.entries) do
+    local base_path = entry:get_path()
     if not tested[base_path] and not string.find(base_path, "technology/") then
       tested[base_path] = true
       tested_count = tested_count + 1

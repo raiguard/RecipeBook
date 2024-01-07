@@ -1,8 +1,6 @@
 local flib_gui = require("__flib__.gui-lite")
 
-local database = require("scripts.database")
 local gui_util = require("scripts.gui.util")
-local util = require("scripts.util")
 
 --- @class ListBox
 local list_box = {}
@@ -50,13 +48,13 @@ function list_box.build(parent, context, title, members, remark)
   local result_count = 0
   for member_index = 1, #members do
     local member = members[member_index]
-    local entry = database.get_entry(member)
+    local entry = global.database:get_entry(member)
     if not entry then
       goto continue
     end
     -- Validate visibility
-    local is_hidden = util.is_hidden(entry.base)
-    local is_unresearched = util.is_unresearched(entry, force_index)
+    local is_hidden = entry:is_hidden()
+    local is_unresearched = not entry:is_researched(force_index)
     if is_hidden and not show_hidden then
       goto continue
     elseif is_unresearched and not show_unresearched then
@@ -72,7 +70,7 @@ function list_box.build(parent, context, title, members, remark)
     frame.add({
       type = "sprite-button",
       style = style,
-      sprite = entry.base_path,
+      sprite = member.type .. "/" .. member.name,
       caption = gui_util.build_caption(member),
       elem_tooltip = member,
       tooltip = { "gui.rb-control-hint" },

@@ -4,7 +4,7 @@ local flib_technology = require("__flib__.technology")
 local util = require("scripts.util")
 
 --- @class EntryProperties
---- @field entry PrototypeEntry
+--- @field entry DatabaseEntry
 --- @field hidden boolean?
 --- @field researched boolean?
 --- @field crafting_time double?
@@ -27,11 +27,11 @@ local util = require("scripts.util")
 --- @field yields GenericObject[]?
 
 --- @param prototype GenericPrototype
---- @return PrototypeEntry?
+--- @return DatabaseEntry?
 local function get_entry(prototype)
-  local type = util.prototype_type[prototype.object_name]
+  local type = util.object_name_to_type[prototype.object_name]
   if type then
-    return global.database[type .. "/" .. prototype.name]
+    return global.database.entries[type .. "/" .. prototype.name]
   end
 end
 
@@ -352,11 +352,18 @@ local function add_equipment_properties(properties, equipment, grouped_with_item
   end
 end
 
+local crafting_machine = {
+  ["assembling-machine"] = true,
+  ["character"] = true,
+  ["furnace"] = true,
+  ["rocket-silo"] = true,
+}
+
 --- @param properties EntryProperties
 --- @param entity LuaEntityPrototype
 --- @param grouped_with_item LuaItemPrototype?
 local function add_entity_properties(properties, entity, grouped_with_item)
-  if util.crafting_machine[entity.type] then
+  if crafting_machine[entity.type] then
     properties.can_craft = {}
     local filters = {}
     for category in pairs(entity.crafting_categories) do
@@ -499,9 +506,10 @@ end
 --- @type table<uint, table<string, EntryProperties>>
 local cache = {}
 
+--- @param self Database
 --- @param path string
 --- @return EntryProperties?
-return function(path, force_index)
+return function(self, path, force_index)
   local profiler = game.create_profiler()
   local force_cache = cache[force_index]
   if not force_cache then
@@ -513,7 +521,7 @@ return function(path, force_index)
     return cached
   end
 
-  local entry = global.database[path]
+  local entry = self.entries[path]
   if not entry then
     return
   end

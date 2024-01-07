@@ -9,7 +9,7 @@ local remote_interface = {}
 --- @return boolean success
 function remote_interface.open_page(player_index, class, name)
   local path = class .. "/" .. name
-  local entry = global.database[path]
+  local entry = global.database.entries[path]
   if not entry or not entry.base then
     return false
   end

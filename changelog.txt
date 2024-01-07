@@ -1,9 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 4.0.0
 Date: ????
-  Changes:
-    - Completely rewrote the mod from scratch (again).
   Gui:
+    - Completely rewrote the mod from scratch (again).
     - The GUI no longer uses plain-text translations for its display, allowing it to be used immediately upon loading.
     - Increased the list box icon size and updated button styling to be more readable.
     - Related objects will be grouped together into a single page.

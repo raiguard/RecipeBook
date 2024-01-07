@@ -1,9 +1,7 @@
-local database = require("scripts.database")
 local gui_util = require("scripts.gui.util")
 local list_box = require("scripts.gui.list-box")
 local slot_table = require("scripts.gui.slot-table")
 local technology_slot_table = require("scripts.gui.technology-slot-table")
-local util = require("scripts.util")
 
 --- @class InfoPane
 --- @field context MainGuiContext
@@ -71,12 +69,12 @@ end
 --- @param path string
 --- @return boolean? updated
 function info_pane:show(path)
-  local path = database.get_base_path(path)
+  local path = global.database:get_base_path(path)
   if not path then
     return
   end
 
-  local properties = database.get_properties(path, self.context.player.force.index)
+  local properties = global.database:get_properties(path, self.context.player.force_index)
   if not properties then
     return
   end
@@ -87,11 +85,11 @@ function info_pane:show(path)
   -- Subheader
   local title_label = self.title_label
   title_label.caption = { "", "            ", entry.base.localised_name }
-  title_label.sprite = entry.base_path
+  title_label.sprite = entry:get_path()
   local style = "rb_subheader_caption_button"
-  if util.is_hidden(entry.base) then
+  if entry:is_hidden() then
     style = "rb_subheader_caption_button_hidden"
-  elseif util.is_unresearched(entry, self.context.player.force.index) then
+  elseif not entry:is_researched(self.context.player.force_index) then
     style = "rb_subheader_caption_button_unresearched"
   end
   title_label.style = style
