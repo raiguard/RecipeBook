@@ -48,7 +48,7 @@ function util.get_path(prototype)
   return type .. "/" .. prototype.name, type
 end
 
---- @param obj GenericObject
+--- @param obj Ingredient|Product
 --- @return GenericPrototype
 function util.get_prototype(obj)
   return game[obj.type .. "_prototypes"][obj.name]

@@ -66,25 +66,14 @@ function info_pane.build(parent, context)
   return self
 end
 
---- @param path string
+--- @param entry Entry
 --- @return boolean? updated
-function info_pane:show(path)
-  local path = global.database:get_base_path(path)
-  if not path then
-    return
-  end
-
-  local properties = global.database:get_properties(path, self.context.player.force_index)
-  if not properties then
-    return
-  end
-  local entry = properties.entry
-
+function info_pane:show(entry)
   local profiler = game.create_profiler()
 
   -- Subheader
   local title_label = self.title_label
-  title_label.caption = { "", "            ", entry.base.localised_name }
+  title_label.caption = { "", "            ", entry:get_localised_name() }
   title_label.sprite = entry:get_path()
   local style = "rb_subheader_caption_button"
   if entry:is_hidden() then
@@ -136,34 +125,34 @@ function info_pane:show(path)
     content_pane,
     self.context,
     { "description.ingredients" },
-    properties.ingredients,
-    gui_util.format_crafting_time(properties.crafting_time)
+    entry:get_ingredients(),
+    gui_util.format_crafting_time(entry:get_crafting_time())
   )
-  list_box.build(content_pane, self.context, { "description.products" }, properties.products)
-  slot_table.build(content_pane, self.context, { "description.made-in" }, properties.made_in)
-  slot_table.build(content_pane, self.context, { "description.rb-ingredient-in" }, properties.ingredient_in)
-  slot_table.build(content_pane, self.context, { "description.rb-product-of" }, properties.product_of)
-  slot_table.build(content_pane, self.context, { "description.rb-can-craft" }, properties.can_craft)
-  slot_table.build(content_pane, self.context, { "description.rb-mined-by" }, properties.mined_by)
-  slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
-  slot_table.build(content_pane, self.context, { "description.rb-gathered-from" }, properties.gathered_from)
-  slot_table.build(
-    content_pane,
-    self.context,
-    { "description.rocket-launch-products" },
-    properties.rocket_launch_products
-  )
-  slot_table.build(
-    content_pane,
-    self.context,
-    { "description.rb-rocket-launch-product-of" },
-    properties.rocket_launch_product_of
-  )
-  slot_table.build(content_pane, self.context, { "description.rb-can-mine" }, properties.can_mine)
-  slot_table.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
-  list_box.build(content_pane, self.context, { "description.rb-yields" }, properties.yields)
-  slot_table.build(content_pane, self.context, { "description.rb-placeable-by" }, properties.placeable_by)
-  technology_slot_table.build(content_pane, self.context, { "description.rb-unlocked-by" }, properties.unlocked_by)
+  list_box.build(content_pane, self.context, { "description.products" }, entry:get_products())
+  -- slot_table.build(content_pane, self.context, { "description.made-in" }, properties.made_in)
+  -- slot_table.build(content_pane, self.context, { "description.rb-ingredient-in" }, properties.ingredient_in)
+  -- slot_table.build(content_pane, self.context, { "description.rb-product-of" }, properties.product_of)
+  -- slot_table.build(content_pane, self.context, { "description.rb-can-craft" }, properties.can_craft)
+  -- slot_table.build(content_pane, self.context, { "description.rb-mined-by" }, properties.mined_by)
+  -- slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
+  -- slot_table.build(content_pane, self.context, { "description.rb-gathered-from" }, properties.gathered_from)
+  -- slot_table.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rocket-launch-products" },
+  --   properties.rocket_launch_products
+  -- )
+  -- slot_table.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-rocket-launch-product-of" },
+  --   properties.rocket_launch_product_of
+  -- )
+  -- slot_table.build(content_pane, self.context, { "description.rb-can-mine" }, properties.can_mine)
+  -- slot_table.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
+  -- list_box.build(content_pane, self.context, { "description.rb-yields" }, properties.yields)
+  -- slot_table.build(content_pane, self.context, { "description.rb-placeable-by" }, properties.placeable_by)
+  -- technology_slot_table.build(content_pane, self.context, { "description.rb-unlocked-by" }, properties.unlocked_by)
 
   profiler.stop()
   log({ "", "[", path, "] GUI update ", profiler })

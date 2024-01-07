@@ -1,4 +1,4 @@
---- @class History: {[integer]: string, index: integer}
+--- @class History: {[integer]: Entry, index: integer}
 local history = {}
 local mt = { __index = history }
 script.register_metatable("history", mt)
@@ -7,17 +7,17 @@ function history.new()
   return setmetatable({ index = 0 }, mt)
 end
 
---- @param path string
-function history:push(path)
+--- @param entry Entry
+function history:push(entry)
   for i = self.index + 1, #self do
     self[i] = nil
   end
   for i = self.index, 1, -1 do
-    if self[i] == path then
+    if self[i] == entry then
       table.remove(self, i)
     end
   end
-  self[#self + 1] = path
+  self[#self + 1] = entry
   self.index = #self
 end
 

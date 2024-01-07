@@ -1,24 +1,29 @@
+local flib_table = require("__flib__.table")
+
+local entry_id = require("scripts.database.entry-id")
 local util = require("scripts.util")
 
---- @alias GenericObject Ingredient|Product|CustomObject
 --- @alias GenericPrototype LuaEquipmentPrototype|LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
 
---- @class DatabaseEntry
---- @field base GenericPrototype
---- @field recipe LuaRecipePrototype?
---- @field item LuaItemPrototype?
---- @field fluid LuaFluidPrototype?
---- @field equipment LuaEquipmentPrototype?
---- @field entity LuaEntityPrototype?
---- @field researched table<uint, boolean>?
+--- @class Entry
+--- @field private database Database
+--- @field private base GenericPrototype
+--- @field private recipe LuaRecipePrototype?
+--- @field private item LuaItemPrototype?
+--- @field private fluid LuaFluidPrototype?
+--- @field private equipment LuaEquipmentPrototype?
+--- @field private entity LuaEntityPrototype?
+--- @field private researched table<uint, boolean>?
 local entry = {}
 local mt = { __index = entry }
 script.register_metatable("entry", mt)
 
 --- @param prototype GenericPrototype
-function entry.new(prototype)
-  --- @type DatabaseEntry
+--- @param database Database
+function entry.new(prototype, database)
+  --- @type Entry
   local self = {
+    database = database,
     base = prototype,
   }
   setmetatable(self, mt)
@@ -28,25 +33,26 @@ function entry.new(prototype)
   return self
 end
 
---- Add the given prototype to this entry.
 --- @param prototype GenericPrototype
 function entry:add(prototype)
   self[util.object_name_to_type[prototype.object_name]] = prototype
 end
 
---- Return the internal name of the base prototype.
 --- @return string
 function entry:get_name()
   return self.base.name
 end
 
---- Return the ID of the base prototype.
+--- @return LocalisedString
+function entry:get_localised_name()
+  return self.base.localised_name
+end
+
 --- @return ElemID
 function entry:get_id()
   return { type = self:get_type(), name = self:get_name() }
 end
 
---- Return the sprite path of the base prototype.
 --- @return SpritePath
 function entry:get_path()
   local base = self.base
@@ -65,7 +71,6 @@ function entry:is_researched(force_index)
   return researched and researched[force_index] or false
 end
 
---- Return the item group of the base prototype.
 --- @return LuaGroup
 function entry:get_group()
   if self.base.object_name == "LuaEquipmentPrototype" then
@@ -74,7 +79,6 @@ function entry:get_group()
   return self.base.group
 end
 
---- Return the item subgroup of the base prototype.
 --- @return LuaGroup
 function entry:get_subgroup()
   if self.base.object_name == "LuaEquipmentPrototype" then
@@ -83,16 +87,47 @@ function entry:get_subgroup()
   return self.base.subgroup
 end
 
---- Return the prototype order of the base prototype.
 --- @return string
 function entry:get_order()
   return self.base.order
 end
 
---- Return the type of the base prototype.
 --- @return string
 function entry:get_type()
   return util.object_name_to_type[self.base.object_name]
+end
+
+-- PROPERTIES
+
+--- @return double?
+function entry:get_crafting_time()
+  if not self.recipe then
+    return
+  end
+
+  return self.recipe.energy
+end
+
+--- @return EntryID[]?
+function entry:get_ingredients()
+  if not self.recipe then
+    return
+  end
+
+  return flib_table.map(self.recipe.ingredients, function(ingredient)
+    return entry_id.new(ingredient, self.database)
+  end)
+end
+
+--- @return EntryID[]?
+function entry:get_products()
+  if not self.recipe then
+    return
+  end
+
+  return flib_table.map(self.recipe.products, function(product)
+    return entry_id.new(product, self.database)
+  end)
 end
 
 return entry

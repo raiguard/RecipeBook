@@ -286,16 +286,19 @@ function main_gui:on_result_clicked(e)
   if not path then
     return
   end
-  local type, name = string.match(path, "(.*)/(.*)")
-  if type == "technology" then
+  local entry = global.database:get(path)
+  if not entry then
+    return
+  end
+  if entry:get_type() == "technology" then
     if not self.pinned then
       self.opening_technology_gui = true
       self:hide()
     end
-    self.context.player.open_technology_gui(name)
+    self.context.player.open_technology_gui(entry:get_name())
     return
   end
-  self.history:push(path)
+  self.history:push(entry)
   self:update_info()
 end
 

@@ -1,6 +1,6 @@
 --- Each top-level prototype sorted into groups and subgroups for the search panel.
 --- @class SearchTree
---- @field groups table<string, table<string, DatabaseEntry[]>> Group name -> subgroup name -> members
+--- @field groups table<string, table<string, Entry[]>> Group name -> subgroup name -> members
 local search_tree = {}
 local mt = { __index = search_tree }
 script.register_metatable("search_tree", mt)
@@ -49,7 +49,7 @@ function search_tree:finalize()
   end
 end
 
---- @param entry DatabaseEntry
+--- @param entry Entry
 function search_tree:add(entry)
   local subgroup = self.groups[entry:get_group().name][entry:get_subgroup().name]
   assert(subgroup, "Subgroup was nil.")

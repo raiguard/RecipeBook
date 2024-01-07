@@ -1,10 +1,12 @@
+--- @diagnostic disable
+
 local flib_table = require("__flib__.table")
 local flib_technology = require("__flib__.technology")
 
 local util = require("scripts.util")
 
 --- @class EntryProperties
---- @field entry DatabaseEntry
+--- @field entry Entry
 --- @field hidden boolean?
 --- @field researched boolean?
 --- @field crafting_time double?
@@ -27,7 +29,7 @@ local util = require("scripts.util")
 --- @field yields GenericObject[]?
 
 --- @param prototype GenericPrototype
---- @return DatabaseEntry?
+--- @return Entry?
 local function get_entry(prototype)
   local type = util.object_name_to_type[prototype.object_name]
   if type then

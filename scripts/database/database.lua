@@ -5,12 +5,8 @@ local researched = require("scripts.database.researched")
 local search_tree = require("scripts.database.search-tree")
 local util = require("scripts.util")
 
---- @class CustomObject: ElemID
---- @field count double
---- @field required_fluid Ingredient?
-
 --- @class Database
---- @field entries table<string, DatabaseEntry?>
+--- @field entries table<string, Entry?>
 --- @field search_tree SearchTree
 --- @field alternatives table<SpritePath, SpritePath>
 --- @field excluded_categories table<string, boolean>
@@ -126,7 +122,7 @@ function database:build()
   log("Technologies and research status")
   for name, technology in pairs(game.technology_prototypes) do
     local path = "technology/" .. name
-    self.entries[path] = db_entry.new(technology)
+    self.entries[path] = db_entry.new(technology, self)
   end
   -- TEMPORARY: Required for `researched` module
   global.database = self
@@ -180,10 +176,16 @@ function database:should_group(a, b)
   return a.name == b.name
 end
 
---- @param obj GenericObject
---- @return DatabaseEntry?
+--- @param obj EntryID|Ingredient|Product|ElemID
+--- @return Entry?
 function database:get_entry(obj)
   return self.entries[obj.type .. "/" .. obj.name]
+end
+
+--- @param path SpritePath
+--- @return Entry?
+function database:get(path)
+  return self.entries[path]
 end
 
 --- @private
@@ -209,7 +211,7 @@ function database:add_prototype(prototype, group_with)
     end
   end
 
-  local entry = db_entry.new(prototype)
+  local entry = db_entry.new(prototype, self)
   self.entries[path] = entry
 
   self.search_tree:add(entry)
@@ -218,37 +220,6 @@ function database:add_prototype(prototype, group_with)
   local prototype_path = prototype_type .. "/" .. prototype.name
   flib_dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
 end
-
---- @param path string
---- @return string?
-function database:get_base_path(path)
-  local entry = self.entries[path]
-  if entry then
-    return entry:get_path()
-  end
-end
-
---- @param obj GenericObject
---- @return boolean
-function database:is_researched(obj, force_index)
-  local entry = self.entries[obj.type .. "/" .. obj.name]
-  if entry and entry.researched and entry.researched[force_index] then
-    return true
-  end
-  return false
-end
-
---- @param obj GenericObject
---- @return boolean
-function database:is_hidden(obj)
-  local entry = self.entries[obj.type .. "/" .. obj.name]
-  if entry and util.is_hidden(entry.base) then
-    return true
-  end
-  return false
-end
-
-database.get_properties = require("scripts.database.properties")
 
 -- Events
 

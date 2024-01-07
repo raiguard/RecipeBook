@@ -1,7 +1,7 @@
 --- @class researched
 local researched = {}
 
---- @param entry DatabaseEntry
+--- @param entry Entry
 --- @param force_index uint
 local function add_researched(entry, force_index)
   if entry.researched then
@@ -140,7 +140,7 @@ function researched.on_technology_researched(technology, force_index)
   local technology_name = technology.name
   local technology_path = "technology/" .. technology_name
   if not db[technology_path] then
-    db[technology_path] = { base = technology.prototype, base_path = technology_path, researched = {} }
+    db[technology_path] = { database = db, base = technology.prototype, base_path = technology_path, researched = {} }
   end
   add_researched(db[technology_path], force_index)
   for _, effect in pairs(technology.effects) do

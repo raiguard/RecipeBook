@@ -1,7 +1,5 @@
 local flib_gui = require("__flib__.gui-lite")
 
-local gui_util = require("scripts.gui.util")
-
 --- @class ListBox
 local list_box = {}
 
@@ -11,10 +9,10 @@ list_box.on_result_clicked = nil
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
 --- @param title LocalisedString
---- @param members GenericObject[]?
+--- @param ids EntryID[]?
 --- @param remark LocalisedString?
-function list_box.build(parent, context, title, members, remark)
-  if not members or #members == 0 then
+function list_box.build(parent, context, title, ids, remark)
+  if not ids or #ids == 0 then
     return
   end
   local outer = parent.add({ type = "flow", direction = "vertical" })
@@ -46,9 +44,9 @@ function list_box.build(parent, context, title, members, remark)
 
   local _ -- To avoid creating a global
   local result_count = 0
-  for member_index = 1, #members do
-    local member = members[member_index]
-    local entry = global.database:get_entry(member)
+  for id_index = 1, #ids do
+    local id = ids[id_index]
+    local entry = id:get_entry()
     if not entry then
       goto continue
     end
@@ -70,9 +68,9 @@ function list_box.build(parent, context, title, members, remark)
     frame.add({
       type = "sprite-button",
       style = style,
-      sprite = member.type .. "/" .. member.name,
-      caption = gui_util.build_caption(member),
-      elem_tooltip = member,
+      sprite = id.type .. "/" .. id.name,
+      caption = { "", "              ", id:get_caption() },
+      elem_tooltip = id:strip(),
       tooltip = { "gui.rb-control-hint" },
       tags = flib_gui.format_handlers({
         [defines.events.on_gui_click] = list_box.on_result_clicked,
