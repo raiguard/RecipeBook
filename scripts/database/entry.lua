@@ -227,7 +227,7 @@ function entry:get_ingredient_in()
       }))
     do
       local entry = self.database:get_entry(recipe)
-      if entry then
+      if entry and entry ~= self then
         local id = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
         for _, ingredient in pairs(recipe.ingredients) do
           -- minimum_temperature and maximum_temperature are mutually inclusive.
@@ -249,7 +249,7 @@ function entry:get_ingredient_in()
       }))
     do
       local entry = self.database:get_entry(recipe)
-      if entry then
+      if entry and entry ~= self then
         output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
       end
     end
@@ -273,7 +273,7 @@ function entry:get_product_of()
       }))
     do
       local entry = self.database:get_entry(recipe)
-      if entry then
+      if entry and entry ~= self then
         output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
       end
     end
@@ -286,7 +286,7 @@ function entry:get_product_of()
       }))
     do
       local entry = self.database:get_entry(recipe)
-      if entry then
+      if entry and entry ~= self then
         output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
       end
     end
