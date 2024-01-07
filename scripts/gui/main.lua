@@ -213,8 +213,12 @@ function main_gui:update_info()
     self.history:at_back() and "disabled" or "default"
   )
 
-  self.search_pane:select_result(self.history:current())
-  self.info_pane:show(self.history:current())
+  local entry = self.history:current()
+  if not entry then
+    return
+  end
+  self.search_pane:select_result(entry)
+  self.info_pane:show(entry)
 end
 
 function main_gui:update()
