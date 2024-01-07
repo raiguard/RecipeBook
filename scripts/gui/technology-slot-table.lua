@@ -10,10 +10,10 @@ local technology_slot_table = {}
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
 --- @param title LocalisedString
---- @param members GenericObject[]?
+--- @param ids EntryID[]?
 --- @param remark LocalisedString?
-function technology_slot_table.build(parent, context, title, members, remark)
-  if not members or #members == 0 then
+function technology_slot_table.build(parent, context, title, ids, remark)
+  if not ids or #ids == 0 then
     return
   end
   local outer = parent.add({ type = "flow", direction = "vertical" })
@@ -37,18 +37,14 @@ function technology_slot_table.build(parent, context, title, members, remark)
   local show_hidden = context.show_hidden
   local force_index = context.player.force.index
 
-  local _ -- To avoid creating a global
   local result_count = 0
-  for member_index = 1, #members do
-    local member = members[member_index]
-    local entry = global.database:get_entry(member)
-    if not entry then
-      goto continue
-    end
+  for id_index = 1, #ids do
+    local id = ids[id_index]
+    local entry = id:get_entry()
     -- Validate visibility
     -- local is_hidden = util.is_hidden(entry.base)
     -- local is_unresearched = util.is_unresearched(entry, force_index)
-    if util.is_hidden(entry.base) and not show_hidden then
+    if entry:is_hidden() and not show_hidden then
       goto continue
     end
     local research_state
@@ -57,7 +53,7 @@ function technology_slot_table.build(parent, context, title, members, remark)
     else
       research_state = flib_technology.research_state.researched
     end
-    local technology = context.player.force.technologies[member.name]
+    local technology = context.player.force.technologies[id.name]
     local slot = flib_gui_templates.technology_slot(
       tbl,
       technology,

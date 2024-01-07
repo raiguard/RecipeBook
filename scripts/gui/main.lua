@@ -351,7 +351,7 @@ local function on_open_selected(e)
     return
   end
   if player_gui.history:current() ~= entry:get_path() then
-    player_gui.history:push(entry:get_path())
+    player_gui.history:push(entry)
   end
   player_gui:update_info()
   player_gui:show()
@@ -462,7 +462,7 @@ commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book
     if not tested[base_path] and not string.find(base_path, "technology/") then
       tested[base_path] = true
       tested_count = tested_count + 1
-      gui.history:push(base_path)
+      gui.history:push(entry)
       gui:update_info()
     end
   end

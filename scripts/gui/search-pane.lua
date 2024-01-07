@@ -5,13 +5,13 @@ local flib_gui = require("__flib__.gui-lite")
 --- @field textfield LuaGuiElement
 --- @field groups_table LuaGuiElement
 --- @field results_pane LuaGuiElement
---- @field result_buttons table<string, LuaGuiElement>
+--- @field result_buttons table<Entry, LuaGuiElement>
 --- @field dictionary_warning LuaGuiElement
 --- @field no_results_warning LuaGuiElement
 --- @field context MainGuiContext
 --- @field query string
 --- @field selected_group string
---- @field selected_result string?
+--- @field selected_result Entry?
 local search_pane = {}
 local mt = { __index = search_pane }
 script.register_metatable("search_pane", mt)
@@ -84,6 +84,7 @@ function search_pane.build(parent, context)
   }).style.left_margin =
     8
 
+  --- @type table<Entry, LuaGuiElement>
   local result_buttons = {}
   for group_name, subgroups in pairs(global.database.search_tree.groups) do
     groups_table.add({
@@ -105,21 +106,20 @@ function search_pane.build(parent, context)
       local subgroup_table =
         group_flow.add({ type = "table", name = subgroup_name, style = "slot_table", column_count = 10 })
       for _, entry in pairs(subgroup) do
-        local path = entry:get_path()
         local button = subgroup_table.add({
           type = "sprite-button",
           style = "flib_slot_button_default",
-          sprite = path,
-          elem_tooltip = entry:get_id(),
+          sprite = entry:get_path(),
+          elem_tooltip = { type = entry:get_type(), name = entry:get_name() },
           tooltip = { "gui.rb-control-hint" },
           tags = flib_gui.format_handlers({
             [defines.events.on_gui_click] = search_pane.on_result_clicked,
           }),
         })
-        if result_buttons[path] then
-          error("Duplicate button ID: " .. entry)
+        if result_buttons[entry] then
+          error("Duplicate search button: " .. entry:get_path())
         end
-        result_buttons[path] = button
+        result_buttons[entry] = button
       end
     end
   end
@@ -159,15 +159,14 @@ function search_pane:update()
     local searched_count = 0
     for _, subgroup in pairs(group) do
       for _, entry in pairs(subgroup) do
-        local path = entry:get_path()
         local is_hidden, is_researched = entry:is_hidden(), entry:is_researched(force_index)
         local filters_match = (show_hidden or not is_hidden) and (show_unresearched or is_researched)
-        local button = result_buttons[path]
+        local button = result_buttons[entry]
         if filters_match then
           filtered_count = filtered_count + 1
           local query_match = #query == 0
           if not query_match then
-            local comp = search_strings[path] or string.gsub(path, "-", " ")
+            local comp = search_strings[entry:get_path()] or string.gsub(entry:get_path(), "-", " ")
             query_match = string.find(string.lower(comp), query, 1, true) --[[@as boolean]]
           end
           button.visible = query_match
@@ -181,8 +180,8 @@ function search_pane:update()
               button.style = "flib_slot_button_default"
             end
           end
-          if query_match and self.selected_result == path and self.selected_group ~= group_name then
-            self:select_result(path)
+          if query_match and self.selected_result == entry and self.selected_group ~= group_name then
+            self:select_result(entry)
           end
         else
           button.visible = false
@@ -239,8 +238,8 @@ function search_pane:select_group(group_name)
   self.selected_group = group_name
 end
 
---- @param result_path string?
-function search_pane:select_result(result_path)
+--- @param entry Entry?
+function search_pane:select_result(entry)
   local previous_result = self.selected_result
   if previous_result then
     local previous_button = self.result_buttons[previous_result]
@@ -248,15 +247,15 @@ function search_pane:select_result(result_path)
       previous_button.toggled = false
     end
   end
-  self.selected_result = result_path
-  if not result_path then
+  self.selected_result = entry
+  if not entry then
     return
   end
-  local new_button = self.result_buttons[result_path]
+  local new_button = self.result_buttons[entry]
   if new_button then
     new_button.toggled = true
     if new_button.visible then
-      self:select_group(global.database.entries[result_path]:get_group().name)
+      self:select_group(entry:get_group().name)
       self.results_pane.scroll_to_element(new_button)
     end
   end

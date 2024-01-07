@@ -48,11 +48,6 @@ function entry:get_localised_name()
   return self.base.localised_name
 end
 
---- @return ElemID
-function entry:get_id()
-  return { type = self:get_type(), name = self:get_name() }
-end
-
 --- @return SpritePath
 function entry:get_path()
   local base = self.base
@@ -128,6 +123,50 @@ function entry:get_products()
   return flib_table.map(self.recipe.products, function(product)
     return entry_id.new(product, self.database)
   end)
+end
+
+--- @return EntryID[]?
+function entry:get_made_in()
+  if not self.recipe then
+    return
+  end
+
+  --- @type EntryID[]
+  local output = {}
+
+  --- @diagnostic disable-next-line unused-fields
+  for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
+    if character.crafting_categories[self.recipe.category] then
+      output[#output + 1] = entry_id.new({
+        type = "entity",
+        name = character.name,
+        amount = self.recipe.energy,
+      }, self.database)
+    end
+  end
+
+  local item_ingredients = flib_table.reduce(self.recipe.ingredients, function(accumulator, ingredient)
+    return accumulator + (ingredient.type == "item" and 1 or 0)
+  end, 0) --[[@as integer]]
+
+  for _, crafter in
+    pairs(game.get_filtered_entity_prototypes({
+      --- @diagnostic disable-next-line unused-fields
+      { filter = "crafting-category", crafting_category = self.recipe.category },
+    }))
+  do
+    local ingredient_count = crafter.ingredient_count
+    local crafter_entry = self.database:get("entity/" .. crafter.name)
+    if crafter_entry and (ingredient_count == 0 or ingredient_count >= item_ingredients) then
+      output[#output + 1] = entry_id.new({
+        type = "entity",
+        name = crafter.name,
+        amount = self.recipe.energy / crafter.crafting_speed,
+      }, self.database)
+    end
+  end
+
+  return output
 end
 
 return entry

@@ -67,7 +67,7 @@ function slot_table.build(parent, context, title, ids, remark)
       type = "sprite-button",
       style = style,
       sprite = entry:get_path(),
-      elem_tooltip = id,
+      elem_tooltip = id:strip(),
       tooltip = { "gui.rb-control-hint" },
       -- TODO: Probabilities, ranges, fluid temperatures
       number = id.amount,
