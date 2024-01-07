@@ -1,7 +1,6 @@
 local flib_dictionary = require("__flib__.dictionary-lite")
 
 local db_entry = require("scripts.database.entry")
-local researched = require("scripts.database.researched")
 local search_tree = require("scripts.database.search-tree")
 local util = require("scripts.util")
 
@@ -124,10 +123,8 @@ function database:build()
     local path = "technology/" .. name
     self.entries[path] = db_entry.new(technology, self)
   end
-  -- TEMPORARY: Required for `researched` module
-  global.database = self
   for _, force in pairs(game.forces) do
-    researched.refresh(force)
+    self:init_researched(force)
   end
 
   log("Alternatives")
@@ -142,6 +139,58 @@ function database:build()
 
   profiler.stop()
   log({ "", "Database Generation ", profiler })
+end
+
+--- @private
+--- @param force LuaForce
+function database:init_researched(force)
+  local force_index = force.index
+  -- Gather-able items
+  for _, entity in
+    pairs(game.get_filtered_entity_prototypes({
+      --- @diagnostic disable-next-line unused-fields
+      { filter = "type", type = "simple-entity" },
+      --- @diagnostic disable-next-line unused-fields
+      { filter = "type", type = "tree" },
+      --- @diagnostic disable-next-line unused-fields
+      { filter = "type", type = "fish" },
+    }))
+  do
+    if entity.type ~= "simple-entity" or entity.count_as_rock_for_filtered_deconstruction then
+      local entry = self:get_entry(entity)
+      if entry then
+        entry:research(force_index)
+      end
+    end
+  end
+  -- Technologies
+  for _, technology in pairs(force.technologies) do
+    if technology.researched then
+      local entry = self:get_entry(technology)
+      if entry then
+        entry:research(force_index)
+      end
+    end
+  end
+  -- Recipes (some may be enabled without technologies)
+  for _, recipe in pairs(force.recipes) do
+    -- Some recipes will be enabled from the start, but will only be craftable in machines
+    if recipe.enabled and not (recipe.prototype.enabled and recipe.prototype.hidden_from_player_crafting) then
+      local entry = self:get_entry(recipe)
+      if entry then
+        entry:research(force_index)
+      end
+    end
+  end
+  -- Characters
+  -- TODO: Gate some characters if mods "unlock" them (Nullius)?
+  --- @diagnostic disable-next-line unused-fields
+  for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
+    local entry = self:get_entry(character)
+    if entry then
+      entry:research(force_index)
+    end
+  end
 end
 
 --- @private
@@ -176,7 +225,7 @@ function database:should_group(a, b)
   return a.name == b.name
 end
 
---- @param obj EntryID|GenericPrototype|Ingredient|Product|SpritePath
+--- @param obj EntryID|GenericPrototype|Ingredient|Product|SpritePath|LuaTechnology|LuaRecipe|LuaEntity|TechnologyModifier
 --- @return Entry?
 function database:get_entry(obj)
   -- LuaLS can't narrow object_name and the Factorio plugin's output doesn't work here
@@ -185,6 +234,8 @@ function database:get_entry(obj)
     return self.entries[obj]
   elseif obj.object_name then
     return self.entries[util.object_name_to_type[obj.object_name] .. "/" .. obj.name]
+  elseif obj.type == "unlock-recipe" then
+    return self.entries["recipe/" .. obj.recipe]
   else
     return self.entries[obj.type .. "/" .. obj.name]
   end
@@ -224,6 +275,15 @@ function database:add_prototype(prototype, group_with)
   flib_dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
 end
 
+--- @param tech LuaTechnology
+function database:on_research_finished(tech)
+  local entry = self:get_entry(tech)
+  if not entry then
+    return
+  end
+  entry:research(tech.force.index)
+end
+
 -- Events
 
 --- @class DatabaseModule
@@ -232,13 +292,12 @@ local M = {}
 --- @param e EventData.on_research_finished
 local function on_research_finished(e)
   local profiler = game.create_profiler()
-  local technology = e.research
-  researched.on_technology_researched(technology, technology.force.index)
+  global.database:on_research_finished(e.research)
   profiler.stop()
   log({ "", "Unlock Tech ", profiler })
   if global.update_force_guis then
     -- Update on the next tick in case multiple researches are done at once
-    global.update_force_guis[technology.force.index] = true
+    global.update_force_guis[e.research.force.index] = true
   end
 end
 

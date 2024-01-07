@@ -27,11 +27,11 @@ local entry_id = {}
 local mt = { __index = entry_id }
 script.register_metatable("entry_id", mt)
 
---- @param input Ingredient.fluid|Product|ElemID
+--- @param input Ingredient.fluid|Product
 --- @param database Database
---- @return EntryID
+--- @return EntryID?
 function entry_id.new(input, database)
-  return setmetatable({
+  local self = setmetatable({
     database = database,
     type = input.type,
     name = input.name,
@@ -43,6 +43,12 @@ function entry_id.new(input, database)
     minimum_temperature = input.minimum_temperature,
     maximum_temperature = input.maximum_temperature,
   }, mt)
+
+  if not database:get_entry(self) then
+    error("Attempted to create an entry ID for a non-existent entry: " .. self:get_path())
+  end
+
+  return self
 end
 
 --- @return Entry

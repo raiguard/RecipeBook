@@ -1,3 +1,5 @@
+--- @diagnostic disable
+
 --- @class researched
 local researched = {}
 

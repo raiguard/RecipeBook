@@ -71,12 +71,15 @@ function util.is_hidden(prototype)
 end
 
 util.object_name_to_type = {
+  LuaEntity = "entity",
   LuaEntityPrototype = "entity",
   LuaEquipmentPrototype = "equipment",
   LuaFluidPrototype = "fluid",
   LuaItemPrototype = "item",
   LuaRecipePrototype = "recipe",
+  LuaRecipe = "recipe",
   LuaTechnologyPrototype = "technology",
+  LuaTechnology = "technology",
 }
 
 --- @return EntryID[]
@@ -88,6 +91,9 @@ function util.unique_id_array()
     --- @param index integer
     --- @param value EntryID
     __newindex = function(self, index, value)
+      if not value then
+        return
+      end
       local key = value:get_path()
       if hash[key] then
         return

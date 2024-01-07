@@ -94,6 +94,39 @@ function entry:get_type()
   return util.object_name_to_type[self.base.object_name]
 end
 
+-- RESEARCH
+
+--- @param force_index uint
+function entry:research(force_index)
+  if not self.researched then
+    self.researched = {}
+  end
+  if self.researched[force_index] then
+    return
+  end
+  self.researched[force_index] = true
+
+  for _, recipe in pairs(self:get_unlocks_recipes() or {}) do
+    recipe:get_entry():research(force_index)
+  end
+  for _, product in pairs(self:get_products() or {}) do
+    product:get_entry():research(force_index)
+  end
+  for _, product in pairs(self:get_rocket_launch_products() or {}) do
+    product:get_entry():research(force_index)
+  end
+  for _, product in pairs(self:get_yields() or {}) do
+    product:get_entry():research(force_index)
+  end
+  for _, resource in pairs(self:get_can_mine() or {}) do
+    resource:get_entry():research(force_index)
+  end
+  local burnt_result = self:get_burnt_result()
+  if burnt_result then
+    burnt_result:get_entry():research(force_index)
+  end
+end
+
 -- PROPERTIES
 -- TODO: Memoization
 
@@ -273,15 +306,17 @@ function entry:get_can_craft()
     filters[#filters + 1] = { filter = "category", category = category }
   end
   for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
-    local item_ingredients = 0
-    for _, ingredient in pairs(recipe.ingredients) do
-      if ingredient.type == "item" then
-        item_ingredients = item_ingredients + 1
+    if self.database:get_entry(recipe) then
+      local item_ingredients = 0
+      for _, ingredient in pairs(recipe.ingredients) do
+        if ingredient.type == "item" then
+          item_ingredients = item_ingredients + 1
+        end
       end
-    end
-    local ingredient_count = self.entity.ingredient_count
-    if not ingredient_count or ingredient_count >= item_ingredients then
-      output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+      local ingredient_count = self.entity.ingredient_count
+      if not ingredient_count or ingredient_count >= item_ingredients then
+        output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+      end
     end
   end
 
@@ -289,10 +324,136 @@ function entry:get_can_craft()
 end
 
 --- @return EntryID[]?
-function entry:get_unlocked_by()
+function entry:get_can_mine()
+  local entity = self.entity
+  if not entity or entity.type ~= "mining-drill" then
+    return
+  end
+
+  --- @type string|boolean?
+  local filter
+  for _, fluidbox_prototype in pairs(entity.fluidbox_prototypes) do
+    local production_type = fluidbox_prototype.production_type
+    if production_type == "input" or production_type == "input-output" then
+      filter = fluidbox_prototype.filter and fluidbox_prototype.filter.name or true
+      break
+    end
+  end
+  local resource_categories = entity.resource_categories
+
   local output = util.unique_id_array()
 
-  -- TODO: Rocket launch products, unlock with crafting machines if no techs
+  for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+    local mineable = resource.mineable_properties
+    local required_fluid = mineable.required_fluid
+    if
+      resource_categories[resource.resource_category]
+      and (not required_fluid or filter == true or filter == required_fluid)
+      and self.database:get_entry(resource)
+    then
+      output[#output + 1] = entry_id.new({
+        type = "entity",
+        name = resource.name,
+        required_fluid = required_fluid
+          and { type = "fluid", name = required_fluid, amount = mineable.fluid_amount / 10 },
+      }, self.database)
+    end
+  end
+
+  return output
+end
+
+--- @return EntryID[]?
+function entry:get_rocket_launch_products()
+  if not self.item then
+    return
+  end
+
+  local products = self.item.rocket_launch_products
+  if #products == 0 then
+    return
+  end
+
+  return flib_table.map(products, function(product)
+    return entry_id.new(product, self.database)
+  end)
+end
+
+--- @return EntryID[]?
+function entry:get_rocket_launch_product_of()
+  if not self.item then
+    return
+  end
+
+  local output = util.unique_id_array()
+
+  --- @diagnostic disable-next-line unused-fields
+  for _, other_item in pairs(game.get_filtered_item_prototypes({ { filter = "has-rocket-launch-products" } })) do
+    for _, product in pairs(other_item.rocket_launch_products) do
+      if product.name == self.item.name then
+        output[#output + 1] = entry_id.new({ type = "item", name = other_item.name }, self.database)
+        break
+      end
+    end
+  end
+
+  return output
+end
+
+local yields = {
+  ["fish"] = true,
+  ["resource"] = true,
+  ["simple-entity"] = true,
+  ["tree"] = true,
+}
+
+--- @return EntryID[]?
+function entry:get_yields()
+  local entity = self.entity
+  if not entity then
+    return
+  end
+
+  if not yields[entity.type] then
+    return
+  end
+
+  local mineable_properties = entity.mineable_properties
+  if not mineable_properties or not mineable_properties.minable then
+    return
+  end
+
+  local products = mineable_properties.products
+  if not products then
+    return
+  end
+
+  if not (#products == 1 and self.item and products[1].type == "item" and products[1].name == self.item.name) then
+    -- properties.crafting_time = mineable_properties.mining_time
+    return flib_table.map(mineable_properties.products, function(product)
+      return entry_id.new(product, self.database)
+    end)
+  end
+end
+
+--- @return EntryID?
+function entry:get_burnt_result()
+  local item = self.item
+  if not item then
+    return
+  end
+
+  local burnt_result = item.burnt_result
+  if not burnt_result then
+    return
+  end
+
+  return entry_id.new({ type = "item", name = burnt_result.name }, self.database)
+end
+
+--- @return EntryID[]?
+function entry:get_unlocked_by()
+  local output = util.unique_id_array()
 
   for _, id in pairs(self:get_product_of() or {}) do
     local recipe = id:get_entry().recipe
@@ -307,10 +468,34 @@ function entry:get_unlocked_by()
     end
   end
 
+  for _, id in pairs(self:get_rocket_launch_product_of() or {}) do
+    for _, tech in pairs(id:get_entry():get_unlocked_by() or {}) do
+      output[#output + 1] = tech
+    end
+  end
+
   local prototypes = game.technology_prototypes
   table.sort(output, function(tech_a, tech_b)
     return flib_technology.sort_predicate(prototypes[tech_a.name], prototypes[tech_b.name])
   end)
+
+  return output
+end
+
+--- @return EntryID[]?
+function entry:get_unlocks_recipes()
+  local technology = self.technology
+  if not technology then
+    return
+  end
+
+  local output = util.unique_id_array()
+
+  for _, effect in pairs(technology.effects) do
+    if effect.type == "unlock-recipe" and self.database:get_entry(effect) then
+      output[#output + 1] = entry_id.new({ type = "recipe", name = effect.recipe }, self.database)
+    end
+  end
 
   return output
 end

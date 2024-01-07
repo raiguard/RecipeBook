@@ -136,21 +136,21 @@ function info_pane:show(entry)
   -- slot_table.build(content_pane, self.context, { "description.rb-mined-by" }, properties.mined_by)
   -- slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, properties.burned_in)
   -- slot_table.build(content_pane, self.context, { "description.rb-gathered-from" }, properties.gathered_from)
-  -- slot_table.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rocket-launch-products" },
-  --   properties.rocket_launch_products
-  -- )
-  -- slot_table.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-rocket-launch-product-of" },
-  --   properties.rocket_launch_product_of
-  -- )
-  -- slot_table.build(content_pane, self.context, { "description.rb-can-mine" }, properties.can_mine)
+  slot_table.build(
+    content_pane,
+    self.context,
+    { "description.rocket-launch-products" },
+    entry:get_rocket_launch_products()
+  )
+  slot_table.build(
+    content_pane,
+    self.context,
+    { "description.rb-rocket-launch-product-of" },
+    entry:get_rocket_launch_product_of()
+  )
+  slot_table.build(content_pane, self.context, { "description.rb-can-mine" }, entry:get_can_mine())
   -- slot_table.build(content_pane, self.context, { "description.rb-can-burn" }, properties.can_burn)
-  -- list_box.build(content_pane, self.context, { "description.rb-yields" }, properties.yields)
+  list_box.build(content_pane, self.context, { "description.rb-yields" }, entry:get_yields())
   -- slot_table.build(content_pane, self.context, { "description.rb-placeable-by" }, properties.placeable_by)
   technology_slot_table.build(content_pane, self.context, { "description.rb-unlocked-by" }, entry:get_unlocked_by())
 
