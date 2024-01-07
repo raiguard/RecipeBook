@@ -193,17 +193,28 @@ function database:init_researched(force)
   end
 end
 
+local bigunpack = require("__big-data-string__.unpack")
+
 --- @private
 function database:get_overrides()
-  -- TODO: Smuggle from data stage
-  self.alternatives = {
-    ["entity-curved-rail"] = "entity/straight-rail",
-  }
-  self.excluded_categories = {}
-  self.group_overrides = {
-    ["entity/fish"] = "item/raw-fish",
-    ["entity/straight-rail"] = "item/rail",
-  }
+  local res, alternatives = serpent.load(bigunpack("rb_alternatives"))
+  if res then
+    self.alternatives = alternatives
+  end
+  local res, group_overrides = serpent.load(bigunpack("rb_group_overrides"))
+  if res then
+    self.group_overrides = group_overrides
+  end
+
+  -- -- TODO: Smuggle from data stage
+  -- self.alternatives = {
+  --   ["entity-curved-rail"] = "entity/straight-rail",
+  -- }
+  -- self.excluded_categories = {}
+  -- self.group_overrides = {
+  --   ["entity/fish"] = "item/raw-fish",
+  --   ["entity/straight-rail"] = "item/rail",
+  -- }
 end
 
 --- @private

@@ -31,36 +31,83 @@ table.insert(data.raw["item"]["electric-energy-interface"].flags, "hidden")
 --   }
 -- }
 
--- -- Testing recipe
--- local recipe = table.deepcopy(data.raw["recipe"]["advanced-oil-processing"])
--- if not recipe.ingredients then
---   return
--- end
--- recipe.name = "rb-test-recipe"
--- recipe.ingredients[1].temperature = 130
--- recipe.ingredients[2].minimum_temperature = 10
--- recipe.ingredients[2].maximum_temperature = 1000
--- recipe.ingredients[3] = {
---   type = "fluid",
---   name = "petroleum-gas",
---   minimum_temperature = 69,
---   amount = 10000,
--- }
--- recipe.ingredients[4] = {
---   type = "fluid",
---   name = "sulfuric-acid",
---   maximum_temperature = 420,
---   amount = 0.5,
--- }
--- recipe.results[2].temperature = 25
--- recipe.results[4] = {
---   type = "item",
---   name = "space-science-pack",
---   amount_min = 1,
---   amount_max = 65535,
---   probability = 0.6666666666666666666667,
--- }
--- data:extend({ recipe })
+-- data:extend({
+--   {
+--     type = "recipe",
+--     name = "rb-properties-test-recipe",
+--     ingredients = { { "uranium-fuel-cell", 420 }, { "pipe", 69 } },
+--     enabled = false,
+--     result = "spidertron",
+--     recipe_book = {
+--       alternative = "recipe/spidertron",
+--     },
+--   },
+-- })
+
+-- table.insert(
+--   data.raw.technology["automation-3"].effects,
+--   { type = "unlock-recipe", recipe = "rb-properties-test-recipe" }
+-- )
+
+--- @diagnostic disable: inject-field
+data.raw["curved-rail"]["curved-rail"].recipe_book = { alternative = "entity/straight-rail" }
+data.raw["fish"]["fish"].recipe_book = { group_with = "item/raw-fish" }
+data.raw["straight-rail"]["straight-rail"].recipe_book = { group_with = "item/rail" }
+--- @diagnostic enable: inject-field
+
+--- @class RBPrototypeOverrides
+--- @field hidden boolean? If true, the prototype will be hidden in recipe book even if it is not hidden otherwise.
+--- @field hidden_from_search boolean? If true, the prototype will be hidden from search results, but will not be hidden in info pages.
+--- @field exclude boolean? If true, the prototype will be entirely excluded from recipe book.
+--- @field alternative string? If set, this prototype will reference the given alternative's page instead of having its own.
+--- @field group_with SpritePath? If set, this prototype will be grouped with the given prototype instead of following the regular grouping logic.
+
+--- @class PrototypeWithRBOverrides: data.PrototypeBase
+--- @field recipe_book RBPrototypeOverrides
+
+--- @type table<SpritePath, SpritePath>
+local alternatives = {}
+--- @type table<SpritePath, SpritePath>
+local group_overrides = {}
+
+--- @param prototype data.PrototypeBase
+--- @return string
+local function get_prototype_base_type(prototype)
+  for name, tbl in pairs(defines.prototypes) do
+    if tbl[prototype.type] then
+      return name
+    end
+  end
+  error("Failed to find prototype type of " .. prototype.type .. "/" .. prototype.name)
+end
+
+--- @param prototype PrototypeWithRBOverrides
+local function add_overrides(prototype)
+  -- TODO: Validation
+  local overrides = prototype.recipe_book
+  local path = get_prototype_base_type(prototype) .. "/" .. prototype.name
+  if overrides.alternative then
+    alternatives[path] = overrides.alternative
+  end
+  if overrides.group_with then
+    group_overrides[path] = overrides.group_with
+  end
+  prototype.recipe_book = nil
+end
+
+for _, prototypes in pairs(data.raw) do
+  for _, prototype in pairs(prototypes) do
+    if prototype.recipe_book then
+      add_overrides(prototype)
+    end
+  end
+end
+
+local bigpack = require("__big-data-string__.pack")
+data:extend({
+  bigpack("rb_alternatives", serpent.line(alternatives)),
+  bigpack("rb_group_overrides", serpent.line(group_overrides)),
+})
 
 --- Some compatibility things for later
 -- local excluded_categories = {
