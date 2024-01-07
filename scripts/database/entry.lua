@@ -93,6 +93,8 @@ function entry:get_type()
 end
 
 -- PROPERTIES
+-- TODO: Memoization
+-- TODO: Deduplication
 
 --- @return double?
 function entry:get_crafting_time()
@@ -198,7 +200,6 @@ function entry:get_ingredient_in()
         output[#output + 1] = id
       end
     end
-    return output
   end
   if self.item then
     for _, recipe in
@@ -212,8 +213,69 @@ function entry:get_ingredient_in()
         output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
       end
     end
-    return output
   end
+
+  return output
+end
+
+--- @return EntryID[]?
+function entry:get_product_of()
+  if not self.fluid and not self.item then
+    return
+  end
+
+  --- @type EntryID[]
+  local output = {}
+  if self.fluid then
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-product-fluid", elem_filters = { { filter = "name", name = self.fluid.name } } },
+      }))
+    do
+      local entry = self.database:get_entry(recipe)
+      if entry then
+        output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+      end
+    end
+  end
+  if self.item then
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-product-item", elem_filters = { { filter = "name", name = self.item.name } } },
+      }))
+    do
+      local entry = self.database:get_entry(recipe)
+      if entry then
+        output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+      end
+    end
+  end
+  return output
+end
+
+--- @return EntryID[]?
+function entry:get_unlocked_by()
+  --- @type EntryID[]
+  local output = {}
+
+  -- TODO: Rocket launch products, unlock with crafting machines if no techs
+
+  for _, id in pairs(self:get_product_of() or {}) do
+    local recipe = id:get_entry().recipe
+    assert(recipe, "Product of recipe was nil.")
+    if recipe.unlock_results then
+      for technology_name in
+        --- @diagnostic disable-next-line unused-fields
+        pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
+      do
+        output[#output + 1] = entry_id.new({ type = "technology", name = technology_name }, self.database)
+      end
+    end
+  end
+
+  return output
 end
 
 return entry
