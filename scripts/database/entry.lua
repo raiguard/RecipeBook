@@ -255,6 +255,42 @@ function entry:get_product_of()
   return output
 end
 
+local crafting_entities = {
+  ["assembling-machine"] = true,
+  ["furnace"] = true,
+  ["rocket-silo"] = true,
+  ["character"] = true,
+}
+
+--- @return EntryID[]?
+function entry:get_can_craft()
+  if not self.entity or not crafting_entities[self.entity.type] then
+    return
+  end
+
+  --- @type EntryID[]
+  local output = {}
+
+  local filters = {}
+  for category in pairs(self.entity.crafting_categories) do
+    filters[#filters + 1] = { filter = "category", category = category }
+  end
+  for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
+    local item_ingredients = 0
+    for _, ingredient in pairs(recipe.ingredients) do
+      if ingredient.type == "item" then
+        item_ingredients = item_ingredients + 1
+      end
+    end
+    local ingredient_count = self.entity.ingredient_count
+    if not ingredient_count or ingredient_count >= item_ingredients then
+      output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+    end
+  end
+
+  return output
+end
+
 --- @return EntryID[]?
 function entry:get_unlocked_by()
   --- @type EntryID[]

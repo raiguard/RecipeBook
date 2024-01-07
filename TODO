@@ -4,6 +4,7 @@ TODO:
 - Technology pages (tech screen pauses the game and prevents any nice logic).
 - Go through listboxes list below and implement those that are missing.
 - Search pane filtering by a specified list and other filtering options.
+- Improve behavior when other GUIs are open (overlay instead of replace).
 
 BUGS:
 - Alt+click on item-on-ground doesn't work.
