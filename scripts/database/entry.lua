@@ -538,11 +538,13 @@ function entry:get_can_burn()
   local burner = entity.burner_prototype
   if burner then
     for category in pairs(burner.fuel_categories) do
-      for item_name in
+      for item_name, item in
         --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_item_prototypes({ { filter = "fuel-category", ["fuel-category"] = category } }))
       do
-        output[#output + 1] = entry_id.new({ type = "item", name = item_name }, self.database)
+        if self.database:get_entry(item) then
+          output[#output + 1] = entry_id.new({ type = "item", name = item_name }, self.database)
+        end
       end
     end
   end
@@ -552,11 +554,13 @@ function entry:get_can_burn()
     if filter then
       output[#output + 1] = entry_id.new({ type = "fluid", name = filter.name }, self.database)
     else
-      for fluid_name in
+      for fluid_name, fluid in
         --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
       do
-        output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_name }, self.database)
+        if self.database:get_entry(fluid) then
+          output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_name }, self.database)
+        end
       end
     end
   end
@@ -565,11 +569,13 @@ function entry:get_can_burn()
     if fluid_box.filter then
       output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_box.filter.name }, self.database)
     else
-      for fluid_name in
+      for fluid_name, fluid in
         --- @diagnostic disable-next-line unused-fields
         pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
       do
-        output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_name }, self.database)
+        if self.database:get_entry(fluid) then
+          output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_name }, self.database)
+        end
       end
     end
   end
