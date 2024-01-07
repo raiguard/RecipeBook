@@ -6,7 +6,7 @@ handler.add_libraries({
   require("__flib__.dictionary-lite"),
   require("__flib__.gui-lite"),
 
-  require("scripts.database"),
+  require("scripts.database.database"),
   require("scripts.gui.main"),
   require("scripts.gui.overhead-button"),
 })
