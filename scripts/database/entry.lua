@@ -551,7 +551,7 @@ function entry:get_can_burn()
   local fluid_energy_source_prototype = entity.fluid_energy_source_prototype
   if fluid_energy_source_prototype then
     local filter = fluid_energy_source_prototype.fluid_box.filter
-    if filter then
+    if filter and self.database:get_entry(filter) then
       output[#output + 1] = entry_id.new({ type = "fluid", name = filter.name }, self.database)
     else
       for fluid_name, fluid in
