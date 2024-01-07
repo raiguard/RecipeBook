@@ -213,7 +213,7 @@ function entry:get_made_in()
 end
 
 --- @return EntryID[]?
-function entry:get_ingredient_in()
+function entry:get_used_in()
   if not self.fluid and not self.item then
     return
   end
@@ -259,7 +259,7 @@ function entry:get_ingredient_in()
 end
 
 --- @return EntryID[]?
-function entry:get_product_of()
+function entry:get_alternate_recipes()
   if not self.fluid and not self.item then
     return
   end
@@ -638,16 +638,21 @@ end
 function entry:get_unlocked_by()
   local output = util.unique_id_array()
 
-  for _, id in pairs(self:get_product_of() or {}) do
-    local recipe = id:get_entry().recipe
-    assert(recipe, "Product of recipe was nil.")
-    if recipe.unlock_results then
-      for technology_name in
-        --- @diagnostic disable-next-line unused-fields
-        pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
-      do
+  local recipe = self.recipe
+  if recipe and recipe.unlock_results then
+    for technology_name, technology in
+      --- @diagnostic disable-next-line unused-fields
+      pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
+    do
+      if self.database:get_entry(technology) then
         output[#output + 1] = entry_id.new({ type = "technology", name = technology_name }, self.database)
       end
+    end
+  end
+
+  for _, id in pairs(self:get_alternate_recipes() or {}) do
+    for _, tech in pairs(id:get_entry():get_unlocked_by() or {}) do
+      output[#output + 1] = tech
     end
   end
 
