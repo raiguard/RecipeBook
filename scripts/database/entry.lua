@@ -125,6 +125,14 @@ function entry:research(force_index)
   if burnt_result then
     burnt_result:get_entry():research(force_index)
   end
+  local pumped_fluid = self:get_pumped_fluid()
+  if pumped_fluid then
+    pumped_fluid:get_entry():research(force_index)
+  end
+  local generated_fluid = self:get_generated_fluid()
+  if generated_fluid then
+    generated_fluid:get_entry():research(force_index)
+  end
 end
 
 -- PROPERTIES
@@ -667,6 +675,36 @@ function entry:get_unlocks_recipes()
   end
 
   return output
+end
+
+--- @return EntryID?
+function entry:get_pumped_fluid()
+  local entity = self.entity
+  if not entity or entity.type ~= "offshore-pump" then
+    return
+  end
+
+  local fluid = entity.fluid
+  if not self.database:get_entry(fluid) then
+    return
+  end
+
+  return entry_id.new({ type = "fluid", name = fluid.name }, self.database)
+end
+
+--- @return EntryID?
+function entry:get_generated_fluid()
+  local entity = self.entity
+  if not entity or entity.type ~= "boiler" then
+    return
+  end
+
+  for _, fluidbox in pairs(entity.fluidbox_prototypes) do
+    if fluidbox.production_type == "output" and fluidbox.filter then
+      -- TODO: Check if multiple outputs are possible
+      return entry_id.new({ type = "fluid", name = fluidbox.filter.name }, self.database)
+    end
+  end
 end
 
 return entry
