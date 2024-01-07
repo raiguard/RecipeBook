@@ -213,6 +213,42 @@ function entry:get_made_in()
 end
 
 --- @return EntryID[]?
+function entry:get_alternate_recipes()
+  if not self.fluid and not self.item then
+    return
+  end
+
+  local output = util.unique_id_array()
+  if self.fluid then
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-product-fluid", elem_filters = { { filter = "name", name = self.fluid.name } } },
+      }))
+    do
+      local entry = self.database:get_entry(recipe)
+      if entry and entry ~= self then
+        output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+      end
+    end
+  end
+  if self.item then
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-product-item", elem_filters = { { filter = "name", name = self.item.name } } },
+      }))
+    do
+      local entry = self.database:get_entry(recipe)
+      if entry and entry ~= self then
+        output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+      end
+    end
+  end
+  return output
+end
+
+--- @return EntryID[]?
 function entry:get_used_in()
   if not self.fluid and not self.item then
     return
@@ -255,42 +291,6 @@ function entry:get_used_in()
     end
   end
 
-  return output
-end
-
---- @return EntryID[]?
-function entry:get_alternate_recipes()
-  if not self.fluid and not self.item then
-    return
-  end
-
-  local output = util.unique_id_array()
-  if self.fluid then
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        --- @diagnostic disable-next-line unused-fields
-        { filter = "has-product-fluid", elem_filters = { { filter = "name", name = self.fluid.name } } },
-      }))
-    do
-      local entry = self.database:get_entry(recipe)
-      if entry and entry ~= self then
-        output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
-      end
-    end
-  end
-  if self.item then
-    for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
-        --- @diagnostic disable-next-line unused-fields
-        { filter = "has-product-item", elem_filters = { { filter = "name", name = self.item.name } } },
-      }))
-    do
-      local entry = self.database:get_entry(recipe)
-      if entry and entry ~= self then
-        output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
-      end
-    end
-  end
   return output
 end
 
