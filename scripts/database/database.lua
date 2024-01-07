@@ -6,7 +6,7 @@ local search_tree = require("scripts.database.search-tree")
 local util = require("scripts.util")
 
 --- @class Database
---- @field entries table<string, Entry?>
+--- @field entries table<SpritePath, Entry?>
 --- @field search_tree SearchTree
 --- @field alternatives table<SpritePath, SpritePath>
 --- @field excluded_categories table<string, boolean>
@@ -176,16 +176,19 @@ function database:should_group(a, b)
   return a.name == b.name
 end
 
---- @param obj EntryID|Ingredient|Product|ElemID
+--- @param obj EntryID|GenericPrototype|Ingredient|Product|SpritePath
 --- @return Entry?
 function database:get_entry(obj)
-  return self.entries[obj.type .. "/" .. obj.name]
-end
-
---- @param path SpritePath
---- @return Entry?
-function database:get(path)
-  return self.entries[path]
+  -- LuaLS can't narrow object_name and the Factorio plugin's output doesn't work here
+  --- @diagnostic disable
+  if type(obj) == "string" then
+    return self.entries[obj]
+  elseif obj.object_name then
+    return self.entries[util.object_name_to_type[obj.object_name] .. "/" .. obj.name]
+  else
+    return self.entries[obj.type .. "/" .. obj.name]
+  end
+  --- @diagnostic enable
 end
 
 --- @private

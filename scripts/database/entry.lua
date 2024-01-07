@@ -156,7 +156,7 @@ function entry:get_made_in()
     }))
   do
     local ingredient_count = crafter.ingredient_count
-    local crafter_entry = self.database:get("entity/" .. crafter.name)
+    local crafter_entry = self.database:get_entry(crafter)
     if crafter_entry and (ingredient_count == 0 or ingredient_count >= item_ingredients) then
       output[#output + 1] = entry_id.new({
         type = "entity",
@@ -167,6 +167,53 @@ function entry:get_made_in()
   end
 
   return output
+end
+
+--- @return EntryID[]?
+function entry:get_ingredient_in()
+  if not self.fluid and not self.item then
+    return
+  end
+
+  --- @type EntryID[]
+  local output = {}
+  if self.fluid then
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = self.fluid.name } } },
+      }))
+    do
+      local entry = self.database:get_entry(recipe)
+      if entry then
+        local id = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+        for _, ingredient in pairs(recipe.ingredients) do
+          -- minimum_temperature and maximum_temperature are mutually inclusive.
+          if ingredient.name == self.fluid.name and ingredient.minimum_temperature then
+            id.minimum_temperature = ingredient.minimum_temperature
+            id.maximum_temperature = ingredient.maximum_temperature
+            break
+          end
+        end
+        output[#output + 1] = id
+      end
+    end
+    return output
+  end
+  if self.item then
+    for _, recipe in
+      pairs(game.get_filtered_recipe_prototypes({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = self.item.name } } },
+      }))
+    do
+      local entry = self.database:get_entry(recipe)
+      if entry then
+        output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+      end
+    end
+    return output
+  end
 end
 
 return entry

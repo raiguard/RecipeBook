@@ -130,7 +130,7 @@ function info_pane:show(entry)
   )
   list_box.build(content_pane, self.context, { "description.products" }, entry:get_products())
   slot_table.build(content_pane, self.context, { "description.made-in" }, entry:get_made_in())
-  -- slot_table.build(content_pane, self.context, { "description.rb-ingredient-in" }, properties.ingredient_in)
+  slot_table.build(content_pane, self.context, { "description.rb-ingredient-in" }, entry:get_ingredient_in())
   -- slot_table.build(content_pane, self.context, { "description.rb-product-of" }, properties.product_of)
   -- slot_table.build(content_pane, self.context, { "description.rb-can-craft" }, properties.can_craft)
   -- slot_table.build(content_pane, self.context, { "description.rb-mined-by" }, properties.mined_by)
@@ -155,7 +155,7 @@ function info_pane:show(entry)
   -- technology_slot_table.build(content_pane, self.context, { "description.rb-unlocked-by" }, properties.unlocked_by)
 
   profiler.stop()
-  log({ "", "[", entry:get_path(), "] GUI update ", profiler })
+  log({ "", "[", entry:get_path(), "] ", profiler })
 
   return true
 end

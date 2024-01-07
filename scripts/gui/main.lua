@@ -286,7 +286,7 @@ function main_gui:on_result_clicked(e)
   if not path then
     return
   end
-  local entry = global.database:get(path)
+  local entry = global.database:get_entry(path)
   if not entry then
     return
   end
