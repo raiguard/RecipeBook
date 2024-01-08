@@ -302,6 +302,9 @@ local M = {}
 
 --- @param e EventData.on_research_finished
 local function on_research_finished(e)
+  if not global.database then
+    return
+  end
   local profiler = game.create_profiler()
   global.database:on_research_finished(e.research)
   profiler.stop()
