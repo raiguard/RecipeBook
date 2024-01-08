@@ -95,6 +95,11 @@ function entry:get_type()
   return util.object_name_to_type[self.base.object_name]
 end
 
+--- @return integer
+function entry:get_display_order()
+  return self.database.search_tree.order[self]
+end
+
 -- RESEARCH
 
 --- @param force_index uint
@@ -246,6 +251,11 @@ function entry:get_alternate_recipes()
       end
     end
   end
+
+  table.sort(output, function(a, b)
+    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  end)
+
   return output
 end
 
@@ -292,6 +302,10 @@ function entry:get_used_in()
     end
   end
 
+  table.sort(output, function(a, b)
+    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  end)
+
   return output
 end
 
@@ -329,6 +343,10 @@ function entry:get_can_craft()
     end
   end
 
+  table.sort(output, function(a, b)
+    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  end)
+
   return output
 end
 
@@ -352,6 +370,10 @@ function entry:get_mined_by()
       output[#output + 1] = entry_id.new({ type = "entity", name = drill.name }, self.database)
     end
   end
+
+  table.sort(output, function(a, b)
+    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  end)
 
   return output
 end
@@ -422,6 +444,10 @@ function entry:get_burned_in()
     end
   end
 
+  table.sort(output, function(a, b)
+    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  end)
+
   return output
 end
 
@@ -446,6 +472,10 @@ function entry:get_gathered_from()
       end
     end
   end
+
+  table.sort(output, function(a, b)
+    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  end)
 
   return output
 end
@@ -524,6 +554,10 @@ function entry:get_can_mine()
     end
   end
 
+  table.sort(output, function(a, b)
+    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  end)
+
   return output
 end
 
@@ -580,6 +614,10 @@ function entry:get_can_burn()
       end
     end
   end
+
+  table.sort(output, function(a, b)
+    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  end)
 
   return output
 end

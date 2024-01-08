@@ -118,6 +118,9 @@ function database:build()
     self:add_prototype(character)
   end
 
+  log("Search tree finalization")
+  self.search_tree:finalize()
+
   log("Technologies and research status")
   for name, technology in pairs(game.technology_prototypes) do
     local path = "technology/" .. name
@@ -133,9 +136,6 @@ function database:build()
       self.entries[from] = self.entries[to]
     end
   end
-
-  log("Search tree finalization")
-  self.search_tree:finalize()
 
   profiler.stop()
   log({ "", "Database Generation ", profiler })

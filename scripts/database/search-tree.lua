@@ -1,6 +1,7 @@
 --- Each top-level prototype sorted into groups and subgroups for the search panel.
 --- @class SearchTree
 --- @field groups table<string, table<string, Entry[]>> Group name -> subgroup name -> members
+--- @field order table<Entry, integer>
 local search_tree = {}
 local mt = { __index = search_tree }
 script.register_metatable("search_tree", mt)
@@ -10,6 +11,7 @@ function search_tree.new()
   --- @type SearchTree
   local self = {
     groups = {},
+    order = {},
   }
 
   for group_name, group_prototype in pairs(game.item_group_prototypes) do
@@ -26,6 +28,7 @@ end
 
 --- Prune empty groups and sort all subgroups.
 function search_tree:finalize()
+  local order = 0
   for group_name, group in pairs(self.groups) do
     for subgroup_name, subgroup in pairs(group) do
       if #subgroup == 0 then
@@ -40,6 +43,11 @@ function search_tree:finalize()
         end
         return a_order < b_order
       end)
+
+      for i = 1, #subgroup do
+        order = order + 1
+        self.order[subgroup[i]] = order
+      end
 
       ::continue::
     end
