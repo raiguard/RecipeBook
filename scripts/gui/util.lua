@@ -1,3 +1,5 @@
+local flib_math = require("__flib__.math")
+
 --- @class GuiUtil
 local gui_util = {}
 
@@ -10,7 +12,7 @@ function gui_util.format_crafting_time(crafting_time)
   return {
     "",
     "[img=quantity-time][font=default-bold]",
-    { "time-symbol-seconds", crafting_time },
+    { "time-symbol-seconds", flib_math.floored(crafting_time, 0.01) },
     "[/font] ",
     { "description.crafting-time" },
   }
