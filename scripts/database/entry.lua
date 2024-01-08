@@ -636,10 +636,22 @@ end
 
 --- @return EntryID[]?
 function entry:get_unlocked_by()
+  return self:get_unlocked_by_internal({})
+end
+
+--- @private
+--- @param visited table<Entry, boolean>
+--- @return EntryID[]?
+function entry:get_unlocked_by_internal(visited)
+  if visited[self] then
+    return
+  end
+  visited[self] = true
+
   local output = util.unique_id_array()
 
   local recipe = self.recipe
-  if recipe and recipe.unlock_results then
+  if recipe and recipe.unlock_results and not visited[recipe.name] then
     for technology_name, technology in
       --- @diagnostic disable-next-line unused-fields
       pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
@@ -651,13 +663,13 @@ function entry:get_unlocked_by()
   end
 
   for _, id in pairs(self:get_alternate_recipes() or {}) do
-    for _, tech in pairs(id:get_entry():get_unlocked_by() or {}) do
+    for _, tech in pairs(id:get_entry():get_unlocked_by_internal(visited) or {}) do
       output[#output + 1] = tech
     end
   end
 
   for _, id in pairs(self:get_rocket_launch_product_of() or {}) do
-    for _, tech in pairs(id:get_entry():get_unlocked_by() or {}) do
+    for _, tech in pairs(id:get_entry():get_unlocked_by_internal(visited) or {}) do
       output[#output + 1] = tech
     end
   end
