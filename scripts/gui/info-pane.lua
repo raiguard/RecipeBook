@@ -76,7 +76,7 @@ function info_pane:show(entry)
   title_label.caption = { "", "            ", entry:get_localised_name() }
   title_label.sprite = entry:get_path()
   local style = "rb_subheader_caption_button"
-  if entry:is_hidden() then
+  if entry:is_hidden(self.context.player.force_index) then
     style = "rb_subheader_caption_button_hidden"
   elseif not entry:is_researched(self.context.player.force_index) then
     style = "rb_subheader_caption_button_unresearched"

@@ -47,7 +47,7 @@ function slot_table.build(parent, context, title, ids, remark)
       goto continue
     end
     -- Validate visibility
-    local is_hidden = entry:is_hidden()
+    local is_hidden = entry:is_hidden(force_index)
     local is_unresearched = not entry:is_researched(force_index)
     if is_hidden and not show_hidden then
       goto continue

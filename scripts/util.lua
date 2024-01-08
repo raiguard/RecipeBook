@@ -55,8 +55,9 @@ function util.get_prototype(obj)
 end
 
 --- @param prototype GenericPrototype
+--- @param force_index uint?
 --- @return boolean
-function util.is_hidden(prototype)
+function util.is_hidden(prototype, force_index)
   local type = prototype.object_name
   if type == "LuaFluidPrototype" then
     return prototype.hidden
@@ -65,7 +66,13 @@ function util.is_hidden(prototype)
   elseif type == "LuaRecipePrototype" then
     return prototype.hidden
   elseif type == "LuaTechnologyPrototype" then
-    return prototype.hidden
+    if force_index then
+      local tech = game.forces[force_index].technologies[prototype.name]
+      -- TODO: How to handle visible_when_disabled?
+      return not tech.enabled
+    else
+      return prototype.hidden
+    end
   end
   return false
 end

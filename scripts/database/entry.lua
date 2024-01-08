@@ -56,9 +56,10 @@ function entry:get_path()
   return util.object_name_to_type[base.object_name] .. "/" .. base.name
 end
 
+--- @param force_index uint
 --- @return boolean
-function entry:is_hidden()
-  return util.is_hidden(self.base)
+function entry:is_hidden(force_index)
+  return util.is_hidden(self.base, force_index)
 end
 
 --- @param force_index uint

@@ -1,6 +1,8 @@
 local flib_dictionary = require("__flib__.dictionary-lite")
 local flib_gui = require("__flib__.gui-lite")
 
+--- @alias SearchFilters table<SpritePath, boolean>
+
 --- @class SearchPane
 --- @field textfield LuaGuiElement
 --- @field groups_table LuaGuiElement
@@ -12,6 +14,7 @@ local flib_gui = require("__flib__.gui-lite")
 --- @field query string
 --- @field selected_group string
 --- @field selected_result Entry?
+--- @field filters SearchFilters?
 local search_pane = {}
 local mt = { __index = search_pane }
 script.register_metatable("search_pane", mt)
@@ -159,7 +162,7 @@ function search_pane:update()
     local searched_count = 0
     for _, subgroup in pairs(group) do
       for _, entry in pairs(subgroup) do
-        local is_hidden, is_researched = entry:is_hidden(), entry:is_researched(force_index)
+        local is_hidden, is_researched = entry:is_hidden(force_index), entry:is_researched(force_index)
         local filters_match = (show_hidden or not is_hidden) and (show_unresearched or is_researched)
         local button = result_buttons[entry]
         if filters_match then
@@ -277,6 +280,13 @@ end
 --- @param e EventData.on_gui_text_changed
 function search_pane:on_group_clicked(e)
   self:select_group(e.element.name)
+end
+
+--- @param filters SearchFilters?
+function search_pane:set_filters(filters)
+  self.filters = filters
+  self.query = ""
+  self:update()
 end
 
 flib_gui.add_handlers(search_pane, function(e, handler)

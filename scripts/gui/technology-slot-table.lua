@@ -42,7 +42,7 @@ function technology_slot_table.build(parent, context, title, ids, remark)
     -- Validate visibility
     -- local is_hidden = util.is_hidden(entry.base)
     -- local is_unresearched = util.is_unresearched(entry, force_index)
-    if entry:is_hidden() and not show_hidden then
+    if entry:is_hidden(force_index) and not show_hidden then
       goto continue
     end
     local research_state
