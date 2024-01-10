@@ -38,6 +38,7 @@ function database:build()
   local profiler = game.create_profiler()
 
   flib_dictionary.new("search")
+  flib_dictionary.new("description")
 
   -- Recipes determine most of what is actually attainable in the game.
   log("Recipes")
@@ -205,16 +206,6 @@ function database:get_overrides()
   if res then
     self.group_overrides = group_overrides
   end
-
-  -- -- TODO: Smuggle from data stage
-  -- self.alternatives = {
-  --   ["entity-curved-rail"] = "entity/straight-rail",
-  -- }
-  -- self.excluded_categories = {}
-  -- self.group_overrides = {
-  --   ["entity/fish"] = "item/raw-fish",
-  --   ["entity/straight-rail"] = "item/rail",
-  -- }
 end
 
 --- @private
@@ -234,6 +225,7 @@ function database:should_group(a, b)
     return false
   end
   return a.name == b.name
+  -- return false
 end
 
 --- @param obj EntryID|GenericPrototype|Ingredient|Product|SpritePath|LuaTechnology|LuaRecipe|LuaEntity|TechnologyModifier
@@ -265,6 +257,8 @@ function database:add_prototype(prototype, group_with)
   if self.alternatives[path] then
     return
   end
+
+  flib_dictionary.add("description", path, prototype.localised_description)
 
   if group_with then
     local parent_path = util.get_path(group_with)

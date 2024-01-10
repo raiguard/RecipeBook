@@ -1,3 +1,4 @@
+local flib_dictionary = require("__flib__.dictionary-lite")
 local gui_util = require("scripts.gui.util")
 local list_box = require("scripts.gui.list-box")
 local slot_table = require("scripts.gui.slot-table")
@@ -106,20 +107,24 @@ function info_pane:show(entry)
   end
 
   -- FIXME: Separate descriptions
-  local description = { "?" }
+  local descriptions = flib_dictionary.get(self.context.player.index, "description") or {}
   for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
     local prototype = entry[key]
-    if prototype and prototype.localised_description then
-      description[#description + 1] = prototype.localised_description
+    if not prototype then
+      goto continue
     end
+    local description = descriptions[key .. "/" .. prototype.name]
+    if not description then
+      goto continue
+    end
+    local description_frame =
+      content_pane.add({ type = "frame", style = "deep_frame_in_shallow_frame", horizontal_scroll_policy = "never" })
+    description_frame.style.horizontally_stretchable = true
+    local description_label = description_frame.add({ type = "label", caption = description })
+    description_label.style.padding = 8
+    description_label.style.single_line = false
+    ::continue::
   end
-  description[#description + 1] = ""
-  local description_frame =
-    content_pane.add({ type = "frame", style = "deep_frame_in_shallow_frame", horizontal_scroll_policy = "never" })
-  description_frame.style.horizontally_stretchable = true
-  local description_label = description_frame.add({ type = "label", caption = description })
-  description_label.style.padding = 8
-  description_label.style.single_line = false
 
   list_box.build(
     content_pane,
