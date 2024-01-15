@@ -106,8 +106,9 @@ function info_pane:show(entry)
     content_pane.welcome_label.destroy()
   end
 
-  -- FIXME: Separate descriptions
   local descriptions = flib_dictionary.get(self.context.player.index, "description") or {}
+  --- @type table<string, boolean>
+  local shown = {}
   for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
     local prototype = entry[key]
     if not prototype then
@@ -117,6 +118,10 @@ function info_pane:show(entry)
     if not description then
       goto continue
     end
+    if shown[description] then
+      goto continue
+    end
+    shown[description] = true
     local description_frame =
       content_pane.add({ type = "frame", style = "deep_frame_in_shallow_frame", horizontal_scroll_policy = "never" })
     description_frame.style.horizontally_stretchable = true
