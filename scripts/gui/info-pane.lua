@@ -135,8 +135,13 @@ function info_pane:show(entry)
   )
   list_box.build(content_pane, self.context, { "description.products" }, entry:get_products())
   slot_table.build(content_pane, self.context, { "description.made-in" }, entry:get_made_in())
-  slot_table.build(content_pane, self.context, { "description.rb-alternate-recipes" }, entry:get_alternate_recipes())
   slot_table.build(content_pane, self.context, { "description.rb-used-in" }, entry:get_used_in())
+  slot_table.build(
+    content_pane,
+    self.context,
+    { "description.rb-alternative-recipes" },
+    entry:get_alternative_recipes()
+  )
   slot_table.build(content_pane, self.context, { "description.rb-mined-by" }, entry:get_mined_by())
   slot_table.build(content_pane, self.context, { "description.rb-burned-in" }, entry:get_burned_in())
   slot_table.build(content_pane, self.context, { "description.rb-gathered-from" }, entry:get_gathered_from())

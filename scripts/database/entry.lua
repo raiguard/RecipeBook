@@ -219,7 +219,7 @@ function entry:get_made_in()
 end
 
 --- @return EntryID[]?
-function entry:get_alternate_recipes()
+function entry:get_alternative_recipes()
   if not self.fluid and not self.item then
     return
   end
@@ -701,7 +701,7 @@ function entry:get_unlocked_by_internal(visited)
     end
   end
 
-  for _, id in pairs(self:get_alternate_recipes() or {}) do
+  for _, id in pairs(self:get_alternative_recipes() or {}) do
     for _, tech in pairs(id:get_entry():get_unlocked_by_internal(visited) or {}) do
       output[#output + 1] = tech
     end
