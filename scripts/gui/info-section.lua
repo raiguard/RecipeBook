@@ -26,7 +26,8 @@ function info_section.build(parent, context, title, ids, settings, callback)
     style = "rb_list_box_caption",
     caption = title,
     state = false,
-    tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_section.toggle_collapsed }),
+    mouse_button_filter = {},
+    tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_section.on_header_clicked }),
   })
   local count_label = header.add({ type = "label", style = "rb_info_label" })
   if settings.remark then
@@ -88,7 +89,7 @@ function info_section.build(parent, context, title, ids, settings, callback)
 end
 
 --- @param e EventData.on_gui_click
-function info_section.toggle_collapsed(e)
+function info_section.on_header_clicked(e)
   local frame = e.element.parent.parent.frame
   if frame then
     frame.style.height = e.element.state and 1 or 0

@@ -1,5 +1,6 @@
 local flib_gui = require("__flib__.gui-lite")
 
+local context_menu = require("scripts.gui.context-menu")
 local gui_util = require("scripts.gui.util")
 local history = require("scripts.gui.history")
 local info_pane = require("scripts.gui.info-pane")
@@ -290,6 +291,10 @@ function main_gui:on_result_clicked(e)
   end
   local entry = global.database:get_entry(path)
   if not entry then
+    return
+  end
+  if e.button == defines.mouse_button_type.right then
+    context_menu.new(self.context.player, { "Test 1", "Test 2" }, e.cursor_display_location)
     return
   end
   if entry:get_type() == "technology" and e.shift then
