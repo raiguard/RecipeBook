@@ -1,4 +1,5 @@
 TODO:
+- Memoization of entry properties
 - Custom prototype properties for overrides etc.
 - Go through listboxes list below and implement those that are missing.
 - Search pane filtering by a specified list and other filtering options.
@@ -10,6 +11,7 @@ CONSIDERING:
 - Reverse-research?
 - Flib GUI components (other than technology button)?
 - Show descriptions stuff in info panes?
+- Search technologies?
 
 BUGS:
 - Alt+click on item-on-ground doesn't work.
