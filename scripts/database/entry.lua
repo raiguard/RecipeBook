@@ -722,6 +722,42 @@ function entry:get_unlocked_by_internal(visited)
 end
 
 --- @return EntryID[]?
+function entry:get_technology_ingredients()
+  local technology = self.technology
+  if not technology then
+    return
+  end
+
+  local output = util.unique_id_array()
+
+  for _, ingredient in pairs(technology.research_unit_ingredients) do
+    output[#output + 1] = entry_id.new(ingredient, self.database)
+  end
+
+  return output
+end
+
+--- @return uint?
+function entry:get_technology_ingredient_count()
+  local technology = self.technology
+  if not technology then
+    return
+  end
+
+  return technology.research_unit_count
+end
+
+--- @return double?
+function entry:get_technology_ingredient_time()
+  local technology = self.technology
+  if not technology then
+    return
+  end
+
+  return technology.research_unit_energy
+end
+
+--- @return EntryID[]?
 function entry:get_unlocks_recipes()
   local technology = self.technology
   if not technology then

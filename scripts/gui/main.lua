@@ -6,6 +6,7 @@ local info_pane = require("scripts.gui.info-pane")
 local list_box = require("scripts.gui.list-box")
 local search_pane = require("scripts.gui.search-pane")
 local slot_table = require("scripts.gui.slot-table")
+local technology_slot_table = require("scripts.gui.technology-slot-table")
 local util = require("scripts.util")
 
 --- @param name string
@@ -286,7 +287,7 @@ end
 
 --- @param e EventData.on_gui_click
 function main_gui:on_result_clicked(e)
-  local path = e.element.sprite --[[@as string?]]
+  local path = e.element.tags.path --[[@as string?]]
   if not path then
     return
   end
@@ -294,7 +295,7 @@ function main_gui:on_result_clicked(e)
   if not entry then
     return
   end
-  if entry:get_type() == "technology" then
+  if entry:get_type() == "technology" and e.shift then
     if not self.pinned then
       self.opening_technology_gui = true
       self:hide()
@@ -451,6 +452,7 @@ end, "main")
 list_box.on_result_clicked = main_gui.on_result_clicked
 search_pane.on_result_clicked = main_gui.on_result_clicked
 slot_table.on_result_clicked = main_gui.on_result_clicked
+technology_slot_table.on_result_clicked = main_gui.on_result_clicked
 
 commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book info page", function(e)
   local gui = main_gui.get(e.player_index)

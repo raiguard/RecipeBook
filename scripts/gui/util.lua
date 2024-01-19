@@ -1,4 +1,6 @@
+local flib_format = require("__flib__.format")
 local flib_math = require("__flib__.math")
+-- local core_util = require("__core__.lualib.util")
 
 --- @class GuiUtil
 local gui_util = {}
@@ -11,10 +13,28 @@ function gui_util.format_crafting_time(crafting_time)
   end
   return {
     "",
-    "[img=quantity-time][font=default-bold]",
+    "[img=quantity-time]",
     { "time-symbol-seconds", flib_math.floored(crafting_time, 0.01) },
-    "[/font] ",
+    " ",
     { "description.crafting-time" },
+  }
+end
+
+--- @param count uint?
+--- @param time double?
+--- @return LocalisedString
+function gui_util.format_technology_count_and_time(count, time)
+  if not count or not time then
+    return
+  end
+
+  --- @type LocalisedString
+  return {
+    "",
+    "[img=quantity-time]",
+    { "time-symbol-seconds", flib_math.floored(time, 0.01) },
+    " × ",
+    flib_format.number(count, true),
   }
 end
 

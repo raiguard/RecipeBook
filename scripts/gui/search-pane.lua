@@ -119,6 +119,9 @@ function search_pane.build(parent, context)
             [defines.events.on_gui_click] = search_pane.on_result_clicked,
           }),
         })
+        local tags = button.tags
+        tags.path = entry:get_path()
+        button.tags = tags
         if result_buttons[entry] then
           error("Duplicate search button: " .. entry:get_path())
         end

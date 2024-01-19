@@ -1,11 +1,15 @@
 TODO:
-- Refactor the database.
 - Custom prototype properties for overrides etc.
-- Technology pages (tech screen pauses the game and prevents any nice logic).
 - Go through listboxes list below and implement those that are missing.
 - Search pane filtering by a specified list and other filtering options.
 - Improve behavior when other GUIs are open (overlay instead of replace).
 - Recipes with no technologies to unlock them and are enabled by default should show as unlocked with their crafter
+- Show group description when hovering the title
+
+CONSIDERING:
+- Reverse-research?
+- Flib GUI components (other than technology button)?
+- Show descriptions stuff in info panes?
 
 BUGS:
 - Alt+click on item-on-ground doesn't work.

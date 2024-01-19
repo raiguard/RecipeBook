@@ -123,9 +123,8 @@ function database:build()
   self.search_tree:finalize()
 
   log("Technologies and research status")
-  for name, technology in pairs(game.technology_prototypes) do
-    local path = "technology/" .. name
-    self.entries[path] = db_entry.new(technology, self)
+  for _, technology in pairs(game.technology_prototypes) do
+    self:add_prototype(technology)
   end
   for _, force in pairs(game.forces) do
     self:init_researched(force)
@@ -273,7 +272,9 @@ function database:add_prototype(prototype, group_with)
   local entry = db_entry.new(prototype, self)
   self.entries[path] = entry
 
-  self.search_tree:add(entry)
+  if prototype.object_name ~= "LuaTechnologyPrototype" then
+    self.search_tree:add(entry)
+  end
 
   local prototype_type = util.object_name_to_type[prototype.object_name]
   local prototype_path = prototype_type .. "/" .. prototype.name

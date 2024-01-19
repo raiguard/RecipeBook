@@ -28,7 +28,7 @@ function list_box.build(parent, context, title, ids, remark)
   local count_label = header.add({ type = "label", style = "rb_info_label" })
   if remark then
     header.add({ type = "empty-widget", style = "flib_horizontal_pusher" })
-    header.add({ type = "label", caption = remark })
+    header.add({ type = "label", style = "count_label", caption = remark })
   end
 
   local frame = outer.add({
@@ -65,7 +65,7 @@ function list_box.build(parent, context, title, ids, remark)
     elseif is_unresearched then
       style = "rb_list_box_item_unresearched"
     end
-    frame.add({
+    local button = frame.add({
       type = "sprite-button",
       style = style,
       sprite = id.type .. "/" .. id.name,
@@ -76,6 +76,9 @@ function list_box.build(parent, context, title, ids, remark)
         [defines.events.on_gui_click] = list_box.on_result_clicked,
       }),
     })
+    local tags = button.tags
+    tags.path = id:get_path()
+    button.tags = tags
     result_count = result_count + 1
     ::continue::
   end

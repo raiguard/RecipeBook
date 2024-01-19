@@ -87,7 +87,7 @@ function info_pane:show(entry)
   local type_label = self.type_label
   --- @type LocalisedString
   local type_caption = { "" }
-  for _, key in pairs({ "recipe", "item", "fluid", "equipment", "entity" }) do
+  for _, key in pairs({ "technology", "recipe", "item", "fluid", "equipment", "entity" }) do
     local prototype = entry[key]
     if prototype then
       type_caption[#type_caption + 1] = gui_util.type_locale[prototype.object_name]
@@ -109,7 +109,7 @@ function info_pane:show(entry)
   local descriptions = flib_dictionary.get(self.context.player.index, "description") or {}
   --- @type table<string, boolean>
   local shown = {}
-  for _, key in pairs({ "recipe", "item", "fluid", "entity" }) do
+  for _, key in pairs({ "technology", "recipe", "item", "fluid", "entity" }) do
     local prototype = entry[key]
     if not prototype then
       goto continue
@@ -167,6 +167,19 @@ function info_pane:show(entry)
   list_box.build(content_pane, self.context, { "description.rb-yields" }, entry:get_yields())
   technology_slot_table.build(content_pane, self.context, { "description.rb-unlocked-by" }, entry:get_unlocked_by())
   slot_table.build(content_pane, self.context, { "description.rb-can-craft" }, entry:get_can_craft())
+
+  -- Technology
+  slot_table.build(
+    content_pane,
+    self.context,
+    { "gui-technology-preview.unit-ingredients" },
+    entry:get_technology_ingredients(),
+    gui_util.format_technology_count_and_time(
+      entry:get_technology_ingredient_count(),
+      entry:get_technology_ingredient_time()
+    )
+  )
+  slot_table.build(content_pane, self.context, { "description.rb-unlocks-recipes" }, entry:get_unlocks_recipes())
 
   profiler.stop()
   log({ "", "[", entry:get_path(), "] ", profiler })

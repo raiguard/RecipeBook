@@ -5,6 +5,9 @@ local flib_technology = require("__flib__.technology")
 --- @class technology_slot_table
 local technology_slot_table = {}
 
+--- @type function?
+technology_slot_table.on_result_clicked = nil
+
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
 --- @param title LocalisedString
@@ -59,7 +62,10 @@ function technology_slot_table.build(parent, context, title, ids, remark)
       research_state,
       technology_slot_table.on_result_clicked
     )
-    slot.tooltip = { "gui.rb-control-hint" }
+    local tags = slot.tags
+    tags.path = id:get_path()
+    slot.tags = tags
+    slot.tooltip = { "", { "gui.rb-control-hint" }, "\n", { "gui.rb-technology-control-hint" } }
     result_count = result_count + 1
     ::continue::
   end
@@ -78,16 +84,6 @@ function technology_slot_table.toggle_collapsed(_, e)
   if frame then
     frame.style.height = e.element.state and 1 or 0
   end
-end
-
---- @param main_gui MainGui
---- @param e EventData.on_gui_click
-function technology_slot_table.on_result_clicked(main_gui, e)
-  if not main_gui.pinned then
-    main_gui.opening_technology_gui = true
-    main_gui:hide()
-  end
-  main_gui.context.player.open_technology_gui(e.element.name)
 end
 
 flib_gui.add_handlers(technology_slot_table, function(e, handler)
