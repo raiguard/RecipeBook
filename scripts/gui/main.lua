@@ -3,10 +3,7 @@ local flib_gui = require("__flib__.gui-lite")
 local gui_util = require("scripts.gui.util")
 local history = require("scripts.gui.history")
 local info_pane = require("scripts.gui.info-pane")
-local list_box = require("scripts.gui.list-box")
 local search_pane = require("scripts.gui.search-pane")
-local slot_table = require("scripts.gui.slot-table")
-local technology_slot_table = require("scripts.gui.technology-slot-table")
 local util = require("scripts.util")
 
 --- @param name string
@@ -449,10 +446,8 @@ flib_gui.add_handlers(main_gui, function(e, handler)
 end, "main")
 
 -- TODO: Perhaps pass these as function parameters when building
-list_box.on_result_clicked = main_gui.on_result_clicked
+info_pane.on_result_clicked = main_gui.on_result_clicked
 search_pane.on_result_clicked = main_gui.on_result_clicked
-slot_table.on_result_clicked = main_gui.on_result_clicked
-technology_slot_table.on_result_clicked = main_gui.on_result_clicked
 
 commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book info page", function(e)
   local gui = main_gui.get(e.player_index)
