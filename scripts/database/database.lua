@@ -195,16 +195,24 @@ end
 
 local bigunpack = require("__big-data-string__.unpack")
 
+--- @generic T
+--- @param key string
+--- @return T
+local function unpack(key)
+  local success, value = serpent.load(bigunpack(key))
+  assert(success, "Deserialising overrides failed for " .. key)
+  return value
+end
+
 --- @private
 function database:get_overrides()
-  local res, alternatives = serpent.load(bigunpack("rb_alternatives"))
-  if res then
-    self.alternatives = alternatives
-  end
-  local res, group_overrides = serpent.load(bigunpack("rb_group_overrides"))
-  if res then
-    self.group_overrides = group_overrides
-  end
+  -- TODO: Implement exclude, hidden, hidden_from_search, and unlocks_results
+  self.alternatives = unpack("rb_alternatives")
+  self.exclude = unpack("rb_exclude")
+  self.group_overrides = unpack("rb_group_with")
+  self.hidden = unpack("rb_hidden")
+  self.hidden_from_search = unpack("rb_hidden_from_search")
+  self.unlocks_results = unpack("rb_unlocks_results")
 end
 
 --- @private
