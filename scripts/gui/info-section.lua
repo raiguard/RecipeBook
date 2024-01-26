@@ -2,9 +2,9 @@ local flib_gui = require("__flib__.gui-lite")
 
 --- @class InfoSectionSettings
 --- @field always_show boolean?
---- @field frame_style string?
+--- @field column_count integer?
 --- @field remark LocalisedString?
---- @field use_table boolean?
+--- @field style string?
 
 --- @class InfoSection
 local info_section = {}
@@ -35,15 +35,14 @@ function info_section.build(parent, context, title, ids, settings, callback)
     header.add({ type = "label", style = "count_label", caption = settings.remark })
   end
 
-  local holder = outer.add({
-    type = "frame",
-    name = "frame",
-    style = settings.frame_style or "slot_button_deep_frame",
-    direction = "vertical",
-  })
-  if settings.use_table then
-    holder = holder.add({ type = "table", name = "table", style = "slot_table", column_count = 10 })
-  end
+  local holder = outer
+    .add({
+      type = "frame",
+      name = "frame",
+      style = settings.style or "slot_button_deep_frame",
+      direction = "vertical",
+    })
+    .add({ type = "table", name = "table", style = "slot_table", column_count = settings.column_count or 1 })
 
   local show_hidden = context.show_hidden
   local show_unresearched = context.show_unresearched

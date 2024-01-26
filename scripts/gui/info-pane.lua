@@ -224,7 +224,7 @@ function info_pane:show(entry)
     self.context,
     { "description.made-in" },
     entry:get_made_in(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -232,7 +232,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-used-in" },
     entry:get_used_in(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -240,7 +240,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-alternative-recipes" },
     entry:get_alternative_recipes(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -248,7 +248,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-mined-by" },
     entry:get_mined_by(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -256,7 +256,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-burned-in" },
     entry:get_burned_in(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -264,7 +264,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-gathered-from" },
     entry:get_gathered_from(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -272,7 +272,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rocket-launch-products" },
     entry:get_rocket_launch_products(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -280,7 +280,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-rocket-launch-product-of" },
     entry:get_rocket_launch_product_of(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -288,7 +288,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-can-mine" },
     entry:get_can_mine(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -296,7 +296,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-can-burn" },
     entry:get_can_burn(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
   info_section.build(
@@ -313,7 +313,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-unlocked-by" },
     entry:get_unlocked_by(),
-    { style = "rb_technology_slot_deep_frame", use_table = true },
+    { style = "rb_technology_slot_deep_frame", column_count = 5 },
     --- @param id EntryID
     --- @param holder LuaGuiElement
     function(id, holder)
@@ -350,7 +350,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-can-craft" },
     entry:get_can_craft(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
 
@@ -365,7 +365,7 @@ function info_pane:show(entry)
         entry:get_technology_ingredient_count(),
         entry:get_technology_ingredient_time()
       ),
-      use_table = true,
+      column_count = 10,
     },
     make_slot_button
   )
@@ -374,7 +374,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-unlocks-recipes" },
     entry:get_unlocks_recipes(),
-    { use_table = true },
+    { column_count = 10 },
     make_slot_button
   )
 
