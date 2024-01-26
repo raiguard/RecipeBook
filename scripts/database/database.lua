@@ -128,7 +128,7 @@ function database.new()
     self:add_prototype(character)
   end
 
-  log("Search tree finalization")
+  log("Search tree")
   --- @type table<Entry, boolean>
   local added = {}
   for _, entry in pairs(self.entries) do
@@ -139,19 +139,19 @@ function database.new()
   end
   self.search_tree:finalize()
 
+  log("Alternatives")
+  for from, to in pairs(self.alternatives) do
+    if self.entries[to] then
+      self.entries[from] = self.entries[to]
+    end
+  end
+
   log("Technologies and research status")
   for _, technology in pairs(game.technology_prototypes) do
     self:add_prototype(technology)
   end
   for _, force in pairs(game.forces) do
     self:init_researched(force)
-  end
-
-  log("Alternatives")
-  for from, to in pairs(self.alternatives) do
-    if self.entries[to] then
-      self.entries[from] = self.entries[to]
-    end
   end
 
   profiler.stop()
