@@ -732,7 +732,7 @@ function entry:get_unlocked_by_internal(visited)
   local output = util.unique_id_array()
 
   local recipe = self.recipe
-  if recipe and self:get_unlocks_results() and not visited[recipe.name] then
+  if recipe and self:get_unlocks_results() and not visited[recipe.name] and not recipe.enabled then
     for technology_name, technology in
       --- @diagnostic disable-next-line unused-fields
       pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
@@ -759,6 +759,14 @@ function entry:get_unlocked_by_internal(visited)
   table.sort(output, function(tech_a, tech_b)
     return flib_technology.sort_predicate(prototypes[tech_a.name], prototypes[tech_b.name])
   end)
+
+  if #output == 0 and recipe and not recipe.enabled then
+    for _, crafter in pairs(self:get_made_in() or {}) do
+      for _, tech in pairs(crafter:get_entry():get_unlocked_by_internal(visited) or {}) do
+        output[#output + 1] = tech
+      end
+    end
+  end
 
   return output
 end
