@@ -10,8 +10,6 @@ recipe_book.set_group_with(data.raw["straight-rail"]["straight-rail"], data.raw[
 recipe_book.set_hidden(data.raw["item"]["rocket-part"], false)
 recipe_book.set_hidden(data.raw["recipe"]["rocket-part"], false)
 
-recipe_book.set_hidden_from_search(data.raw["recipe"]["solid-fuel-from-light-oil"], true)
-
 for _, recipe in pairs(data.raw["recipe"]) do
   if string.match(recipe.name, "^empty%-.*%-barrel$") then
     recipe_book.set_unlocks_results(recipe, false)
