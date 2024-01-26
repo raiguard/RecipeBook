@@ -129,6 +129,14 @@ function database.new()
   end
 
   log("Search tree finalization")
+  --- @type table<Entry, boolean>
+  local added = {}
+  for _, entry in pairs(self.entries) do
+    if not added[entry] then
+      added[entry] = true
+      self.search_tree:add(entry)
+    end
+  end
   self.search_tree:finalize()
 
   log("Technologies and research status")
@@ -268,12 +276,7 @@ function database:add_prototype(prototype, group_with)
     end
   end
 
-  local entry = db_entry.new(prototype, self)
-  self.entries[path] = entry
-
-  if prototype.object_name ~= "LuaTechnologyPrototype" then
-    self.search_tree:add(entry)
-  end
+  self.entries[path] = db_entry.new(prototype, self)
 
   local prototype_type = util.object_name_to_type[prototype.object_name]
   local prototype_path = prototype_type .. "/" .. prototype.name

@@ -86,6 +86,12 @@ function entry:get_group()
   if self.base.object_name == "LuaEquipmentPrototype" then
     return game.item_group_prototypes["combat"]
   end
+  if self.fluid then
+    return self.fluid.group
+  end
+  if self.item then
+    return self.item.group
+  end
   return self.base.group
 end
 
@@ -93,6 +99,12 @@ end
 function entry:get_subgroup()
   if self.base.object_name == "LuaEquipmentPrototype" then
     return game.item_subgroup_prototypes["rb-uncategorized-equipment"]
+  end
+  if self.fluid then
+    return self.fluid.subgroup
+  end
+  if self.item then
+    return self.item.subgroup
   end
   return self.base.subgroup
 end
