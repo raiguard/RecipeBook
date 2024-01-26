@@ -59,7 +59,19 @@ end
 --- @param force_index uint
 --- @return boolean
 function entry:is_hidden(force_index)
-  return util.is_hidden(self.base, force_index)
+  return self.database:is_hidden(self.base, force_index)
+end
+
+--- @param force_index uint
+--- @return boolean
+function entry:is_hidden_from_search(force_index)
+  if self:is_hidden(force_index) then
+    return true
+  end
+  if self.database.hidden_from_search[self:get_path()] then
+    return true
+  end
+  return false
 end
 
 --- @param force_index uint
@@ -100,6 +112,20 @@ function entry:get_display_order()
   return self.database.search_tree.order[self]
 end
 
+--- @return boolean
+function entry:get_unlocks_results()
+  local override = self.database.unlocks_results[self:get_path()]
+  if override ~= nil then
+    return override
+  end
+
+  if self.recipe then
+    return self.recipe.unlock_results
+  end
+
+  return true
+end
+
 -- RESEARCH
 
 --- @param force_index uint
@@ -111,6 +137,10 @@ function entry:research(force_index)
     return
   end
   self.researched[force_index] = true
+
+  if not self:get_unlocks_results() then
+    return
+  end
 
   for _, recipe in pairs(self:get_unlocks_recipes() or {}) do
     recipe:get_entry():research(force_index)
@@ -690,7 +720,7 @@ function entry:get_unlocked_by_internal(visited)
   local output = util.unique_id_array()
 
   local recipe = self.recipe
-  if recipe and recipe.unlock_results and not visited[recipe.name] then
+  if recipe and self:get_unlocks_results() and not visited[recipe.name] then
     for technology_name, technology in
       --- @diagnostic disable-next-line unused-fields
       pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))

@@ -106,8 +106,9 @@ function recipe_book.get_unlocks_results(prototype)
 end
 
 --- @param prototype data.PrototypeBase
+--- @param unlocks_results boolean
 function recipe_book.set_unlocks_results(prototype, unlocks_results)
   data_util.assert_is_prototype(prototype, "prototype")
-  data_util.assert_is_boolean(unlocks_results, "hidden")
+  data_util.assert_is_boolean(unlocks_results, "unlocks_results")
   recipe_book.unlocks_results[data_util.get_sprite_path(prototype)] = unlocks_results
 end

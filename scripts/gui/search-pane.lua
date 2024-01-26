@@ -165,7 +165,7 @@ function search_pane:update()
     local searched_count = 0
     for _, subgroup in pairs(group) do
       for _, entry in pairs(subgroup) do
-        local is_hidden, is_researched = entry:is_hidden(force_index), entry:is_researched(force_index)
+        local is_hidden, is_researched = entry:is_hidden_from_search(force_index), entry:is_researched(force_index)
         local filters_match = (show_hidden or not is_hidden) and (show_unresearched or is_researched)
         local button = result_buttons[entry]
         if filters_match then

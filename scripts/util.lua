@@ -54,29 +54,6 @@ function util.get_prototype(obj)
   return game[obj.type .. "_prototypes"][obj.name]
 end
 
---- @param prototype GenericPrototype
---- @param force_index uint?
---- @return boolean
-function util.is_hidden(prototype, force_index)
-  local type = prototype.object_name
-  if type == "LuaFluidPrototype" then
-    return prototype.hidden
-  elseif type == "LuaItemPrototype" then
-    return prototype.has_flag("hidden")
-  elseif type == "LuaRecipePrototype" then
-    return prototype.hidden
-  elseif type == "LuaTechnologyPrototype" then
-    if force_index then
-      local tech = game.forces[force_index].technologies[prototype.name]
-      -- TODO: How to handle visible_when_disabled?
-      return not tech.enabled
-    else
-      return prototype.hidden
-    end
-  end
-  return false
-end
-
 util.object_name_to_type = {
   LuaEntity = "entity",
   LuaEntityPrototype = "entity",
@@ -101,7 +78,8 @@ function util.unique_id_array()
       if not value then
         return
       end
-      local key = value:get_path()
+      -- Use the base path to work with alternatives, etc.
+      local key = value:get_entry():get_path()
       if hash[key] then
         return
       end

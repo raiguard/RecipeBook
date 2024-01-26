@@ -4,12 +4,26 @@ local db_entry = require("scripts.database.entry")
 local search_tree = require("scripts.database.search-tree")
 local util = require("scripts.util")
 
+local bigunpack = require("__big-data-string__.unpack")
+
+--- @generic T
+--- @param key string
+--- @return T
+local function unpack(key)
+  local success, value = serpent.load(bigunpack(key))
+  assert(success, "Deserialising overrides failed for " .. key)
+  return value
+end
+
 --- @class Database
 --- @field entries table<SpritePath, Entry?>
 --- @field search_tree SearchTree
 --- @field alternatives table<SpritePath, SpritePath>
---- @field excluded_categories table<string, boolean>
---- @field group_overrides table<SpritePath, SpritePath>
+--- @field exclude table<SpritePath, boolean>
+--- @field group_with table<SpritePath, SpritePath>
+--- @field hidden table<SpritePath, boolean>
+--- @field hidden_from_search table<SpritePath, boolean>
+--- @field unlocks_results table<SpritePath, boolean>
 local database = {}
 local mt = { __index = database }
 script.register_metatable("database", mt)
@@ -17,23 +31,18 @@ script.register_metatable("database", mt)
 --- @return Database
 function database.new()
   --- @type Database
-  local self = setmetatable({
+  local self = {
     entries = {},
     search_tree = search_tree.new(),
+    alternatives = unpack("rb_alternatives"),
+    exclude = unpack("rb_exclude"),
+    group_with = unpack("rb_group_with"),
+    hidden = unpack("rb_hidden"),
+    hidden_from_search = unpack("rb_hidden_from_search"),
+    unlocks_results = unpack("rb_unlocks_results"),
+  }
+  setmetatable(self, mt)
 
-    alternatives = {},
-    excluded_categories = {},
-    group_overrides = {},
-  }, mt)
-
-  self:get_overrides()
-  self:build()
-
-  return self
-end
-
---- @private
-function database:build()
   log("Generating database")
   local profiler = game.create_profiler()
 
@@ -45,7 +54,7 @@ function database:build()
   --- @type table<string, GenericPrototype>
   local materials_to_add = {}
   for _, prototype in pairs(game.recipe_prototypes) do
-    if self.excluded_categories[prototype.category] or #prototype.products == 0 then
+    if self.exclude["recipe-category/" .. prototype.category] or #prototype.products == 0 then
       goto continue
     end
     self:add_prototype(prototype)
@@ -139,6 +148,8 @@ function database:build()
 
   profiler.stop()
   log({ "", "Database Generation ", profiler })
+
+  return self
 end
 
 --- @private
@@ -193,46 +204,23 @@ function database:init_researched(force)
   end
 end
 
-local bigunpack = require("__big-data-string__.unpack")
-
---- @generic T
---- @param key string
---- @return T
-local function unpack(key)
-  local success, value = serpent.load(bigunpack(key))
-  assert(success, "Deserialising overrides failed for " .. key)
-  return value
-end
-
---- @private
-function database:get_overrides()
-  -- TODO: Implement exclude, hidden, hidden_from_search, and unlocks_results
-  self.alternatives = unpack("rb_alternatives")
-  self.exclude = unpack("rb_exclude")
-  self.group_overrides = unpack("rb_group_with")
-  self.hidden = unpack("rb_hidden")
-  self.hidden_from_search = unpack("rb_hidden_from_search")
-  self.unlocks_results = unpack("rb_unlocks_results")
-end
-
 --- @private
 --- @param a GenericPrototype
 --- @param b GenericPrototype
 function database:should_group(a, b)
   local a_path = util.get_path(a)
   local b_path = util.get_path(b)
-  if self.group_overrides[a_path] == b_path then
+  if self.group_with[a_path] == b_path then
     return true
   end
   if
     a.object_name ~= "LuaEntityPrototype"
     and a.object_name ~= "LuaEquipmentPrototype"
-    and util.is_hidden(a) ~= util.is_hidden(b)
+    and self:is_hidden(a) ~= self:is_hidden(b)
   then
     return false
   end
   return a.name == b.name
-  -- return false
 end
 
 --- @param obj EntryID|GenericPrototype|Ingredient|Product|SpritePath|LuaTechnology|LuaRecipe|LuaEntity|TechnologyModifier
@@ -262,6 +250,9 @@ function database:add_prototype(prototype, group_with)
     return
   end
   if self.alternatives[path] then
+    return
+  end
+  if self.exclude[path] then
     return
   end
 
@@ -296,6 +287,33 @@ function database:on_research_finished(tech)
     return
   end
   entry:research(tech.force.index)
+end
+
+--- @param prototype GenericPrototype
+--- @param force_index uint?
+--- @return boolean
+function database:is_hidden(prototype, force_index)
+  local override = self.hidden[util.get_path(prototype)]
+  if override ~= nil then
+    return override
+  end
+  local type = prototype.object_name
+  if type == "LuaFluidPrototype" then
+    return prototype.hidden
+  elseif type == "LuaItemPrototype" then
+    return prototype.has_flag("hidden")
+  elseif type == "LuaRecipePrototype" then
+    return prototype.hidden
+  elseif type == "LuaTechnologyPrototype" then
+    if force_index then
+      local tech = game.forces[force_index].technologies[prototype.name]
+      -- TODO: How to handle visible_when_disabled?
+      return not tech.enabled
+    else
+      return prototype.hidden
+    end
+  end
+  return false
 end
 
 -- Events
