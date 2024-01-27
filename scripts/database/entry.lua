@@ -725,16 +725,16 @@ function entry:get_generated_by()
   local output = util.unique_id_array()
 
   for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
-    local output_fluidbox = entity.fluidbox_prototypes[2]
-    if not output_fluidbox then
+    local entry = self.database:get_entry(entity)
+    if not entry then
       goto continue
     end
-    local filter = output_fluidbox.filter
-    if not filter or filter.name ~= fluid.name then
+    local generates = entry:get_generated_fluid()
+    if not generates or generates.name ~= fluid.name then
       goto continue
     end
     output[#output + 1] =
-      entry_id.new({ type = "entity", name = entity.name, amount = entity.target_temperature }, self.database)
+      entry_id.new({ type = "entity", name = entity.name, temperature = entity.target_temperature }, self.database)
     ::continue::
   end
 
@@ -876,7 +876,10 @@ function entry:get_generated_fluid()
   for _, fluidbox in pairs(entity.fluidbox_prototypes) do
     if fluidbox.production_type == "output" and fluidbox.filter then
       -- TODO: Check if multiple outputs are possible
-      return entry_id.new({ type = "fluid", name = fluidbox.filter.name }, self.database)
+      return entry_id.new(
+        { type = "fluid", name = fluidbox.filter.name, temperature = entity.target_temperature },
+        self.database
+      )
     end
   end
 end

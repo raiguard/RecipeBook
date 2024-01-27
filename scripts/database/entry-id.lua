@@ -40,6 +40,7 @@ function entry_id.new(input, database)
     amount_max = input.amount_max,
     probability = input.probability,
     catalyst_amount = input.catalyst_amount,
+    temperature = input.temperature,
     minimum_temperature = input.minimum_temperature,
     maximum_temperature = input.maximum_temperature,
   }, mt)
