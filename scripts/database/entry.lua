@@ -716,6 +716,32 @@ function entry:get_burnt_result()
 end
 
 --- @return EntryID[]?
+function entry:get_generated_by()
+  local fluid = self.fluid
+  if not fluid then
+    return
+  end
+
+  local output = util.unique_id_array()
+
+  for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
+    local output_fluidbox = entity.fluidbox_prototypes[2]
+    if not output_fluidbox then
+      goto continue
+    end
+    local filter = output_fluidbox.filter
+    if not filter or filter.name ~= fluid.name then
+      goto continue
+    end
+    output[#output + 1] =
+      entry_id.new({ type = "entity", name = entity.name, amount = entity.target_temperature }, self.database)
+    ::continue::
+  end
+
+  return output
+end
+
+--- @return EntryID[]?
 function entry:get_unlocked_by()
   return self:get_unlocked_by_internal({})
 end

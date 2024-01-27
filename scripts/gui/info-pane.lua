@@ -307,6 +307,14 @@ function info_pane:show(entry)
     {},
     make_list_box_item
   )
+  info_section.build(
+    content_pane,
+    self.context,
+    { "description.rb-generated-by" },
+    entry:get_generated_by(),
+    { column_count = 10 },
+    make_slot_button
+  )
 
   info_section.build(
     content_pane,

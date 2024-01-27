@@ -1,8 +1,8 @@
 recipe_book.set_alternative(data.raw["curved-rail"]["curved-rail"], data.raw["straight-rail"]["straight-rail"])
 
-recipe_book.set_hidden_from_search(data.raw["recipe"]["electric-energy-interface"], true)
-recipe_book.set_hidden_from_search(data.raw["item"]["electric-energy-interface"], true)
-recipe_book.set_hidden_from_search(data.raw["electric-energy-interface"]["electric-energy-interface"], true)
+recipe_book.set_hidden(data.raw["recipe"]["electric-energy-interface"], true)
+recipe_book.set_hidden(data.raw["item"]["electric-energy-interface"], true)
+recipe_book.set_hidden(data.raw["electric-energy-interface"]["electric-energy-interface"], true)
 
 recipe_book.set_group_with(data.raw["fish"]["fish"], data.raw["capsule"]["raw-fish"])
 recipe_book.set_group_with(data.raw["straight-rail"]["straight-rail"], data.raw["rail-planner"]["rail"])

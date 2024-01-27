@@ -14,6 +14,7 @@ CONSIDERING:
 
 BUGS:
 - Alt+click on item-on-ground doesn't work.
+- Research time is wrong.
 
 API additions:
 - get_filtered_entity_prototypes:
