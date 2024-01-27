@@ -191,3 +191,32 @@ styles.rb_technology_slot_deep_frame = {
     overall_tiling_vertical_size = 100,
   },
 }
+
+styles.rb_description_frame = {
+  type = "frame_style",
+  parent = "deep_frame_in_shallow_frame",
+  padding = 8,
+  horizontally_stretchable = "on",
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    vertical_spacing = 8,
+  },
+}
+
+styles.rb_description_line = {
+  type = "line_style",
+  parent = "tooltip_horizontal_line",
+  left_margin = -8,
+  right_margin = -8,
+}
+
+styles.rb_double_spaced_naked_scroll_pane = {
+  type = "scroll_pane_style",
+  parent = "flib_naked_scroll_pane",
+  vertical_flow_style = {
+    type = "vertical_flow_style",
+    vertical_spacing = 8,
+  },
+  horizontally_stretchable = "on",
+  vertically_stretchable = "on",
+}

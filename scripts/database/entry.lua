@@ -7,14 +7,14 @@ local util = require("scripts.util")
 --- @alias GenericPrototype LuaEquipmentPrototype|LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
 
 --- @class Entry
+--- @field technology LuaTechnologyPrototype?
+--- @field recipe LuaRecipePrototype?
+--- @field item LuaItemPrototype?
+--- @field fluid LuaFluidPrototype?
+--- @field equipment LuaEquipmentPrototype?
+--- @field entity LuaEntityPrototype?
 --- @field private database Database
 --- @field private base GenericPrototype
---- @field private technology LuaTechnologyPrototype?
---- @field private recipe LuaRecipePrototype?
---- @field private item LuaItemPrototype?
---- @field private fluid LuaFluidPrototype?
---- @field private equipment LuaEquipmentPrototype?
---- @field private entity LuaEntityPrototype?
 --- @field private researched table<uint, boolean>?
 local entry = {}
 local mt = { __index = entry }

@@ -4,6 +4,7 @@ local flib_gui_templates = require("__flib__.gui-templates")
 local flib_technology = require("__flib__.technology")
 
 local gui_util = require("scripts.gui.util")
+local info_description = require("scripts.gui.info-description")
 local info_section = require("scripts.gui.info-section")
 
 --- @class InfoPane
@@ -46,13 +47,10 @@ function info_pane.build(parent, context)
 
   local content_pane = frame.add({
     type = "scroll-pane",
-    style = "flib_naked_scroll_pane",
+    style = "rb_double_spaced_naked_scroll_pane",
     horizontal_scroll_policy = "never",
     vertical_scroll_policy = "always",
   })
-  -- content_pane.style.top_padding = 8
-  content_pane.style.horizontally_stretchable = true
-  content_pane.style.vertically_stretchable = true
 
   -- Will be deleted when the first page is shown
   content_pane.add({
@@ -103,38 +101,6 @@ function info_pane:show(entry)
   type_label.caption = type_caption
 
   -- Contents
-
-  local content_pane = self.content_pane
-  content_pane.clear()
-  content_pane.scroll_to_top()
-  if content_pane.welcome_label then
-    content_pane.welcome_label.destroy()
-  end
-
-  local descriptions = flib_dictionary.get(self.context.player.index, "description") or {}
-  --- @type table<string, boolean>
-  local shown = {}
-  for _, key in pairs({ "technology", "recipe", "item", "fluid", "entity" }) do
-    local prototype = entry[key]
-    if not prototype then
-      goto continue
-    end
-    local description = descriptions[key .. "/" .. prototype.name]
-    if not description then
-      goto continue
-    end
-    if shown[description] then
-      goto continue
-    end
-    shown[description] = true
-    local description_frame =
-      content_pane.add({ type = "frame", style = "deep_frame_in_shallow_frame", horizontal_scroll_policy = "never" })
-    description_frame.style.horizontally_stretchable = true
-    local description_label = description_frame.add({ type = "label", caption = description })
-    description_label.style.padding = 8
-    description_label.style.single_line = false
-    ::continue::
-  end
 
   local force_index = self.context.player.force_index
 
@@ -203,6 +169,19 @@ function info_pane:show(entry)
     return button
   end
 
+  local content_pane = self.content_pane
+  content_pane.clear()
+  content_pane.scroll_to_top()
+  if content_pane.welcome_label then
+    content_pane.welcome_label.destroy()
+  end
+
+  -- Recipe
+
+  local recipe_description = info_description.new(content_pane, self.context)
+  recipe_description:add_common(entry.recipe)
+  recipe_description:finalize()
+
   info_section.build(
     content_pane,
     self.context,
@@ -227,6 +206,15 @@ function info_pane:show(entry)
     { column_count = 10 },
     make_slot_button
   )
+
+  -- Material
+
+  local material_description = info_description.new(content_pane, self.context)
+  material_description:add_common(entry.item or entry.fluid)
+  material_description:add_item(entry)
+  material_description:add_fluid(entry)
+  material_description:finalize()
+
   info_section.build(
     content_pane,
     self.context,
@@ -240,6 +228,14 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-alternative-recipes" },
     entry:get_alternative_recipes(),
+    { column_count = 10 },
+    make_slot_button
+  )
+  info_section.build(
+    content_pane,
+    self.context,
+    { "description.rb-generated-by" },
+    entry:get_generated_by(),
     { column_count = 10 },
     make_slot_button
   )
@@ -306,14 +302,6 @@ function info_pane:show(entry)
     entry:get_yields(),
     {},
     make_list_box_item
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-generated-by" },
-    entry:get_generated_by(),
-    { column_count = 10 },
-    make_slot_button
   )
 
   info_section.build(
