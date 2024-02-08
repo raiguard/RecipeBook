@@ -215,7 +215,7 @@ styles.rb_info_scroll_pane = {
   parent = "flib_naked_scroll_pane",
   vertical_flow_style = {
     type = "vertical_flow_style",
-    vertical_spacing = 12,
+    vertical_spacing = 8,
   },
   horizontally_stretchable = "on",
   vertically_stretchable = "on",
