@@ -47,7 +47,7 @@ function info_pane.build(parent, context)
 
   local content_pane = frame.add({
     type = "scroll-pane",
-    style = "rb_double_spaced_naked_scroll_pane",
+    style = "rb_info_scroll_pane",
     horizontal_scroll_policy = "never",
     vertical_scroll_policy = "always",
   })
@@ -182,6 +182,12 @@ function info_pane:show(entry)
   recipe_description:add_common(entry.recipe)
   recipe_description:finalize()
 
+  local material_description = info_description.new(content_pane, self.context)
+  material_description:add_common(entry.item or entry.fluid)
+  material_description:add_item(entry)
+  material_description:add_fluid(entry)
+  material_description:finalize()
+
   info_section.build(
     content_pane,
     self.context,
@@ -208,12 +214,6 @@ function info_pane:show(entry)
   )
 
   -- Material
-
-  local material_description = info_description.new(content_pane, self.context)
-  material_description:add_common(entry.item or entry.fluid)
-  material_description:add_item(entry)
-  material_description:add_fluid(entry)
-  material_description:finalize()
 
   info_section.build(
     content_pane,

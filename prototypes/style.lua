@@ -210,12 +210,12 @@ styles.rb_description_line = {
   right_margin = -8,
 }
 
-styles.rb_double_spaced_naked_scroll_pane = {
+styles.rb_info_scroll_pane = {
   type = "scroll_pane_style",
   parent = "flib_naked_scroll_pane",
   vertical_flow_style = {
     type = "vertical_flow_style",
-    vertical_spacing = 8,
+    vertical_spacing = 12,
   },
   horizontally_stretchable = "on",
   vertically_stretchable = "on",

@@ -49,11 +49,19 @@ local function mod_name_string(internal_name)
   return { "?", { "mod-name." .. internal_name }, internal_name }
 end
 
+function info_description:add_section()
+  self.new_section = true
+end
+
+--- @private
 --- @param args LuaGuiElement.add_param
 --- @return LuaGuiElement
 function info_description:add_internal(args)
-  if #self.frame.children_names > 0 then
-    self.frame.add({ type = "line", style = "rb_description_line", direction = "horizontal" })
+  if self.new_section then
+    self.new_section = false
+    if #self.frame.children_names > 0 then
+      self.frame.add({ type = "line", style = "rb_description_line", direction = "horizontal" })
+    end
   end
   return self.frame.add(args)
 end
@@ -107,6 +115,15 @@ function info_description:add_item(entry)
   if not item then
     return
   end
+
+  self:add_section()
+
+  local stack_size = item.stack_size
+  if stack_size > 0 then
+    self:make_generic_row({ "description.rb-stack-size" }, flib_format.number(stack_size, true))
+  end
+
+  self:add_section()
 
   local fuel_category = item.fuel_category
   if fuel_category then
