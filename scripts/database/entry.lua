@@ -575,7 +575,7 @@ function entry:get_can_mine()
       break
     end
   end
-  local resource_categories = entity.resource_categories
+  local resource_categories = entity.resource_categories or {}
 
   local output = util.unique_id_array()
 
@@ -859,7 +859,7 @@ function entry:get_pumped_fluid()
   end
 
   local fluid = entity.fluid
-  if not self.database:get_entry(fluid) then
+  if not fluid or not self.database:get_entry(fluid) then
     return
   end
 

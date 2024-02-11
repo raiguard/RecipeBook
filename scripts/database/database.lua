@@ -202,7 +202,6 @@ function database:init_researched(force)
     end
   end
   -- Characters
-  -- TODO: Gate some characters if mods "unlock" them (Nullius)?
   --- @diagnostic disable-next-line unused-fields
   for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
     local entry = self:get_entry(character)

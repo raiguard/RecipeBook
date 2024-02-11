@@ -27,7 +27,11 @@ local entry_id = {}
 local mt = { __index = entry_id }
 script.register_metatable("entry_id", mt)
 
---- @param input Ingredient.fluid|Product
+--- @class GenericID
+--- @field type "entity"|"equipment"|"fluid"|"item"|"recipe"|"technology"
+--- @field name string
+
+--- @param input GenericID|Ingredient.fluid|Product
 --- @param database Database
 --- @return EntryID?
 function entry_id.new(input, database)
@@ -46,7 +50,9 @@ function entry_id.new(input, database)
   }, mt)
 
   if not database:get_entry(self) then
-    error("Attempted to create an entry ID for a non-existent entry: " .. self:get_path())
+    -- TODO raiguard: Debug only / remove?
+    log("Created an entry ID for a non-existent entry: " .. self:get_path())
+    return
   end
 
   return self
