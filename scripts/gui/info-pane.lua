@@ -186,6 +186,7 @@ function info_pane:show(entry)
   material_description:add_common(entry.item or entry.fluid)
   material_description:add_item(entry)
   material_description:add_fluid(entry)
+  material_description:add_entity(entry)
   material_description:finalize()
 
   info_section.build(

@@ -3,7 +3,7 @@ Version: 4.0.0
 Date: ????
   Gui:
     - Completely rewrote the mod from scratch (again).
-    - The GUI no longer uses plain-text translations for its display, allowing it to be used immediately upon loading.
+    - The GUI no longer uses plain-text translations for its display, allowing it to be used immediately just like any other GUI.
     - Increased the list box icon size and updated button styling to be more readable.
     - Related objects will be grouped together into a single page.
       - Grouping is performed based on recipe -> main product -> placed entity/equipment/tile, and the internal prototype names.

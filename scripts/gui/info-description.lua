@@ -170,6 +170,38 @@ end
 --- @param entry Entry
 function info_description:add_fluid(entry) end
 
+--- @param entry Entry
+function info_description:add_entity(entry)
+  local entity = entry.entity
+  if not entity then
+    return
+  end
+
+  self:add_section()
+
+  local max_underground_distance = entity.max_underground_distance
+  if max_underground_distance then
+    self:make_generic_row(
+      { "description.maximum-length" },
+      flib_format.number(flib_math.round(max_underground_distance, 0.01), true)
+    )
+  end
+
+  local belt_speed = entity.belt_speed
+  if belt_speed then
+    self:make_generic_row(
+      { "description.belt-speed" },
+      {
+        "",
+        flib_format.number(flib_math.round(belt_speed * 8 * 60, 0.01), true),
+        " ",
+        { "description.belt-items" },
+        { "per-second-suffix" },
+      }
+    )
+  end
+end
+
 function info_description:finalize()
   if #self.frame.children_names == 0 then
     self.frame.destroy()
