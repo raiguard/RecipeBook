@@ -22,4 +22,9 @@ function remote_interface.open_page(player_index, class, name)
   return true
 end
 
+function remote_interface.version()
+  -- TODO raiguard: Bump version
+  return 4
+end
+
 remote.add_interface("RecipeBook", remote_interface)
