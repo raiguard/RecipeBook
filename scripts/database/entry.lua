@@ -276,7 +276,14 @@ function entry:get_alternative_recipes()
     do
       local entry = self.database:get_entry(recipe)
       if entry and entry ~= self then
-        output[#output + 1] = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+        local id = entry_id.new({ type = "recipe", name = recipe.name }, self.database)
+        for _, product in pairs(recipe.products) do
+          if product.name == self.fluid.name and product.temperature then
+            id.temperature = product.temperature
+            break
+          end
+        end
+        output[#output + 1] = id
       end
     end
   end
