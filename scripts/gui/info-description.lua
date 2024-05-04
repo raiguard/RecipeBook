@@ -103,7 +103,6 @@ end
 --- @return LuaGuiElement
 function info_description:make_generic_row(label, value)
   local flow = self:add_internal({ type = "flow" })
-  flow.style.horizontal_spacing = 8
   flow.add({ type = "label", style = "caption_label", caption = { "", label, ":" } })
   flow.add({ type = "label", caption = value })
   return flow
@@ -189,17 +188,21 @@ function info_description:add_entity(entry)
 
   local belt_speed = entity.belt_speed
   if belt_speed then
-    self:make_generic_row(
-      { "description.belt-speed" },
-      {
-        "",
-        flib_format.number(flib_math.round(belt_speed * 8 * 60, 0.01), true),
-        " ",
-        { "description.belt-items" },
-        { "per-second-suffix" },
-      }
-    )
+    self:make_generic_row({ "description.belt-speed" }, {
+      "",
+      flib_format.number(flib_math.round(belt_speed * 8 * 60, 0.01), true),
+      " ",
+      { "description.belt-items" },
+      { "per-second-suffix" },
+    })
   end
+
+  local storage_size = entity.get_inventory_size(defines.inventory.chest)
+  if storage_size then
+    self:make_generic_row({ "description.storage-size" }, flib_format.number(storage_size, true))
+  end
+
+  -- TODO: Storage volume
 end
 
 function info_description:finalize()
