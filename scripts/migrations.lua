@@ -1,3 +1,4 @@
+local dictionary = require("__flib__.dictionary-lite")
 local on_tick_n = require("__flib__.on-tick-n")
 
 local database = require("scripts.database")
@@ -12,6 +13,8 @@ return {
 
     global_data.init()
     global_data.build_prototypes()
+
+    dictionary.on_configuration_changed()
 
     database.build()
     database.check_forces()

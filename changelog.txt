@@ -3,6 +3,8 @@ Version: 3.5.8
 Date: ????
   Changes:
     - Updated translations from Crowdin.
+  Bugfixes:
+    - Fixed a crash when migrating from a Recipe Book version older than 3.0. (#162)
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.7
 Date: 2023-11-24
