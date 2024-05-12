@@ -185,8 +185,13 @@ function info_pane:show(entry)
   material_description:add_common(entry.item or entry.fluid)
   material_description:add_item(entry)
   material_description:add_fluid(entry)
-  material_description:add_entity(entry)
   material_description:finalize()
+
+  -- TODO: Deduplicate descriptions
+  local entity_description = info_description.new(content_pane, self.context)
+  entity_description:add_common(entry.entity)
+  entity_description:add_entity(entry)
+  entity_description:finalize()
 
   info_section.build(
     content_pane,
