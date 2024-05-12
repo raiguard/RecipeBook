@@ -155,7 +155,6 @@ function info_pane:show(entry)
       tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),
     })
 
-    -- TODO: Custom tooltip titles with all the info?
     if not id.amount and (id.temperature or id.minimum_temperature) then
       local bottom, top = id:get_temperature_strings()
       if bottom then

@@ -179,6 +179,13 @@ end
 --- @param entry Entry
 function info_description:add_fluid(entry) end
 
+local container_types = {
+  ["container"] = true,
+  ["logistic-container"] = true,
+  ["infinity-container"] = true,
+  ["cargo-wagon"] = true,
+}
+
 --- @param entry Entry
 function info_description:add_entity(entry)
   local entity = entry.entity
@@ -207,15 +214,17 @@ function info_description:add_entity(entry)
     })
   end
 
-  -- TODO: Don't show this on non-containers
-  local storage_size = entity.get_inventory_size(defines.inventory.chest)
-  if storage_size then
-    self:make_generic_row({ "description.storage-size" }, flib_format.number(storage_size, true))
+  if container_types[entity.type] then
+    local storage_size = entity.get_inventory_size(defines.inventory.chest)
+    if storage_size then
+      self:make_generic_row({ "description.storage-size" }, flib_format.number(storage_size, true))
+    end
   end
 
-  -- TODO: Storage volume
+  if entity.type == "storage-tank" or entity.type == "fluid-wagon" then
+    self:make_generic_row({ "description.fluid-capacity" }, flib_format.number(entity.fluid_capacity, true))
+  end
 
-  -- TODO: Determine if an icon exists and fall back to the default if not.
   if entity.type == "boiler" then
     local input_fluid_box = entity.fluidbox_prototypes[1]
     local input_filter = input_fluid_box.filter

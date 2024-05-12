@@ -13,6 +13,10 @@ local M = {}
 
 M.events = {
   ["rb-debug-toggle-entity-selection"] = on_toggle_entity_selection,
+  ["rb-debug-reload-mods"] = function(e)
+    game.reload_mods()
+    game.get_player(e.player_index).create_local_flying_text({ text = "Reloaded mods", create_at_cursor = true })
+  end,
 }
 
 return M
