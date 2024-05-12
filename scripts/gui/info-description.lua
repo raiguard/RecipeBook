@@ -49,7 +49,7 @@ local function mod_name_string(internal_name)
   return { "?", { "mod-name." .. internal_name }, internal_name }
 end
 
-function info_description:add_section()
+function info_description:add_separator()
   self.new_section = true
 end
 
@@ -64,6 +64,16 @@ function info_description:add_internal(args)
     end
   end
   return self.frame.add(args)
+end
+
+-- TODO: Add button to cross-reference steam, water, etc.
+--- @private
+--- @param label LocalisedString
+function info_description:add_header(label)
+  self:add_internal({ type = "label", style = "tooltip_heading_label_category", caption = label })
+  local line = self:add_internal({ type = "line", style = "tooltip_category_line" })
+  line.style.left_margin = -8
+  line.style.right_margin = -8
 end
 
 --- Adds prototype history and localised description of the prototype.
@@ -115,14 +125,14 @@ function info_description:add_item(entry)
     return
   end
 
-  self:add_section()
+  self:add_separator()
 
   local stack_size = item.stack_size
   if stack_size > 0 then
     self:make_generic_row({ "description.rb-stack-size" }, flib_format.number(stack_size, true))
   end
 
-  self:add_section()
+  self:add_separator()
 
   local fuel_category = item.fuel_category
   if fuel_category then
@@ -176,7 +186,7 @@ function info_description:add_entity(entry)
     return
   end
 
-  self:add_section()
+  self:add_separator()
 
   local max_underground_distance = entity.max_underground_distance
   if max_underground_distance then
@@ -197,12 +207,49 @@ function info_description:add_entity(entry)
     })
   end
 
+  -- TODO: Don't show this on non-containers
   local storage_size = entity.get_inventory_size(defines.inventory.chest)
   if storage_size then
     self:make_generic_row({ "description.storage-size" }, flib_format.number(storage_size, true))
   end
 
   -- TODO: Storage volume
+
+  -- TODO: Determine if an icon exists and fall back to the default if not.
+  if entity.type == "boiler" then
+    local input_fluid_box = entity.fluidbox_prototypes[1]
+    local input_filter = input_fluid_box.filter
+    if input_filter then
+      local minimum_temperature = input_fluid_box.minimum_temperature or input_filter.default_temperature
+      local flow_per_tick = (entity.target_temperature - minimum_temperature) * input_filter.heat_capacity
+      local flow_label = { "", entity.max_energy_usage / flow_per_tick * 60, { "per-second-suffix" } }
+
+      self:add_separator()
+      self:add_header({
+        "",
+        "[img=" .. entry.database:get_tooltip_category_sprite(input_filter, "consumption") .. "] ",
+        { "tooltip-category.consumes" },
+        " ",
+        input_filter.localised_name,
+      })
+      self:make_generic_row({ "description.energy-consumption" }, flow_label)
+
+      local output_fluid_box = entity.fluidbox_prototypes[2]
+      local output_filter = output_fluid_box.filter
+      if output_filter then
+        self:add_separator()
+        self:add_header({
+          "",
+          "[img=" .. entry.database:get_tooltip_category_sprite(output_filter, "production") .. "] ",
+          { "tooltip-category.generates" },
+          " ",
+          output_filter.localised_name,
+        })
+        self:make_generic_row({ "description.fluid-output" }, flow_label)
+        self:make_generic_row({ "description.temperature" }, { "format-degrees-c", entity.target_temperature })
+      end
+    end
+  end
 end
 
 function info_description:finalize()

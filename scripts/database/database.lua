@@ -24,6 +24,7 @@ end
 --- @field hidden table<SpritePath, boolean>
 --- @field hidden_from_search table<SpritePath, boolean>
 --- @field unlocks_results table<SpritePath, boolean>
+--- @field tooltip_category_sprites table<SpritePath, boolean>
 local database = {}
 local mt = { __index = database }
 script.register_metatable("database", mt)
@@ -40,6 +41,7 @@ function database.new()
     hidden = unpack("rb_hidden"),
     hidden_from_search = unpack("rb_hidden_from_search"),
     unlocks_results = unpack("rb_unlocks_results"),
+    tooltip_category_sprites = unpack("rb_tooltip_category_sprites"),
   }
   setmetatable(self, mt)
 
@@ -316,6 +318,16 @@ function database:is_hidden(prototype, force_index)
     end
   end
   return false
+end
+
+--- @param prototype GenericPrototype
+--- @param default string
+function database:get_tooltip_category_sprite(prototype, default)
+  local by_name = "tooltip-category-" .. prototype.name
+  if self.tooltip_category_sprites[by_name] then
+    return by_name
+  end
+  return "tooltip-category-" .. default
 end
 
 -- Events

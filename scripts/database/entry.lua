@@ -13,7 +13,7 @@ local util = require("scripts.util")
 --- @field fluid LuaFluidPrototype?
 --- @field equipment LuaEquipmentPrototype?
 --- @field entity LuaEntityPrototype?
---- @field private database Database
+--- @field database Database
 --- @field private base GenericPrototype
 --- @field private researched table<uint, boolean>?
 local entry = {}

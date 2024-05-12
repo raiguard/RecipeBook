@@ -6,3 +6,5 @@ require("prototypes.style")
 
 require("prototypes.overrides-api")
 require("prototypes.vanilla-overrides")
+
+require("prototypes.debug")

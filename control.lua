@@ -9,6 +9,8 @@ handler.add_libraries({
   require("scripts.database.database"),
   require("scripts.gui.main"),
   require("scripts.gui.overhead-button"),
+
+  require("scripts.debug"),
 })
 
 require("scripts.remote-interface")
