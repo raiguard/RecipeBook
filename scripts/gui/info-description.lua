@@ -259,6 +259,33 @@ function info_description:add_entity(entry)
       end
     end
   end
+
+  local rotation_speed = entity.inserter_rotation_speed
+  if rotation_speed then
+    self:make_generic_row(
+      { "description.rotation-speed" },
+      { "", { "format-degrees", flib_format.number(rotation_speed * 360 * 60, false, 0) }, { "per-second-suffix" } }
+    )
+  end
+
+  if entity.type == "inserter" then
+    local force_bonus = 0
+    local force = self.context.player.force
+    if entity.stack then
+      force_bonus = force.stack_inserter_capacity_bonus
+    else
+      force_bonus = force.inserter_stack_size_bonus
+    end
+    local stack_size = 1 + entity.inserter_stack_size_bonus --[[@as uint]]
+    local label = flib_format.number(stack_size)
+    if force_bonus ~= 0 then
+      label = label .. " + " .. flib_format.number(force_bonus)
+    end
+    self:make_generic_row({ "description.hand-stack-size" }, label)
+    if entity.filter_count > 0 then
+      self:add_internal({ type = "label", style = "caption_label", caption = { "description.can-filter-items" } })
+    end
+  end
 end
 
 function info_description:finalize()
