@@ -86,7 +86,7 @@ function info_description:add_common(prototype)
   if history.created ~= "base" or #history.changed > 0 then
     local output = mod_name_string(history.created)
     for _, changed in pairs(history.changed) do
-      output = { "", output, " -> ", mod_name_string(changed) }
+      output = { "", output, " › ", mod_name_string(changed) }
     end
     self:add_internal({ type = "label", style = "info_label", caption = output })
   end

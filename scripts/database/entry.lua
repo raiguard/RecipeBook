@@ -463,7 +463,6 @@ function entry:get_burned_in()
       end
     end
     if fluid.fuel_value then
-      -- TODO: Add energy source entity prototype filter to the API
       --- @diagnostic disable-next-line unused-fields
       for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "building" } })) do
         if self.database:get_entry(entity) and entity.fluid_energy_source_prototype then

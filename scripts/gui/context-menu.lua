@@ -50,8 +50,6 @@ function context_menu.new(player, items, location)
   return setmetatable(self, mt)
 end
 
--- TODO: Some new GUI event handling system that allows tieing to classes with metatables
-
 --- @param e EventData.on_gui_click
 function context_menu.on_result_clicked(e)
   game.print(e.element.caption)
