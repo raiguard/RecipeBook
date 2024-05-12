@@ -286,6 +286,20 @@ function info_description:add_entity(entry)
       self:add_internal({ type = "label", style = "caption_label", caption = { "description.can-filter-items" } })
     end
   end
+
+  if entity.type == "electric-pole" then
+    self:make_generic_row({ "description.wire-reach" }, flib_format.number(entity.max_wire_distance))
+    local supply_area = flib_format.number(entity.supply_area_distance * 2)
+    self:make_generic_row({ "description.supply-area" }, supply_area .. "×" .. supply_area)
+  end
+
+  local pumping_speed = entity.pumping_speed
+  if pumping_speed then
+    self:make_generic_row(
+      { "description.pumping-speed" },
+      { "", flib_format.number(pumping_speed * 60, true), { "per-second-suffix" } }
+    )
+  end
 end
 
 function info_description:finalize()
