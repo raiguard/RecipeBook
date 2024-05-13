@@ -890,4 +890,53 @@ function entry:get_generated_fluid()
   end
 end
 
+--- @return EntryID[]
+function entry:get_accepted_modules()
+  --- @type EntryID[]
+  local modules = {}
+
+  local entity = self.entity
+  if entity then
+    local allowed_lookup = entity.allowed_effects
+    for _, module in pairs(game.get_filtered_item_prototypes({ { filter = "type", type = "module" } })) do
+      if not allowed_lookup then
+        modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
+        goto continue
+      end
+      local module_effects = module.module_effects
+      if not module_effects then
+        goto continue
+      end
+      for effect in pairs(module_effects) do
+        if not allowed_lookup[effect] then
+          goto continue
+        end
+      end
+      modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
+      ::continue::
+    end
+    -- TODO: Somehow distinguish recipe modules vs. entity modules
+    return modules
+  end
+
+  local recipe = self.recipe
+  if recipe then
+    for _, module in pairs(game.get_filtered_item_prototypes({ { filter = "type", type = "module" } })) do
+      local limitations = module.limitations
+      if not limitations or #limitations == 0 then
+        modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
+        goto continue
+      end
+      for _, recipe_name in pairs(limitations) do
+        if recipe_name == recipe.name then
+          modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
+        end
+      end
+      ::continue::
+    end
+  end
+
+  return modules
+end
+
 return entry

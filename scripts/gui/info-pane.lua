@@ -346,11 +346,22 @@ function info_pane:show(entry)
     end
   )
 
+  -- Entity
+
   info_section.build(
     content_pane,
     self.context,
     { "description.rb-can-craft" },
     entry:get_can_craft(),
+    { column_count = 10 },
+    make_slot_button
+  )
+
+  info_section.build(
+    content_pane,
+    self.context,
+    { "description.rb-accepted-modules" },
+    entry:get_accepted_modules(),
     { column_count = 10 },
     make_slot_button
   )
