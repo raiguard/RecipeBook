@@ -6,6 +6,19 @@ TODO:
 - Improve behavior when other GUIs are open (overlay instead of replace).
 - Show group description when hovering the title
 
+MIKELAT:
+recipe book thoughts and suggested changes
+
+major
+
+allowed equipment is not shown
+
+suggestions
+
+for mods with lots of different ways of making a product, a named list instead of icons looks better, i find myself having to hover to know which recipe it is. SE and Py are two examples.
+sorting "used in" and "made by". the most useful one is probably by science its unlocked with (most sciences in mods do later = better recipe).
+favorites missing? (maybe intentional)
+
 CONSIDERING:
 - Reverse-research?
 - Flib GUI components (other than technology button)?
