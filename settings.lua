@@ -5,4 +5,10 @@ data:extend({
     setting_type = "runtime-per-user",
     default_value = false,
   },
+  {
+    type = "bool-setting",
+    name = "rb-auto-focus-search",
+    setting_type = "runtime-per-user",
+    default_value = false,
+  },
 })

@@ -192,6 +192,9 @@ function main_gui:show()
     self.window.force_auto_center()
   end
   self.context.player.set_shortcut_toggled("rb-toggle", true)
+  if self.context.player.mod_settings["rb-auto-focus-search"].value then
+    self.search_pane:focus_search()
+  end
 end
 
 function main_gui:toggle()
