@@ -186,6 +186,15 @@ local container_types = {
   ["cargo-wagon"] = true,
 }
 
+local vehicles = {
+  ["car"] = true,
+  ["artillery-wagon"] = true,
+  ["cargo-wagon"] = true,
+  ["fluid-wagon"] = true,
+  ["locomotive"] = true,
+  ["spider-vehicle"] = true,
+}
+
 --- @param entry Entry
 function info_description:add_entity(entry)
   local entity = entry.entity
@@ -299,6 +308,37 @@ function info_description:add_entity(entry)
       { "description.pumping-speed" },
       { "", flib_format.number(pumping_speed * 60, true), { "per-second-suffix" } }
     )
+  end
+
+  if vehicles[entity.type] then
+    self:add_header({
+      "",
+      "[img=tooltip-category-vehicle] ",
+      { "tooltip-category.vehicle" },
+    })
+    if not string.find(entity.type, "wagon") then
+      local max_speed = entity.speed
+      if max_speed then
+        self:make_generic_row(
+          { "description.max-speed" },
+          { "", flib_format.number(max_speed * 60 * 60 * 60 / 1000, false, 0), { "si-unit-kilometer-per-hour" } }
+        )
+      end
+      -- TODO: Add read for vehicle max acceleration power
+      --   local burner = entity.burner_prototype
+      --   if burner then
+      --   end
+      --   if acceleration_power then
+      --     self:make_generic_row(
+      --       { "description.max-speed" },
+      --       { "", flib_format.number(acceleration_power * 60 * 60 * 60 / 1000, false, 0), { "si-unit-kilometer-per-hour" } }
+      --     )
+      --   end
+    end
+    local weight = entity.weight
+    if weight then
+      self:make_generic_row({ "description.weight" }, flib_format.number(weight))
+    end
   end
 end
 
