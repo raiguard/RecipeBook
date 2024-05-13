@@ -177,7 +177,20 @@ function info_description:add_item(entry)
 end
 
 --- @param entry Entry
-function info_description:add_fluid(entry) end
+function info_description:add_fluid(entry)
+  local fluid = entry.fluid
+  if not fluid then
+    return
+  end
+
+  local fuel_value = fluid.fuel_value
+  if fuel_value > 0 then
+    self:make_generic_row(
+      { "description.fuel-value" },
+      { "", flib_format.number(flib_math.round(fuel_value, 0.01), true), { "si-unit-symbol-joule" } }
+    )
+  end
+end
 
 local container_types = {
   ["container"] = true,
