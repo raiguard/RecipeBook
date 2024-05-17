@@ -76,6 +76,8 @@ function info_description:add_header(label)
   line.style.right_margin = -8
 end
 
+local mod_name_separator = " › "
+
 --- Adds prototype history and localised description of the prototype.
 --- @param prototype GenericPrototype?
 function info_description:add_common(prototype)
@@ -84,9 +86,19 @@ function info_description:add_common(prototype)
   end
   local history = script.get_prototype_history(get_prototype_type(prototype), prototype.name)
   if history.created ~= "base" or #history.changed > 0 then
-    local output = mod_name_string(history.created)
+    --- @type LocalisedString
+    local output = { "", mod_name_string(history.created) }
+    local x = 2
     for _, changed in pairs(history.changed) do
-      output = { "", output, " › ", mod_name_string(changed) }
+      local mod_name = mod_name_string(changed)
+      x = x + 2
+      if x > 20 then
+        x = 4
+        output = { "", output, mod_name_separator, mod_name }
+      else
+        output[#output + 1] = mod_name_separator
+        output[#output + 1] = mod_name
+      end
     end
     self:add_internal({ type = "label", style = "info_label", caption = output })
   end
