@@ -76,7 +76,7 @@ end
 --- @private
 --- @param label LocalisedString
 --- @param id EntryID?
-function info_description:add_header(label, id)
+function info_description:add_category(label, id)
   if id then
     local flow = self:add_internal({ type = "flow", style = "centering_horizontal_flow" })
     flow.add({ type = "label", style = "tooltip_heading_label_category", caption = label })
@@ -305,22 +305,22 @@ function info_description:add_entity(entry)
       local flow_label = { "", entity.max_energy_usage / flow_per_tick * 60, { "per-second-suffix" } }
 
       self:add_separator()
-      self:add_header({
+      self:add_category({
         "",
-        "[img=" .. entry.database:get_tooltip_category_sprite(input_filter, "consumption") .. "] ",
+        "[img=" .. self.context.database:get_tooltip_category_sprite(input_filter, "consumption") .. "] ",
         { "tooltip-category.consumes" },
-      }, entry_id.new({ type = "fluid", name = input_filter.name }, entry.database))
+      }, entry_id.new({ type = "fluid", name = input_filter.name }, self.context.database))
       self:make_generic_row({ "description.energy-consumption" }, flow_label)
 
       local output_fluid_box = entity.fluidbox_prototypes[2]
       local output_filter = output_fluid_box.filter
       if output_filter then
         self:add_separator()
-        self:add_header({
+        self:add_category({
           "",
-          "[img=" .. entry.database:get_tooltip_category_sprite(output_filter, "production") .. "] ",
+          "[img=" .. self.context.database:get_tooltip_category_sprite(output_filter, "production") .. "] ",
           { "tooltip-category.generates" },
-        }, entry_id.new({ type = "fluid", name = output_filter.name }, entry.database))
+        }, entry_id.new({ type = "fluid", name = output_filter.name }, self.context.database))
         self:make_generic_row({ "description.fluid-output" }, flow_label)
         self:make_generic_row({ "description.temperature" }, { "format-degrees-c", entity.target_temperature })
       end
@@ -369,7 +369,7 @@ function info_description:add_entity(entry)
   end
 
   if vehicles[entity.type] then
-    self:add_header({
+    self:add_category({
       "",
       "[img=tooltip-category-vehicle] ",
       { "tooltip-category.vehicle" },
@@ -403,7 +403,7 @@ function info_description:add_entity(entry)
     local mineable_properties = entity.mineable_properties
     local fluid_name = mineable_properties.required_fluid
     if fluid_name then
-      local entry_id = entry_id.new({ type = "fluid", name = fluid_name }, entry.database)
+      local entry_id = entry_id.new({ type = "fluid", name = fluid_name }, self.context.database)
       if entry_id then
         self:make_id_row({ "description.rb-mining-fluid" }, entry_id)
       end

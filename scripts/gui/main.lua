@@ -29,6 +29,7 @@ local function frame_action_button(name, sprite, tooltip, handler, auto_toggle)
 end
 
 --- @class MainGuiContext
+--- @field database Database
 --- @field show_hidden boolean
 --- @field show_unresearched boolean
 --- @field player LuaPlayer
@@ -47,12 +48,14 @@ local mt = { __index = main_gui }
 script.register_metatable("main_gui", mt)
 
 --- @param player LuaPlayer
+--- @param database Database
 --- @return MainGui
-function main_gui.build(player)
+function main_gui.build(player, database)
   main_gui.destroy(player.index)
 
   --- @type MainGuiContext
   local context = {
+    database = database,
     show_hidden = false,
     show_unresearched = true,
     player = player,
@@ -241,7 +244,7 @@ function main_gui.get(player_index)
     if self then
       player.print({ "message.rb-recreated-gui" })
     end
-    self = main_gui.build(player)
+    self = main_gui.build(player, global.database)
   end
   return self
 end
@@ -430,7 +433,7 @@ end
 
 function main_gui.on_configuration_changed()
   for _, player in pairs(game.players) do
-    main_gui.build(player)
+    main_gui.build(player, global.database)
   end
 end
 

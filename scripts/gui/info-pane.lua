@@ -1,4 +1,3 @@
-local flib_dictionary = require("__flib__.dictionary-lite")
 local flib_gui = require("__flib__.gui-lite")
 local flib_gui_templates = require("__flib__.gui-templates")
 local flib_technology = require("__flib__.technology")
