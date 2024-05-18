@@ -183,6 +183,28 @@ function entry:research(force_index)
   end
 end
 
+local next_key = {
+  recipe = "item",
+  item = "fluid",
+  fluid = "entity",
+}
+
+--- @return fun(): GenericPrototype?
+function entry:iterate()
+  local current = "recipe"
+  return function()
+    while current and not self[current] do
+      current = next_key[current]
+    end
+    if not current then
+      return nil
+    end
+    local ret = self[current]
+    current = next_key[current]
+    return ret
+  end
+end
+
 -- PROPERTIES
 -- TODO: Memoization
 
