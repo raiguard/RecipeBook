@@ -122,6 +122,7 @@ function info_description:add_common(prototype)
       end
     end
     self:add_internal({ type = "label", style = "info_label", caption = output })
+    self:add_separator()
   end
   local descriptions = flib_dictionary.get(self.context.player.index, "description") or {}
   local path = util.get_path(prototype)
@@ -130,15 +131,21 @@ function info_description:add_common(prototype)
     local label = self:add_internal({ type = "label", caption = description })
     label.style.single_line = false
   end
+  self:add_separator()
 end
 
--- --- @param entry Entry
--- function info_description:add_recipe(entry)
---   local recipe = entry.recipe
---   if not recipe then
---     return
---   end
--- end
+--- @param entry Entry
+function info_description:add_recipe(entry)
+  local recipe = entry.recipe
+  if not recipe then
+    return
+  end
+
+  local pollution = recipe.emissions_multiplier
+  if pollution ~= 1 then
+    self:make_generic_row({ "description.recipe-pollution" }, flib_format.number(pollution * 100, false, 0) .. "%")
+  end
+end
 
 --- @private
 --- @param label LocalisedString

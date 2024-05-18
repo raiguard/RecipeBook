@@ -174,10 +174,9 @@ function info_pane:show(entry)
     content_pane.welcome_label.destroy()
   end
 
-  -- Recipe
-
   local recipe_description = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
   recipe_description:add_common(entry.recipe)
+  recipe_description:add_recipe(entry)
   recipe_description:finalize()
 
   local material_description = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
@@ -191,6 +190,8 @@ function info_pane:show(entry)
   entity_description:add_common(entry.entity)
   entity_description:add_entity(entry)
   entity_description:finalize()
+
+  -- Recipe
 
   info_section.build(
     content_pane,
