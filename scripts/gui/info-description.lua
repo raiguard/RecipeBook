@@ -236,6 +236,18 @@ function info_description:add_item_properties(entry)
       { "format-percent", flib_format.number(flib_math.round(fuel_top_speed_multiplier * 100, 0.01), true) }
     )
   end
+
+  local module_effects = item.module_effects
+  if module_effects then
+    self:add_separator()
+    for key, value in pairs(module_effects) do
+      local caption = flib_format.number(value.bonus * 100, false, 2) .. "%"
+      if value.bonus > 0 then
+        caption = "+" .. caption
+      end
+      self:add_generic_row({ "description." .. key .. "-bonus" }, caption)
+    end
+  end
 end
 
 --- @param entry Entry
