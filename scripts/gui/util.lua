@@ -72,4 +72,14 @@ gui_util.type_locale = {
   LuaTechnologyPrototype = { "gui-map-generator.technology-difficulty-group-tile" },
 }
 
+--- @type table<string, boolean>
+gui_util.vehicles = {
+  ["car"] = true,
+  ["artillery-wagon"] = true,
+  ["cargo-wagon"] = true,
+  ["fluid-wagon"] = true,
+  ["locomotive"] = true,
+  ["spider-vehicle"] = true,
+}
+
 return gui_util

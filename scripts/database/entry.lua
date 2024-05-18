@@ -961,4 +961,54 @@ function entry:get_accepted_modules()
   return modules
 end
 
+--- @return EntryID?
+function entry:get_material_consumption()
+  local entity = self.entity
+  if not entity then
+    return
+  end
+
+  if entity.type == "boiler" then
+    local input_fluid_box = entity.fluidbox_prototypes[1]
+    local input_filter = input_fluid_box.filter
+    if input_filter then
+      local minimum_temperature = input_fluid_box.minimum_temperature or input_filter.default_temperature
+      local flow_per_tick = (entity.target_temperature - minimum_temperature) * input_filter.heat_capacity
+      return entry_id.new(
+        { type = "fluid", name = input_filter.name, amount = entity.max_energy_usage / flow_per_tick * 60 },
+        self.database
+      )
+    end
+  end
+end
+
+function entry:get_material_production()
+  local entity = self.entity
+  if not entity then
+    return
+  end
+
+  if entity.type == "boiler" then
+    local input_fluid_box = entity.fluidbox_prototypes[1]
+    local input_filter = input_fluid_box.filter
+    if input_filter then
+      local output_fluid_box = entity.fluidbox_prototypes[2]
+      local output_filter = output_fluid_box.filter
+      if output_filter then
+        local minimum_temperature = input_fluid_box.minimum_temperature or input_filter.default_temperature
+        local flow_per_tick = (entity.target_temperature - minimum_temperature) * input_filter.heat_capacity
+        return entry_id.new(
+          {
+            type = "fluid",
+            name = output_filter.name,
+            amount = entity.max_energy_usage / flow_per_tick * 60,
+            temperature = entity.target_temperature,
+          },
+          self.database
+        )
+      end
+    end
+  end
+end
+
 return entry

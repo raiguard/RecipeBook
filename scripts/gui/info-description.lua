@@ -5,6 +5,7 @@ local flib_math = require("__flib__.math")
 local util = require("scripts.util")
 
 local entry_id = require("scripts.database.entry-id")
+local gui_util = require("scripts.gui.util")
 
 --- @class InfoDescription
 --- @field context MainGuiContext
@@ -83,7 +84,7 @@ function info_description:add_category(label, id)
     flow.add({
       type = "button",
       style = "rb_description_heading_id_button",
-      caption = { "", "[img=" .. id:get_path() .. "]  ", id:get_caption() },
+      caption = { "", "[img=" .. id:get_path() .. "]  ", id:get_entry():get_localised_name() },
       elem_tooltip = id:strip(),
       tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = self.callback }, { path = id:get_path() }),
     })
@@ -185,14 +186,10 @@ function info_description:add_item_properties(entry)
     return
   end
 
-  self:add_separator()
-
   local stack_size = item.stack_size
   if stack_size > 0 then
     self:add_generic_row({ "description.rb-stack-size" }, flib_format.number(stack_size, true))
   end
-
-  self:add_separator()
 
   local fuel_category = item.fuel_category
   if fuel_category then
@@ -259,23 +256,12 @@ local container_types = {
   ["cargo-wagon"] = true,
 }
 
-local vehicles = {
-  ["car"] = true,
-  ["artillery-wagon"] = true,
-  ["cargo-wagon"] = true,
-  ["fluid-wagon"] = true,
-  ["locomotive"] = true,
-  ["spider-vehicle"] = true,
-}
-
 --- @param entry Entry
 function info_description:add_entity_properties(entry)
   local entity = entry.entity
   if not entity then
     return
   end
-
-  self:add_separator()
 
   local max_underground_distance = entity.max_underground_distance
   if max_underground_distance then
@@ -305,37 +291,6 @@ function info_description:add_entity_properties(entry)
 
   if entity.type == "storage-tank" or entity.type == "fluid-wagon" then
     self:add_generic_row({ "description.fluid-capacity" }, flib_format.number(entity.fluid_capacity, true))
-  end
-
-  if entity.type == "boiler" then
-    local input_fluid_box = entity.fluidbox_prototypes[1]
-    local input_filter = input_fluid_box.filter
-    if input_filter then
-      local minimum_temperature = input_fluid_box.minimum_temperature or input_filter.default_temperature
-      local flow_per_tick = (entity.target_temperature - minimum_temperature) * input_filter.heat_capacity
-      local flow_label = { "", entity.max_energy_usage / flow_per_tick * 60, { "per-second-suffix" } }
-
-      self:add_separator()
-      self:add_category({
-        "",
-        "[img=" .. self.context.database:get_tooltip_category_sprite(input_filter, "consumption") .. "] ",
-        { "tooltip-category.consumes" },
-      }, entry_id.new({ type = "fluid", name = input_filter.name }, self.context.database))
-      self:add_generic_row({ "description.energy-consumption" }, flow_label)
-
-      local output_fluid_box = entity.fluidbox_prototypes[2]
-      local output_filter = output_fluid_box.filter
-      if output_filter then
-        self:add_separator()
-        self:add_category({
-          "",
-          "[img=" .. self.context.database:get_tooltip_category_sprite(output_filter, "production") .. "] ",
-          { "tooltip-category.generates" },
-        }, entry_id.new({ type = "fluid", name = output_filter.name }, self.context.database))
-        self:add_generic_row({ "description.fluid-output" }, flow_label)
-        self:add_generic_row({ "description.temperature" }, { "format-degrees-c", entity.target_temperature })
-      end
-    end
   end
 
   local rotation_speed = entity.inserter_rotation_speed
@@ -379,37 +334,6 @@ function info_description:add_entity_properties(entry)
     )
   end
 
-  if vehicles[entity.type] then
-    self:add_category({
-      "",
-      "[img=tooltip-category-vehicle] ",
-      { "tooltip-category.vehicle" },
-    })
-    if not string.find(entity.type, "wagon") then
-      local max_speed = entity.speed
-      if max_speed then
-        self:add_generic_row(
-          { "description.max-speed" },
-          { "", flib_format.number(max_speed * 60 * 60 * 60 / 1000, false, 0), { "si-unit-kilometer-per-hour" } }
-        )
-      end
-      -- TODO: Add read for vehicle max acceleration power
-      --   local burner = entity.burner_prototype
-      --   if burner then
-      --   end
-      --   if acceleration_power then
-      --     self:add_generic_row(
-      --       { "description.max-speed" },
-      --       { "", flib_format.number(acceleration_power * 60 * 60 * 60 / 1000, false, 0), { "si-unit-kilometer-per-hour" } }
-      --     )
-      --   end
-    end
-    local weight = entity.weight
-    if weight then
-      self:add_generic_row({ "description.weight" }, flib_format.number(weight))
-    end
-  end
-
   if entity.type == "resource" then
     local mineable_properties = entity.mineable_properties
     local fluid_name = mineable_properties.required_fluid
@@ -419,6 +343,80 @@ function info_description:add_entity_properties(entry)
         self:add_id_row({ "description.rb-mining-fluid" }, entry_id)
       end
     end
+  end
+
+  local burner = entity.burner_prototype
+  if burner then
+    self:add_generic_row({ "description.pollution" }, {
+      "",
+      flib_format.number(burner.emissions * entity.max_energy_usage * 60 * 60, false),
+      { "per-minute-suffix" },
+    })
+  end
+end
+
+--- @param id EntryID
+function info_description:add_consumption(id)
+  self:add_category({
+    "",
+    "[img=" .. id:get_tooltip_category_sprite("consumption") .. "] ",
+    { "tooltip-category.consumes" },
+  }, id)
+  assert(id.amount)
+  self:add_generic_row(
+    { "description.energy-consumption" },
+    { "", flib_format.number(id.amount), { "per-second-suffix" } }
+  )
+end
+
+--- @param id EntryID
+function info_description:add_production(id)
+  self:add_category({
+    "",
+    "[img=" .. id:get_tooltip_category_sprite("production") .. "] ",
+    { "tooltip-category.generates" },
+  }, id)
+  assert(id.amount)
+  self:add_generic_row({ "description.fluid-output" }, { "", flib_format.number(id.amount), { "per-second-suffix" } })
+  if id.temperature then
+    self:add_generic_row({ "description.temperature" }, { "format-degrees-c", flib_format.number(id.temperature) })
+  end
+end
+
+--- @param entry Entry
+function info_description:add_vehicle_properties(entry)
+  local entity = entry.entity
+  if not entity or not gui_util.vehicles[entity.type] then
+    return
+  end
+
+  self:add_category({
+    "",
+    "[img=tooltip-category-vehicle] ",
+    { "tooltip-category.vehicle" },
+  })
+  if not string.find(entity.type, "wagon") then
+    local max_speed = entity.speed
+    if max_speed then
+      self:add_generic_row(
+        { "description.max-speed" },
+        { "", flib_format.number(max_speed * 60 * 60 * 60 / 1000, false, 0), { "si-unit-kilometer-per-hour" } }
+      )
+    end
+    -- TODO: Add read for vehicle max acceleration power
+    --   local burner = entity.burner_prototype
+    --   if burner then
+    --   end
+    --   if acceleration_power then
+    --     self:add_generic_row(
+    --       { "description.max-speed" },
+    --       { "", flib_format.number(acceleration_power * 60 * 60 * 60 / 1000, false, 0), { "si-unit-kilometer-per-hour" } }
+    --     )
+    --   end
+  end
+  local weight = entity.weight
+  if weight then
+    self:add_generic_row({ "description.weight" }, flib_format.number(weight))
   end
 end
 

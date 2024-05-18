@@ -99,7 +99,7 @@ function entry_id:get_caption()
     }
   end
 
-  caption[#caption + 1] = self:get_entry()[self.type].localised_name
+  caption[#caption + 1] = self:get_prototype().localised_name
 
   if self.temperature then
     caption[#caption + 1] = { "", "  (", { "format-degrees-c-compact", flib_math.round(self.temperature, 0.01) }, ")" }
@@ -152,6 +152,16 @@ end
 --- @return ElemID
 function entry_id:strip()
   return { type = self.type, name = self.name }
+end
+
+--- @return GenericPrototype
+function entry_id:get_prototype()
+  return self:get_entry()[self.type]
+end
+
+--- @return SpritePath
+function entry_id:get_tooltip_category_sprite(fallback)
+  return self.database:get_tooltip_category_sprite(self:get_prototype(), fallback)
 end
 
 return entry_id

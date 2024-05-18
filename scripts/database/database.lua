@@ -321,13 +321,13 @@ function database:is_hidden(prototype, force_index)
 end
 
 --- @param prototype GenericPrototype
---- @param default string
-function database:get_tooltip_category_sprite(prototype, default)
+--- @param fallback string
+function database:get_tooltip_category_sprite(prototype, fallback)
   local by_name = "tooltip-category-" .. prototype.name
   if self.tooltip_category_sprites[by_name] then
     return by_name
   end
-  return "tooltip-category-" .. default
+  return "tooltip-category-" .. fallback
 end
 
 -- Events

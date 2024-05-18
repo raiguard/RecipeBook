@@ -182,6 +182,27 @@ function info_pane:show(entry)
   general_desc:add_entity_properties(entry)
   general_desc:finalize()
 
+  local entity = entry.entity
+  if entity then
+    local consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    local consumption_id = entry:get_material_consumption()
+    if consumption_id then
+      consumption_desc:add_consumption(consumption_id)
+    end
+    consumption_desc:finalize()
+
+    local production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    local production_id = entry:get_material_production()
+    if production_id then
+      production_desc:add_production(production_id)
+    end
+    production_desc:finalize()
+
+    local vehicle_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    vehicle_desc:add_vehicle_properties(entry)
+    vehicle_desc:finalize()
+  end
+
   -- Recipe
 
   info_section.build(
