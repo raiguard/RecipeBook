@@ -1,3 +1,4 @@
+local flib_math = require("__flib__.math")
 local flib_table = require("__flib__.table")
 local flib_technology = require("__flib__.technology")
 
@@ -979,6 +980,17 @@ function entry:get_material_consumption()
         self.database
       )
     end
+  elseif entity.type == "generator" then
+    local fluid_box = entity.fluidbox_prototypes[1]
+    local filter = fluid_box.filter
+    if filter then
+      return entry_id.new({
+        type = "fluid",
+        name = filter.name,
+        amount = entity.fluid_usage_per_tick * 60,
+        maximum_temperature = entity.maximum_temperature,
+      }, self.database)
+    end
   end
 end
 
@@ -997,18 +1009,53 @@ function entry:get_material_production()
       if output_filter then
         local minimum_temperature = input_fluid_box.minimum_temperature or input_filter.default_temperature
         local flow_per_tick = (entity.target_temperature - minimum_temperature) * input_filter.heat_capacity
-        return entry_id.new(
-          {
-            type = "fluid",
-            name = output_filter.name,
-            amount = entity.max_energy_usage / flow_per_tick * 60,
-            temperature = entity.target_temperature,
-          },
-          self.database
-        )
+        return entry_id.new({
+          type = "fluid",
+          name = output_filter.name,
+          amount = entity.max_energy_usage / flow_per_tick * 60,
+          temperature = entity.target_temperature,
+        }, self.database)
       end
     end
   end
+end
+
+--- @return {min: double, max: double}?
+function entry:get_power_consumption()
+  local entity = self.entity
+  if not entity then
+    return
+  end
+
+  local electric_energy_source_prototype = entity.electric_energy_source_prototype --[[@as LuaElectricEnergySourcePrototype]]
+  if not electric_energy_source_prototype then
+    return
+  end
+
+  -- local added_emissions = 0
+  local max_energy_usage = entity.max_energy_usage or 0
+  if max_energy_usage > 0 and max_energy_usage < flib_math.max_int53 then
+    local drain = electric_energy_source_prototype.drain
+    if max_energy_usage ~= drain then
+      max_energy_usage = max_energy_usage + drain
+    end
+    return { min = drain * 60, max = max_energy_usage * 60 }
+  end
+end
+
+--- @return double?
+function entry:get_power_production()
+  local entity = self.entity
+  if not entity then
+    return
+  end
+
+  local output = entity.max_power_output
+  if not output then
+    return
+  end
+
+  return output * 60
 end
 
 return entry

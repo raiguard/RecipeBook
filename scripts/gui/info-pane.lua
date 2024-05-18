@@ -191,6 +191,38 @@ function info_pane:show(entry)
     end
     consumption_desc:finalize()
 
+    local power_consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    local power_consumption = entry:get_power_consumption()
+    if power_consumption then
+      power_consumption_desc:add_category_header(
+        "tooltip-category-electricity",
+        { "", { "tooltip-category.consumes" }, " ", { "description.electricity" } }
+      )
+      power_consumption_desc:add_generic_row(
+        { "description.max-energy-consumption" },
+        gui_util.format_power(power_consumption.max)
+      )
+      power_consumption_desc:add_generic_row(
+        { "description.min-energy-consumption" },
+        gui_util.format_power(power_consumption.min)
+      )
+    end
+    power_consumption_desc:finalize()
+
+    local power_production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    local power_production = entry:get_power_production()
+    if power_production then
+      power_production_desc:add_category_header(
+        "tooltip-category-electricity",
+        { "", { "tooltip-category.generates" }, " ", { "description.electricity" } }
+      )
+      power_production_desc:add_generic_row(
+        { "description.maximum-power-output" },
+        gui_util.format_power(power_production)
+      )
+    end
+    power_production_desc:finalize()
+
     local production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
     local production_id = entry:get_material_production()
     if production_id then

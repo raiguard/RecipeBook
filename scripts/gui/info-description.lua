@@ -73,14 +73,17 @@ function info_description:add_internal(args)
   return self.frame.add(args)
 end
 
--- TODO: Add button to cross-reference steam, water, etc.
---- @private
---- @param label LocalisedString
+--- @param icon SpritePath
+--- @param caption LocalisedString
 --- @param id EntryID?
-function info_description:add_category(label, id)
+function info_description:add_category_header(icon, caption, id)
   if id then
     local flow = self:add_internal({ type = "flow", style = "centering_horizontal_flow" })
-    flow.add({ type = "label", style = "tooltip_heading_label_category", caption = label })
+    flow.add({
+      type = "label",
+      style = "tooltip_heading_label_category",
+      caption = { "", "[img=" .. icon .. "]  ", caption },
+    })
     flow.add({
       type = "button",
       style = "rb_description_heading_id_button",
@@ -91,7 +94,11 @@ function info_description:add_category(label, id)
     flow.style.top_margin = -4
     flow.style.bottom_margin = -4
   else
-    self:add_internal({ type = "label", style = "tooltip_heading_label_category", caption = label })
+    self:add_internal({
+      type = "label",
+      style = "tooltip_heading_label_category",
+      caption = { "", "[img=" .. icon .. "] ", caption },
+    })
   end
   local line = self:add_internal({ type = "line", style = "tooltip_category_line" })
   line.style.left_margin = -8
@@ -138,7 +145,6 @@ function info_description:add_history_and_description(entry)
   end
 end
 
---- @private
 --- @param label LocalisedString
 --- @param value LocalisedString
 --- @return LuaGuiElement
@@ -149,7 +155,6 @@ function info_description:add_generic_row(label, value)
   return flow
 end
 
---- @private
 --- @param label LocalisedString
 --- @param id EntryID
 --- @return LuaGuiElement
@@ -357,29 +362,45 @@ end
 
 --- @param id EntryID
 function info_description:add_consumption(id)
-  self:add_category({
-    "",
-    "[img=" .. id:get_tooltip_category_sprite("consumption") .. "] ",
-    { "tooltip-category.consumes" },
-  }, id)
+  self:add_category_header(id:get_tooltip_category_sprite("consumption"), { "tooltip-category.consumes" }, id)
   assert(id.amount)
   self:add_generic_row(
     { "description.energy-consumption" },
     { "", flib_format.number(id.amount), { "per-second-suffix" } }
   )
+  if id.minimum_temperature then
+    self:add_generic_row(
+      { "description.minimum-temperature" },
+      { "format-degrees-c", flib_format.number(id.minimum_temperature) }
+    )
+  end
+  if id.maximum_temperature then
+    self:add_generic_row(
+      { "description.maximum-temperature" },
+      { "format-degrees-c", flib_format.number(id.maximum_temperature) }
+    )
+  end
 end
 
 --- @param id EntryID
 function info_description:add_production(id)
-  self:add_category({
-    "",
-    "[img=" .. id:get_tooltip_category_sprite("production") .. "] ",
-    { "tooltip-category.generates" },
-  }, id)
+  self:add_category_header(id:get_tooltip_category_sprite("production"), { "tooltip-category.generates" }, id)
   assert(id.amount)
   self:add_generic_row({ "description.fluid-output" }, { "", flib_format.number(id.amount), { "per-second-suffix" } })
   if id.temperature then
     self:add_generic_row({ "description.temperature" }, { "format-degrees-c", flib_format.number(id.temperature) })
+  end
+  if id.minimum_temperature then
+    self:add_generic_row(
+      { "description.minimum-temperature" },
+      { "format-degrees-c", flib_format.number(id.minimum_temperature) }
+    )
+  end
+  if id.maximum_temperature then
+    self:add_generic_row(
+      { "description.maximum-temperature" },
+      { "format-degrees-c", flib_format.number(id.maximum_temperature) }
+    )
   end
 end
 
@@ -390,11 +411,7 @@ function info_description:add_vehicle_properties(entry)
     return
   end
 
-  self:add_category({
-    "",
-    "[img=tooltip-category-vehicle] ",
-    { "tooltip-category.vehicle" },
-  })
+  self:add_category_header("tooltip-category-vehicle", { "tooltip-category.vehicle" })
   if not string.find(entity.type, "wagon") then
     local max_speed = entity.speed
     if max_speed then

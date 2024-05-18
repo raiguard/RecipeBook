@@ -1,6 +1,6 @@
 local flib_format = require("__flib__.format")
 local flib_math = require("__flib__.math")
--- local core_util = require("__core__.lualib.util")
+local core_util = require("__core__.lualib.util")
 
 --- @class GuiUtil
 local gui_util = {}
@@ -81,5 +81,14 @@ gui_util.vehicles = {
   ["locomotive"] = true,
   ["spider-vehicle"] = true,
 }
+
+--- @return LocalisedString
+function gui_util.format_power(input)
+  local formatted = flib_format.number(input, true)
+  if input < 1000 then
+    return { "", formatted, " ", { "si-unit-symbol-watt" } }
+  end
+  return { "", formatted, { "si-unit-symbol-watt" } }
+end
 
 return gui_util
