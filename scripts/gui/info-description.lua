@@ -75,8 +75,23 @@ end
 -- TODO: Add button to cross-reference steam, water, etc.
 --- @private
 --- @param label LocalisedString
-function info_description:add_header(label)
-  self:add_internal({ type = "label", style = "tooltip_heading_label_category", caption = label })
+--- @param id EntryID?
+function info_description:add_header(label, id)
+  if id then
+    local flow = self:add_internal({ type = "flow", style = "centering_horizontal_flow" })
+    flow.add({ type = "label", style = "tooltip_heading_label_category", caption = label })
+    flow.add({
+      type = "button",
+      style = "rb_description_heading_id_button",
+      caption = { "", "[img=" .. id:get_path() .. "]  ", id:get_caption() },
+      elem_tooltip = id:strip(),
+      tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = self.callback }, { path = id:get_path() }),
+    })
+    flow.style.top_margin = -4
+    flow.style.bottom_margin = -4
+  else
+    self:add_internal({ type = "label", style = "tooltip_heading_label_category", caption = label })
+  end
   local line = self:add_internal({ type = "line", style = "tooltip_category_line" })
   line.style.left_margin = -8
   line.style.right_margin = -8
@@ -146,6 +161,7 @@ function info_description:make_id_row(label, id)
     type = "button",
     style = "rb_description_id_button",
     caption = { "", "[img=" .. id:get_path() .. "]  ", id:get_caption() },
+    elem_tooltip = id:strip(),
     tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = self.callback }, { path = id:get_path() }),
   })
   return flow
@@ -293,9 +309,7 @@ function info_description:add_entity(entry)
         "",
         "[img=" .. entry.database:get_tooltip_category_sprite(input_filter, "consumption") .. "] ",
         { "tooltip-category.consumes" },
-        " ",
-        input_filter.localised_name,
-      })
+      }, entry_id.new({ type = "fluid", name = input_filter.name }, entry.database))
       self:make_generic_row({ "description.energy-consumption" }, flow_label)
 
       local output_fluid_box = entity.fluidbox_prototypes[2]
@@ -306,9 +320,7 @@ function info_description:add_entity(entry)
           "",
           "[img=" .. entry.database:get_tooltip_category_sprite(output_filter, "production") .. "] ",
           { "tooltip-category.generates" },
-          " ",
-          output_filter.localised_name,
-        })
+        }, entry_id.new({ type = "fluid", name = output_filter.name }, entry.database))
         self:make_generic_row({ "description.fluid-output" }, flow_label)
         self:make_generic_row({ "description.temperature" }, { "format-degrees-c", entity.target_temperature })
       end

@@ -225,8 +225,15 @@ styles.rb_description_id_button = {
   type = "button_style",
   parent = "flib_slot_button_default",
   width = 0,
-  left_padding = 8,
+  left_padding = 4,
   right_padding = 8,
   height = 28,
   default_font_color = default_font_color,
+}
+
+styles.rb_description_heading_id_button = {
+  type = "button_style",
+  parent = "rb_description_id_button",
+  default_font_color = styles.tooltip_heading_label_category.font_color,
+  font = "default-bold",
 }
