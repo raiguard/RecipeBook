@@ -1,10 +1,14 @@
 local flib_dictionary = require("__flib__.dictionary-lite")
 local flib_format = require("__flib__.format")
+local flib_gui = require("__flib__.gui-lite")
 local flib_math = require("__flib__.math")
 local util = require("scripts.util")
 
+local entry_id = require("scripts.database.entry-id")
+
 --- @class InfoDescription
 --- @field context MainGuiContext
+--- @field callback GuiElemHandler
 --- @field frame LuaGuiElement
 --- @field has_content boolean
 local info_description = {}
@@ -13,8 +17,9 @@ script.register_metatable("info_description", mt)
 
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
+--- @param callback GuiElemHandler
 --- @return InfoDescription
-function info_description.new(parent, context)
+function info_description.new(parent, context, callback)
   local frame = parent.add({
     type = "frame",
     style = "rb_description_frame",
@@ -24,6 +29,7 @@ function info_description.new(parent, context)
   local self = {
     context = context,
     frame = frame,
+    callback = callback,
     has_content = false,
   }
   setmetatable(self, mt)
@@ -127,6 +133,21 @@ function info_description:make_generic_row(label, value)
   local flow = self:add_internal({ type = "flow" })
   flow.add({ type = "label", style = "caption_label", caption = { "", label, ":" } })
   flow.add({ type = "label", caption = value })
+  return flow
+end
+
+--- @param label LocalisedString
+--- @param id EntryID
+--- @return LuaGuiElement
+function info_description:make_id_row(label, id)
+  local flow = self:add_internal({ type = "flow", style = "centering_horizontal_flow" })
+  flow.add({ type = "label", style = "caption_label", caption = { "", label, ":" } })
+  flow.add({
+    type = "button",
+    style = "rb_description_id_button",
+    caption = { "", "[img=" .. id:get_path() .. "]  ", id:get_caption() },
+    tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = self.callback }, { path = id:get_path() }),
+  })
   return flow
 end
 
@@ -363,6 +384,17 @@ function info_description:add_entity(entry)
     local weight = entity.weight
     if weight then
       self:make_generic_row({ "description.weight" }, flib_format.number(weight))
+    end
+  end
+
+  if entity.type == "resource" then
+    local mineable_properties = entity.mineable_properties
+    local fluid_name = mineable_properties.required_fluid
+    if fluid_name then
+      local entry_id = entry_id.new({ type = "fluid", name = fluid_name }, entry.database)
+      if entry_id then
+        self:make_id_row({ "description.rb-mining-fluid" }, entry_id)
+      end
     end
   end
 end

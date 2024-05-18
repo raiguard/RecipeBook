@@ -220,3 +220,13 @@ styles.rb_info_scroll_pane = {
   horizontally_stretchable = "on",
   vertically_stretchable = "on",
 }
+
+styles.rb_description_id_button = {
+  type = "button_style",
+  parent = "flib_slot_button_default",
+  width = 0,
+  left_padding = 8,
+  right_padding = 8,
+  height = 28,
+  default_font_color = default_font_color,
+}

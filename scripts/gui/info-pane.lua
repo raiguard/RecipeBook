@@ -177,18 +177,18 @@ function info_pane:show(entry)
 
   -- Recipe
 
-  local recipe_description = info_description.new(content_pane, self.context)
+  local recipe_description = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
   recipe_description:add_common(entry.recipe)
   recipe_description:finalize()
 
-  local material_description = info_description.new(content_pane, self.context)
+  local material_description = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
   material_description:add_common(entry.item or entry.fluid)
   material_description:add_item(entry)
   material_description:add_fluid(entry)
   material_description:finalize()
 
   -- TODO: Deduplicate descriptions
-  local entity_description = info_description.new(content_pane, self.context)
+  local entity_description = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
   entity_description:add_common(entry.entity)
   entity_description:add_entity(entry)
   entity_description:finalize()
