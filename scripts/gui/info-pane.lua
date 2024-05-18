@@ -196,16 +196,23 @@ function info_pane:show(entry)
     if power_consumption then
       power_consumption_desc:add_category_header(
         "tooltip-category-electricity",
-        { "", { "tooltip-category.consumes" }, " ", { "description.electricity" } }
+        { "", { "tooltip-category.consumes" }, " ", { "tooltip-category.electricity" } }
       )
-      power_consumption_desc:add_generic_row(
-        { "description.max-energy-consumption" },
-        gui_util.format_power(power_consumption.max)
-      )
-      power_consumption_desc:add_generic_row(
-        { "description.min-energy-consumption" },
-        gui_util.format_power(power_consumption.min)
-      )
+      if power_consumption.min == power_consumption.max then
+        power_consumption_desc:add_generic_row(
+          { "description.energy-consumption" },
+          gui_util.format_power(power_consumption.max)
+        )
+      else
+        power_consumption_desc:add_generic_row(
+          { "description.max-energy-consumption" },
+          gui_util.format_power(power_consumption.max)
+        )
+        power_consumption_desc:add_generic_row(
+          { "description.min-energy-consumption" },
+          gui_util.format_power(power_consumption.min)
+        )
+      end
     end
     power_consumption_desc:finalize()
 
@@ -214,7 +221,7 @@ function info_pane:show(entry)
     if power_production then
       power_production_desc:add_category_header(
         "tooltip-category-electricity",
-        { "", { "tooltip-category.generates" }, " ", { "description.electricity" } }
+        { "", { "tooltip-category.generates" }, " ", { "tooltip-category.electricity" } }
       )
       power_production_desc:add_generic_row(
         { "description.maximum-power-output" },
