@@ -118,7 +118,7 @@ commands.add_command("rb-print-object", nil, function(e)
     player.print("Invalid arguments format")
     return
   end
-  local obj = database[class] and database[class][name]
+  local obj = global.database[class] and global.database[class][name]
   if not obj then
     player.print("Not a valid object")
     return
@@ -138,7 +138,7 @@ commands.add_command("rb-count-objects", nil, function(e)
     player.print({ "cant-run-command-not-admin", "rb-dump-data" })
     return
   end
-  for name, tbl in pairs(database) do
+  for name, tbl in pairs(global.database) do
     if type(tbl) == "table" then
       local output = name .. ": " .. table_size(tbl)
       player.print(output)
@@ -154,7 +154,7 @@ commands.add_command("rb-dump-database", nil, function(e)
     return
   end
   if __DebugAdapter and (not e.parameter or #e.parameter == 0) then
-    __DebugAdapter.print(database)
+    __DebugAdapter.print(global.database)
     game.print("Database has been dumped to the debug console.")
   else
     game.print("[color=red]DUMPING RECIPE BOOK DATABASE[/color]")
@@ -179,8 +179,7 @@ script.on_init(function()
   global_data.update_sync_data()
   global_data.build_prototypes()
 
-  database.build()
-  database.check_forces()
+  global.database = database.new()
 
   for i, player in pairs(game.players) do
     player_data.init(i)
@@ -190,12 +189,6 @@ end)
 
 script.on_load(function()
   formatter.create_all_caches()
-
-  -- When mod configuration changes, don't bother to build anything because it'll have to be built again anyway
-  if global_data.check_should_load() then
-    database.build()
-    database.check_forces()
-  end
 
   -- Load GUIs
   for _, player_table in pairs(global.players) do
@@ -225,8 +218,7 @@ migration.handle_on_configuration_changed(migrations, function()
   global_data.update_sync_data()
   global_data.build_prototypes()
 
-  database.build()
-  database.check_forces()
+  global.database = database.new()
 
   for i, player in pairs(game.players) do
     player_data.refresh(player, global.players[i])
@@ -238,7 +230,8 @@ end)
 dictionary.handle_events()
 
 script.on_event(dictionary.on_player_dictionaries_ready, function(e)
-  local player = game.get_player(e.player_index) --[[@as LuaPlayer]] --[[@as LuaPlayer]]
+  local player = game.get_player(e.player_index)
+  assert(player)
   local player_table = global.players[e.player_index]
 
   player_table.translations = dictionary.get_all(e.player_index)
@@ -263,23 +256,23 @@ end)
 -- FORCE
 
 script.on_event(defines.events.on_force_created, function(e)
-  if not global.forces or not database.generated then
+  if not global.forces or not global.database then
     return
   end
   global_data.add_force(e.force)
-  database.check_force(e.force)
+  global.database:check_force(e.force)
 end)
 
 script.on_event({ defines.events.on_research_finished, defines.events.on_research_reversed }, function(e)
   -- This can be called by other mods before we get a chance to load
-  if not global.players or not database.generated then
+  if not global.players or not global.database then
     return
   end
-  if not database[constants.classes[1]] then
+  if not global.database[constants.classes[1]] then
     return
   end
 
-  database.handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
+  global.database:handle_research_updated(e.research, e.name == defines.events.on_research_finished and true or nil)
 
   -- Refresh all GUIs to reflect finished research
   for _, player in pairs(e.research.force.players) do
@@ -356,7 +349,7 @@ script.on_event(defines.events.on_lua_shortcut, function(e)
 
     local cursor_stack = player.cursor_stack
     if cursor_stack and cursor_stack.valid_for_read then
-      local data = database.item[cursor_stack.name]
+      local data = global.database.item[cursor_stack.name]
       if data then
         OPEN_PAGE(player, player_table, { class = "item", name = cursor_stack.name })
       else
@@ -439,7 +432,7 @@ script.on_event({ "rb-search", "rb-open-selected" }, function(e)
         -- Not everything will have a Recipe Book entry
         if class then
           local name = selected_prototype.name
-          local obj_data = database[class][name]
+          local obj_data = global.database[class][name]
           if obj_data then
             local options
             if player_table.settings.general.interface.open_info_relative_to_gui then
@@ -540,18 +533,16 @@ script.on_event(defines.events.on_tick, function(e)
       elseif msg.action == "dump_database" then
         -- game.table_to_json() does not like functions
         local output = {}
-        for key, value in pairs(database) do
-          if type(value) ~= "function" then
-            output[key] = value
-          end
+        for key, value in pairs(global.database) do
+          output[key] = value
         end
         local func = msg.raw and serpent.dump or game.table_to_json
         game.write_file("rb-dump", func(output), false, msg.player_index)
         game.print("[color=green]Dumped database to script-output/rb-dump[/color]")
       elseif msg.action == "refresh_all" then
         dictionary.on_init()
-        database.build()
-        database.check_forces()
+        global.database = database.new()
+        global.database:check_forces()
         for player_index, player in pairs(game.players) do
           local player_table = global.players[player_index]
           player_data.refresh(player, player_table)

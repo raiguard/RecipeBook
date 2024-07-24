@@ -25,8 +25,6 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
-local database = require("scripts.database")
-
 local caches = {}
 
 local formatter = {}
@@ -114,7 +112,7 @@ local function per_second(value, gui_translations)
 end
 
 local function object(obj, _, player_data, options)
-  local obj_data = database[obj.class][obj.name]
+  local obj_data = global.database[obj.class][obj.name]
   local obj_options = options and table.shallow_copy(options) or {}
   obj_options.amount_ident = obj.amount_ident
   local info = formatter(obj_data, player_data, obj_options)

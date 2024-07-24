@@ -16,8 +16,7 @@ return {
 
     dictionary.on_configuration_changed()
 
-    database.build()
-    database.check_forces()
+    global.database = database.build()
 
     on_tick_n.init()
     for i, player in pairs(game.players) do

@@ -3,7 +3,6 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
-local database = require("scripts.database")
 local util = require("scripts.util")
 
 --- @class SettingsGui
@@ -131,7 +130,7 @@ function Gui:update_contents(tab)
     local class_settings = actual_settings.categories[selected_class]
     local class_translations = translations[selected_class]
     local children = {}
-    for category_name in pairs(database[selected_class]) do
+    for category_name in pairs(global.database[selected_class]) do
       local category_translation = class_translations[category_name] or category_name
       if string.find(string.lower(category_translation), query) then
         local img_type = constants.class_to_type[selected_class]

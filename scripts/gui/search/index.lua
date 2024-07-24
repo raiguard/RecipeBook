@@ -3,7 +3,6 @@ local table = require("__flib__.table")
 
 local constants = require("constants")
 
-local database = require("scripts.database")
 local formatter = require("scripts.formatter")
 local gui_util = require("scripts.gui.util")
 local util = require("scripts.util")
@@ -101,7 +100,7 @@ function Gui:update_visual_contents()
   local groups = {}
 
   for _, objects in pairs(
-    { database.item, database.fluid }
+    { global.database.item, global.database.fluid }
     -- { database.recipe }
   ) do
     for name, object in pairs(objects) do

@@ -1,7 +1,5 @@
 local constants = require("constants")
 
-local database = require("scripts.database")
-
 local remote_interface = {}
 
 --- Returns a copy of the given object's information in the Recipe Book database.
@@ -19,7 +17,7 @@ function remote_interface.get_object_data(class, name)
     error("Remote interface caller did not provide an object name.")
   end
 
-  return database[class][name]
+  return global.database[class][name]
 end
 
 --- Opens the given info page in a Recipe Book window.
@@ -38,7 +36,7 @@ function remote_interface.open_page(player_index, class, name)
     error("Remote interface caller did not provide an object name.")
   end
 
-  local data = database[class][name]
+  local data = global.database[class][name]
   if not data then
     return false
   end

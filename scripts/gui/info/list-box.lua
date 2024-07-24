@@ -1,7 +1,6 @@
 local gui = require("__flib__.gui")
 
 local constants = require("constants")
-local database = require("scripts.database")
 local formatter = require("scripts.formatter")
 
 local list_box = {}
@@ -85,7 +84,7 @@ function list_box.update(component, refs, context_data, player_data, settings, v
     end
 
     if matched then
-      local obj_data = database[obj.class][obj.name]
+      local obj_data = global.database[obj.class][obj.name]
       local blueprint_result
       if context.class == "recipe" and component.source == "made_in" and obj_data.blueprintable then
         blueprint_result = { name = obj.name, recipe = context.name }

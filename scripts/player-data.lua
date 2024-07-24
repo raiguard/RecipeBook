@@ -1,8 +1,6 @@
-local dictionary = require("__flib__.dictionary-lite")
 local table = require("__flib__.table")
 
 local constants = require("constants")
-local database = require("scripts.database")
 local formatter = require("scripts.formatter")
 local util = require("scripts.util")
 
@@ -72,7 +70,7 @@ function player_data.update_settings(player, player_table)
     local former_category_settings = former_settings.categories[category_class_name] or {}
     local category_settings = {}
     settings.categories[category_class_name] = category_settings
-    for category_name in pairs(database[category_class_name]) do
+    for category_name in pairs(global.database[category_class_name]) do
       local disabled_by_default = constants.disabled_categories[category_class_name][category_name]
       local former_setting = former_category_settings[category_name]
       if former_setting ~= nil then
@@ -135,7 +133,7 @@ end
 function player_data.validate_favorites(favorites)
   local to_remove = {}
   for key, obj in pairs(favorites) do
-    if not database[obj.class] or not database[obj.class][obj.name] then
+    if not global.database[obj.class] or not global.database[obj.class][obj.name] then
       table.insert(to_remove, key)
     end
   end
@@ -147,7 +145,7 @@ end
 function player_data.validate_global_history(global_history)
   for i = #global_history, 1, -1 do
     local entry = global_history[i]
-    if not (database[entry.class] and database[entry.class][entry.name]) then
+    if not (global.database[entry.class] and global.database[entry.class][entry.name]) then
       table.remove(global_history, i)
       global_history[entry.class .. "." .. entry.name] = nil
     end
@@ -195,7 +193,7 @@ end
 
 function player_data.check_cursor_stack(player)
   local cursor_stack = player.cursor_stack
-  if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and database.item[cursor_stack.name] then
+  if cursor_stack and cursor_stack.valid and cursor_stack.valid_for_read and global.database.item[cursor_stack.name] then
     return cursor_stack.name
   end
   return false

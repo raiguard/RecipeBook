@@ -27,11 +27,14 @@ local science_pack = require("scripts.database.science-pack")
 local technology = require("scripts.database.technology")
 
 local database = {}
+local mt = { __index = database }
+script.register_metatable("database", mt)
 
-function database.build()
+function database.new()
+  local self = setmetatable({}, mt)
   -- Create class tables
   for _, class in pairs(constants.classes) do
-    database[class] = {}
+    self[class] = {}
   end
 
   -- Create dictionaries
@@ -44,44 +47,58 @@ function database.build()
   -- Data that is needed for generation but will not be saved
   local metadata = {}
 
-  entity_type(database)
-  equipment_category(database)
-  fuel_category(database)
-  group(database)
-  item_type(database)
-  recipe_category(database)
-  resource_category(database)
-  science_pack(database)
+  entity_type(self)
+  equipment_category(self)
+  fuel_category(self)
+  group(self)
+  item_type(self)
+  recipe_category(self)
+  resource_category(self)
+  science_pack(self)
 
-  equipment(database)
+  equipment(self)
 
-  beacon(database, metadata)
-  crafter(database, metadata)
-  generator(database)
-  entity(database, metadata)
-  mining_drill(database)
+  beacon(self, metadata)
+  crafter(self, metadata)
+  generator(self)
+  entity(self, metadata)
+  mining_drill(self)
 
-  fluid(database, metadata)
+  fluid(self, metadata)
 
-  lab(database)
-  offshore_pump(database) -- requires fluids
+  lab(self)
+  offshore_pump(self) -- requires fluids
 
-  item(database, metadata) -- requires all entities
+  item(self, metadata) -- requires all entities
 
-  recipe(database, metadata)
-  resource(database)
-  technology(database, metadata)
+  recipe(self, metadata)
+  resource(self)
+  technology(self, metadata)
 
-  offshore_pump.check_enabled_at_start(database)
-  fluid.process_temperatures(database, metadata)
-  mining_drill.add_resources(database)
-  fuel_category.check_fake_category(database)
-  lab.process_researched_in(database)
+  offshore_pump.check_enabled_at_start(self)
+  fluid.process_temperatures(self, metadata)
+  mining_drill.add_resources(self)
+  fuel_category.check_fake_category(self)
+  lab.process_researched_in(self)
 
-  burning(database)
-  entity_state(database)
+  burning(self)
+  entity_state(self)
 
-  database.generated = true
+  for _, force in pairs(game.forces) do
+    if force.valid then
+      self:check_force(force)
+    end
+  end
+
+  return self
+end
+
+function database:check_force(force)
+  for _, technology in pairs(force.technologies) do
+    if technology.enabled and technology.researched then
+      self:handle_research_updated(technology, true)
+    end
+  end
 end
 
 local function update_launch_products(launch_products, force_index, to_value)
@@ -94,10 +111,10 @@ local function update_launch_products(launch_products, force_index, to_value)
   end
 end
 
-function database.handle_research_updated(technology, to_value)
+function database:handle_research_updated(technology, to_value)
   local force_index = technology.force.index
   -- Technology
-  local technology_data = database.technology[technology.name]
+  local technology_data = self.technology[technology.name]
   -- Other mods can update technologies during on_configuration_changed before RB gets a chance to config change
   if not technology_data then
     return
@@ -113,7 +130,7 @@ function database.handle_research_updated(technology, to_value)
   }) do
     for _, obj_ident in ipairs(objects) do
       local class = obj_ident.class
-      local obj_data = database[class][obj_ident.name]
+      local obj_data = self[class][obj_ident.name]
 
       -- Unlock this object
       if obj_data.researched_forces then
@@ -122,7 +139,7 @@ function database.handle_research_updated(technology, to_value)
 
       if class == "fluid" and obj_data.temperature_ident then
         -- Unlock base fluid
-        local base_fluid_data = database.fluid[obj_data.prototype_name]
+        local base_fluid_data = self.fluid[obj_data.prototype_name]
         if base_fluid_data.researched_forces then
           base_fluid_data.researched_forces[force_index] = to_value
         end
@@ -132,29 +149,12 @@ function database.handle_research_updated(technology, to_value)
       elseif class == "offshore_pump" then
         -- Unlock pumped fluid
         local fluid = obj_data.fluid
-        local fluid_data = database.fluid[fluid.name]
+        local fluid_data = self.fluid[fluid.name]
         if fluid_data.researched_forces then
           fluid_data.researched_forces[force_index] = to_value
         end
       end
     end
-  end
-end
-
-function database.check_force(force)
-  if not force.valid then
-    return
-  end
-  for _, technology in pairs(force.technologies) do
-    if technology.enabled and technology.researched then
-      database.handle_research_updated(technology, true)
-    end
-  end
-end
-
-function database.check_forces()
-  for _, force in pairs(global.forces) do
-    database.check_force(force)
   end
 end
 
