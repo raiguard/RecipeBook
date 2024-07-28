@@ -101,13 +101,13 @@ function database:check_force(force)
   end
 end
 
-local function update_launch_products(launch_products, force_index, to_value)
+local function update_launch_products(database, launch_products, force_index, to_value)
   for _, launch_product in pairs(launch_products) do
     local product_data = database.item[launch_product.name]
     if product_data.researched_forces then
       product_data.researched_forces[force_index] = to_value
     end
-    update_launch_products(product_data.rocket_launch_products, force_index, to_value)
+    update_launch_products(database, product_data.rocket_launch_products, force_index, to_value)
   end
 end
 
@@ -145,7 +145,7 @@ function database:handle_research_updated(technology, to_value)
         end
       elseif class == "item" then
         -- Unlock rocket launch products
-        update_launch_products(obj_data.rocket_launch_products, force_index, to_value)
+        update_launch_products(self, obj_data.rocket_launch_products, force_index, to_value)
       elseif class == "offshore_pump" then
         -- Unlock pumped fluid
         local fluid = obj_data.fluid

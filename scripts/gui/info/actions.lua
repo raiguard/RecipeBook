@@ -3,7 +3,6 @@ local on_tick_n = require("__flib__.on-tick-n")
 
 local constants = require("constants")
 
-local database = require("scripts.database")
 local gui_util = require("scripts.gui.util")
 local util = require("scripts.util")
 
