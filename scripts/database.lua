@@ -155,12 +155,22 @@ local function get_recipes(gui, context, recipe)
   local researched = global.researched_objects[gui.player.force_index]
   local show_hidden = gui.show_hidden
   local show_unresearched = gui.show_unresearched
-  local material_key = context.type .. "/" .. context.name
-  local subtable_key = context.kind == "recipes" and "products" or "ingredients"
   local output = {}
   local index = 1
   for key, obj in pairs(global.database) do
-    if obj.type ~= "recipe" or not obj[subtable_key][material_key] then
+    if obj.type ~= "recipe" then
+      goto continue
+    end
+    local subtable = context.type == "recipes" and obj.products or obj.ingredients
+    local found = false
+    for i = 1, #subtable do
+      local material = subtable[i]
+      if material.type == context.type and material.name == context.name then
+        found = true
+        break
+      end
+    end
+    if not found then
       goto continue
     end
     if obj.hidden and not show_hidden then
@@ -196,8 +206,8 @@ local function add_launch_recipe(item, item_name, launch_products, unlocked_by_l
     localised_name = { "recipe-name.rb-pseudo-rocket-launch", item.localised_name },
     sprite_path = "item/" .. item_name,
     energy = 1,
-    ingredients = make_sprite_path_lookup({ { type = "item", name = item_name, amount = 1 } }),
-    products = make_sprite_path_lookup(launch_products),
+    ingredients = { { type = "item", name = item_name, amount = 1 } },
+    products = launch_products,
     made_in = made_in,
     unlocked_by = unlocked_by_lookup["item/" .. item_name],
   }
@@ -229,8 +239,8 @@ local function add_burning_recipe(item, item_name, burnt_result, unlocked_by_loo
     localised_name = { "recipe-name.rb-pseudo-burning", item.localised_name },
     sprite_path = "item/" .. item_name,
     energy = 1,
-    ingredients = make_sprite_path_lookup({ { type = "item", name = item_name, amount = 1 } }),
-    products = make_sprite_path_lookup({ { type = "item", name = burnt_result.name, amount = 1 } }),
+    ingredients = { { type = "item", name = item_name, amount = 1 } },
+    products = { { type = "item", name = burnt_result.name, amount = 1 } },
     made_in = made_in,
     unlocked_by = unlocked_by_lookup["item/" .. item_name],
   }
@@ -286,8 +296,8 @@ local function add_mining_recipe(resource, resource_name, mineable_properties, u
     localised_name = { "recipe-name.rb-pseudo-mining", resource.localised_name },
     sprite_path = "entity/" .. resource_name,
     energy = mineable_properties.mining_time,
-    ingredients = make_sprite_path_lookup({ { type = "entity", name = resource_name }, required_fluid }),
-    products = make_sprite_path_lookup(products),
+    ingredients = { { type = "entity", name = resource_name }, required_fluid },
+    products = products,
     made_in = made_in,
     unlocked_by = unlocked_by,
   }
@@ -310,7 +320,7 @@ local function add_boiler_recipe(boiler, boiler_name, unlocked_by_lookup)
   local path = "recipe/" .. name
   local existing = global.database[path]
   if existing then
-    existing.made_in["entity/" .. boiler_name] = { type = "entity", name = boiler_name }
+    table.insert(existing.made_in, { type = "entity", name = boiler_name })
     for technology in pairs(unlocked_by_lookup["entity/" .. boiler_name] or {}) do
       existing.unlocked_by[technology] = true
     end
@@ -323,9 +333,9 @@ local function add_boiler_recipe(boiler, boiler_name, unlocked_by_lookup)
     localised_name = { "recipe-name.rb-pseudo-boiling", input.localised_name },
     sprite_path = "fluid/" .. output.name, -- TODO: Super special icons for these?
     energy = 1, -- TODO:
-    ingredients = make_sprite_path_lookup({ { type = "fluid", name = input.name } }),
-    products = make_sprite_path_lookup({ { type = "fluid", name = output.name } }), -- TODO: Temperature
-    made_in = make_sprite_path_lookup({ { type = "entity", name = boiler_name } }),
+    ingredients = { { type = "fluid", name = input.name } },
+    products = { { type = "fluid", name = output.name } }, -- TODO: Temperature
+    made_in = { { type = "entity", name = boiler_name } },
     unlocked_by = flib_table.shallow_copy(unlocked_by_lookup["entity/" .. boiler_name] or {}),
   }
 end
@@ -362,8 +372,8 @@ local function add_real_recipe(recipe, unlocked_by_lookup)
     sprite_path = "recipe/" .. recipe.name,
     hidden = recipe.hidden or nil,
     energy = recipe.energy,
-    ingredients = make_sprite_path_lookup(recipe.ingredients),
-    products = make_sprite_path_lookup(recipe.products),
+    ingredients = recipe.ingredients,
+    products = recipe.products,
     is_hand_craftable = game.entity_prototypes["character"].crafting_categories[recipe.category] and true or nil,
     made_in = made_in,
     unlocked_by = unlocked_by,
