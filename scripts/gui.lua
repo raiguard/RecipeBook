@@ -336,7 +336,8 @@ on_prototype_button_hovered = function(e)
   elem.tags = tags
   --- @type string, string
   local type, name = string.match(elem.sprite, "(.-)/(.*)")
-  elem.tooltip = util.build_tooltip(global.gui[e.player_index].player, type, name)
+  elem.elem_tooltip = { type = type, name = name }
+  elem.tooltip = util.build_tooltip(global.gui[e.player_index].player, type)
 end
 
 --- @param e EventData.on_gui_leave

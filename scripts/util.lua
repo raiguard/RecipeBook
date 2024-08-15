@@ -81,37 +81,16 @@ local has_derived_types = {
 
 --- @param player LuaPlayer
 --- @param type string
---- @param name string
 --- @return LocalisedString
-function util.build_tooltip(player, type, name)
-  --- @type GenericPrototype
-  local prototype = game[type .. "_prototypes"][name]
-
-  --- @type LocalisedString
-  local prototype_history = { "" }
-  local derived_type = type
-  if has_derived_types[type] then
-    derived_type = prototype.type
-  end
-  local history = script.get_prototype_history(derived_type, name)
-  if history and (#history.changed > 0 or (history.created ~= "base" and history.created ~= "core")) then
-    --- @type LocalisedString
-    local items = { "", { "?", { "mod-name." .. history.created }, history.created } }
-    for _, mod_name in pairs(history.changed) do
-      items[#items + 1] = { "", " › ", { "?", { "mod-name." .. mod_name }, mod_name } }
-    end
-    prototype_history = { "", "\n", { "gui.rb-info-color", items } }
-  end
-
+function util.build_tooltip(player, type)
   --- @type LocalisedString
   local control_hints = { "" }
   if player.mod_settings["rb-show-control-hints"].value then
     if type == "technology" then
-      control_hints = { "", "\n", { "gui.rb-left-click-instruction", { "gui.rb-view-technology" } } }
+      control_hints = { "", { "gui.rb-left-click-instruction", { "gui.rb-view-technology" } } }
     else
       control_hints = {
         "",
-        "\n",
         { "gui.rb-left-click-instruction", { "gui.rb-view-recipes" } },
         "\n",
         { "gui.rb-right-click-instruction", { "gui.rb-view-usage" } },
@@ -119,43 +98,7 @@ function util.build_tooltip(player, type, name)
     end
   end
 
-  --- @type LocalisedString
-  local descriptions = { "?", prototype.localised_description }
-  --- @type LuaItemPrototype?
-  local item_prototype = type == "item" and prototype --[[@as LuaItemPrototype]]
-    or nil
-  if type == "recipe" then
-    local main_product = prototype.main_product
-    if main_product then
-      descriptions[#descriptions + 1] =
-        game[main_product.type .. "_prototypes"][main_product.name].localised_description
-      if main_product.type == "item" then
-        item_prototype = game.item_prototypes[main_product.name]
-      end
-    end
-  end
-  if item_prototype then
-    local place_result = item_prototype.place_result
-    if place_result then
-      descriptions[#descriptions + 1] = place_result.localised_description
-    end
-    local place_as_equipment_result = item_prototype.place_as_equipment_result
-    if place_as_equipment_result then
-      descriptions[#descriptions + 1] = place_as_equipment_result.localised_description
-    end
-    local place_as_tile_result = item_prototype.place_as_tile_result
-    if place_as_tile_result then
-      descriptions[#descriptions + 1] = place_as_tile_result.result.localised_description
-    end
-  end
-
-  return {
-    "",
-    { "gui.rb-tooltip-title", prototype.localised_name, { "gui.rb-" .. type } },
-    prototype_history,
-    { "?", { "", "\n", descriptions }, "" },
-    control_hints,
-  }
+  return control_hints
 end
 
 --- @param num number

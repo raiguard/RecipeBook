@@ -161,7 +161,7 @@ local function get_recipes(gui, context, recipe)
     if obj.type ~= "recipe" then
       goto continue
     end
-    local subtable = context.type == "recipes" and obj.products or obj.ingredients
+    local subtable = context.kind == "recipes" and obj.products or obj.ingredients
     local found = false
     for i = 1, #subtable do
       local material = subtable[i]
