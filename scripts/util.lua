@@ -1,4 +1,4 @@
-local flib_dictionary = require("__flib__/dictionary-lite")
+local flib_dictionary = require("__flib__/dictionary")
 local flib_format = require("__flib__/format")
 local flib_math = require("__flib__/math")
 
@@ -8,7 +8,7 @@ local util = {}
 --- @return LocalisedString
 function util.build_caption(obj)
   --- @type LocalisedString
-  local caption = { "", "            " }
+  local caption = { "", "    " }
   if obj.probability and obj.probability < 1 then
     caption[#caption + 1] = {
       "",
@@ -34,7 +34,7 @@ function util.build_caption(obj)
       " ×[/font]  ",
     }
   end
-  caption[#caption + 1] = game[obj.type .. "_prototypes"][obj.name].localised_name
+  caption[#caption + 1] = prototypes[obj.type][obj.name].localised_name
 
   if obj.type == "fluid" then
     local temperature = obj.temperature
@@ -64,15 +64,13 @@ end
 
 function util.build_dictionaries()
   flib_dictionary.new("search")
-  for _, item in pairs(game.item_prototypes) do
+  for _, item in pairs(prototypes.item) do
     flib_dictionary.add("search", "item/" .. item.name, { "?", item.localised_name, item.name })
   end
-  for _, fluid in pairs(game.fluid_prototypes) do
+  for _, fluid in pairs(prototypes.fluid) do
     flib_dictionary.add("search", "fluid/" .. fluid.name, { "?", fluid.localised_name, fluid.name })
   end
 end
-
---- @alias GenericPrototype LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
 
 local has_derived_types = {
   entity = true,
@@ -110,7 +108,7 @@ end
 --- @param entity_name string
 --- @return string?
 function util.get_item_to_place(entity_name)
-  local prototype = game.entity_prototypes[entity_name]
+  local prototype = prototypes.entity[entity_name]
   if not prototype then
     return
   end
@@ -130,12 +128,12 @@ function util.is_hand_craftable(recipe)
   -- TODO: Account for other characters and god controller?
   if
     recipe.object_name == "LuaRecipePrototype"
-    and not game.entity_prototypes["character"].crafting_categories[recipe.category]
+    and not prototypes.entity["character"].crafting_categories[recipe.category]
   then
     return false
   elseif
     recipe.object_name == "rb-pseudo-mining"
-    and not game.entity_prototypes["character"].resource_categories[recipe.category]
+    and not prototypes.entity["character"].resource_categories[recipe.category]
   then
     return false
   elseif recipe.object_name == "rb-pseudo-rocket-launch" or recipe.object_name == "rb-pseudo-burning" then
@@ -149,24 +147,11 @@ function util.is_hand_craftable(recipe)
   return true
 end
 
---- @param obj GenericObject
-function util.is_hidden(obj)
-  --- @type GenericPrototype
-  local prototype = game[obj.type .. "_prototypes"][obj.name]
-  if obj.type == "item" then
-    return prototype.has_flag("hidden")
-  elseif obj.type == "entity" then
-    return false
-  else
-    return prototype.hidden
-  end
-end
-
 util.refresh_guis_paused_event = script.generate_event_name()
 
 --- @param player LuaPlayer
 function util.schedule_gui_refresh(player)
-  global.refresh_gui[player.index] = true
+  storage.refresh_gui[player.index] = true
   if game.tick_paused then
     script.raise_event(util.refresh_guis_paused_event, {})
   end

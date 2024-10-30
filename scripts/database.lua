@@ -65,7 +65,7 @@ local function unlocked_by_mining_drill_products(lookup, entity, technology)
   end
   local resource_categories = entity.resource_categories
   --- @cast resource_categories UnlockedByLookup
-  for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+  for _, resource in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "resource" } })) do
     if not add_lookup(lookup, "entity/" .. resource.name, technology) then
       local mineable = resource.mineable_properties
       local required_fluid = mineable.required_fluid
@@ -104,9 +104,10 @@ local function unlocked_by_entity(lookup, entity, technology)
     end
   elseif entity.type == "mining-drill" then
     unlocked_by_mining_drill_products(lookup, entity, technology)
-  elseif entity.type == "offshore-pump" then
-    local fluid = entity.fluid --[[@as LuaFluidPrototype]]
-    unlocked_by_fluid(lookup, fluid, technology)
+    -- TODO:
+    -- elseif entity.type == "offshore-pump" then
+    --   local fluid = entity.fluid
+    --   unlocked_by_fluid(lookup, fluid, technology)
   end
 end
 
@@ -119,7 +120,7 @@ local function unlocked_by_item(lookup, item, technology)
   end
 
   for _, product in pairs(item.rocket_launch_products) do
-    local product_prototype = game.item_prototypes[product.name]
+    local product_prototype = prototypes.item[product.name]
     unlocked_by_item(lookup, product_prototype, technology)
   end
 
@@ -140,9 +141,9 @@ end
 function unlocked_by_products(lookup, products, technology)
   for _, product in pairs(products) do
     if product.type == "fluid" then
-      unlocked_by_fluid(lookup, game.fluid_prototypes[product.name], technology)
+      unlocked_by_fluid(lookup, prototypes.fluid[product.name], technology)
     else
-      unlocked_by_item(lookup, game.item_prototypes[product.name], technology)
+      unlocked_by_item(lookup, prototypes.item[product.name], technology)
     end
   end
 end
@@ -152,12 +153,12 @@ end
 --- @param recipe string?
 --- @return DatabaseRecipe[], integer
 local function get_recipes(gui, context, recipe)
-  local researched = global.researched_objects[gui.player.force_index]
+  local researched = storage.researched_objects[gui.player.force_index]
   local show_hidden = gui.show_hidden
   local show_unresearched = gui.show_unresearched
   local output = {}
   local index = 1
-  for key, obj in pairs(global.database) do
+  for key, obj in pairs(storage.database) do
     if obj.type ~= "recipe" then
       goto continue
     end
@@ -193,14 +194,14 @@ end
 --- @param launch_products Product[]
 --- @param unlocked_by_lookup UnlockedByLookup
 local function add_launch_recipe(item, item_name, launch_products, unlocked_by_lookup)
-  local machines = game.get_filtered_entity_prototypes({ filter = { filter = "type", type = "rocket-silo" } })
+  local machines = prototypes.get_entity_filtered({ filter = { filter = "type", type = "rocket-silo" } })
   local made_in = {}
   for _, machine in pairs(machines) do
     made_in[#made_in + 1] = { type = "entity", name = machine.name, amount = machine.rocket_parts_required }
   end
 
   local name = "rb-pseudo-" .. item_name .. "-rocket-launch"
-  global.database["recipe/" .. name] = {
+  storage.database["recipe/" .. name] = {
     type = "recipe",
     name = name,
     localised_name = { "recipe-name.rb-pseudo-rocket-launch", item.localised_name },
@@ -220,7 +221,7 @@ end
 local function add_burning_recipe(item, item_name, burnt_result, unlocked_by_lookup)
   local name = "rb-pseudo-" .. item_name .. "-burning"
 
-  local buildings = game.get_filtered_entity_prototypes({ { filter = "building" } })
+  local buildings = prototypes.get_entity_filtered({ { filter = "building" } })
   local made_in = {}
   local fuel_category = item.fuel_category
   for _, machine in pairs(buildings) do
@@ -228,12 +229,12 @@ local function add_burning_recipe(item, item_name, burnt_result, unlocked_by_loo
       made_in[#made_in + 1] = {
         type = "entity",
         name = machine.name,
-        amount = item.fuel_value / (machine.max_energy_usage / machine.burner_prototype.effectivity) / 60,
+        amount = item.fuel_value / (machine.get_max_energy_usage() / machine.burner_prototype.effectivity) / 60,
       }
     end
   end
 
-  global.database["recipe/" .. name] = {
+  storage.database["recipe/" .. name] = {
     type = "recipe",
     name = name,
     localised_name = { "recipe-name.rb-pseudo-burning", item.localised_name },
@@ -248,7 +249,7 @@ end
 
 --- @param resource LuaEntityPrototype
 --- @param resource_name string
---- @param mineable_properties LuaEntityPrototype.mineable_properties
+--- @param mineable_properties MineableProperties
 --- @param unlocked_by_lookup UnlockedByLookup
 local function add_mining_recipe(resource, resource_name, mineable_properties, unlocked_by_lookup)
   local products = mineable_properties.products
@@ -268,7 +269,7 @@ local function add_mining_recipe(resource, resource_name, mineable_properties, u
   local made_in = {}
   local unlocked_by = {}
   local resource_category = resource.resource_category
-  for drill_name, drill in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
+  for drill_name, drill in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "mining-drill" } })) do
     if not drill.resource_categories[resource_category] then
       goto continue
     end
@@ -301,7 +302,7 @@ local function add_mining_recipe(resource, resource_name, mineable_properties, u
     made_in = made_in,
     unlocked_by = unlocked_by,
   }
-  global.database["recipe/" .. name] = recipe
+  storage.database["recipe/" .. name] = recipe
 end
 
 --- @param boiler LuaEntityPrototype
@@ -318,7 +319,7 @@ local function add_boiler_recipe(boiler, boiler_name, unlocked_by_lookup)
 
   local name = "rb-pseudo-" .. input.name .. "-boiling"
   local path = "recipe/" .. name
-  local existing = global.database[path]
+  local existing = storage.database[path]
   if existing then
     table.insert(existing.made_in, { type = "entity", name = boiler_name })
     for technology in pairs(unlocked_by_lookup["entity/" .. boiler_name] or {}) do
@@ -327,7 +328,7 @@ local function add_boiler_recipe(boiler, boiler_name, unlocked_by_lookup)
     return
   end
 
-  global.database[path] = {
+  storage.database[path] = {
     type = "recipe",
     name = name,
     localised_name = { "recipe-name.rb-pseudo-boiling", input.localised_name },
@@ -350,22 +351,23 @@ local function add_real_recipe(recipe, unlocked_by_lookup)
     end
   end
   local machines =
-    game.get_filtered_entity_prototypes({ { filter = "crafting-category", crafting_category = recipe.category } })
+    prototypes.get_entity_filtered({ { filter = "crafting-category", crafting_category = recipe.category } })
   local made_in = {}
   for _, machine in pairs(machines) do
     local ingredient_count = machine.ingredient_count
     if ingredient_count == 0 or ingredient_count >= item_ingredients then
-      made_in[#made_in + 1] = { type = "entity", name = machine.name, amount = recipe.energy / machine.crafting_speed }
+      made_in[#made_in + 1] =
+        { type = "entity", name = machine.name, amount = recipe.energy / machine.get_crafting_speed() }
     end
   end
 
   local unlocked_by = {}
-  for name in pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } })) do
+  for name in pairs(prototypes.get_technology_filtered({ { filter = "unlocks-recipe", recipe = recipe.name } })) do
     unlocked_by["technology/" .. name] = true
     unlocked_by_products(unlocked_by_lookup, recipe.products, "technology/" .. name)
   end
 
-  global.database["recipe/" .. recipe.name] = {
+  storage.database["recipe/" .. recipe.name] = {
     type = "recipe",
     name = recipe.name,
     localised_name = recipe.localised_name,
@@ -374,7 +376,7 @@ local function add_real_recipe(recipe, unlocked_by_lookup)
     energy = recipe.energy,
     ingredients = recipe.ingredients,
     products = recipe.products,
-    is_hand_craftable = game.entity_prototypes["character"].crafting_categories[recipe.category] and true or nil,
+    is_hand_craftable = prototypes.entity["character"].crafting_categories[recipe.category] and true or nil,
     made_in = made_in,
     unlocked_by = unlocked_by,
   }
@@ -382,15 +384,15 @@ end
 
 local function add_objects()
   --- @type table<SpritePath, DatabaseRecipe?>
-  global.database = {}
+  storage.database = {}
   --- @type UnlockedByLookup
   local unlocked_by_lookup = {}
 
-  for _, recipe in pairs(game.recipe_prototypes) do
+  for _, recipe in pairs(prototypes.recipe) do
     add_real_recipe(recipe, unlocked_by_lookup)
   end
 
-  for item_name, item in pairs(game.item_prototypes) do
+  for item_name, item in pairs(prototypes.item) do
     local launch_products = item.rocket_launch_products
     if launch_products[1] then
       add_launch_recipe(item, item_name, launch_products, unlocked_by_lookup)
@@ -401,14 +403,14 @@ local function add_objects()
     end
   end
 
-  for resource_name, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+  for resource_name, resource in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "resource" } })) do
     local mineable_properties = resource.mineable_properties
     if mineable_properties then
       add_mining_recipe(resource, resource_name, mineable_properties, unlocked_by_lookup)
     end
   end
 
-  for boiler_name, boiler in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
+  for boiler_name, boiler in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "boiler" } })) do
     add_boiler_recipe(boiler, boiler_name, unlocked_by_lookup)
   end
 end

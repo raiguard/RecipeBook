@@ -1,5 +1,5 @@
-local flib_dictionary = require("__flib__/dictionary-lite")
-local flib_gui = require("__flib__/gui-lite")
+local flib_dictionary = require("__flib__/dictionary")
+local flib_gui = require("__flib__/gui")
 local flib_position = require("__flib__/position")
 local flib_table = require("__flib__/table")
 local mod_gui = require("__core__/lualib/mod-gui")
@@ -60,7 +60,7 @@ local function update_search_results(self)
   local show_hidden = self.show_hidden
   local show_unresearched = self.show_unresearched
   local dictionary = flib_dictionary.get(self.player.index, "search") or {}
-  local researched = global.researched_objects[self.player.force_index]
+  local researched = storage.researched_objects[self.player.force_index]
   for _, button in pairs(self.elems.search_table.children) do
     local is_researched = researched[
       button.sprite --[[@as string]]
@@ -90,7 +90,7 @@ end
 --- @return GuiElemDef
 local function build_list_box_item(obj, researched)
   local path = obj.type .. "/" .. obj.name
-  local obj_data = global.database[path]
+  local obj_data = storage.database[path]
   local style = "rb_list_box_item"
   if obj_data and obj_data.hidden then
     style = "rb_list_box_item_hidden"
@@ -121,7 +121,7 @@ local function update_info_page(self)
   self.elems.search_pane.visible = false
   self.elems.info_pane.visible = true
 
-  local researched = global.researched_objects[self.player.force_index]
+  local researched = storage.researched_objects[self.player.force_index]
 
   local recipe = self.current_list[self.current_list_index]
   local context = entry.context
@@ -129,12 +129,12 @@ local function update_info_page(self)
   self.elems.info_recipe_count_label.caption = "[" .. self.current_list_index .. "/" .. #self.current_list .. "]"
   self.elems.info_context_label.sprite = context.type .. "/" .. context.name
   self.elems.info_context_label.caption =
-    { "", "            ", context.kind == "recipes" and { "gui.rb-recipes" } or { "gui.rb-usage" } }
+    { "", "      ", context.kind == "recipes" and { "gui.rb-recipes" } or { "gui.rb-usage" } }
   self.elems.info_context_label.tooltip = ""
 
   local recipe_name_label = self.elems.info_recipe_name_label
   recipe_name_label.sprite = recipe.sprite_path
-  recipe_name_label.caption = { "", "            ", recipe.localised_name }
+  recipe_name_label.caption = { "", "      ", recipe.localised_name }
   recipe_name_label.tooltip = ""
   if recipe.hidden then
     recipe_name_label.style = "rb_subheader_caption_button_hidden"
@@ -204,7 +204,7 @@ local function update_info_page(self)
   for technology_path in pairs(recipe.unlocked_by or {}) do
     flib_gui.add(unlocked_by_frame, {
       type = "sprite-button",
-      style = global.researched_objects[self.player.force_index][technology_path] and "flib_slot_button_green"
+      style = storage.researched_objects[self.player.force_index][technology_path] and "flib_slot_button_green"
         or "flib_slot_button_red",
       style_mods = { size = 60 },
       sprite = technology_path,
@@ -281,26 +281,21 @@ end
 
 --- @param self GuiData
 local function toggle_pinned(self)
-  local pin_button = self.elems.pin_button
-  self.pinned = not self.pinned
+  self.pinned = self.elems.pin_button.toggled
   if self.pinned then
     if self.player.opened == self.elems.rb_main_window then
       self.player.opened = nil
     end
-    pin_button.style = "flib_selected_frame_action_button"
-    pin_button.sprite = "flib_pin_black"
     self.elems.close_button.tooltip = { "gui.close" }
   else
     self.player.opened = self.elems.rb_main_window
-    pin_button.style = "frame_action_button"
-    pin_button.sprite = "flib_pin_white"
     self.elems.close_button.tooltip = { "gui.close-instruction" }
   end
 end
 
 --- @param e EventData.on_gui_text_changed
 local function on_search_textfield_changed(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     return
   end
@@ -310,7 +305,7 @@ end
 
 --- @param e EventData.on_gui_click
 on_prototype_button_clicked = function(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     return
   end
@@ -337,7 +332,7 @@ on_prototype_button_hovered = function(e)
   --- @type string, string
   local type, name = string.match(elem.sprite, "(.-)/(.*)")
   elem.elem_tooltip = { type = type, name = name }
-  elem.tooltip = util.build_tooltip(global.gui[e.player_index].player, type)
+  elem.tooltip = util.build_tooltip(storage.gui[e.player_index].player, type)
 end
 
 --- @param e EventData.on_gui_leave
@@ -387,7 +382,7 @@ end
 
 --- @param e EventData.on_gui_closed
 local function on_main_window_closed(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     return
   end
@@ -402,7 +397,7 @@ local function on_titlebar_clicked(e)
   if e.button ~= defines.mouse_button_type.middle then
     return
   end
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     return
   end
@@ -411,7 +406,7 @@ end
 
 --- @param e EventData.on_gui_click
 local function on_close_button_clicked(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     return
   end
@@ -420,7 +415,7 @@ end
 
 --- @param e EventData.on_gui_click
 local function on_pin_button_clicked(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     return
   end
@@ -429,7 +424,7 @@ end
 
 --- @param e EventData.CustomInputEvent|EventData.on_gui_click
 local function on_go_back_clicked(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self or not self.elems.rb_main_window.visible then
     return
   end
@@ -444,7 +439,7 @@ end
 
 --- @param e EventData.CustomInputEvent|EventData.on_gui_click
 local function on_go_forward_clicked(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self or not self.elems.rb_main_window.visible then
     return
   end
@@ -458,12 +453,11 @@ end
 
 --- @param e EventData.on_gui_click
 local function on_show_hidden_clicked(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     return
   end
   self.show_hidden = e.element.toggled
-  e.element.sprite = self.show_hidden and "rb_show_hidden_black" or "rb_show_hidden_white"
   update_search_results(self)
   update_list(self)
   update_info_page(self)
@@ -471,13 +465,11 @@ end
 
 --- @param e EventData.on_gui_click
 local function on_show_unresearched_clicked(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     return
   end
   self.show_unresearched = e.element.toggled
-  self.elems.show_unresearched_button.sprite = self.show_unresearched and "rb_show_unresearched_black"
-    or "rb_show_unresearched_white"
   update_search_results(self)
   update_list(self)
   update_info_page(self)
@@ -485,7 +477,7 @@ end
 
 --- @param e EventData.on_gui_click
 local function on_recipe_nav_clicked(e)
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self or not self.current_list then
     return
   end
@@ -511,7 +503,7 @@ local hidden_item_groups = {
 --- @return GuiData
 local function create_gui(player)
   local buttons = {}
-  -- for _, recipe in pairs(global.database) do
+  -- for _, recipe in pairs(storage.database) do
   --   table.insert(buttons, {
   --     type = "sprite-button",
   --     style = recipe.hidden and "flib_slot_button_grey" or "slot_button",
@@ -525,8 +517,8 @@ local function create_gui(player)
   --     },
   --   })
   -- end
-  for _, item in pairs(game.item_prototypes) do
-    local is_hidden = item.has_flag("hidden") or item.has_flag("spawnable") or hidden_item_groups[item.group.name]
+  for _, item in pairs(prototypes.item) do
+    local is_hidden = item.hidden or item.has_flag("spawnable") or hidden_item_groups[item.group.name]
     table.insert(buttons, {
       type = "sprite-button",
       style = is_hidden and "flib_slot_button_grey" or "slot_button",
@@ -540,7 +532,7 @@ local function create_gui(player)
       },
     })
   end
-  for _, fluid in pairs(game.fluid_prototypes) do
+  for _, fluid in pairs(prototypes.fluid) do
     local is_hidden = fluid.hidden
     table.insert(buttons, {
       type = "sprite-button",
@@ -577,9 +569,7 @@ local function create_gui(player)
         type = "sprite-button",
         name = "show_unresearched_button",
         style = "frame_action_button",
-        sprite = "rb_show_unresearched_black",
-        hovered_sprite = "rb_show_unresearched_black",
-        clicked_sprite = "rb_show_unresearched_black",
+        sprite = "rb_show_unresearched_white",
         tooltip = { "gui.rb-show-unresearched" },
         auto_toggle = true,
         toggled = true,
@@ -590,8 +580,6 @@ local function create_gui(player)
         name = "show_hidden_button",
         style = "frame_action_button",
         sprite = "rb_show_hidden_white",
-        hovered_sprite = "rb_show_hidden_black",
-        clicked_sprite = "rb_show_hidden_black",
         tooltip = { "gui.rb-show-hidden" },
         auto_toggle = true,
         handler = on_show_hidden_clicked,
@@ -604,8 +592,6 @@ local function create_gui(player)
           name = "go_back_button",
           style = "frame_action_button",
           sprite = "flib_nav_backward_white",
-          hovered_sprite = "flib_nav_backward_black",
-          clicked_sprite = "flib_nav_backward_black",
           tooltip = { "gui.rb-go-back" },
           handler = on_go_back_clicked,
         },
@@ -614,8 +600,6 @@ local function create_gui(player)
           name = "go_forward_button",
           style = "frame_action_button",
           sprite = "flib_nav_forward_white",
-          hovered_sprite = "flib_nav_forward_black",
-          clicked_sprite = "flib_nav_forward_black",
           tooltip = { "gui.rb-go-forward" },
           handler = on_go_forward_clicked,
         },
@@ -625,18 +609,15 @@ local function create_gui(player)
         name = "pin_button",
         style = "frame_action_button",
         sprite = "flib_pin_white",
-        hovered_sprite = "flib_pin_black",
-        clicked_sprite = "flib_pin_black",
         tooltip = { "gui.flib-keep-open" },
+        auto_toggle = true,
         handler = on_pin_button_clicked,
       },
       {
         type = "sprite-button",
         name = "close_button",
         style = "frame_action_button",
-        sprite = "utility/close_white",
-        hovered_sprite = "utility/close_black",
-        clicked_sprite = "utility/close_black",
+        sprite = "utility/close",
         tooltip = { "gui.close-instruction" },
         handler = on_close_button_clicked,
       },
@@ -824,7 +805,7 @@ local function create_gui(player)
     show_hidden = false,
     show_unresearched = true,
   }
-  global.gui[player.index] = self
+  storage.gui[player.index] = self
 
   reset_gui_location(self)
   update_search_results(self)
@@ -855,7 +836,7 @@ local function on_open_selected(e)
   local recipe_name
   if type == "recipe" then
     recipe_name = selected.name
-    local recipe = game.recipe_prototypes[recipe_name]
+    local recipe = prototypes.recipe[recipe_name]
     local product = recipe.main_product or recipe.products[1]
     if not product then
       return
@@ -868,7 +849,7 @@ local function on_open_selected(e)
     return
   end
 
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     self = create_gui(player)
   end
@@ -894,7 +875,7 @@ local function on_gui_toggle(e)
   if not player then
     return
   end
-  local self = global.gui[e.player_index]
+  local self = storage.gui[e.player_index]
   if not self then
     self = create_gui(player)
   end
@@ -906,13 +887,13 @@ local function on_gui_toggle(e)
 end
 
 local function on_tick()
-  for player_index in pairs(global.refresh_gui) do
-    local self = global.gui[player_index]
+  for player_index in pairs(storage.refresh_gui) do
+    local self = storage.gui[player_index]
     if self then
       update_search_results(self)
       update_info_page(self)
     end
-    global.refresh_gui[player_index] = nil
+    storage.refresh_gui[player_index] = nil
   end
 end
 
@@ -963,9 +944,9 @@ local gui = {}
 
 gui.on_init = function()
   --- @type table<uint, GuiData?>
-  global.gui = {}
+  storage.gui = {}
   --- @type Set<uint>
-  global.refresh_gui = {}
+  storage.refresh_gui = {}
   util.build_dictionaries()
 
   for _, player in pairs(game.players) do
@@ -977,12 +958,12 @@ gui.on_configuration_changed = function()
   for _, player in pairs(game.players) do
     refresh_mod_gui_button(player)
   end
-  for _, gui in pairs(global.gui) do
+  for _, gui in pairs(storage.gui) do
     if gui.elems.rb_main_window.valid then
       gui.elems.rb_main_window.destroy()
     end
   end
-  global.gui = {}
+  storage.gui = {}
 end
 
 gui.events = {

@@ -18,7 +18,7 @@ local function unlock_mining_drill(entity, researched)
   end
   local resource_categories = entity.resource_categories
   --- @cast resource_categories Set<string>
-  for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+  for _, resource in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "resource" } })) do
     local mineable = resource.mineable_properties
     local required_fluid = mineable.required_fluid
     if
@@ -64,9 +64,10 @@ local function unlock_entity(entity, researched)
     end
   elseif entity.type == "mining-drill" then
     unlock_mining_drill(entity, researched)
-  elseif entity.type == "offshore-pump" then
-    local fluid = entity.fluid --[[@as LuaFluidPrototype]]
-    unlock_fluid(fluid, researched)
+    -- TODO:
+    -- elseif entity.type == "offshore-pump" then
+    --   local fluid = entity.fluid
+    --   unlock_fluid(fluid, researched)
   end
 end
 
@@ -80,7 +81,7 @@ local function unlock_item(item, researched)
   researched[key] = true
 
   for _, product in pairs(item.rocket_launch_products) do
-    local product_prototype = game.item_prototypes[product.name]
+    local product_prototype = prototypes.item[product.name]
     unlock_item(product_prototype, researched)
     researched["recipe/rb-pseudo-" .. item.name .. "-rocket-launch"] = true
   end
@@ -102,9 +103,9 @@ end
 function unlock_products(products, researched)
   for _, product in pairs(products) do
     if product.type == "fluid" then
-      unlock_fluid(game.fluid_prototypes[product.name], researched)
+      unlock_fluid(prototypes.fluid[product.name], researched)
     else
-      unlock_item(game.item_prototypes[product.name], researched)
+      unlock_item(prototypes.item[product.name], researched)
     end
   end
 end
@@ -131,7 +132,7 @@ end
 local function unlock_technology(technology, researched)
   local recipes = technology.force.recipes
   researched["technology/" .. technology.name] = true
-  for _, effect in pairs(technology.effects) do
+  for _, effect in pairs(technology.prototype.effects) do
     if effect.type == "unlock-recipe" then
       unlock_recipe(recipes[effect.recipe], researched)
     end
@@ -143,11 +144,11 @@ end
 
 --- @param e EventData.on_research_finished
 local function on_research_finished(e)
-  if not global.researched_objects then
+  if not storage.researched_objects then
     return
   end
   local technology = e.research
-  local researched = global.researched_objects[technology.force.index]
+  local researched = storage.researched_objects[technology.force.index]
   if not researched then
     return
   end
@@ -168,7 +169,7 @@ local function refresh_force(force)
     end
   end
   -- Trees and rocks
-  local flora = game.get_filtered_entity_prototypes({
+  local flora = prototypes.get_entity_filtered({
     { filter = "type", type = "simple-entity" },
     { filter = "type", type = "tree" },
   })
@@ -181,15 +182,15 @@ local function refresh_force(force)
     end
     -- TODO: "Gathered from" lists
   end
-  for name in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+  for name in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "resource" } })) do
     researched["entity/" .. name] = true
   end
-  global.researched_objects[force.index] = researched
+  storage.researched_objects[force.index] = researched
 end
 
 --- @param e EventData.on_force_created
 local function on_force_created(e)
-  if not global.researched_objects then
+  if not storage.researched_objects then
     return
   end
   refresh_force(e.force)
@@ -205,7 +206,7 @@ local researched = {}
 
 researched.on_init = function()
   --- @type table<ForceIndex, Set<string>>
-  global.researched_objects = {}
+  storage.researched_objects = {}
   refresh_all_forces()
 end
 
