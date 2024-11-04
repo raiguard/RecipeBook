@@ -1,4 +1,4 @@
-local flib_gui = require("__flib__.gui-lite")
+local flib_gui = require("__flib__.gui")
 
 --- @class ContextMenu
 --- @field overlay LuaGuiElement

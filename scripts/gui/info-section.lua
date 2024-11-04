@@ -1,4 +1,4 @@
-local flib_gui = require("__flib__.gui-lite")
+local flib_gui = require("__flib__.gui")
 
 --- @class InfoSectionSettings
 --- @field always_show boolean?
@@ -20,7 +20,8 @@ function info_section.build(parent, context, title, ids, settings, callback)
     return
   end
   local outer = parent.add({ type = "flow", direction = "vertical" })
-  local header = outer.add({ type = "flow", style = "centering_horizontal_flow" })
+  local header = outer.add({ type = "flow" })
+  header.style.vertical_align = "center"
   header.add({
     type = "checkbox",
     style = "rb_list_box_caption",

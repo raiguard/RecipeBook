@@ -1,19 +1,19 @@
-local flib_dictionary = require("__flib__.dictionary-lite")
+local flib_dictionary = require("__flib__.dictionary")
 
 local db_entry = require("scripts.database.entry")
 local search_tree = require("scripts.database.search-tree")
 local util = require("scripts.util")
 
-local bigunpack = require("__big-data-string__.unpack")
+-- local bigunpack = require("__big-data-string__.unpack")
 
---- @generic T
---- @param key string
---- @return T
-local function unpack(key)
-  local success, value = serpent.load(bigunpack(key))
-  assert(success, "Deserialising overrides failed for " .. key)
-  return value
-end
+-- --- @generic T
+-- --- @param key string
+-- --- @return T
+-- local function unpack(key)
+--   local success, value = serpent.load(bigunpack(key))
+--   assert(success, "Deserialising overrides failed for " .. key)
+--   return value
+-- end
 
 --- @class Database
 --- @field entries table<SpritePath, Entry?>
@@ -35,13 +35,13 @@ function database.new()
   local self = {
     entries = {},
     search_tree = search_tree.new(),
-    alternatives = unpack("rb_alternatives"),
-    exclude = unpack("rb_exclude"),
-    group_with = unpack("rb_group_with"),
-    hidden = unpack("rb_hidden"),
-    hidden_from_search = unpack("rb_hidden_from_search"),
-    unlocks_results = unpack("rb_unlocks_results"),
-    tooltip_category_sprites = unpack("rb_tooltip_category_sprites"),
+    alternatives = {}, -- unpack("rb_alternatives"),
+    exclude = {}, -- unpack("rb_exclude"),
+    group_with = {}, -- unpack("rb_group_with"),
+    hidden = {}, -- unpack("rb_hidden"),
+    hidden_from_search = {}, -- unpack("rb_hidden_from_search"),
+    unlocks_results = {}, -- unpack("rb_unlocks_results"),
+    tooltip_category_sprites = {}, -- unpack("rb_tooltip_category_sprites"),
   }
   setmetatable(self, mt)
 
@@ -55,7 +55,7 @@ function database.new()
   log("Recipes")
   --- @type table<string, GenericPrototype>
   local materials_to_add = {}
-  for _, prototype in pairs(game.recipe_prototypes) do
+  for _, prototype in pairs(prototypes.recipe) do
     if self.exclude["recipe-category/" .. prototype.category] or #prototype.products == 0 then
       goto continue
     end
@@ -126,7 +126,7 @@ function database.new()
 
   log("Characters")
   --- @diagnostic disable-next-line unused-fields
-  for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
+  for _, character in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "character" } })) do
     self:add_prototype(character)
   end
 
@@ -149,7 +149,7 @@ function database.new()
   end
 
   log("Technologies and research status")
-  for _, technology in pairs(game.technology_prototypes) do
+  for _, technology in pairs(prototypes.technology) do
     self:add_prototype(technology)
   end
   for _, force in pairs(game.forces) do
@@ -168,7 +168,7 @@ function database:init_researched(force)
   local force_index = force.index
   -- Gather-able items
   for _, entity in
-    pairs(game.get_filtered_entity_prototypes({
+    pairs(prototypes.get_entity_filtered({
       --- @diagnostic disable-next-line unused-fields
       { filter = "type", type = "simple-entity" },
       --- @diagnostic disable-next-line unused-fields
@@ -205,7 +205,7 @@ function database:init_researched(force)
   end
   -- Characters
   --- @diagnostic disable-next-line unused-fields
-  for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
+  for _, character in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "character" } })) do
     local entry = self:get_entry(character)
     if entry then
       entry:research(force_index)
@@ -305,7 +305,7 @@ function database:is_hidden(prototype, force_index)
   if type == "LuaFluidPrototype" then
     return prototype.hidden
   elseif type == "LuaItemPrototype" then
-    return prototype.has_flag("hidden")
+    return prototype.hidden
   elseif type == "LuaRecipePrototype" then
     return prototype.hidden
   elseif type == "LuaTechnologyPrototype" then
@@ -337,21 +337,21 @@ local M = {}
 
 --- @param e EventData.on_research_finished
 local function on_research_finished(e)
-  if not global.database then
+  if not storage.database then
     return
   end
   local profiler = game.create_profiler()
-  global.database:on_research_finished(e.research)
+  storage.database:on_research_finished(e.research)
   profiler.stop()
   log({ "", "Unlock Tech ", profiler })
-  if global.update_force_guis then
+  if storage.update_force_guis then
     -- Update on the next tick in case multiple researches are done at once
-    global.update_force_guis[e.research.force.index] = true
+    storage.update_force_guis[e.research.force.index] = true
   end
 end
 
 local function init()
-  global.database = database.new()
+  storage.database = database.new()
 end
 
 M.on_init = init

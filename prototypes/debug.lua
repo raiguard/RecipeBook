@@ -1,6 +1,6 @@
 local boiler = table.deepcopy(data.raw.boiler.boiler)
 boiler.name = "heating-boiler"
-boiler.mode = "heat-water-inside"
+boiler.mode = "heat-fluid-inside"
 boiler.target_temperature = 100
 data:extend({ boiler })
 

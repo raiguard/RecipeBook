@@ -1,6 +1,6 @@
-local flib_dictionary = require("__flib__.dictionary-lite")
+local flib_dictionary = require("__flib__.dictionary")
 local flib_format = require("__flib__.format")
-local flib_gui = require("__flib__.gui-lite")
+local flib_gui = require("__flib__.gui")
 local flib_math = require("__flib__.math")
 local util = require("scripts.util")
 
@@ -9,7 +9,7 @@ local gui_util = require("scripts.gui.util")
 
 --- @class InfoDescription
 --- @field context MainGuiContext
---- @field callback GuiElemHandler
+--- @field callback flib.GuiElemHandler
 --- @field frame LuaGuiElement
 --- @field has_content boolean
 local info_description = {}
@@ -18,7 +18,7 @@ script.register_metatable("info_description", mt)
 
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
---- @param callback GuiElemHandler
+--- @param callback flib.GuiElemHandler
 --- @return InfoDescription
 function info_description.new(parent, context, callback)
   local frame = parent.add({
@@ -78,7 +78,8 @@ end
 --- @param id EntryID?
 function info_description:add_category_header(icon, caption, id)
   if id then
-    local flow = self:add_internal({ type = "flow", style = "centering_horizontal_flow" })
+    local flow = self:add_internal({ type = "flow" })
+    flow.style.vertical_align = "center"
     flow.add({
       type = "label",
       style = "tooltip_heading_label_category",
@@ -111,7 +112,7 @@ local mod_name_separator = " › "
 --- @param entry Entry
 function info_description:add_history_and_description(entry)
   for prototype in entry:iterate() do
-    local history = script.get_prototype_history(get_prototype_type(prototype), prototype.name)
+    local history = prototypes.get_history(get_prototype_type(prototype), prototype.name)
     if history.created ~= "base" or #history.changed > 0 then
       --- @type LocalisedString
       local output = { "", mod_name_string(history.created) }
@@ -159,7 +160,8 @@ end
 --- @param id EntryID
 --- @return LuaGuiElement
 function info_description:add_id_row(label, id)
-  local flow = self:add_internal({ type = "flow", style = "centering_horizontal_flow" })
+  local flow = self:add_internal({ type = "flow" })
+  flow.style.vertical_align = "center"
   flow.add({ type = "label", style = "caption_label", caption = { "", label, ":" } })
   flow.add({
     type = "button",
@@ -201,7 +203,7 @@ function info_description:add_item_properties(entry)
     self:add_internal({
       type = "label",
       style = "caption_label",
-      caption = game.fuel_category_prototypes[fuel_category].localised_name,
+      caption = prototypes.fuel_category[fuel_category].localised_name,
     })
   end
 
@@ -241,8 +243,8 @@ function info_description:add_item_properties(entry)
   if module_effects then
     self:add_separator()
     for key, value in pairs(module_effects) do
-      local caption = flib_format.number(value.bonus * 100, false, 2) .. "%"
-      if value.bonus > 0 then
+      local caption = flib_format.number(value * 100, false, 2) .. "%"
+      if value > 0 then
         caption = "+" .. caption
       end
       self:add_generic_row({ "description." .. key .. "-bonus" }, caption)
@@ -310,7 +312,7 @@ function info_description:add_entity_properties(entry)
     self:add_generic_row({ "description.fluid-capacity" }, flib_format.number(entity.fluid_capacity, true))
   end
 
-  local rotation_speed = entity.inserter_rotation_speed
+  local rotation_speed = entity.get_inserter_rotation_speed() -- TODO: Quality
   if rotation_speed then
     self:add_generic_row(
       { "description.rotation-speed" },
@@ -321,8 +323,8 @@ function info_description:add_entity_properties(entry)
   if entity.type == "inserter" then
     local force_bonus = 0
     local force = self.context.player.force
-    if entity.stack then
-      force_bonus = force.stack_inserter_capacity_bonus
+    if entity.bulk then
+      force_bonus = force.bulk_inserter_capacity_bonus
     else
       force_bonus = force.inserter_stack_size_bonus
     end
@@ -338,17 +340,19 @@ function info_description:add_entity_properties(entry)
   end
 
   if entity.type == "electric-pole" then
-    self:add_generic_row({ "description.wire-reach" }, flib_format.number(entity.max_wire_distance))
-    local supply_area = flib_format.number(entity.supply_area_distance * 2)
+    self:add_generic_row({ "description.wire-reach" }, flib_format.number(entity.get_max_wire_distance())) -- TODO: Quality
+    local supply_area = flib_format.number(entity.get_supply_area_distance() * 2) -- TODO: Quality
     self:add_generic_row({ "description.supply-area" }, supply_area .. "×" .. supply_area)
   end
 
-  local pumping_speed = entity.pumping_speed
-  if pumping_speed then
-    self:add_generic_row(
-      { "description.pumping-speed" },
-      { "", flib_format.number(pumping_speed * 60, true), { "per-second-suffix" } }
-    )
+  if entity.type == "pump" or entity.type == "offshore-pump" then
+    local pumping_speed = entity.pumping_speed
+    if pumping_speed then
+      self:add_generic_row(
+        { "description.pumping-speed" },
+        { "", flib_format.number(pumping_speed * 60, true), { "per-second-suffix" } }
+      )
+    end
   end
 
   if entity.type == "resource" then
@@ -364,9 +368,11 @@ function info_description:add_entity_properties(entry)
 
   local burner = entity.burner_prototype
   if burner then
+    local emissions_per_joule = burner.emissions_per_joule
     self:add_generic_row({ "description.pollution" }, {
       "",
-      flib_format.number(burner.emissions * entity.max_energy_usage * 60 * 60, false),
+      -- TODO: Don't hardcode this
+      flib_format.number(emissions_per_joule["pollution"] * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
       { "per-minute-suffix" },
     })
   end

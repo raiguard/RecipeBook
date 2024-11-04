@@ -1,4 +1,4 @@
-local flib_gui = require("__flib__.gui-lite")
+local flib_gui = require("__flib__.gui")
 local mod_gui = require("__core__.lualib.mod-gui")
 
 local main_gui = require("scripts.gui.main")

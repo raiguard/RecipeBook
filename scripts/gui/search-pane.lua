@@ -1,5 +1,5 @@
-local flib_dictionary = require("__flib__.dictionary-lite")
-local flib_gui = require("__flib__.gui-lite")
+local flib_dictionary = require("__flib__.dictionary")
+local flib_gui = require("__flib__.gui")
 
 --- @alias SearchFilters table<SpritePath, boolean>
 
@@ -66,7 +66,7 @@ function search_pane.build(parent, context)
   }).style.left_margin =
     8
 
-  local groups_table = outer.add({ type = "table", style = "filter_group_table", column_count = 6 })
+  local groups_table = outer.add({ type = "table", style = "slot_table", column_count = 6 })
 
   local results_pane = outer
     .add({ type = "frame", style = "rb_filter_frame" })
@@ -89,7 +89,7 @@ function search_pane.build(parent, context)
 
   --- @type table<Entry, LuaGuiElement>
   local result_buttons = {}
-  for group_name, subgroups in pairs(global.database.search_tree.groups) do
+  for group_name, subgroups in pairs(storage.database.search_tree.groups) do
     groups_table.add({
       type = "sprite-button",
       name = group_name,
@@ -160,7 +160,7 @@ function search_pane:update()
 
   self.textfield.placeholder.visible = #query == 0
 
-  for group_name, group in pairs(global.database.search_tree.groups) do
+  for group_name, group in pairs(storage.database.search_tree.groups) do
     local filtered_count = 0
     local searched_count = 0
     for _, subgroup in pairs(group) do
@@ -173,7 +173,7 @@ function search_pane:update()
           local query_match = #query == 0
           if not query_match then
             local comp = search_strings[entry:get_path()] or string.gsub(entry:get_path(), "-", " ")
-            query_match = string.find(string.lower(comp), query, 1, true) --[[@as boolean]]
+            query_match = string.find(string.lower(comp), query, 1, true) ~= nil
           end
           button.visible = query_match
           if query_match then
@@ -293,7 +293,7 @@ function search_pane:set_filters(filters)
 end
 
 flib_gui.add_handlers(search_pane, function(e, handler)
-  local main = global.guis[e.player_index]
+  local main = storage.guis[e.player_index]
   if not main or not main.window.valid then
     return
   end

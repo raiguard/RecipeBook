@@ -14,7 +14,7 @@ function search_tree.new()
     order = {},
   }
 
-  for group_name, group_prototype in pairs(game.item_group_prototypes) do
+  for group_name, group_prototype in pairs(prototypes.item_group) do
     local subgroups = {}
     for _, subgroup_prototype in pairs(group_prototype.subgroups) do
       subgroups[subgroup_prototype.name] = {}

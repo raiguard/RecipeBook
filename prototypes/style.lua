@@ -4,7 +4,7 @@ local styles = data.raw["gui-style"]["default"]
 
 styles.rb_filter_group_button_tab = {
   type = "button_style",
-  parent = "filter_group_button_tab",
+  parent = "filter_group_button_tab_slightly_larger",
   width = 0,
   horizontally_stretchable = "on",
 }
@@ -112,22 +112,25 @@ styles.rb_list_box_item_hidden = {
 styles.rb_list_box_item_unresearched = {
   type = "button_style",
   parent = "rb_list_box_item",
-  --- @diagnostic disable-next-line undefined-global
-  default_font_color = red_body_text_color,
+  default_font_color = gui_color.red,
 }
 
 styles.rb_subheader_caption_button = {
   type = "button_style",
-  disabled_graphical_set = {},
-  --- @diagnostic disable-next-line undefined-global
-  disabled_font_color = bold_font_color,
+  default_graphical_set = {},
+  default_font_color = gui_color.caption,
+  hovered_graphical_set = {},
+  hovered_font_color = gui_color.caption,
+  clicked_graphical_set = {},
+  clicked_font_color = gui_color.caption,
+  clicked_vertical_offset = 0,
   font = "default-bold",
   icon_horizontal_align = "left",
-  padding = 0,
-  left_margin = 4,
+  padding = 4,
   height = 36,
   minimal_width = 0,
   draw_shadow_under_picture = true,
+  left_click_sound = nil,
 }
 
 styles.rb_subheader_caption_button_hidden = {
@@ -139,8 +142,7 @@ styles.rb_subheader_caption_button_hidden = {
 styles.rb_subheader_caption_button_unresearched = {
   type = "button_style",
   parent = "rb_subheader_caption_button",
-  --- @diagnostic disable-next-line undefined-global
-  disabled_font_color = red_body_text_color,
+  disabled_font_color = gui_color.red,
 }
 
 styles.rb_caption_label_hidden = {
@@ -152,8 +154,7 @@ styles.rb_caption_label_hidden = {
 styles.rb_caption_label_unresearched = {
   type = "label_style",
   parent = "caption_label",
-  --- @diagnostic disable-next-line undefined-global
-  font_color = red_body_text_color,
+  font_color = gui_color.red,
 }
 
 styles.rb_info_label = {

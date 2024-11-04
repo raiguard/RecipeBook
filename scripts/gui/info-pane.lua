@@ -1,4 +1,4 @@
-local flib_gui = require("__flib__.gui-lite")
+local flib_gui = require("__flib__.gui")
 local flib_gui_templates = require("__flib__.gui-templates")
 local flib_technology = require("__flib__.technology")
 
@@ -33,7 +33,6 @@ function info_pane.build(parent, context)
     type = "sprite-button",
     name = "page_header_title",
     style = "rb_subheader_caption_button",
-    enabled = false,
     caption = { "gui.rb-welcome-title" },
   })
   subheader.add({ type = "empty-widget", style = "flib_horizontal_pusher" })
@@ -76,7 +75,7 @@ function info_pane:show(entry)
 
   -- Subheader
   local title_label = self.title_label
-  title_label.caption = { "", "            ", entry:get_localised_name() }
+  title_label.caption = { "", "      ", entry:get_localised_name() }
   title_label.sprite = entry:get_path()
   local style = "rb_subheader_caption_button"
   if entry:is_hidden(self.context.player.force_index) then
@@ -122,7 +121,7 @@ function info_pane:show(entry)
       type = "sprite-button",
       style = style,
       sprite = id:get_path(),
-      caption = { "", "              ", id:get_caption() },
+      caption = { "", "      ", id:get_caption() },
       tooltip = { "gui.rb-control-hint" },
       elem_tooltip = id:strip(),
       tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),

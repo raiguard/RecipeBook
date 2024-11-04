@@ -1,4 +1,4 @@
-local flib_gui = require("__flib__.gui-lite")
+local flib_gui = require("__flib__.gui")
 
 local context_menu = require("scripts.gui.context-menu")
 local gui_util = require("scripts.gui.util")
@@ -18,9 +18,7 @@ local function frame_action_button(name, sprite, tooltip, handler, auto_toggle)
     type = "sprite-button",
     name = name,
     style = "frame_action_button",
-    sprite = sprite .. "_white",
-    hovered_sprite = sprite .. "_black",
-    clicked_sprite = sprite .. "_black",
+    sprite = sprite,
     tooltip = tooltip,
     mouse_button_filter = { "left" },
     tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = handler }),
@@ -78,7 +76,7 @@ function main_gui.build(player, database)
   header.drag_target = window
   header.add({
     type = "label",
-    style = "frame_title",
+    style = "flib_frame_title",
     caption = { "mod-name.RecipeBook" },
     ignored_by_interaction = true,
   })
@@ -86,7 +84,7 @@ function main_gui.build(player, database)
   header.add(
     frame_action_button(
       "show_unresearched_button",
-      "rb_show_unresearched",
+      "rb_show_unresearched_white",
       { "gui.rb-show-unresearched-instruction" },
       main_gui.on_show_unresearched_button_clicked,
       true
@@ -95,7 +93,7 @@ function main_gui.build(player, database)
   header.add(
     frame_action_button(
       "show_hidden_button",
-      "rb_show_hidden",
+      "rb_show_hidden_white",
       { "gui.rb-show-hidden-instruction" },
       main_gui.on_show_hidden_button_clicked,
       true
@@ -104,7 +102,7 @@ function main_gui.build(player, database)
   header.add(
     frame_action_button(
       "nav_backward_button",
-      "flib_nav_backward",
+      "flib_nav_backward_white",
       { "gui.rb-nav-backward-instruction" },
       main_gui.prev,
       false
@@ -113,14 +111,20 @@ function main_gui.build(player, database)
   header.add(
     frame_action_button(
       "nav_forward_button",
-      "flib_nav_forward",
+      "flib_nav_forward_white",
       { "gui.rb-nav-forward-instruction" },
       main_gui.next,
       false
     )
   )
   header.add(
-    frame_action_button("pin_button", "flib_pin", { "gui.rb-pin-instruction" }, main_gui.on_pin_button_clicked, true)
+    frame_action_button(
+      "pin_button",
+      "flib_pin_white",
+      { "gui.rb-pin-instruction" },
+      main_gui.on_pin_button_clicked,
+      true
+    )
   )
   header.add(frame_action_button("close_button", "utility/close", { "gui.close-instruction" }, main_gui.hide, false))
 
@@ -146,21 +150,21 @@ function main_gui.build(player, database)
     opening_technology_gui = false,
   }
   setmetatable(self, mt)
-  global.guis[player.index] = self
+  storage.guis[player.index] = self
 
   return self
 end
 
 --- @param player_index uint
 function main_gui.destroy(player_index)
-  local self = global.guis[player_index]
+  local self = storage.guis[player_index]
   if not self then
     return
   end
   if self.window.valid then
     self.window.destroy()
   end
-  global.guis[player_index] = nil
+  storage.guis[player_index] = nil
 end
 
 function main_gui:hide()
@@ -235,7 +239,7 @@ end
 --- @param player_index uint
 --- @return MainGui?
 function main_gui.get(player_index)
-  local self = global.guis[player_index]
+  local self = storage.guis[player_index]
   if not self or not self.window.valid then
     local player = game.get_player(player_index)
     if not player then
@@ -244,7 +248,7 @@ function main_gui.get(player_index)
     if self then
       player.print({ "message.rb-recreated-gui" })
     end
-    self = main_gui.build(player, global.database)
+    self = main_gui.build(player, storage.database)
   end
   return self
 end
@@ -253,14 +257,12 @@ end
 function main_gui:on_pin_button_clicked(e)
   self.pinned = e.element.toggled
   if self.pinned then
-    self.header.pin_button.sprite = "flib_pin_black"
     self.header.close_button.tooltip = { "gui.close" }
     self.search_pane.textfield.tooltip = { "gui.search" }
     if self.context.player.opened == self.window then
       self.context.player.opened = nil
     end
   else
-    self.header.pin_button.sprite = "flib_pin_white"
     self.context.player.opened = self.window
     self.window.force_auto_center()
     self.header.close_button.tooltip = { "gui.close-instruction" }
@@ -295,7 +297,7 @@ function main_gui:on_result_clicked(e)
   if not path then
     return
   end
-  local entry = global.database:get_entry(path)
+  local entry = storage.database:get_entry(path)
   if not entry then
     return
   end
@@ -335,16 +337,16 @@ local function update_force_guis(force)
 end
 
 local function on_tick()
-  if not next(global.update_force_guis or {}) then
+  if not next(storage.update_force_guis or {}) then
     return
   end
-  for force_index in pairs(global.update_force_guis) do
+  for force_index in pairs(storage.update_force_guis) do
     local force = game.forces[force_index]
     if force then
       update_force_guis(force)
     end
   end
-  global.update_force_guis = {}
+  storage.update_force_guis = {}
 end
 
 --- @param e EventData.CustomInputEvent
@@ -357,7 +359,7 @@ local function on_open_selected(e)
   if not player_gui then
     return
   end
-  local entry = global.database:get_entry({ type = selected_prototype.base_type, name = selected_prototype.name })
+  local entry = storage.database:get_entry({ type = selected_prototype.base_type, name = selected_prototype.name })
   if not entry then
     util.flying_text(player_gui.context.player, { "message.rb-no-info" })
     return
@@ -382,7 +384,7 @@ local function on_gui_closed(e)
   if e.gui_type ~= defines.gui_type.research then
     return
   end
-  local self = global.guis[e.player_index]
+  local self = storage.guis[e.player_index]
   if self and self.window.valid and self.opening_technology_gui then
     self.opening_technology_gui = false
     self:show()
@@ -418,7 +420,7 @@ end
 
 --- @param e EventData.CustomInputEvent
 local function on_focus_search(e)
-  local self = global.guis[e.player_index]
+  local self = storage.guis[e.player_index]
   if self and self.window.valid and not self.pinned and self.window.visible then
     self.search_pane:focus_search()
   end
@@ -426,14 +428,14 @@ end
 
 function main_gui.on_init()
   --- @type table<uint, MainGui>
-  global.guis = {}
+  storage.guis = {}
   --- @type table<uint, boolean>
-  global.update_force_guis = {} --
+  storage.update_force_guis = {} --
 end
 
 function main_gui.on_configuration_changed()
   for _, player in pairs(game.players) do
-    main_gui.build(player, global.database)
+    main_gui.build(player, storage.database)
   end
 end
 
@@ -468,7 +470,7 @@ commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book
   local tested = {}
   local tested_count = 0
   local profiler = game.create_profiler()
-  for _, entry in pairs(global.database.entries) do
+  for _, entry in pairs(storage.database.entries) do
     local base_path = entry:get_path()
     if not tested[base_path] and not string.find(base_path, "technology/") then
       tested[base_path] = true

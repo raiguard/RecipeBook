@@ -46,19 +46,15 @@ end
 --- @param button LuaGuiElement
 --- @param state FabState
 function gui_util.update_frame_action_button(button, state)
-  local sprite_base = string.match(button.sprite, "(.*)_[a-z]")
   if state == "default" then
     button.enabled = true
     button.toggled = false
-    button.sprite = sprite_base .. "_white"
   elseif state == "selected" then
     button.enabled = true
     button.toggled = true
-    button.sprite = sprite_base .. "_black"
   elseif state == "disabled" then
     button.enabled = false
     button.toggled = false
-    button.sprite = sprite_base .. "_disabled"
   end
 end
 

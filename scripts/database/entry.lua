@@ -85,7 +85,7 @@ end
 --- @return LuaGroup
 function entry:get_group()
   if self.base.object_name == "LuaEquipmentPrototype" then
-    return game.item_group_prototypes["combat"]
+    return prototypes.item_group["combat"]
   end
   if self.fluid then
     return self.fluid.group
@@ -99,7 +99,7 @@ end
 --- @return LuaGroup
 function entry:get_subgroup()
   if self.base.object_name == "LuaEquipmentPrototype" then
-    return game.item_subgroup_prototypes["rb-uncategorized-equipment"]
+    return prototypes.item_subgroup["rb-uncategorized-equipment"]
   end
   if self.fluid then
     return self.fluid.subgroup
@@ -249,7 +249,7 @@ function entry:get_made_in()
   local output = util.unique_id_array()
 
   --- @diagnostic disable-next-line unused-fields
-  for _, character in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "character" } })) do
+  for _, character in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "character" } })) do
     if character.crafting_categories[self.recipe.category] then
       output[#output + 1] = entry_id.new({
         type = "entity",
@@ -264,7 +264,7 @@ function entry:get_made_in()
   end, 0) --[[@as integer]]
 
   for _, crafter in
-    pairs(game.get_filtered_entity_prototypes({
+    pairs(prototypes.get_entity_filtered({
       --- @diagnostic disable-next-line unused-fields
       { filter = "crafting-category", crafting_category = self.recipe.category },
     }))
@@ -275,7 +275,7 @@ function entry:get_made_in()
       output[#output + 1] = entry_id.new({
         type = "entity",
         name = crafter.name,
-        amount = self.recipe.energy / crafter.crafting_speed,
+        amount = self.recipe.energy / crafter.get_crafting_speed(), -- TODO: Quality
       }, self.database)
     end
   end
@@ -292,7 +292,7 @@ function entry:get_alternative_recipes()
   local output = util.unique_id_array()
   if self.fluid then
     for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
+      pairs(prototypes.get_recipe_filtered({
         --- @diagnostic disable-next-line unused-fields
         { filter = "has-product-fluid", elem_filters = { { filter = "name", name = self.fluid.name } } },
       }))
@@ -312,7 +312,7 @@ function entry:get_alternative_recipes()
   end
   if self.item then
     for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
+      pairs(prototypes.get_recipe_filtered({
         --- @diagnostic disable-next-line unused-fields
         { filter = "has-product-item", elem_filters = { { filter = "name", name = self.item.name } } },
       }))
@@ -340,7 +340,7 @@ function entry:get_used_in()
   local output = util.unique_id_array()
   if self.fluid then
     for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
+      pairs(prototypes.get_recipe_filtered({
         --- @diagnostic disable-next-line unused-fields
         { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = self.fluid.name } } },
       }))
@@ -362,7 +362,7 @@ function entry:get_used_in()
   end
   if self.item then
     for _, recipe in
-      pairs(game.get_filtered_recipe_prototypes({
+      pairs(prototypes.get_recipe_filtered({
         --- @diagnostic disable-next-line unused-fields
         { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = self.item.name } } },
       }))
@@ -400,7 +400,7 @@ function entry:get_can_craft()
   for category in pairs(self.entity.crafting_categories) do
     filters[#filters + 1] = { filter = "category", category = category }
   end
-  for _, recipe in pairs(game.get_filtered_recipe_prototypes(filters)) do
+  for _, recipe in pairs(prototypes.get_recipe_filtered(filters)) do
     if self.database:get_entry(recipe) then
       local item_ingredients = 0
       for _, ingredient in pairs(recipe.ingredients) do
@@ -433,7 +433,7 @@ function entry:get_mined_by()
 
   local required_fluid = entity.mineable_properties.required_fluid
   local resource_category = entity.resource_category
-  for _, drill in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "mining-drill" } })) do
+  for _, drill in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "mining-drill" } })) do
     if
       drill.resource_categories[resource_category]
       and (not required_fluid or drill.fluidbox_prototypes[1])
@@ -461,7 +461,7 @@ function entry:get_burned_in()
 
   if fluid then
     --- @diagnostic disable-next-line unused-fields
-    for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "generator" } })) do
+    for entity_name, entity in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "generator" } })) do
       if self.database:get_entry(entity) then
         local fluid_box = entity.fluidbox_prototypes[1]
         if
@@ -472,7 +472,7 @@ function entry:get_burned_in()
       end
     end
     --- @diagnostic disable-next-line unused-fields
-    for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
+    for entity_name, entity in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "boiler" } })) do
       if self.database:get_entry(entity) then
         for _, fluidbox in pairs(entity.fluidbox_prototypes) do
           if
@@ -487,7 +487,7 @@ function entry:get_burned_in()
     end
     if fluid.fuel_value then
       --- @diagnostic disable-next-line unused-fields
-      for entity_name, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "building" } })) do
+      for entity_name, entity in pairs(prototypes.get_entity_filtered({ { filter = "building" } })) do
         if self.database:get_entry(entity) and entity.fluid_energy_source_prototype then
           output[#output + 1] = entry_id.new({ type = "entity", name = entity_name }, self.database)
         end
@@ -497,7 +497,7 @@ function entry:get_burned_in()
 
   if item then
     local fuel_category = item.fuel_category
-    for entity_name, entity_prototype in pairs(game.entity_prototypes) do
+    for entity_name, entity_prototype in pairs(prototypes.entity) do
       if self.database:get_entry(entity_prototype) then
         local burner = entity_prototype.burner_prototype
         if burner and burner.fuel_categories[fuel_category] then
@@ -505,7 +505,7 @@ function entry:get_burned_in()
         end
       end
     end
-    for equipment_name, equipment_prototype in pairs(game.equipment_prototypes) do
+    for equipment_name, equipment_prototype in pairs(prototypes.equipment) do
       if self.database:get_entry(equipment_prototype) then
         local burner = equipment_prototype.burner_prototype
         if burner and burner.fuel_categories[fuel_category] then
@@ -576,7 +576,7 @@ function entry:get_rocket_launch_product_of()
   local output = util.unique_id_array()
 
   --- @diagnostic disable-next-line unused-fields
-  for _, other_item in pairs(game.get_filtered_item_prototypes({ { filter = "has-rocket-launch-products" } })) do
+  for _, other_item in pairs(prototypes.get_item_filtered({ { filter = "has-rocket-launch-products" } })) do
     for _, product in pairs(other_item.rocket_launch_products) do
       if product.name == self.item.name then
         output[#output + 1] = entry_id.new({ type = "item", name = other_item.name }, self.database)
@@ -608,7 +608,7 @@ function entry:get_can_mine()
 
   local output = util.unique_id_array()
 
-  for _, resource in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "resource" } })) do
+  for _, resource in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "resource" } })) do
     local mineable = resource.mineable_properties
     local required_fluid = mineable.required_fluid
     if
@@ -646,7 +646,7 @@ function entry:get_can_burn()
     for category in pairs(burner.fuel_categories) do
       for item_name, item in
         --- @diagnostic disable-next-line unused-fields
-        pairs(game.get_filtered_item_prototypes({ { filter = "fuel-category", ["fuel-category"] = category } }))
+        pairs(prototypes.get_item_filtered({ { filter = "fuel-category", ["fuel-category"] = category } }))
       do
         if self.database:get_entry(item) then
           output[#output + 1] = entry_id.new({ type = "item", name = item_name }, self.database)
@@ -662,7 +662,7 @@ function entry:get_can_burn()
     else
       for fluid_name, fluid in
         --- @diagnostic disable-next-line unused-fields
-        pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
+        pairs(prototypes.get_fluid_filtered({ { filter = "fuel-value", comparison = ">", value = 0 } }))
       do
         if self.database:get_entry(fluid) then
           output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_name }, self.database)
@@ -677,7 +677,7 @@ function entry:get_can_burn()
     else
       for fluid_name, fluid in
         --- @diagnostic disable-next-line unused-fields
-        pairs(game.get_filtered_fluid_prototypes({ { filter = "fuel-value", comparison = ">", value = 0 } }))
+        pairs(prototypes.get_fluid_filtered({ { filter = "fuel-value", comparison = ">", value = 0 } }))
       do
         if self.database:get_entry(fluid) then
           output[#output + 1] = entry_id.new({ type = "fluid", name = fluid_name }, self.database)
@@ -753,7 +753,7 @@ function entry:get_generated_by()
 
   local output = util.unique_id_array()
 
-  for _, entity in pairs(game.get_filtered_entity_prototypes({ { filter = "type", type = "boiler" } })) do
+  for _, entity in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "boiler" } })) do
     local entry = self.database:get_entry(entity)
     if not entry then
       goto continue
@@ -790,7 +790,7 @@ function entry:get_unlocked_by_internal(visited)
   if recipe and self:get_unlocks_results() and not visited[recipe.name] and not recipe.enabled then
     for technology_name, technology in
       --- @diagnostic disable-next-line unused-fields
-      pairs(game.get_filtered_technology_prototypes({ { filter = "unlocks-recipe", recipe = recipe.name } }))
+      pairs(prototypes.get_technology_filtered({ { filter = "unlocks-recipe", recipe = recipe.name } }))
     do
       if self.database:get_entry(technology) then
         output[#output + 1] = entry_id.new({ type = "technology", name = technology_name }, self.database)
@@ -810,7 +810,7 @@ function entry:get_unlocked_by_internal(visited)
     end
   end
 
-  local prototypes = game.technology_prototypes
+  local prototypes = prototypes.technology
   table.sort(output, function(tech_a, tech_b)
     return flib_technology.sort_predicate(prototypes[tech_a.name], prototypes[tech_b.name])
   end)
@@ -836,7 +836,8 @@ function entry:get_technology_ingredients()
   local output = util.unique_id_array()
 
   for _, ingredient in pairs(technology.research_unit_ingredients) do
-    output[#output + 1] = entry_id.new(ingredient, self.database)
+    output[#output + 1] =
+      entry_id.new({ type = "item", name = ingredient.name, amount = ingredient.amount }, self.database)
   end
 
   return output
@@ -886,13 +887,14 @@ function entry:get_pumped_fluid()
   if not entity or entity.type ~= "offshore-pump" then
     return
   end
+  return -- TODO:
 
-  local fluid = entity.fluid
-  if not fluid or not self.database:get_entry(fluid) then
-    return
-  end
+  -- local fluid = entity.fluid
+  -- if not fluid or not self.database:get_entry(fluid) then
+  --   return
+  -- end
 
-  return entry_id.new({ type = "fluid", name = fluid.name }, self.database)
+  -- return entry_id.new({ type = "fluid", name = fluid.name }, self.database)
 end
 
 --- @return EntryID?
@@ -918,11 +920,13 @@ function entry:get_accepted_modules()
   --- @type EntryID[]
   local modules = {}
 
+  -- TODO: Allowed module categories
+
   local entity = self.entity
   if entity then
-    local allowed_lookup = entity.allowed_effects
-    for _, module in pairs(game.get_filtered_item_prototypes({ { filter = "type", type = "module" } })) do
-      if not allowed_lookup then
+    local allowed_effects = entity.allowed_effects
+    for _, module in pairs(prototypes.get_item_filtered({ { filter = "type", type = "module" } })) do
+      if not allowed_effects then
         modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
         goto continue
       end
@@ -931,7 +935,7 @@ function entry:get_accepted_modules()
         goto continue
       end
       for effect in pairs(module_effects) do
-        if not allowed_lookup[effect] then
+        if not allowed_effects[effect] then
           goto continue
         end
       end
@@ -944,19 +948,26 @@ function entry:get_accepted_modules()
 
   local recipe = self.recipe
   if recipe then
-    for _, module in pairs(game.get_filtered_item_prototypes({ { filter = "type", type = "module" } })) do
-      local limitations = module.limitations
-      if not limitations or #limitations == 0 then
+    local allowed_effects = recipe.allowed_effects
+    for _, module in pairs(prototypes.get_item_filtered({ { filter = "type", type = "module" } })) do
+      if not allowed_effects then
         modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
         goto continue
       end
-      for _, recipe_name in pairs(limitations) do
-        if recipe_name == recipe.name then
-          modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
+      local module_effects = module.module_effects
+      if not module_effects then
+        goto continue
+      end
+      for effect in pairs(module_effects) do
+        if not allowed_effects[effect] then
+          goto continue
         end
       end
+      modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
       ::continue::
     end
+    -- TODO: Somehow distinguish recipe modules vs. entity modules
+    return modules
   end
 
   return modules
@@ -976,7 +987,7 @@ function entry:get_material_consumption()
       local minimum_temperature = input_fluid_box.minimum_temperature or input_filter.default_temperature
       local flow_per_tick = (entity.target_temperature - minimum_temperature) * input_filter.heat_capacity
       return entry_id.new(
-        { type = "fluid", name = input_filter.name, amount = entity.max_energy_usage / flow_per_tick * 60 },
+        { type = "fluid", name = input_filter.name, amount = entity.get_max_energy_usage() / flow_per_tick * 60 }, -- TODO: Quality
         self.database
       )
     end
@@ -1012,7 +1023,7 @@ function entry:get_material_production()
         return entry_id.new({
           type = "fluid",
           name = output_filter.name,
-          amount = entity.max_energy_usage / flow_per_tick * 60,
+          amount = entity.get_max_energy_usage() / flow_per_tick * 60, -- TODO: Quality
           temperature = entity.target_temperature,
         }, self.database)
       end
@@ -1033,7 +1044,7 @@ function entry:get_power_consumption()
   end
 
   -- local added_emissions = 0
-  local max_energy_usage = entity.max_energy_usage or 0
+  local max_energy_usage = entity.get_max_energy_usage() or 0 -- TODO: Quality
   if max_energy_usage > 0 and max_energy_usage < flib_math.max_int53 then
     local drain = electric_energy_source_prototype.drain
     if max_energy_usage ~= drain then

@@ -28,7 +28,7 @@ function util.format_number(num)
 end
 
 function util.get_natural_entities()
-  return game.get_filtered_entity_prototypes({
+  return prototypes.get_entity_filtered({
     --- @diagnostic disable-next-line unused-fields
     { filter = "type", type = "resource" },
     --- @diagnostic disable-next-line unused-fields
@@ -51,7 +51,7 @@ end
 --- @param obj Ingredient|Product
 --- @return GenericPrototype
 function util.get_prototype(obj)
-  return game[obj.type .. "_prototypes"][obj.name]
+  return prototypes[obj.type][obj.name]
 end
 
 util.object_name_to_type = {

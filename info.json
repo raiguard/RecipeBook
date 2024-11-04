@@ -6,10 +6,9 @@
   "author": "raiguard",
   "contact": "https://github.com/raiguard/RecipeBook",
   "homepage": "https://github.com/raiguard/RecipeBook",
-  "factorio_version": "1.1",
+  "factorio_version": "2.0",
   "dependencies": [
-    "base >= 1.1.101",
-    "flib >= 0.14.0",
-    "big-data-string"
+    "base >= 2.0.14",
+    "flib >= 0.15.0"
   ]
 }

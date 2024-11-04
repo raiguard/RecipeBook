@@ -1,4 +1,4 @@
-local flib_dictionary = require("__flib__.dictionary-lite")
+local flib_dictionary = require("__flib__.dictionary")
 local flib_migration = require("__flib__.migration")
 
 local database = require("scripts.database.database")
