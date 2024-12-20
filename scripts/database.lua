@@ -1,4 +1,4 @@
-local flib_table = require("__flib__/table")
+local flib_table = require("__flib__.table")
 
 --- @class DatabaseRecipe
 --- @field type "recipe"

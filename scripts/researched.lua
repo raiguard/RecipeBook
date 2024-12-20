@@ -1,4 +1,4 @@
-local util = require("__RecipeBook__/scripts/util")
+local util = require("scripts.util")
 
 --- @alias ForceIndex uint
 

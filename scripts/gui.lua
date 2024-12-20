@@ -1,11 +1,11 @@
-local flib_dictionary = require("__flib__/dictionary")
-local flib_gui = require("__flib__/gui")
-local flib_position = require("__flib__/position")
-local flib_table = require("__flib__/table")
-local mod_gui = require("__core__/lualib/mod-gui")
+local flib_dictionary = require("__flib__.dictionary")
+local flib_gui = require("__flib__.gui")
+local flib_position = require("__flib__.position")
+local flib_table = require("__flib__.table")
+local mod_gui = require("__core__.lualib.mod-gui")
 
-local database = require("__RecipeBook__/scripts/database")
-local util = require("__RecipeBook__/scripts/util")
+local database = require("scripts.database")
+local util = require("scripts.util")
 
 --- @class Context
 --- @field kind ContextKind

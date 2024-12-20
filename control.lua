@@ -1,14 +1,14 @@
-local handler = require("__core__/lualib/event_handler")
+local handler = require("__core__.lualib.event_handler")
 
 handler.add_libraries({
-  require("__RecipeBook__/scripts/migrations"),
+  require("scripts.migrations"),
 
-  require("__flib__/dictionary"),
-  require("__flib__/gui"),
+  require("__flib__.dictionary"),
+  require("__flib__.gui"),
 
-  require("__RecipeBook__/scripts/database"),
-  require("__RecipeBook__/scripts/gui"),
-  require("__RecipeBook__/scripts/researched"),
+  require("scripts.database"),
+  require("scripts.gui"),
+  require("scripts.researched"),
 })
 
 --- @class Set<T> { [T]: boolean }

@@ -1,6 +1,6 @@
-local flib_dictionary = require("__flib__/dictionary")
-local flib_format = require("__flib__/format")
-local flib_math = require("__flib__/math")
+local flib_dictionary = require("__flib__.dictionary")
+local flib_format = require("__flib__.format")
+local flib_math = require("__flib__.math")
 
 local util = {}
 
