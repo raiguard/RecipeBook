@@ -1,11 +1,22 @@
 local flib_dictionary = require("__flib__.dictionary")
 local flib_gui = require("__flib__.gui")
+local flib_gui_templates = require("__flib__.gui-templates")
 local flib_position = require("__flib__.position")
 local flib_table = require("__flib__.table")
+local flib_technology = require("__flib__.technology")
 local mod_gui = require("__core__.lualib.mod-gui")
 
 local database = require("scripts.database")
 local util = require("scripts.util")
+
+--- @param element LuaGuiElement
+--- @param key string
+--- @param value AnyBasic
+local function set_tag(element, key, value)
+  local tags = element.tags
+  tags[key] = value
+  element.tags = tags
+end
 
 --- @class Context
 --- @field kind ContextKind
@@ -46,6 +57,7 @@ local top_left_location = { x = 15, y = 58 + 15 }
 local on_prototype_button_clicked
 local on_prototype_button_hovered
 local on_prototype_button_left
+local on_technology_slot_clicked
 
 --- @param self GuiData
 local function reset_gui_location(self)
@@ -202,19 +214,18 @@ local function update_info_page(self)
   local unlocked_by_frame = self.elems.info_unlocked_by_frame
   unlocked_by_frame.clear()
   for technology_path in pairs(recipe.unlocked_by or {}) do
-    flib_gui.add(unlocked_by_frame, {
-      type = "sprite-button",
-      style = storage.researched_objects[self.player.force_index][technology_path] and "flib_slot_button_green"
-        or "flib_slot_button_red",
-      style_mods = { size = 60 },
-      sprite = technology_path,
-      raise_hover_events = true,
-      handler = {
-        [defines.events.on_gui_click] = on_prototype_button_clicked,
-        [defines.events.on_gui_hover] = on_prototype_button_hovered,
-        [defines.events.on_gui_leave] = on_prototype_button_left,
-      },
-    })
+    local _, technology_name = string.match(technology_path, "(.-)/(.*)")
+    local technology = self.player.force.technologies[technology_name]
+    local button = flib_gui_templates.technology_slot(
+      unlocked_by_frame,
+      technology,
+      technology.level,
+      technology.researched and flib_technology.research_state.researched
+        or flib_technology.research_state.not_available,
+      on_technology_slot_clicked
+    )
+    button.tooltip = { "gui.rb-left-click-instruction", { "gui.rb-view-technology" } }
+    set_tag(button, "technology_name", technology_name)
   end
   self.elems.info_unlocked_by_flow.visible = #unlocked_by_frame.children > 0
 end
@@ -272,7 +283,7 @@ local function show_info(self, context, recipe)
   for i = self.history_index, #self.history do
     self.history[i] = nil
   end
-  self.history[self.history_index] = { context = context, self.current_list[self.current_list_index].name }
+  self.history[self.history_index] = { context = context, recipe = self.current_list[self.current_list_index].name }
 
   update_info_page(self)
 
@@ -341,6 +352,16 @@ on_prototype_button_left = function(e)
   local tags = e.element.tags
   tags.hovering = false
   e.element.tags = tags
+end
+
+--- @param e EventData.on_gui_click
+on_technology_slot_clicked = function(e)
+  local self = storage.gui[e.player_index]
+  if not self then
+    return
+  end
+  local technology_name = e.element.tags.technology_name --[[@as string]]
+  self.player.open_technology_gui(self.player.force.technologies[technology_name])
 end
 
 --- @param self GuiData
@@ -907,15 +928,15 @@ local function refresh_mod_gui_button(player)
   if not player.mod_settings["rb-show-overhead-button"].value then
     return
   end
-  flib_gui.add(button_flow, {
+  local button = button_flow.add({
     type = "sprite-button",
     name = "rb_mod_gui_button",
     style = mod_gui.button_style,
-    style_mods = { padding = 8 },
     sprite = "rb_mod_gui_icon",
     tooltip = { "gui.rb-mod-gui-button-tooltip" },
-    handler = { [defines.events.on_gui_click] = on_gui_toggle },
+    tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = on_gui_toggle }),
   })
+  button.style.padding = 8
 end
 
 --- @param e EventData.on_player_created
@@ -991,6 +1012,7 @@ flib_gui.add_handlers({
   on_search_textfield_changed = on_search_textfield_changed,
   on_show_hidden_clicked = on_show_hidden_clicked,
   on_show_unresearched_clicked = on_show_unresearched_clicked,
+  on_technology_slot_clicked = on_technology_slot_clicked,
   on_titlebar_clicked = on_titlebar_clicked,
 })
 
