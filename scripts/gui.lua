@@ -87,7 +87,7 @@ end
 
 --- @param obj Ingredient|Product
 --- @param researched Set<string>
---- @return GuiElemDef
+--- @return flib.GuiElemDef
 local function build_list_box_item(obj, researched)
   local path = obj.type .. "/" .. obj.name
   local obj_data = storage.database[path]

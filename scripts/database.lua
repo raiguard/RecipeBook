@@ -372,7 +372,7 @@ local function add_real_recipe(recipe, unlocked_by_lookup)
     name = recipe.name,
     localised_name = recipe.localised_name,
     sprite_path = "recipe/" .. recipe.name,
-    hidden = recipe.hidden or nil,
+    hidden = recipe.hidden_in_factoriopedia or recipe.hidden or nil,
     energy = recipe.energy,
     ingredients = recipe.ingredients,
     products = recipe.products,
