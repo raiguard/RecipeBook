@@ -74,13 +74,13 @@ local styles = data.raw["gui-style"]["default"]
 
 styles.rb_subheader_caption_button = {
   type = "button_style",
-  disabled_graphical_set = {},
-  disabled_font_color = bold_font_color,
+  default_graphical_set = {},
+  default_font_color = gui_color.caption,
   font = "default-bold",
   icon_horizontal_align = "left",
   padding = 0,
-  top_padding = -4,
-  bottom_padding = -4,
+  -- top_padding = -4,
+  -- bottom_padding = -4,
   left_margin = 4,
   height = 28,
   minimal_width = 0,
@@ -92,13 +92,13 @@ local hidden_font_color = { r = 1, g = 1, b = 1, a = 0.6 }
 styles.rb_subheader_caption_button_hidden = {
   type = "button_style",
   parent = "rb_subheader_caption_button",
-  disabled_font_color = hidden_font_color,
+  default_font_color = gui_color.grey,
 }
 
 styles.rb_subheader_caption_button_unresearched = {
   type = "button_style",
   parent = "rb_subheader_caption_button",
-  disabled_font_color = red_body_text_color,
+  default_font_color = gui_color.red,
 }
 
 styles.rb_list_box_item = {
@@ -113,13 +113,13 @@ styles.rb_list_box_item = {
 styles.rb_list_box_item_hidden = {
   type = "button_style",
   parent = "rb_list_box_item",
-  default_font_color = hidden_font_color,
+  default_font_color = gui_color.grey,
 }
 
 styles.rb_list_box_item_unresearched = {
   type = "button_style",
   parent = "rb_list_box_item",
-  default_font_color = red_body_text_color,
+  default_font_color = gui_color.red,
 }
 
 styles.rb_search_scroll_pane = {
