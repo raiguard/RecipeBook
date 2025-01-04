@@ -43,14 +43,13 @@ function entry_id.new(input, database)
     amount_min = input.amount_min,
     amount_max = input.amount_max,
     probability = input.probability,
-    catalyst_amount = input.catalyst_amount,
+    catalyst_amount = input.ignored_by_productivity,
     temperature = input.temperature,
     minimum_temperature = input.minimum_temperature,
     maximum_temperature = input.maximum_temperature,
   }, mt)
 
   if not database:get_entry(self) then
-    -- TODO raiguard: Debug only / remove?
     log("Created an entry ID for a non-existent entry: " .. self:get_path())
     return
   end
