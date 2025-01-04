@@ -368,13 +368,13 @@ function info_description:add_entity_properties(entry)
 
   local burner = entity.burner_prototype
   if burner then
-    local emissions_per_joule = burner.emissions_per_joule
-    self:add_generic_row({ "description.pollution" }, {
-      "",
-      -- TODO: Don't hardcode this
-      flib_format.number(emissions_per_joule["pollution"] * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
-      { "per-minute-suffix" },
-    })
+    for pollutant_name, pollution in pairs(burner.emissions_per_joule) do
+      self:add_generic_row(prototypes.airborne_pollutant[pollutant_name].localised_name, {
+        "",
+        flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
+        { "per-minute-suffix" },
+      })
+    end
   end
 end
 
