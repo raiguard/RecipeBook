@@ -376,6 +376,17 @@ function info_description:add_entity_properties(entry)
       })
     end
   end
+
+  local electric_energy_source_prototype = entity.electric_energy_source_prototype
+  if electric_energy_source_prototype then
+    for pollutant_name, pollution in pairs(electric_energy_source_prototype.emissions_per_joule) do
+      self:add_generic_row(prototypes.airborne_pollutant[pollutant_name].localised_name, {
+        "",
+        flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
+        { "per-minute-suffix" },
+      })
+    end
+  end
 end
 
 --- @param id EntryID
