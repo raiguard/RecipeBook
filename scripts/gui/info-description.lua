@@ -359,9 +359,9 @@ function info_description:add_entity_properties(entry)
     local mineable_properties = entity.mineable_properties
     local fluid_name = mineable_properties.required_fluid
     if fluid_name then
-      local entry_id = entry_id.new({ type = "fluid", name = fluid_name }, self.context.database)
-      if entry_id then
-        self:add_id_row({ "description.rb-mining-fluid" }, entry_id)
+      local fluid_id = entry_id.new({ type = "fluid", name = fluid_name }, self.context.database)
+      if fluid_id then
+        self:add_id_row({ "description.rb-mining-fluid" }, fluid_id)
       end
     end
   end

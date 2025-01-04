@@ -753,17 +753,19 @@ function entry:get_generated_by()
 
   local output = util.unique_id_array()
 
-  for _, entity in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "boiler" } })) do
-    local entry = self.database:get_entry(entity)
-    if not entry then
+  for _, boiler_prototype in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "boiler" } })) do
+    local boiler_entry = self.database:get_entry(boiler_prototype)
+    if not boiler_entry then
       goto continue
     end
-    local generates = entry:get_generated_fluid()
+    local generates = boiler_entry:get_generated_fluid()
     if not generates or generates.name ~= fluid.name then
       goto continue
     end
-    output[#output + 1] =
-      entry_id.new({ type = "entity", name = entity.name, temperature = entity.target_temperature }, self.database)
+    output[#output + 1] = entry_id.new(
+      { type = "entity", name = boiler_prototype.name, temperature = boiler_prototype.target_temperature },
+      self.database
+    )
     ::continue::
   end
 
@@ -887,8 +889,8 @@ function entry:get_pumped_fluid()
   if not entity or entity.type ~= "offshore-pump" then
     return
   end
-  return -- TODO:
 
+  -- TODO:
   -- local fluid = entity.fluid
   -- if not fluid or not self.database:get_entry(fluid) then
   --   return

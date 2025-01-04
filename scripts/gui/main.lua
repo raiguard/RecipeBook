@@ -10,7 +10,7 @@ local util = require("scripts.util")
 --- @param name string
 --- @param sprite string
 --- @param tooltip LocalisedString
---- @param handler GuiElemHandler
+--- @param handler flib.GuiElemHandler
 --- @param auto_toggle boolean
 --- @return LuaGuiElement.add_param
 local function frame_action_button(name, sprite, tooltip, handler, auto_toggle)
