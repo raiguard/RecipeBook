@@ -101,7 +101,7 @@ function entry_id:get_caption()
   caption[#caption + 1] = self:get_prototype().localised_name
 
   if self.temperature then
-    caption[#caption + 1] = { "", "  (", { "format-degrees-c-compact", flib_math.round(self.temperature, 0.01) }, ")" }
+    caption[#caption + 1] = { "", "  (", flib_math.round(self.temperature, 0.01), { "si-unit-degree-celsius" }, ")" }
   elseif self.minimum_temperature and self.maximum_temperature then
     local temperature_min = self.minimum_temperature --[[@as number]]
     local temperature_max = self.maximum_temperature --[[@as number]]
@@ -116,7 +116,7 @@ function entry_id:get_caption()
         .. " - "
         .. flib_math.round(temperature_max, 0.01)
     end
-    caption[#caption + 1] = { "", "  (", { "format-degrees-c-compact", temperature_string }, ")" }
+    caption[#caption + 1] = { "", "  (", temperature_string, { "si-unit-degree-celsius" }, ")" }
   end
 
   return caption

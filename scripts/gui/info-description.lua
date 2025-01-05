@@ -404,13 +404,13 @@ function info_description:add_consumption(id)
   if id.minimum_temperature then
     self:add_generic_row(
       { "description.minimum-temperature" },
-      { "format-degrees-c", flib_format.number(id.minimum_temperature) }
+      { "", flib_format.number(id.minimum_temperature), " ", { "si-unit-degree-celsius" } }
     )
   end
   if id.maximum_temperature then
     self:add_generic_row(
       { "description.maximum-temperature" },
-      { "format-degrees-c", flib_format.number(id.maximum_temperature) }
+      { "", flib_format.number(id.maximum_temperature), " ", { "si-unit-degree-celsius" } }
     )
   end
 end
@@ -421,18 +421,21 @@ function info_description:add_production(id)
   assert(id.amount)
   self:add_generic_row({ "description.fluid-output" }, { "", flib_format.number(id.amount), { "per-second-suffix" } })
   if id.temperature then
-    self:add_generic_row({ "description.temperature" }, { "format-degrees-c", flib_format.number(id.temperature) })
+    self:add_generic_row(
+      { "description.temperature" },
+      { "", flib_format.number(id.temperature), " ", { "si-unit-degree-celsius" } }
+    )
   end
   if id.minimum_temperature then
     self:add_generic_row(
       { "description.minimum-temperature" },
-      { "format-degrees-c", flib_format.number(id.minimum_temperature) }
+      { "", flib_format.number(id.minimum_temperature), " ", { "si-unit-degree-celsius" } }
     )
   end
   if id.maximum_temperature then
     self:add_generic_row(
       { "description.maximum-temperature" },
-      { "format-degrees-c", flib_format.number(id.maximum_temperature) }
+      { "", flib_format.number(id.maximum_temperature), " ", { "si-unit-degree-celsius" } }
     )
   end
 end

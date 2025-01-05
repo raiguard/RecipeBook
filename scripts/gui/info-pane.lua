@@ -324,7 +324,7 @@ function info_pane:show(entry)
     { "description.rocket-launch-products" },
     entry:get_rocket_launch_products(),
     { column_count = 10 },
-    make_slot_button
+    make_list_box_item
   )
   info_section.build(
     content_pane,
