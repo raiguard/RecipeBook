@@ -174,8 +174,8 @@ function entry:research(force_index)
   if burnt_result then
     burnt_result:get_entry():research(force_index)
   end
-  local pumped_fluid = self:get_pumped_fluid()
-  if pumped_fluid then
+  -- TODO: Pumped fluid should only be unlocked if its tile is unlocked
+  for _, pumped_fluid in pairs(self:get_pumped_fluids() or {}) do
     pumped_fluid:get_entry():research(force_index)
   end
   local generated_fluid = self:get_generated_fluid()
@@ -883,20 +883,22 @@ function entry:get_unlocks_recipes()
   return output
 end
 
---- @return EntryID?
-function entry:get_pumped_fluid()
+--- @return EntryID[]?
+function entry:get_pumped_fluids()
   local entity = self.entity
   if not entity or entity.type ~= "offshore-pump" then
     return
   end
 
-  -- TODO:
-  -- local fluid = entity.fluid
-  -- if not fluid or not self.database:get_entry(fluid) then
-  --   return
-  -- end
+  local output = util.unique_id_array()
 
-  -- return entry_id.new({ type = "fluid", name = fluid.name }, self.database)
+  for _, tile_prototype in pairs(prototypes.tile) do
+    if tile_prototype.fluid then
+      output[#output + 1] = entry_id.new({ type = "fluid", name = tile_prototype.fluid.name }, self.database)
+    end
+  end
+
+  return output
 end
 
 --- @return EntryID?
