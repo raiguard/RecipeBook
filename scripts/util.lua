@@ -64,6 +64,7 @@ util.object_name_to_type = {
   LuaRecipe = "recipe",
   LuaTechnologyPrototype = "technology",
   LuaTechnology = "technology",
+  LuaTilePrototype = "tile",
 }
 
 --- @return EntryID[]

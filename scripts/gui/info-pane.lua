@@ -88,7 +88,7 @@ function info_pane:show(entry)
   local type_label = self.type_label
   --- @type LocalisedString
   local type_caption = { "" }
-  for _, key in pairs({ "technology", "recipe", "item", "fluid", "equipment", "entity" }) do
+  for _, key in pairs({ "technology", "recipe", "item", "fluid", "equipment", "entity", "tile" }) do
     local prototype = entry[key]
     if prototype then
       type_caption[#type_caption + 1] = gui_util.type_locale[prototype.object_name]
@@ -416,7 +416,17 @@ function info_pane:show(entry)
     make_slot_button
   )
 
+  info_section.build(
+    content_pane,
+    self.context,
+    { "factoriopedia.can-extract-from" },
+    entry:get_can_extract_from(),
+    { column_count = 10 },
+    make_slot_button
+  )
+
   -- Technology
+
   info_section.build(
     content_pane,
     self.context,
@@ -431,11 +441,23 @@ function info_pane:show(entry)
     },
     make_slot_button
   )
+
   info_section.build(
     content_pane,
     self.context,
     { "description.rb-unlocks-recipes" },
     entry:get_unlocks_recipes(),
+    { column_count = 10 },
+    make_slot_button
+  )
+
+  -- Tile
+
+  info_section.build(
+    content_pane,
+    self.context,
+    { "factoriopedia.source-of" },
+    entry:get_source_of(),
     { column_count = 10 },
     make_slot_button
   )

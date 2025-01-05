@@ -66,6 +66,7 @@ gui_util.type_locale = {
   LuaItemPrototype = { "description.rb-item" },
   LuaRecipePrototype = { "description.recipe" },
   LuaTechnologyPrototype = { "gui-map-generator.technology-difficulty-group-tile" },
+  LuaTilePrototype = { "factoriopedia.tile" },
 }
 
 --- @type table<string, boolean>

@@ -5,7 +5,7 @@ local flib_technology = require("__flib__.technology")
 local entry_id = require("scripts.database.entry-id")
 local util = require("scripts.util")
 
---- @alias GenericPrototype LuaEquipmentPrototype|LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype
+--- @alias GenericPrototype LuaEquipmentPrototype|LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype|LuaTilePrototype
 
 --- @class Entry
 --- @field technology LuaTechnologyPrototype?
@@ -14,6 +14,7 @@ local util = require("scripts.util")
 --- @field fluid LuaFluidPrototype?
 --- @field equipment LuaEquipmentPrototype?
 --- @field entity LuaEntityPrototype?
+--- @field tile LuaTilePrototype?
 --- @field private database Database
 --- @field private base GenericPrototype
 --- @field private researched table<uint, boolean>?
@@ -174,9 +175,12 @@ function entry:research(force_index)
   if burnt_result then
     burnt_result:get_entry():research(force_index)
   end
-  -- TODO: Pumped fluid should only be unlocked if its tile is unlocked
-  for _, pumped_fluid in pairs(self:get_pumped_fluids() or {}) do
-    pumped_fluid:get_entry():research(force_index)
+  -- TODO: Restrict by planet
+  for _, tile in pairs(self:get_can_extract_from() or {}) do
+    tile:get_entry():research(force_index)
+  end
+  for _, fluid in pairs(self:get_source_of() or {}) do
+    fluid:get_entry():research(force_index)
   end
   local generated_fluid = self:get_generated_fluid()
   if generated_fluid then
@@ -884,7 +888,7 @@ function entry:get_unlocks_recipes()
 end
 
 --- @return EntryID[]?
-function entry:get_pumped_fluids()
+function entry:get_can_extract_from()
   local entity = self.entity
   if not entity or entity.type ~= "offshore-pump" then
     return
@@ -894,10 +898,22 @@ function entry:get_pumped_fluids()
 
   for _, tile_prototype in pairs(prototypes.tile) do
     if tile_prototype.fluid then
-      output[#output + 1] = entry_id.new({ type = "fluid", name = tile_prototype.fluid.name }, self.database)
+      output[#output + 1] = entry_id.new({ type = "tile", name = tile_prototype.name }, self.database)
     end
   end
 
+  return output
+end
+
+--- @return EntryID[]?
+function entry:get_source_of()
+  local tile = self.tile
+  if not tile or not tile.fluid then
+    return
+  end
+
+  local output = util.unique_id_array()
+  output[#output + 1] = entry_id.new({ type = "fluid", name = tile.fluid.name }, self.database)
   return output
 end
 

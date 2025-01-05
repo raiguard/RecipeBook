@@ -28,7 +28,7 @@ local mt = { __index = entry_id }
 script.register_metatable("entry_id", mt)
 
 --- @class GenericID
---- @field type "entity"|"equipment"|"fluid"|"item"|"recipe"|"technology"
+--- @field type "entity"|"equipment"|"fluid"|"item"|"recipe"|"technology"|"tile"
 --- @field name string
 
 --- @param input GenericID|Ingredient.fluid|Product

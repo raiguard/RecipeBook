@@ -124,6 +124,24 @@ function database.new()
     ::continue::
   end
 
+  log("Tiles")
+  for _, prototype in pairs(prototypes.tile) do
+    local grouped_material
+    local products = prototype.mineable_properties.products
+    if products then
+      for _, product in pairs(products) do
+        if self:get_entry(product) then
+          local product_prototype = util.get_prototype(product)
+          if self:should_group(prototype, product_prototype) then
+            grouped_material = product_prototype
+            break
+          end
+        end
+      end
+    end
+    self:add_prototype(prototype, grouped_material)
+  end
+
   log("Characters")
   --- @diagnostic disable-next-line unused-fields
   for _, character in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "character" } })) do
