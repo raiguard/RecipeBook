@@ -303,8 +303,7 @@ function database:is_hidden(prototype, force_index)
   end
   if force_index and prototype.object_name == "LuaTechnologyPrototype" then
     local tech = game.forces[force_index].technologies[prototype.name]
-    -- TODO: How to handle visible_when_disabled?
-    return not tech.enabled
+    return not tech.enabled and not tech.visible_when_disabled
   end
   return prototype.hidden
 end
