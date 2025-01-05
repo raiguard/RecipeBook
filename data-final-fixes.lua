@@ -1,2 +1,2 @@
--- require("prototypes.pack-overrides")
--- require("prototypes.pack-sprites")
+require("prototypes.pack-overrides")
+require("prototypes.pack-sprites")

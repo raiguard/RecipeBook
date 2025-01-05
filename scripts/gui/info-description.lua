@@ -369,29 +369,33 @@ function info_description:add_entity_properties(entry)
   local burner = entity.burner_prototype
   if burner then
     for pollutant_name, pollution in pairs(burner.emissions_per_joule) do
-      self:add_generic_row(prototypes.airborne_pollutant[pollutant_name].localised_name, {
-        "",
-        flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
-        { "per-minute-suffix" },
-      })
+      if pollution ~= 0 then
+        self:add_generic_row(prototypes.airborne_pollutant[pollutant_name].localised_name, {
+          "",
+          flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
+          { "per-minute-suffix" },
+        })
+      end
     end
   end
 
   local electric_energy_source_prototype = entity.electric_energy_source_prototype
   if electric_energy_source_prototype then
     for pollutant_name, pollution in pairs(electric_energy_source_prototype.emissions_per_joule) do
-      self:add_generic_row(prototypes.airborne_pollutant[pollutant_name].localised_name, {
-        "",
-        flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
-        { "per-minute-suffix" },
-      })
+      if pollution ~= 0 then
+        self:add_generic_row(prototypes.airborne_pollutant[pollutant_name].localised_name, {
+          "",
+          flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
+          { "per-minute-suffix" },
+        })
+      end
     end
   end
 end
 
 --- @param id EntryID
 function info_description:add_consumption(id)
-  self:add_category_header(id:get_tooltip_category_sprite("consumption"), { "tooltip-category.consumes" }, id)
+  self:add_category_header(id:get_tooltip_category_sprite("consumes"), { "tooltip-category.consumes" }, id)
   assert(id.amount)
   self:add_generic_row(
     { "description.energy-consumption" },
@@ -413,7 +417,7 @@ end
 
 --- @param id EntryID
 function info_description:add_production(id)
-  self:add_category_header(id:get_tooltip_category_sprite("production"), { "tooltip-category.generates" }, id)
+  self:add_category_header(id:get_tooltip_category_sprite("produces"), { "tooltip-category.generates" }, id)
   assert(id.amount)
   self:add_generic_row({ "description.fluid-output" }, { "", flib_format.number(id.amount), { "per-second-suffix" } })
   if id.temperature then

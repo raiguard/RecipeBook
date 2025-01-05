@@ -4,16 +4,16 @@ local db_entry = require("scripts.database.entry")
 local search_tree = require("scripts.database.search-tree")
 local util = require("scripts.util")
 
--- local bigunpack = require("__big-data-string__.unpack")
+local bigunpack = require("__big-data-string2__.unpack")
 
--- --- @generic T
--- --- @param key string
--- --- @return T
--- local function unpack(key)
---   local success, value = serpent.load(bigunpack(key))
---   assert(success, "Deserialising overrides failed for " .. key)
---   return value
--- end
+--- @generic T
+--- @param key string
+--- @return T
+local function unpack(key)
+  local success, value = serpent.load(bigunpack(key))
+  assert(success, "Deserialising overrides failed for " .. key)
+  return value
+end
 
 --- @class Database
 --- @field entries table<SpritePath, Entry?>
@@ -35,13 +35,13 @@ function database.new()
   local self = {
     entries = {},
     search_tree = search_tree.new(),
-    alternatives = {}, -- unpack("rb_alternatives"),
-    exclude = {}, -- unpack("rb_exclude"),
-    group_with = {}, -- unpack("rb_group_with"),
-    hidden = {}, -- unpack("rb_hidden"),
-    hidden_from_search = {}, -- unpack("rb_hidden_from_search"),
-    unlocks_results = {}, -- unpack("rb_unlocks_results"),
-    tooltip_category_sprites = {}, -- unpack("rb_tooltip_category_sprites"),
+    alternatives = unpack("rb_alternatives"),
+    exclude = unpack("rb_exclude"),
+    group_with = unpack("rb_group_with"),
+    hidden = unpack("rb_hidden"),
+    hidden_from_search = unpack("rb_hidden_from_search"),
+    unlocks_results = unpack("rb_unlocks_results"),
+    tooltip_category_sprites = unpack("rb_tooltip_category_sprites"),
   }
   setmetatable(self, mt)
 
@@ -301,23 +301,12 @@ function database:is_hidden(prototype, force_index)
   if override ~= nil then
     return override
   end
-  local type = prototype.object_name
-  if type == "LuaFluidPrototype" then
-    return prototype.hidden
-  elseif type == "LuaItemPrototype" then
-    return prototype.hidden
-  elseif type == "LuaRecipePrototype" then
-    return prototype.hidden
-  elseif type == "LuaTechnologyPrototype" then
-    if force_index then
-      local tech = game.forces[force_index].technologies[prototype.name]
-      -- TODO: How to handle visible_when_disabled?
-      return not tech.enabled
-    else
-      return prototype.hidden
-    end
+  if force_index and prototype.object_name == "LuaTechnologyPrototype" then
+    local tech = game.forces[force_index].technologies[prototype.name]
+    -- TODO: How to handle visible_when_disabled?
+    return not tech.enabled
   end
-  return false
+  return prototype.hidden
 end
 
 --- @param prototype GenericPrototype

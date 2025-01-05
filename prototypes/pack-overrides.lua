@@ -1,4 +1,4 @@
-local bigpack = require("__big-data-string__.pack")
+local bigpack = require("__big-data-string2__.pack")
 local data_util = require("prototypes.util")
 local flib_table = require("__flib__.table")
 
