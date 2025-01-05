@@ -1,42 +1,24 @@
 local data_util = require("prototypes.util")
 
 --- Recipe Book data overrides API. Overrides are:
---- - **alternative**: `string?` - If set, this prototype will reference the given alternative's page instead of having its own.
 --- - **exclude**: `boolean?` - If true, the prototype will be entirely excluded from recipe book.
 --- - **group_with**: `SpritePath?` - If set, this prototype will be grouped with the given prototype instead of following the regular grouping logic.
 --- - **hidden**: `boolean?` - If true, the prototype will be hidden in recipe book even if it is not hidden otherwise.
 --- - **hidden_from_search**: `boolean?` - If true, the prototype will be hidden from search results, but will not be hidden in info pages.
 --- - **unlocks_results**: `boolean?` - If true, unlocking this recipe will not mark the recipe products as unlocked.
 --- @class RecipeBookDataAPI
---- @field private alternatives table<SpritePath, data.PrototypeBase>
 --- @field private exclude table<SpritePath, boolean>
 --- @field private group_with table<SpritePath, data.PrototypeBase>
 --- @field private hidden table<SpritePath, boolean>
 --- @field private hidden_from_search table<SpritePath, boolean>
 --- @field private unlocks_results table<SpritePath, boolean>
 recipe_book = {
-  alternatives = {},
   exclude = {},
   group_with = {},
   hidden = {},
   hidden_from_search = {},
   unlocks_results = {},
 }
-
---- @param prototype data.PrototypeBase
---- @return data.PrototypeBase?
-function recipe_book.get_alternative(prototype)
-  data_util.assert_is_prototype(prototype, "prototype")
-  return recipe_book.alternatives[data_util.get_sprite_path(prototype)]
-end
-
---- @param prototype data.PrototypeBase
---- @param alternative data.PrototypeBase
-function recipe_book.set_alternative(prototype, alternative)
-  data_util.assert_is_prototype(prototype, "prototype")
-  data_util.assert_is_prototype(alternative, "alternative")
-  recipe_book.alternatives[data_util.get_sprite_path(prototype)] = alternative
-end
 
 --- @param prototype data.PrototypeBase
 --- @return boolean
