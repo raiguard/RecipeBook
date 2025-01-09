@@ -125,21 +125,20 @@ function database.new()
   end
 
   log("Tiles")
-  for _, prototype in pairs(prototypes.tile) do
-    local grouped_material
-    local products = prototype.mineable_properties.products
-    if products then
-      for _, product in pairs(products) do
-        if self:get_entry(product) then
-          local product_prototype = util.get_prototype(product)
-          if self:should_group(prototype, product_prototype) then
-            grouped_material = product_prototype
-            break
-          end
-        end
-      end
+  for _, tile in pairs(prototypes.tile) do
+    local products = tile.mineable_properties.products
+    local first_product = products and products[1]
+    if not first_product then
+      self:add_prototype(tile)
+      goto continue
     end
-    self:add_prototype(prototype, grouped_material)
+    local product_entry = self:get_entry(first_product)
+    if not product_entry or not product_entry.tile then
+      self:add_prototype(tile, util.get_prototype(first_product), true)
+    elseif product_entry then
+      self.entries[util.get_path(tile)] = product_entry
+    end
+    ::continue::
   end
 
   log("Characters")
@@ -270,7 +269,9 @@ end
 --- @private
 --- @param prototype GenericPrototype
 --- @param group_with GenericPrototype?
-function database:add_prototype(prototype, group_with)
+--- @param force_group boolean?
+--- @return Entry?
+function database:add_prototype(prototype, group_with, force_group)
   local path, type = util.get_path(prototype)
   local entry = self.entries[path]
   if entry then
@@ -288,18 +289,21 @@ function database:add_prototype(prototype, group_with)
   if group_with then
     local parent_path = util.get_path(group_with)
     local parent_entry = self.entries[parent_path]
-    if parent_entry and not parent_entry[type] and self:should_group(prototype, group_with) then
+    if parent_entry and not parent_entry[type] and (force_group or self:should_group(prototype, group_with)) then
       parent_entry:add(prototype)
       self.entries[path] = parent_entry
       return
     end
   end
 
-  self.entries[path] = db_entry.new(prototype, self)
+  local entry = db_entry.new(prototype, self)
+  self.entries[path] = entry
 
   local prototype_type = util.object_name_to_type[prototype.object_name]
   local prototype_path = prototype_type .. "/" .. prototype.name
   flib_dictionary.add("search", prototype_path, { "?", prototype.localised_name, prototype_path })
+
+  return entry
 end
 
 --- @param tech LuaTechnology
