@@ -284,6 +284,7 @@ function database:add_prototype(prototype, group_with, force_group)
     return
   end
 
+  -- FIXME: Add factoriopedia_description read
   flib_dictionary.add("description", path, prototype.localised_description)
 
   if group_with then

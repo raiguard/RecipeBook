@@ -526,12 +526,26 @@ function entry:get_burned_in()
   return output
 end
 
+--- @private
 --- @return EntryID[]?
-function entry:get_gathered_from()
-  local item = self.item
-  if not item then
-    return
+function entry:get_gathered_from_fluid()
+  local fluid = self.fluid
+
+  local output = util.unique_id_array()
+
+  for tile_name, tile in pairs(prototypes.tile) do
+    if tile.fluid == fluid then
+      output[#output + 1] = entry_id.new({ type = "tile", name = tile_name }, self.database)
+    end
   end
+
+  return output
+end
+
+--- @private
+--- @return EntryID[]?
+function entry:get_gathered_from_item()
+  local item = self.item
 
   local output = util.unique_id_array()
 
@@ -553,6 +567,16 @@ function entry:get_gathered_from()
   end)
 
   return output
+end
+
+--- @return EntryID[]?
+function entry:get_gathered_from()
+  if self.fluid then
+    return self:get_gathered_from_fluid()
+  end
+  if self.item then
+    return self:get_gathered_from_item()
+  end
 end
 
 --- @return EntryID[]?
