@@ -239,13 +239,13 @@ function database:should_group(a, b)
   if self.group_with[a_path] == b_path then
     return true
   end
-  if
-    a.object_name ~= "LuaEntityPrototype"
-    and a.object_name ~= "LuaEquipmentPrototype"
-    and self:is_hidden(a) ~= self:is_hidden(b)
-  then
-    return false
-  end
+  -- if
+  --   a.object_name ~= "LuaEntityPrototype"
+  --   and a.object_name ~= "LuaEquipmentPrototype"
+  --   and self:is_hidden(a) ~= self:is_hidden(b)
+  -- then
+  --   return false
+  -- end
   return a.name == b.name
 end
 
