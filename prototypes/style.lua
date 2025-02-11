@@ -5,7 +5,14 @@ local styles = data.raw["gui-style"]["default"]
 styles.rb_filter_group_button_tab = {
   type = "button_style",
   parent = "filter_group_button_tab_slightly_larger",
+  height = 72,
+  -- The GUI style has a built-in 8 pixels of padding
+  top_padding = 0,
+  right_padding = 0,
+  bottom_padding = 0,
+  left_padding = -1,
   width = 0,
+  minimal_width = 71,
   horizontally_stretchable = "on",
 }
 
