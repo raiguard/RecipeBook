@@ -1,15 +1,13 @@
 ---------------------------------------------------------------------------------------------------
 Version: 4.0.0
 Date: ????
-  Gui:
+  Changes:
     - Completely rewrote the mod from scratch (again).
     - The GUI no longer uses plain-text translations for its display, allowing it to be used immediately just like any other GUI.
     - Increased the list box icon size and updated button styling to be more readable.
-    - Related objects will be grouped together into a single page.
-      - Grouping is performed based on recipe -> main product -> placed entity/equipment/tile, and the internal prototype names.
-      - There WILL be issues with mods. Please report any issues on the dedicated GitHub issue so I can coordinate with mod authors.
+    - Related objects will be grouped together into a single page, similar to Factoriopedia.
     - Removed the multi-window system - it caused more problems than it solved.
-    - Changed the default search interface to be icon-based.
+    - Changed the search interface to be icon-based.
     - Changed most info pane lists to be icon-based.
   Optimizations:
     - Significantly improved the database generation time by caching fewer things in advance.
