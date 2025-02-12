@@ -13,12 +13,12 @@ data:extend({
   {
     type = "custom-input",
     name = "rb-previous",
-    key_sequence = "mouse-button-4",
+    key_sequence = "ALT + mouse-button-4",
   },
   {
     type = "custom-input",
     name = "rb-next",
-    key_sequence = "mouse-button-5",
+    key_sequence = "ALT + mouse-button-5",
   },
   {
     type = "custom-input",
