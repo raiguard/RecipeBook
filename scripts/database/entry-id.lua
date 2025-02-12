@@ -50,7 +50,6 @@ function entry_id.new(input, database)
   }, mt)
 
   if not database:get_entry(self) then
-    log("Created an entry ID for a non-existent entry: " .. self:get_path())
     return
   end
 
