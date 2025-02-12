@@ -2,7 +2,7 @@ data:extend({
   {
     type = "sprite",
     name = "rb_logo",
-    filename = "__RecipeBook__/graphics/shortcut-x32-black.png",
+    filename = "__RecipeBook__/graphics/logo.png",
     size = 32,
     flags = { "gui-icon" },
   },

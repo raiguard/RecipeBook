@@ -77,7 +77,7 @@ function main_gui.build(player, database)
   header.add({
     type = "label",
     style = "flib_frame_title",
-    caption = { "mod-name.RecipeBook" },
+    caption = { "gui.rb-title" },
     ignored_by_interaction = true,
   })
   header.add({ type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true })
@@ -172,7 +172,6 @@ function main_gui:hide()
   if self.context.player.opened == self.window then
     self.context.player.opened = nil
   end
-  self.context.player.set_shortcut_toggled("rb-toggle", false)
 end
 
 function main_gui:prev()
@@ -198,7 +197,6 @@ function main_gui:show()
     self.context.player.opened = self.window
     self.window.force_auto_center()
   end
-  self.context.player.set_shortcut_toggled("rb-toggle", true)
   if self.context.player.mod_settings["rb-auto-focus-search"].value then
     self.search_pane:focus_search()
   end

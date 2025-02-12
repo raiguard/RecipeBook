@@ -14,7 +14,7 @@ local function refresh_button(player)
       type = "sprite-button",
       name = "rb_toggle",
       style = mod_gui.button_style,
-      tooltip = { "", { "shortcut-name.rb-toggle" }, " (", { "gui.rb-toggle-instruction" }, ")" },
+      tooltip = { "", { "gui.rb-title" }, " (", { "gui.rb-toggle-instruction" }, ")" },
       sprite = "rb_logo",
       tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = main_gui.toggle }),
     }).style.padding =
@@ -22,6 +22,16 @@ local function refresh_button(player)
   end
 end
 
+--- @param e EventData.on_player_created
+local function on_player_created(e)
+  local player = game.get_player(e.player_index)
+  if not player then
+    return
+  end
+  refresh_button(player)
+end
+
+--- @param e EventData.on_runtime_mod_setting_changed
 local function on_runtime_mod_setting_changed(e)
   if e.setting ~= "rb-show-overhead-button" then
     return
@@ -48,6 +58,7 @@ function overhead_button.on_configuration_changed()
 end
 
 overhead_button.events = {
+  [defines.events.on_player_created] = on_player_created,
   [defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed,
 }
 
