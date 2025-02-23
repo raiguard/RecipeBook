@@ -432,6 +432,9 @@ function main_gui.on_init()
 end
 
 function main_gui.on_configuration_changed()
+  if not storage.guis then
+    return
+  end
   for _, player in pairs(game.players) do
     main_gui.build(player, storage.database)
   end
