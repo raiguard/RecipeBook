@@ -828,22 +828,18 @@ function entry:get_unlocked_by_internal(visited)
     end
   end
 
-  for _, id in pairs(self:get_alternative_recipes() or {}) do
-    for _, tech in pairs(id:get_entry():get_unlocked_by_internal(visited) or {}) do
-      output[#output + 1] = tech
-    end
-  end
+  -- TODO: Make this less mudurous on performance
+  -- for _, id in pairs(self:get_alternative_recipes() or {}) do
+  --   for _, tech in pairs(id:get_entry():get_unlocked_by_internal(visited) or {}) do
+  --     output[#output + 1] = tech
+  --   end
+  -- end
 
-  for _, id in pairs(self:get_rocket_launch_product_of() or {}) do
-    for _, tech in pairs(id:get_entry():get_unlocked_by_internal(visited) or {}) do
-      output[#output + 1] = tech
-    end
-  end
-
-  local prototypes = prototypes.technology
-  table.sort(output, function(tech_a, tech_b)
-    return flib_technology.sort_predicate(prototypes[tech_a.name], prototypes[tech_b.name])
-  end)
+  -- for _, id in pairs(self:get_rocket_launch_product_of() or {}) do
+  --   for _, tech in pairs(id:get_entry():get_unlocked_by_internal(visited) or {}) do
+  --     output[#output + 1] = tech
+  --   end
+  -- end
 
   if #output == 0 and recipe and not recipe.enabled then
     for _, crafter in pairs(self:get_made_in() or {}) do
@@ -852,6 +848,11 @@ function entry:get_unlocked_by_internal(visited)
       end
     end
   end
+
+  local prototypes = prototypes.technology
+  table.sort(output, function(tech_a, tech_b)
+    return flib_technology.sort_predicate(prototypes[tech_a.name], prototypes[tech_b.name])
+  end)
 
   return output
 end
