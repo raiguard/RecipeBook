@@ -183,6 +183,10 @@ end
 --- @param force LuaForce
 function database:init_researched(force)
   local force_index = force.index
+  -- Tiles and natural entities
+  for _, surface in pairs(game.surfaces) do
+    self:on_surface_created(surface)
+  end
   -- Gather-able items
   for _, entity in
     pairs(prototypes.get_entity_filtered({
@@ -227,10 +231,6 @@ function database:init_researched(force)
     if entry then
       entry:research(force_index)
     end
-  end
-  -- Tiles and natural entities
-  for _, surface in pairs(game.surfaces) do
-    self:on_surface_created(surface)
   end
 end
 
@@ -322,7 +322,17 @@ end
 
 --- @param surface LuaSurface
 function database:on_surface_created(surface)
-  for tile_name in pairs(surface.map_gen_settings.autoplace_settings.tile.settings) do
+  local autoplace_settings = surface.map_gen_settings.autoplace_settings
+  -- TODO: Iterate natural entities
+  -- for entity_name in pairs(autoplace_settings.entity.settings) do
+  --   local entity_entry = self:get_entry({ type = "entity", name = entity_name })
+  --   if entity_entry then
+  --     for _, force in pairs(game.forces) do
+  --       entity_entry:research(force.index)
+  --     end
+  --   end
+  -- end
+  for tile_name in pairs(autoplace_settings.tile.settings) do
     local tile_entry = self:get_entry({ type = "tile", name = tile_name })
     if tile_entry then
       for _, force in pairs(game.forces) do

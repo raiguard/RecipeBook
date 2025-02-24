@@ -175,13 +175,20 @@ function entry:research(force_index)
   if burnt_result then
     burnt_result:get_entry():research(force_index)
   end
-  -- TODO: Restrict by planet
   for _, tile in pairs(self:get_can_extract_from() or {}) do
-    tile:get_entry():research(force_index)
+    if tile:get_entry():is_researched(force_index) then
+      for _, fluid in pairs(tile:get_entry():get_source_of() or {}) do
+        fluid:get_entry():research(force_index)
+      end
+    end
   end
-  -- TODO: Restrict by offshore pump
-  for _, fluid in pairs(self:get_source_of() or {}) do
-    fluid:get_entry():research(force_index)
+  for _, offshore_pump in pairs(self:get_extracted_by() or {}) do
+    if offshore_pump:get_entry():is_researched(force_index) then
+      for _, fluid in pairs(self:get_source_of() or {}) do
+        fluid:get_entry():research(force_index)
+      end
+      break
+    end
   end
   local generated_fluid = self:get_generated_fluid()
   if generated_fluid then
@@ -940,6 +947,22 @@ function entry:get_source_of()
 
   local output = util.unique_id_array()
   output[#output + 1] = entry_id.new({ type = "fluid", name = tile.fluid.name }, self.database)
+  return output
+end
+
+--- @return EntryID[]?
+function entry:get_extracted_by()
+  local tile = self.tile
+  if not tile then
+    return
+  end
+
+  local output = util.unique_id_array()
+
+  for _, offshore_pump in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "offshore-pump" } })) do
+    output[#output + 1] = entry_id.new({ type = "entity", name = offshore_pump.name }, self.database)
+  end
+
   return output
 end
 

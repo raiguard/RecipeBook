@@ -462,6 +462,15 @@ function info_pane:show(entry)
     make_slot_button
   )
 
+  info_section.build(
+    content_pane,
+    self.context,
+    { "description.rb-extracted-by" },
+    entry:get_extracted_by(),
+    { column_count = 10 },
+    make_slot_button
+  )
+
   profiler.stop()
   log({ "", "[", entry:get_path(), "] ", profiler })
 
