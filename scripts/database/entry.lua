@@ -989,55 +989,56 @@ function entry:get_accepted_modules()
   --- @type EntryID[]
   local modules = {}
 
-  -- TODO: Allowed module categories
+  -- -- TODO: Allowed module categories
+  -- TODO: This is totally broken
 
-  local entity = self.entity
-  if entity then
-    local allowed_effects = entity.allowed_effects
-    for _, module in pairs(prototypes.get_item_filtered({ { filter = "type", type = "module" } })) do
-      if not allowed_effects then
-        modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
-        goto continue
-      end
-      local module_effects = module.module_effects
-      if not module_effects then
-        goto continue
-      end
-      for effect in pairs(module_effects) do
-        if not allowed_effects[effect] then
-          goto continue
-        end
-      end
-      modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
-      ::continue::
-    end
-    -- TODO: Somehow distinguish recipe modules vs. entity modules
-    return modules
-  end
+  -- local entity = self.entity
+  -- if entity then
+  --   local allowed_effects = entity.allowed_effects
+  --   for _, module in pairs(prototypes.get_item_filtered({ { filter = "type", type = "module" } })) do
+  --     if not allowed_effects then
+  --       modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
+  --       goto continue
+  --     end
+  --     local module_effects = module.module_effects
+  --     if not module_effects then
+  --       goto continue
+  --     end
+  --     for effect in pairs(module_effects) do
+  --       if not allowed_effects[effect] then
+  --         goto continue
+  --       end
+  --     end
+  --     modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
+  --     ::continue::
+  --   end
+  --   -- TODO: Somehow distinguish recipe modules vs. entity modules
+  --   return modules
+  -- end
 
-  local recipe = self.recipe
-  if recipe then
-    local allowed_effects = recipe.allowed_effects
-    for _, module in pairs(prototypes.get_item_filtered({ { filter = "type", type = "module" } })) do
-      if not allowed_effects then
-        modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
-        goto continue
-      end
-      local module_effects = module.module_effects
-      if not module_effects then
-        goto continue
-      end
-      for effect in pairs(module_effects) do
-        if not allowed_effects[effect] then
-          goto continue
-        end
-      end
-      modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
-      ::continue::
-    end
-    -- TODO: Somehow distinguish recipe modules vs. entity modules
-    return modules
-  end
+  -- local recipe = self.recipe
+  -- if recipe then
+  --   local allowed_effects = recipe.allowed_effects
+  --   for _, module in pairs(prototypes.get_item_filtered({ { filter = "type", type = "module" } })) do
+  --     if not allowed_effects then
+  --       modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
+  --       goto continue
+  --     end
+  --     local module_effects = module.module_effects
+  --     if not module_effects then
+  --       goto continue
+  --     end
+  --     for effect in pairs(module_effects) do
+  --       if not allowed_effects[effect] then
+  --         goto continue
+  --       end
+  --     end
+  --     modules[#modules + 1] = entry_id.new({ type = "item", name = module.name }, self.database)
+  --     ::continue::
+  --   end
+  --   -- TODO: Somehow distinguish recipe modules vs. entity modules
+  --   return modules
+  -- end
 
   return modules
 end
