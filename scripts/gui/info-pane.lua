@@ -285,7 +285,7 @@ function info_pane:show(entry)
   info_section.build(
     content_pane,
     self.context,
-    { "description.rb-alternative-recipes" },
+    entry.recipe and { "description.rb-alternative-recipes" } or { "description.rb-recipes" },
     entry:get_alternative_recipes(),
     { column_count = grid_column_count },
     grid_builder
