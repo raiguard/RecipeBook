@@ -228,6 +228,10 @@ function database:init_researched(force)
       entry:research(force_index)
     end
   end
+  -- Tiles and natural entities
+  for _, surface in pairs(game.surfaces) do
+    self:on_surface_created(surface)
+  end
 end
 
 --- @private
@@ -316,6 +320,18 @@ function database:on_research_finished(tech)
   entry:research(tech.force.index)
 end
 
+--- @param surface LuaSurface
+function database:on_surface_created(surface)
+  for tile_name in pairs(surface.map_gen_settings.autoplace_settings.tile.settings) do
+    local tile_entry = self:get_entry({ type = "tile", name = tile_name })
+    if tile_entry then
+      for _, force in pairs(game.forces) do
+        tile_entry:research(force.index)
+      end
+    end
+  end
+end
+
 --- @param prototype GenericPrototype
 --- @param force_index uint?
 --- @return boolean
@@ -361,6 +377,18 @@ local function on_research_finished(e)
   end
 end
 
+--- @param e EventData.on_surface_created
+local function on_surface_created(e)
+  if not storage.database then
+    return
+  end
+  local surface = game.get_surface(e.surface_index)
+  if not surface then
+    return
+  end
+  storage.database:on_surface_created(surface)
+end
+
 local function init()
   storage.database = database.new()
 end
@@ -370,6 +398,7 @@ M.on_configuration_changed = init
 
 M.events = {
   [defines.events.on_research_finished] = on_research_finished,
+  [defines.events.on_surface_created] = on_surface_created,
 }
 
 return M

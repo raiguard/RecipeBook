@@ -179,6 +179,7 @@ function entry:research(force_index)
   for _, tile in pairs(self:get_can_extract_from() or {}) do
     tile:get_entry():research(force_index)
   end
+  -- TODO: Restrict by offshore pump
   for _, fluid in pairs(self:get_source_of() or {}) do
     fluid:get_entry():research(force_index)
   end
