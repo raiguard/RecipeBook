@@ -332,11 +332,14 @@ function database:on_surface_created(surface)
   --     end
   --   end
   -- end
-  for tile_name in pairs(autoplace_settings.tile.settings) do
-    local tile_entry = self:get_entry({ type = "tile", name = tile_name })
-    if tile_entry then
-      for _, force in pairs(game.forces) do
-        tile_entry:research(force.index)
+  local tile_settings = autoplace_settings.tile
+  if tile_settings then
+    for tile_name in pairs(tile_settings.settings) do
+      local tile_entry = self:get_entry({ type = "tile", name = tile_name })
+      if tile_entry then
+        for _, force in pairs(game.forces) do
+          tile_entry:research(force.index)
+        end
       end
     end
   end
