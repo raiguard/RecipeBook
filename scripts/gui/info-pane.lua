@@ -241,6 +241,10 @@ function info_pane:show(entry)
     vehicle_desc:finalize()
   end
 
+  local lists_everywhere = self.context.player.mod_settings["rb-lists-everywhere"].value --[[@as boolean]]
+  local grid_builder = lists_everywhere and make_list_box_item or make_slot_button
+  local grid_column_count = lists_everywhere and 1 or 10
+
   -- Recipe
 
   info_section.build(
@@ -264,8 +268,8 @@ function info_pane:show(entry)
     self.context,
     { "description.made-in" },
     entry:get_made_in(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
 
   -- Material
@@ -275,55 +279,55 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-used-in" },
     entry:get_used_in(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
   info_section.build(
     content_pane,
     self.context,
     { "description.rb-alternative-recipes" },
     entry:get_alternative_recipes(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
   info_section.build(
     content_pane,
     self.context,
     { "description.rb-generated-by" },
     entry:get_generated_by(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
   info_section.build(
     content_pane,
     self.context,
     { "description.rb-mined-by" },
     entry:get_mined_by(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
   info_section.build(
     content_pane,
     self.context,
     { "description.rb-burned-in" },
     entry:get_burned_in(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
   info_section.build(
     content_pane,
     self.context,
     { "description.rb-gathered-from" },
     entry:get_gathered_from(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
   info_section.build(
     content_pane,
     self.context,
     { "description.rocket-launch-products" },
     entry:get_rocket_launch_products(),
-    { column_count = 10 },
+    { column_count = grid_column_count },
     make_list_box_item
   )
   info_section.build(
@@ -331,24 +335,24 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-rocket-launch-product-of" },
     entry:get_rocket_launch_product_of(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
   info_section.build(
     content_pane,
     self.context,
     { "description.rb-can-mine" },
     entry:get_can_mine(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
   info_section.build(
     content_pane,
     self.context,
     { "description.rb-can-burn" },
     entry:get_can_burn(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
   info_section.build(
     content_pane,
@@ -403,8 +407,8 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-can-craft" },
     entry:get_can_craft(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
 
   info_section.build(
@@ -412,8 +416,8 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-accepted-modules" },
     entry:get_accepted_modules(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
 
   info_section.build(
@@ -421,8 +425,8 @@ function info_pane:show(entry)
     self.context,
     { "factoriopedia.can-extract-from" },
     entry:get_can_extract_from(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
 
   -- Technology
@@ -437,9 +441,9 @@ function info_pane:show(entry)
         entry:get_technology_ingredient_count(),
         entry:get_technology_ingredient_time()
       ),
-      column_count = 10,
+      column_count = grid_column_count,
     },
-    make_slot_button
+    grid_builder
   )
 
   info_section.build(
@@ -447,8 +451,8 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-unlocks-recipes" },
     entry:get_unlocks_recipes(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
 
   -- Tile
@@ -458,8 +462,8 @@ function info_pane:show(entry)
     self.context,
     { "factoriopedia.source-of" },
     entry:get_source_of(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
 
   info_section.build(
@@ -467,8 +471,8 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-extracted-by" },
     entry:get_extracted_by(),
-    { column_count = 10 },
-    make_slot_button
+    { column_count = grid_column_count },
+    grid_builder
   )
 
   profiler.stop()

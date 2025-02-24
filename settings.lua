@@ -11,4 +11,10 @@ data:extend({
     setting_type = "runtime-per-user",
     default_value = false,
   },
+  {
+    type = "bool-setting",
+    name = "rb-lists-everywhere",
+    setting_type = "runtime-per-user",
+    default_value = false,
+  },
 })

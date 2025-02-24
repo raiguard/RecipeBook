@@ -25,6 +25,7 @@ search_pane.on_result_clicked = nil
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
 function search_pane.build(parent, context)
+  -- TODO: Respect "lists everywhere" setting and make a list instead of a grid.
   local outer = parent.add({
     type = "frame",
     name = "filter_outer_frame",
