@@ -364,7 +364,7 @@ function info_pane:show(entry)
     self.context,
     { "description.rb-unlocked-by" },
     entry:get_unlocked_by(),
-    { style = "rb_technology_slot_deep_frame", column_count = 5 },
+    { style = "rb_technology_slot_deep_frame", column_count = 5, always_show = true },
     --- @param id EntryID
     --- @param holder LuaGuiElement
     function(id, holder)
