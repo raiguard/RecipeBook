@@ -968,7 +968,7 @@ end
 --- @return EntryID[]?
 function entry:get_extracted_by()
   local tile = self.tile
-  if not tile then
+  if not tile or not tile.fluid then
     return
   end
 
