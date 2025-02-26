@@ -245,8 +245,6 @@ function info_pane:show(entry)
   local grid_builder = lists_everywhere and make_list_box_item or make_slot_button
   local grid_column_count = lists_everywhere and 1 or 10
 
-  -- Recipe
-
   info_section.build(
     content_pane,
     self.context,
@@ -271,22 +269,11 @@ function info_pane:show(entry)
     { column_count = grid_column_count },
     grid_builder
   )
-
-  -- Material
-
   info_section.build(
     content_pane,
     self.context,
-    { "description.rb-used-in" },
-    entry:get_used_in(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    entry.recipe and { "description.rb-alternative-recipes" } or { "description.rb-recipes" },
-    entry:get_alternative_recipes(),
+    { "description.rb-gathered-from" },
+    entry:get_gathered_from(),
     { column_count = grid_column_count },
     grid_builder
   )
@@ -309,16 +296,33 @@ function info_pane:show(entry)
   info_section.build(
     content_pane,
     self.context,
-    { "description.rb-burned-in" },
-    entry:get_burned_in(),
+    { "description.rb-rocket-launch-product-of" },
+    entry:get_rocket_launch_product_of(),
+    { column_count = grid_column_count },
+    grid_builder
+  )
+
+  info_section.build(
+    content_pane,
+    self.context,
+    entry.recipe and { "description.rb-alternative-recipes" } or { "description.rb-recipes" },
+    entry:get_alternative_recipes(),
     { column_count = grid_column_count },
     grid_builder
   )
   info_section.build(
     content_pane,
     self.context,
-    { "description.rb-gathered-from" },
-    entry:get_gathered_from(),
+    { "description.rb-used-in" },
+    entry:get_used_in(),
+    { column_count = grid_column_count },
+    grid_builder
+  )
+  info_section.build(
+    content_pane,
+    self.context,
+    { "description.rb-burned-in" },
+    entry:get_burned_in(),
     { column_count = grid_column_count },
     grid_builder
   )
@@ -329,14 +333,6 @@ function info_pane:show(entry)
     entry:get_rocket_launch_products(),
     { column_count = grid_column_count },
     make_list_box_item
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-rocket-launch-product-of" },
-    entry:get_rocket_launch_product_of(),
-    { column_count = grid_column_count },
-    grid_builder
   )
   info_section.build(
     content_pane,
@@ -400,8 +396,6 @@ function info_pane:show(entry)
     end
   )
 
-  -- Entity
-
   info_section.build(
     content_pane,
     self.context,
@@ -429,8 +423,6 @@ function info_pane:show(entry)
     grid_builder
   )
 
-  -- Technology
-
   info_section.build(
     content_pane,
     self.context,
@@ -454,8 +446,6 @@ function info_pane:show(entry)
     { column_count = grid_column_count },
     grid_builder
   )
-
-  -- Tile
 
   info_section.build(
     content_pane,
