@@ -106,12 +106,8 @@ local function on_research_finished(e)
   research(e.research.prototype, e.research.force.index)
 end
 
---- @param e EventData.on_surface_created
-local function on_surface_created(e)
-  local surface = game.get_surface(e.surface_index)
-  if not surface then
-    return
-  end
+--- @param surface LuaSurface
+local function research_surface(surface)
   local autoplace_settings = surface.map_gen_settings.autoplace_settings
   -- TODO: Iterate natural entities
   -- for entity_name in pairs(autoplace_settings.entity.settings) do
@@ -126,20 +122,25 @@ local function on_surface_created(e)
   if tile_settings then
     for tile_name in pairs(tile_settings.settings) do
       local tile = prototypes.tile[tile_name]
-      for _, force in pairs(game.forces) do
+      for _, force in pairs(storage.forces) do
         research(tile, force.index)
       end
     end
   end
 end
 
+--- @param e EventData.on_surface_created
+local function on_surface_created(e)
+  local surface = game.get_surface(e.surface_index)
+  if not surface then
+    return
+  end
+  research_surface(surface)
+end
+
 --- @param force LuaForce
 local function rebuild_force(force)
   local force_index = force.index
-  -- Tiles and natural entities
-  for _, surface in pairs(game.surfaces) do
-    on_surface_created({ surface_index = surface.index }) --- @diagnostic disable-line:missing-fields
-  end
   -- Gather-able items
   for _, entity in
     pairs(prototypes.get_entity_filtered({
@@ -176,6 +177,14 @@ local function rebuild_force(force)
 end
 
 local function rebuild()
+  if not storage.forces or not storage.surfaces then
+    return
+  end
+  for _, surface in pairs(storage.surfaces) do
+    if surface.valid then
+      research_surface(surface)
+    end
+  end
   for _, force in pairs(storage.forces or {}) do
     if force.valid then
       rebuild_force(force)
@@ -185,34 +194,45 @@ end
 
 --- @param e EventData.on_force_created
 local function on_force_created(e)
+  if not storage.forces then
+    return
+  end
+  storage.forces[e.force.index] = e.force
   rebuild_force(e.force)
+end
+
+local function setup_cache()
+  storage.forces = {}
+  for _, force in pairs(game.forces) do
+    storage.forces[force.index] = force
+  end
+  storage.surfaces = {}
+  for _, surface in pairs(game.surfaces) do
+    storage.surfaces[surface.index] = surface
+  end
 end
 
 --- @class Researched
 local M = {}
 
 function M.on_init()
-  storage.forces = {}
-  for _, force in pairs(game.forces) do
-    storage.forces[force.index] = force
-  end
+  setup_cache()
   rebuild()
 end
 
 M.on_load = rebuild
 
 function M.on_configuration_changed()
-  storage.forces = {}
-  for _, force in pairs(game.forces) do
-    storage.forces[force.index] = force
-  end
+  setup_cache()
   rebuild()
 end
 
 M.events = {
   [defines.events.on_force_created] = on_force_created,
+  -- [defines.events.on_forces_merged] = on_forces_merged, -- TODO:
   [defines.events.on_research_finished] = on_research_finished,
   [defines.events.on_surface_created] = on_surface_created,
+  -- [defines.events.on_surface_deleted] = on_surface_destroyed, -- TODO:
 }
 
 --- @param prototype GenericPrototype
