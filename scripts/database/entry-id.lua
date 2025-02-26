@@ -67,6 +67,8 @@ function entry_id:get_path()
   return self.type .. "/" .. self.name
 end
 
+local temperature_edge = (2 - 2 ^ -23) * 2 ^ 127
+
 --- @return LocalisedString
 function entry_id:get_caption()
   --- @type LocalisedString
@@ -105,9 +107,9 @@ function entry_id:get_caption()
     local temperature_min = self.minimum_temperature --[[@as number]]
     local temperature_max = self.maximum_temperature --[[@as number]]
     local temperature_string
-    if temperature_min == flib_math.min_double then
+    if temperature_min == -temperature_edge then
       temperature_string = "≤ " .. flib_math.round(temperature_max, 0.01)
-    elseif temperature_max == flib_math.max_double then
+    elseif temperature_max == temperature_edge then
       temperature_string = "≥ " .. flib_math.round(temperature_min, 0.01)
     else
       temperature_string = ""
@@ -134,9 +136,9 @@ function entry_id:get_temperature_strings()
     temperature_min = temperature
     temperature_max = temperature
   elseif temperature_min and temperature_max then
-    if temperature_min == flib_math.min_double then
+    if temperature_min == -temperature_edge then
       bottom = "≤" .. core_util.format_number(temperature_max, true)
-    elseif temperature_max == flib_math.max_double then
+    elseif temperature_max == temperature_edge then
       bottom = "≥" .. core_util.format_number(temperature_min, true)
     else
       bottom = core_util.format_number(temperature_min, true)
