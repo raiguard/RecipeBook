@@ -1,3 +1,4 @@
+local grouping = require("scripts.database.grouping")
 local util = require("scripts.util")
 
 local bigunpack = require("__big-data-string2__.unpack")
@@ -47,47 +48,6 @@ local function build_tree(use_grouping)
     self.groups[group_name] = subgroups
   end
 
-  --- @param recipe LuaRecipePrototype
-  --- @return GenericPrototype?
-  local function get_simple_product(recipe)
-    local main_product = recipe.main_product
-    if main_product and main_product.name == recipe.name then
-      return prototypes[main_product.type][main_product.name]
-    end
-    local products = recipe.products
-    if #products ~= 1 then
-      return
-    end
-    local first_product = products[1]
-    if first_product.name ~= recipe.name or first_product.type == "research-progress" then
-      return
-    end
-    return prototypes[first_product.type][first_product.name]
-  end
-
-  --- @param prototype GenericPrototype
-  --- @return boolean
-  local function get_hidden(prototype)
-    return prototype.hidden or prototype.hidden_in_factoriopedia
-  end
-
-  --- @param prototype LuaEntityPrototype|LuaTilePrototype
-  --- @return LuaItemPrototype?
-  local function get_simple_item_to_place_this(prototype)
-    local items_to_place_this = prototype.items_to_place_this
-    if not items_to_place_this then
-      return
-    end
-    local first_item = items_to_place_this[1]
-    if not first_item then
-      return
-    end
-    if first_item.name ~= prototype.name then
-      return
-    end
-    return prototypes.item[first_item.name]
-  end
-
   for _, item in pairs(prototypes.item) do
     add(item)
   end
@@ -95,20 +55,17 @@ local function build_tree(use_grouping)
     add(fluid)
   end
   for _, entity in pairs(prototypes.entity) do
-    local item = get_simple_item_to_place_this(entity)
-    if not use_grouping or not item or get_hidden(item) ~= get_hidden(entity) then
+    if not use_grouping or not grouping[util.get_path(entity)] then
       add(entity)
     end
   end
   for _, recipe in pairs(prototypes.recipe) do
-    local material = get_simple_product(recipe)
-    if not use_grouping or not material or get_hidden(material) ~= get_hidden(recipe) then
+    if not use_grouping or not grouping[util.get_path(recipe)] then
       add(recipe)
     end
   end
   for _, tile in pairs(prototypes.tile) do
-    local material = get_simple_item_to_place_this(tile)
-    if not use_grouping or not material or get_hidden(material) ~= get_hidden(tile) then
+    if not use_grouping or not grouping[util.get_path(tile)] then
       add(tile)
     end
   end

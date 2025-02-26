@@ -108,4 +108,10 @@ function util.get_subgroup(prototype)
   return prototype.subgroup
 end
 
+--- @param prototype GenericPrototype
+--- @return boolean
+function util.get_hidden(prototype)
+  return prototype.hidden or prototype.hidden_in_factoriopedia
+end
+
 return util

@@ -129,11 +129,8 @@ function search_pane.build(parent, context)
           tooltip = { "gui.rb-control-hint" },
           tags = flib_gui.format_handlers({
             [defines.events.on_gui_click] = search_pane.on_result_clicked,
-          }),
+          }, { id = { type = util.object_name_to_type[prototype.object_name], name = prototype.name } }),
         })
-        local tags = button.tags
-        tags.path = path
-        button.tags = tags
         if result_buttons[path] then
           error("Duplicate search button: " .. path)
         end

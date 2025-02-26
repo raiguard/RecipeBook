@@ -5,6 +5,8 @@ local flib_technology = require("__flib__.technology")
 local gui_util = require("scripts.gui.util")
 local info_description = require("scripts.gui.info-description")
 local info_section = require("scripts.gui.info-section")
+local researched = require("scripts.database.researched")
+local util = require("scripts.util")
 
 --- @class InfoPane
 --- @field context MainGuiContext
@@ -68,405 +70,406 @@ function info_pane.build(parent, context)
   return self
 end
 
---- @param entry Entry
+--- @param prototype GenericPrototype
 --- @return boolean? updated
-function info_pane:show(entry)
+function info_pane:show(prototype)
   local profiler = game.create_profiler()
 
   -- Subheader
   local title_label = self.title_label
-  title_label.caption = { "", "      ", entry:get_localised_name() }
-  title_label.sprite = entry:get_path()
+  title_label.caption = { "", "      ", prototype.localised_name } --- @diagnostic disable-line:assign-type-mismatch
+  title_label.sprite = util.get_path(prototype)
   local style = "rb_subheader_caption_button"
-  if entry:is_hidden(self.context.player.force_index) then
+  -- TODO: Technology runtime enable/disable
+  if util.get_hidden(prototype) then
     style = "rb_subheader_caption_button_hidden"
-  elseif not entry:is_researched(self.context.player.force_index) then
+  elseif not researched.is(prototype, self.context.player.force_index) then
     style = "rb_subheader_caption_button_unresearched"
   end
   title_label.style = style
   title_label.style.horizontally_squashable = true
-  local type_label = self.type_label
-  --- @type LocalisedString
-  local type_caption = { "" }
-  for _, key in pairs({ "technology", "recipe", "item", "fluid", "equipment", "entity", "tile" }) do
-    local prototype = entry[key]
-    if prototype then
-      type_caption[#type_caption + 1] = gui_util.type_locale[prototype.object_name]
-      type_caption[#type_caption + 1] = "/"
-    end
-  end
-  type_caption[#type_caption] = nil
-  type_label.caption = type_caption
+  -- local type_label = self.type_label
+  -- --- @type LocalisedString
+  -- local type_caption = { "" }
+  -- for _, key in pairs({ "technology", "recipe", "item", "fluid", "equipment", "entity", "tile" }) do
+  --   local prototype = prototype[key]
+  --   if prototype then
+  --     type_caption[#type_caption + 1] = gui_util.type_locale[prototype.object_name]
+  --     type_caption[#type_caption + 1] = "/"
+  --   end
+  -- end
+  -- type_caption[#type_caption] = nil
+  -- type_label.caption = type_caption
 
-  -- Contents
+  -- -- Contents
 
-  local force_index = self.context.player.force_index
+  -- local force_index = self.context.player.force_index
 
-  --- @param id EntryID
-  --- @param holder LuaGuiElement
-  local function make_list_box_item(id, holder)
-    local entry = id:get_entry()
-    if not entry then
-      return
-    end
+  -- --- @param id EntryID
+  -- --- @param holder LuaGuiElement
+  -- local function make_list_box_item(id, holder)
+  --   local entry = id:get_entry()
+  --   if not entry then
+  --     return
+  --   end
 
-    local style = "rb_list_box_item"
-    if entry:is_hidden(force_index) then
-      style = "rb_list_box_item_hidden"
-    elseif not entry:is_researched(force_index) then
-      style = "rb_list_box_item_unresearched"
-    end
+  --   local style = "rb_list_box_item"
+  --   if entry:is_hidden(force_index) then
+  --     style = "rb_list_box_item_hidden"
+  --   elseif not entry:is_researched(force_index) then
+  --     style = "rb_list_box_item_unresearched"
+  --   end
 
-    return holder.add({
-      type = "sprite-button",
-      style = style,
-      sprite = id:get_path(),
-      caption = { "", "      ", id:get_caption() },
-      tooltip = { "gui.rb-control-hint" },
-      elem_tooltip = id:strip(),
-      tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),
-    })
-  end
+  --   return holder.add({
+  --     type = "sprite-button",
+  --     style = style,
+  --     sprite = id:get_path(),
+  --     caption = { "", "      ", id:get_caption() },
+  --     tooltip = { "gui.rb-control-hint" },
+  --     elem_tooltip = id:strip(),
+  --     tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),
+  --   })
+  -- end
 
-  --- @param id EntryID
-  --- @param holder LuaGuiElement
-  local function make_slot_button(id, holder)
-    local entry = id:get_entry()
-    if not entry then
-      return
-    end
+  -- --- @param id EntryID
+  -- --- @param holder LuaGuiElement
+  -- local function make_slot_button(id, holder)
+  --   local entry = id:get_entry()
+  --   if not entry then
+  --     return
+  --   end
 
-    local style = "flib_slot_button_default"
-    if entry:is_hidden(force_index) then
-      style = "flib_slot_button_grey"
-    elseif not entry:is_researched(force_index) then
-      style = "flib_slot_button_red"
-    end
+  --   local style = "flib_slot_button_default"
+  --   if entry:is_hidden(force_index) then
+  --     style = "flib_slot_button_grey"
+  --   elseif not entry:is_researched(force_index) then
+  --     style = "flib_slot_button_red"
+  --   end
 
-    local button = holder.add({
-      type = "sprite-button",
-      style = style,
-      sprite = id:get_path(),
-      number = id.amount,
-      tooltip = { "gui.rb-control-hint" },
-      elem_tooltip = id:strip(),
-      tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),
-    })
+  --   local button = holder.add({
+  --     type = "sprite-button",
+  --     style = style,
+  --     sprite = id:get_path(),
+  --     number = id.amount,
+  --     tooltip = { "gui.rb-control-hint" },
+  --     elem_tooltip = id:strip(),
+  --     tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),
+  --   })
 
-    if not id.amount and (id.temperature or id.minimum_temperature) then
-      local bottom, top = id:get_temperature_strings()
-      if bottom then
-        button.add({ type = "label", style = "rb_slot_label", caption = bottom, ignored_by_interaction = true })
-      end
-      if top then
-        button.add({ type = "label", style = "rb_slot_label_top", caption = top, ignored_by_interaction = true })
-      end
-    end
+  --   if not id.amount and (id.temperature or id.minimum_temperature) then
+  --     local bottom, top = id:get_temperature_strings()
+  --     if bottom then
+  --       button.add({ type = "label", style = "rb_slot_label", caption = bottom, ignored_by_interaction = true })
+  --     end
+  --     if top then
+  --       button.add({ type = "label", style = "rb_slot_label_top", caption = top, ignored_by_interaction = true })
+  --     end
+  --   end
 
-    return button
-  end
+  --   return button
+  -- end
 
-  local content_pane = self.content_pane
-  content_pane.clear()
-  content_pane.scroll_to_top()
-  if content_pane.welcome_label then
-    content_pane.welcome_label.destroy()
-  end
+  -- local content_pane = self.content_pane
+  -- content_pane.clear()
+  -- content_pane.scroll_to_top()
+  -- if content_pane.welcome_label then
+  --   content_pane.welcome_label.destroy()
+  -- end
 
-  local general_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  general_desc:add_history_and_description(entry)
-  general_desc:add_recipe_properties(entry)
-  general_desc:add_item_properties(entry)
-  general_desc:add_fluid_properties(entry)
-  general_desc:add_entity_properties(entry)
-  general_desc:finalize()
+  -- local general_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+  -- general_desc:add_history_and_description(prototype)
+  -- general_desc:add_recipe_properties(prototype)
+  -- general_desc:add_item_properties(prototype)
+  -- general_desc:add_fluid_properties(prototype)
+  -- general_desc:add_entity_properties(prototype)
+  -- general_desc:finalize()
 
-  local entity = entry.entity
-  if entity then
-    local consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-    local consumption_id = entry:get_material_consumption()
-    if consumption_id then
-      consumption_desc:add_consumption(consumption_id)
-    end
-    consumption_desc:finalize()
+  -- local entity = prototype.entity
+  -- if entity then
+  --   local consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+  --   local consumption_id = prototype:get_material_consumption()
+  --   if consumption_id then
+  --     consumption_desc:add_consumption(consumption_id)
+  --   end
+  --   consumption_desc:finalize()
 
-    local power_consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-    local power_consumption = entry:get_power_consumption()
-    if power_consumption then
-      power_consumption_desc:add_category_header(
-        "tooltip-category-electricity",
-        { "", { "tooltip-category.consumes" }, " ", { "tooltip-category.electricity" } }
-      )
-      if power_consumption.min == power_consumption.max then
-        power_consumption_desc:add_generic_row(
-          { "description.energy-consumption" },
-          gui_util.format_power(power_consumption.max)
-        )
-      else
-        power_consumption_desc:add_generic_row(
-          { "description.max-energy-consumption" },
-          gui_util.format_power(power_consumption.max)
-        )
-        power_consumption_desc:add_generic_row(
-          { "description.min-energy-consumption" },
-          gui_util.format_power(power_consumption.min)
-        )
-      end
-    end
-    power_consumption_desc:finalize()
+  --   local power_consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+  --   local power_consumption = prototype:get_power_consumption()
+  --   if power_consumption then
+  --     power_consumption_desc:add_category_header(
+  --       "tooltip-category-electricity",
+  --       { "", { "tooltip-category.consumes" }, " ", { "tooltip-category.electricity" } }
+  --     )
+  --     if power_consumption.min == power_consumption.max then
+  --       power_consumption_desc:add_generic_row(
+  --         { "description.energy-consumption" },
+  --         gui_util.format_power(power_consumption.max)
+  --       )
+  --     else
+  --       power_consumption_desc:add_generic_row(
+  --         { "description.max-energy-consumption" },
+  --         gui_util.format_power(power_consumption.max)
+  --       )
+  --       power_consumption_desc:add_generic_row(
+  --         { "description.min-energy-consumption" },
+  --         gui_util.format_power(power_consumption.min)
+  --       )
+  --     end
+  --   end
+  --   power_consumption_desc:finalize()
 
-    local power_production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-    local power_production = entry:get_power_production()
-    if power_production then
-      power_production_desc:add_category_header(
-        "tooltip-category-electricity",
-        { "", { "tooltip-category.generates" }, " ", { "tooltip-category.electricity" } }
-      )
-      power_production_desc:add_generic_row(
-        { "description.maximum-power-output" },
-        gui_util.format_power(power_production)
-      )
-    end
-    power_production_desc:finalize()
+  --   local power_production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+  --   local power_production = prototype:get_power_production()
+  --   if power_production then
+  --     power_production_desc:add_category_header(
+  --       "tooltip-category-electricity",
+  --       { "", { "tooltip-category.generates" }, " ", { "tooltip-category.electricity" } }
+  --     )
+  --     power_production_desc:add_generic_row(
+  --       { "description.maximum-power-output" },
+  --       gui_util.format_power(power_production)
+  --     )
+  --   end
+  --   power_production_desc:finalize()
 
-    local production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-    local production_id = entry:get_material_production()
-    if production_id then
-      production_desc:add_production(production_id)
-    end
-    production_desc:finalize()
+  --   local production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+  --   local production_id = prototype:get_material_production()
+  --   if production_id then
+  --     production_desc:add_production(production_id)
+  --   end
+  --   production_desc:finalize()
 
-    local vehicle_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-    vehicle_desc:add_vehicle_properties(entry)
-    vehicle_desc:finalize()
-  end
+  --   local vehicle_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+  --   vehicle_desc:add_vehicle_properties(prototype)
+  --   vehicle_desc:finalize()
+  -- end
 
-  local lists_everywhere = self.context.player.mod_settings["rb-lists-everywhere"].value --[[@as boolean]]
-  local grid_builder = lists_everywhere and make_list_box_item or make_slot_button
-  local grid_column_count = lists_everywhere and 1 or 10
+  -- local lists_everywhere = self.context.player.mod_settings["rb-lists-everywhere"].value --[[@as boolean]]
+  -- local grid_builder = lists_everywhere and make_list_box_item or make_slot_button
+  -- local grid_column_count = lists_everywhere and 1 or 10
 
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.ingredients" },
-    entry:get_ingredients(),
-    { always_show = true, remark = gui_util.format_crafting_time(entry:get_crafting_time()) },
-    make_list_box_item
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.products" },
-    entry:get_products(),
-    { always_show = true },
-    make_list_box_item
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.made-in" },
-    entry:get_made_in(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-gathered-from" },
-    entry:get_gathered_from(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-generated-by" },
-    entry:get_generated_by(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-mined-by" },
-    entry:get_mined_by(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-rocket-launch-product-of" },
-    entry:get_rocket_launch_product_of(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.ingredients" },
+  --   prototype:get_ingredients(),
+  --   { always_show = true, remark = gui_util.format_crafting_time(prototype:get_crafting_time()) },
+  --   make_list_box_item
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.products" },
+  --   prototype:get_products(),
+  --   { always_show = true },
+  --   make_list_box_item
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.made-in" },
+  --   prototype:get_made_in(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-gathered-from" },
+  --   prototype:get_gathered_from(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-generated-by" },
+  --   prototype:get_generated_by(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-mined-by" },
+  --   prototype:get_mined_by(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-rocket-launch-product-of" },
+  --   prototype:get_rocket_launch_product_of(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
 
-  info_section.build(
-    content_pane,
-    self.context,
-    entry.recipe and { "description.rb-alternative-recipes" } or { "description.rb-recipes" },
-    entry:get_alternative_recipes(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-used-in" },
-    entry:get_used_in(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-burned-in" },
-    entry:get_burned_in(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rocket-launch-products" },
-    entry:get_rocket_launch_products(),
-    { column_count = grid_column_count },
-    make_list_box_item
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-can-mine" },
-    entry:get_can_mine(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-can-burn" },
-    entry:get_can_burn(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-yields" },
-    entry:get_yields(),
-    {},
-    make_list_box_item
-  )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   prototype.recipe and { "description.rb-alternative-recipes" } or { "description.rb-recipes" },
+  --   prototype:get_alternative_recipes(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-used-in" },
+  --   prototype:get_used_in(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-burned-in" },
+  --   prototype:get_burned_in(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rocket-launch-products" },
+  --   prototype:get_rocket_launch_products(),
+  --   { column_count = grid_column_count },
+  --   make_list_box_item
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-can-mine" },
+  --   prototype:get_can_mine(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-can-burn" },
+  --   prototype:get_can_burn(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-yields" },
+  --   prototype:get_yields(),
+  --   {},
+  --   make_list_box_item
+  -- )
 
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-unlocked-by" },
-    entry:get_unlocked_by(),
-    { style = "rb_technology_slot_deep_frame", column_count = 5, always_show = true },
-    --- @param id EntryID
-    --- @param holder LuaGuiElement
-    function(id, holder)
-      local entry = id:get_entry()
-      if not entry then
-        return
-      end
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-unlocked-by" },
+  --   prototype:get_unlocked_by(),
+  --   { style = "rb_technology_slot_deep_frame", column_count = 5, always_show = true },
+  --   --- @param id EntryID
+  --   --- @param holder LuaGuiElement
+  --   function(id, holder)
+  --     local entry = id:get_entry()
+  --     if not entry then
+  --       return
+  --     end
 
-      if entry:is_hidden(force_index) and not self.context.show_hidden then
-        return
-      end
-      local research_state
-      if not entry:is_researched(force_index) then
-        research_state = flib_technology.research_state.not_available
-      else
-        research_state = flib_technology.research_state.researched
-      end
-      local technology = self.context.player.force.technologies[id.name]
-      local button = flib_gui_templates.technology_slot(
-        holder,
-        technology,
-        technology.level,
-        research_state,
-        info_pane.on_result_clicked
-      )
-      button.tooltip = { "", { "gui.rb-control-hint" }, "\n", { "gui.rb-technology-control-hint" } }
+  --     if entry:is_hidden(force_index) and not self.context.show_hidden then
+  --       return
+  --     end
+  --     local research_state
+  --     if not entry:is_researched(force_index) then
+  --       research_state = flib_technology.research_state.not_available
+  --     else
+  --       research_state = flib_technology.research_state.researched
+  --     end
+  --     local technology = self.context.player.force.technologies[id.name]
+  --     local button = flib_gui_templates.technology_slot(
+  --       holder,
+  --       technology,
+  --       technology.level,
+  --       research_state,
+  --       info_pane.on_result_clicked
+  --     )
+  --     button.tooltip = { "", { "gui.rb-control-hint" }, "\n", { "gui.rb-technology-control-hint" } }
 
-      return button
-    end
-  )
+  --     return button
+  --   end
+  -- )
 
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-can-craft" },
-    entry:get_can_craft(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-can-craft" },
+  --   prototype:get_can_craft(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
 
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-accepted-modules" },
-    entry:get_accepted_modules(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-accepted-modules" },
+  --   prototype:get_accepted_modules(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
 
-  info_section.build(
-    content_pane,
-    self.context,
-    { "factoriopedia.can-extract-from" },
-    entry:get_can_extract_from(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "factoriopedia.can-extract-from" },
+  --   prototype:get_can_extract_from(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
 
-  info_section.build(
-    content_pane,
-    self.context,
-    { "gui-technology-preview.unit-ingredients" },
-    entry:get_technology_ingredients(),
-    {
-      remark = gui_util.format_technology_count_and_time(
-        entry:get_technology_ingredient_count(),
-        entry:get_technology_ingredient_time()
-      ),
-      column_count = grid_column_count,
-    },
-    grid_builder
-  )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "gui-technology-preview.unit-ingredients" },
+  --   prototype:get_technology_ingredients(),
+  --   {
+  --     remark = gui_util.format_technology_count_and_time(
+  --       prototype:get_technology_ingredient_count(),
+  --       prototype:get_technology_ingredient_time()
+  --     ),
+  --     column_count = grid_column_count,
+  --   },
+  --   grid_builder
+  -- )
 
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-unlocks-recipes" },
-    entry:get_unlocks_recipes(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-unlocks-recipes" },
+  --   prototype:get_unlocks_recipes(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
 
-  info_section.build(
-    content_pane,
-    self.context,
-    { "factoriopedia.source-of" },
-    entry:get_source_of(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "factoriopedia.source-of" },
+  --   prototype:get_source_of(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
 
-  info_section.build(
-    content_pane,
-    self.context,
-    { "description.rb-extracted-by" },
-    entry:get_extracted_by(),
-    { column_count = grid_column_count },
-    grid_builder
-  )
+  -- info_section.build(
+  --   content_pane,
+  --   self.context,
+  --   { "description.rb-extracted-by" },
+  --   prototype:get_extracted_by(),
+  --   { column_count = grid_column_count },
+  --   grid_builder
+  -- )
 
   profiler.stop()
-  log({ "", "[", entry:get_path(), "] ", profiler })
+  log({ "", "[", util.get_path(prototype), "] ", profiler })
 
   return true
 end
