@@ -1,6 +1,9 @@
 local flib_dictionary = require("__flib__.dictionary")
 local flib_format = require("__flib__.format")
 local flib_gui = require("__flib__.gui")
+local researched = require("scripts.database.researched")
+local search_tree = require("scripts.database.search-tree")
+local util = require("scripts.util")
 
 --- @alias SearchFilters table<SpritePath, boolean>
 
@@ -9,13 +12,13 @@ local flib_gui = require("__flib__.gui")
 --- @field count_label LuaGuiElement
 --- @field groups_table LuaGuiElement
 --- @field results_pane LuaGuiElement
---- @field result_buttons table<Entry, LuaGuiElement>
+--- @field result_buttons table<SpritePath, LuaGuiElement>
 --- @field dictionary_warning LuaGuiElement
 --- @field no_results_warning LuaGuiElement
 --- @field context MainGuiContext
 --- @field query string
 --- @field selected_group string
---- @field selected_result Entry?
+--- @field selected_result SpritePath?
 --- @field filters SearchFilters?
 local search_pane = {}
 local mt = { __index = search_pane }
@@ -93,9 +96,11 @@ function search_pane.build(parent, context)
   }).style.left_margin =
     8
 
-  --- @type table<Entry, LuaGuiElement>
+  local tree = context.player.mod_settings["rb-use-groups"].value and search_tree.grouped or search_tree.plain
+
+  --- @type table<SpritePath, LuaGuiElement>
   local result_buttons = {}
-  for group_name, subgroups in pairs(storage.database.search_tree.groups) do
+  for group_name, subgroups in pairs(tree.groups) do
     groups_table.add({
       type = "sprite-button",
       name = group_name,
@@ -114,24 +119,25 @@ function search_pane.build(parent, context)
     for subgroup_name, subgroup in pairs(subgroups) do
       local subgroup_table =
         group_flow.add({ type = "table", name = subgroup_name, style = "slot_table", column_count = 10 })
-      for _, entry in pairs(subgroup) do
+      for _, prototype in pairs(subgroup) do
+        local path = util.get_path(prototype)
         local button = subgroup_table.add({
           type = "sprite-button",
           style = "flib_slot_button_default",
-          sprite = entry:get_path(),
-          elem_tooltip = { type = entry:get_type(), name = entry:get_name() },
+          sprite = path,
+          elem_tooltip = { type = util.object_name_to_type[prototype.object_name], name = prototype.name },
           tooltip = { "gui.rb-control-hint" },
           tags = flib_gui.format_handlers({
             [defines.events.on_gui_click] = search_pane.on_result_clicked,
           }),
         })
         local tags = button.tags
-        tags.path = entry:get_path()
+        tags.path = path
         button.tags = tags
-        if result_buttons[entry] then
-          error("Duplicate search button: " .. entry:get_path())
+        if result_buttons[path] then
+          error("Duplicate search button: " .. path)
         end
-        result_buttons[entry] = button
+        result_buttons[path] = button
       end
     end
   end
@@ -167,20 +173,24 @@ function search_pane:update()
 
   self.textfield.placeholder.visible = #query == 0
 
+  local tree = self.context.player.mod_settings["rb-use-groups"].value and search_tree.grouped or search_tree.plain
+
   local overall_results_count = 0
-  for group_name, group in pairs(storage.database.search_tree.groups) do
+  for group_name, group in pairs(tree.groups) do
     local filtered_count = 0
     local searched_count = 0
     for _, subgroup in pairs(group) do
-      for _, entry in pairs(subgroup) do
-        local is_hidden, is_researched = entry:is_hidden_from_search(force_index), entry:is_researched(force_index)
+      for _, prototype in pairs(subgroup) do
+        local is_hidden = prototype.hidden or prototype.hidden_in_factoriopedia
+        local is_researched = researched.is(prototype, force_index)
         local filters_match = (show_hidden or not is_hidden) and (show_unresearched or is_researched)
-        local button = result_buttons[entry]
+        local path = util.get_path(prototype)
+        local button = result_buttons[path]
         if filters_match then
           filtered_count = filtered_count + 1
           local query_match = #query == 0
           if not query_match then
-            local comp = search_strings[entry:get_path()] or string.gsub(entry:get_path(), "-", " ")
+            local comp = search_strings[path] or string.gsub(path, "-", " ")
             query_match = string.find(string.lower(comp), query, 1, true) ~= nil
           end
           button.visible = query_match
@@ -194,8 +204,8 @@ function search_pane:update()
               button.style = "flib_slot_button_default"
             end
           end
-          if query_match and self.selected_result == entry and self.selected_group ~= group_name then
-            self:select_result(entry)
+          if query_match and self.selected_result == path and self.selected_group ~= group_name then
+            self:select_result(prototype)
           end
         else
           button.visible = false
@@ -255,8 +265,8 @@ function search_pane:select_group(group_name)
   self.selected_group = group_name
 end
 
---- @param entry Entry?
-function search_pane:select_result(entry)
+--- @param prototype GenericPrototype?
+function search_pane:select_result(prototype)
   local previous_result = self.selected_result
   if previous_result then
     local previous_button = self.result_buttons[previous_result]
@@ -264,15 +274,16 @@ function search_pane:select_result(entry)
       previous_button.toggled = false
     end
   end
-  self.selected_result = entry
-  if not entry then
+  if not prototype then
+    self.selected_result = nil
     return
   end
-  local new_button = self.result_buttons[entry]
+  self.selected_result = util.get_path(prototype)
+  local new_button = self.result_buttons[self.selected_result]
   if new_button then
     new_button.toggled = true
     if new_button.visible then
-      self:select_group(entry:get_group().name)
+      self:select_group(util.get_group(prototype).name)
       self.results_pane.scroll_to_element(new_button)
     end
   end

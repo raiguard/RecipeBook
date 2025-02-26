@@ -224,7 +224,7 @@ function main_gui:update_info()
   if not entry then
     return
   end
-  self.search_pane:select_result(entry)
+  self.search_pane:select_result(entry.base)
   self.info_pane:show(entry)
 end
 

@@ -4,6 +4,7 @@ local flib_technology = require("__flib__.technology")
 
 local entry_id = require("scripts.database.entry-id")
 local researched = require("scripts.database.researched")
+local search_tree = require("scripts.database.search-tree")
 local util = require("scripts.util")
 
 --- @alias GenericPrototype LuaEquipmentPrototype|LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype|LuaTilePrototype
@@ -123,7 +124,8 @@ end
 
 --- @return integer
 function entry:get_display_order()
-  return self.database.search_tree.order[self]
+  -- TODO: This should be dependent on player preference
+  return search_tree.grouped.order[self]
 end
 
 --- @return boolean
@@ -282,9 +284,9 @@ function entry:get_alternative_recipes()
     end
   end
 
-  table.sort(output, function(a, b)
-    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
-  end)
+  -- table.sort(output, function(a, b)
+  --   return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  -- end)
 
   return output
 end
@@ -332,9 +334,10 @@ function entry:get_used_in()
     end
   end
 
-  table.sort(output, function(a, b)
-    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
-  end)
+  -- table.sort(output, function(a, b)
+  --   -- TODO: Fix this
+  --   return (a:get_entry():get_display_order() or 0) < (b:get_entry():get_display_order() or 1)
+  -- end)
 
   return output
 end
@@ -373,9 +376,9 @@ function entry:get_can_craft()
     end
   end
 
-  table.sort(output, function(a, b)
-    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
-  end)
+  -- table.sort(output, function(a, b)
+  --   return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  -- end)
 
   return output
 end
@@ -401,9 +404,9 @@ function entry:get_mined_by()
     end
   end
 
-  table.sort(output, function(a, b)
-    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
-  end)
+  -- table.sort(output, function(a, b)
+  --   return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  -- end)
 
   return output
 end
@@ -473,9 +476,9 @@ function entry:get_burned_in()
     end
   end
 
-  table.sort(output, function(a, b)
-    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
-  end)
+  -- table.sort(output, function(a, b)
+  --   return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  -- end)
 
   return output
 end
@@ -531,9 +534,9 @@ function entry:get_gathered_from_item()
     end
   end
 
-  table.sort(output, function(a, b)
-    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
-  end)
+  -- table.sort(output, function(a, b)
+  --   return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  -- end)
 
   return output
 end
@@ -622,9 +625,9 @@ function entry:get_can_mine()
     end
   end
 
-  table.sort(output, function(a, b)
-    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
-  end)
+  -- table.sort(output, function(a, b)
+  --   return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  -- end)
 
   return output
 end
@@ -683,9 +686,9 @@ function entry:get_can_burn()
     end
   end
 
-  table.sort(output, function(a, b)
-    return a:get_entry():get_display_order() < b:get_entry():get_display_order()
-  end)
+  -- table.sort(output, function(a, b)
+  --   return a:get_entry():get_display_order() < b:get_entry():get_display_order()
+  -- end)
 
   return output
 end
@@ -821,9 +824,9 @@ function entry:get_unlocked_by_internal(visited)
   end
 
   local prototypes = prototypes.technology
-  table.sort(output, function(tech_a, tech_b)
-    return flib_technology.sort_predicate(prototypes[tech_a.name], prototypes[tech_b.name])
-  end)
+  -- table.sort(output, function(tech_a, tech_b)
+  --   return flib_technology.sort_predicate(prototypes[tech_a.name], prototypes[tech_b.name])
+  -- end)
 
   return output
 end

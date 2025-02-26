@@ -17,7 +17,6 @@ end
 
 --- @class Database
 --- @field entries table<SpritePath, Entry?>
---- @field search_tree SearchTree
 --- @field alternatives table<SpritePath, SpritePath>
 --- @field exclude table<SpritePath, boolean>
 --- @field group_with table<SpritePath, SpritePath>
@@ -34,7 +33,6 @@ function database.new()
   --- @type Database
   local self = {
     entries = {},
-    search_tree = search_tree.new(),
     alternatives = unpack("rb_alternatives"),
     exclude = unpack("rb_exclude"),
     group_with = unpack("rb_group_with"),
@@ -146,17 +144,6 @@ function database.new()
   for _, character in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "character" } })) do
     self:add_prototype(character)
   end
-
-  log("Search tree")
-  --- @type table<Entry, boolean>
-  local added = {}
-  for _, entry in pairs(self.entries) do
-    if not added[entry] then
-      added[entry] = true
-      self.search_tree:add(entry)
-    end
-  end
-  self.search_tree:finalize()
 
   log("Alternatives")
   for from, to in pairs(self.alternatives) do

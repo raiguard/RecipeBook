@@ -90,4 +90,22 @@ function util.unique_id_array()
   })
 end
 
+--- @param prototype GenericPrototype
+--- @return LuaGroup
+function util.get_group(prototype)
+  if prototype.object_name == "LuaEquipmentPrototype" then
+    return prototypes.item_group["combat"]
+  end
+  return prototype.group
+end
+
+--- @param prototype GenericPrototype
+--- @return LuaGroup
+function util.get_subgroup(prototype)
+  if prototype.object_name == "LuaEquipmentPrototype" then
+    return prototypes.item_subgroup["rb-uncategorized-equipment"]
+  end
+  return prototype.subgroup
+end
+
 return util

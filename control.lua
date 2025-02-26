@@ -8,6 +8,7 @@ handler.add_libraries({
 
   require("scripts.database.database"),
   require("scripts.database.researched"),
+  require("scripts.database.search-tree"),
   require("scripts.gui.main"),
   require("scripts.gui.overhead-button"),
 
