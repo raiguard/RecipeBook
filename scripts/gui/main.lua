@@ -357,6 +357,17 @@ local function on_open_selected(e)
   if not player_gui then
     return
   end
+  if
+    selected_prototype.base_type == "entity"
+    and (selected_prototype.derived_type == "entity-ghost" or selected_prototype.derived_type == "tile-ghost")
+  then
+    local selected = player_gui.context.player.selected
+    if selected and (selected.type == "entity-ghost" or selected.type == "tile-ghost") then
+      selected_prototype.base_type = selected.type == "entity-ghost" and "entity" or "tile"
+      selected_prototype.derived_type = selected.ghost_type
+      selected_prototype.name = selected.ghost_name
+    end
+  end
   local entry = storage.database:get_entry({ type = selected_prototype.base_type, name = selected_prototype.name })
   if not entry then
     util.flying_text(player_gui.context.player, { "message.rb-no-info" })
