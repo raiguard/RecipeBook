@@ -165,73 +165,15 @@ function database.new()
     end
   end
 
-  log("Technologies and research status")
+  log("Technologies")
   for _, technology in pairs(prototypes.technology) do
     self:add_prototype(technology)
-  end
-  for _, force in pairs(game.forces) do
-    self:init_researched(force)
   end
 
   profiler.stop()
   log({ "", "Database Generation ", profiler })
 
   return self
-end
-
---- @private
---- @param force LuaForce
-function database:init_researched(force)
-  local force_index = force.index
-  -- Tiles and natural entities
-  for _, surface in pairs(game.surfaces) do
-    self:on_surface_created(surface)
-  end
-  -- Gather-able items
-  for _, entity in
-    pairs(prototypes.get_entity_filtered({
-      --- @diagnostic disable-next-line unused-fields
-      { filter = "type", type = "simple-entity" },
-      --- @diagnostic disable-next-line unused-fields
-      { filter = "type", type = "tree" },
-      --- @diagnostic disable-next-line unused-fields
-      { filter = "type", type = "fish" },
-    }))
-  do
-    if entity.type ~= "simple-entity" or entity.count_as_rock_for_filtered_deconstruction then
-      local entry = self:get_entry(entity)
-      if entry then
-        entry:research(force_index)
-      end
-    end
-  end
-  -- Technologies
-  for _, technology in pairs(force.technologies) do
-    if technology.researched then
-      local entry = self:get_entry(technology)
-      if entry then
-        entry:research(force_index)
-      end
-    end
-  end
-  -- Recipes (some may be enabled without technologies)
-  for _, recipe in pairs(force.recipes) do
-    -- Some recipes will be enabled from the start, but will only be craftable in machines
-    if recipe.enabled and not (recipe.prototype.enabled and recipe.prototype.hidden_from_player_crafting) then
-      local entry = self:get_entry(recipe)
-      if entry then
-        entry:research(force_index)
-      end
-    end
-  end
-  -- Characters
-  --- @diagnostic disable-next-line unused-fields
-  for _, character in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "character" } })) do
-    local entry = self:get_entry(character)
-    if entry then
-      entry:research(force_index)
-    end
-  end
 end
 
 --- @private
@@ -311,40 +253,6 @@ function database:add_prototype(prototype, group_with, force_group)
   return entry
 end
 
---- @param tech LuaTechnology
-function database:on_research_finished(tech)
-  local entry = self:get_entry(tech)
-  if not entry then
-    return
-  end
-  entry:research(tech.force.index)
-end
-
---- @param surface LuaSurface
-function database:on_surface_created(surface)
-  local autoplace_settings = surface.map_gen_settings.autoplace_settings
-  -- TODO: Iterate natural entities
-  -- for entity_name in pairs(autoplace_settings.entity.settings) do
-  --   local entity_entry = self:get_entry({ type = "entity", name = entity_name })
-  --   if entity_entry then
-  --     for _, force in pairs(game.forces) do
-  --       entity_entry:research(force.index)
-  --     end
-  --   end
-  -- end
-  local tile_settings = autoplace_settings.tile
-  if tile_settings then
-    for tile_name in pairs(tile_settings.settings) do
-      local tile_entry = self:get_entry({ type = "tile", name = tile_name })
-      if tile_entry then
-        for _, force in pairs(game.forces) do
-          tile_entry:research(force.index)
-        end
-      end
-    end
-  end
-end
-
 --- @param prototype GenericPrototype
 --- @param force_index uint?
 --- @return boolean
@@ -375,43 +283,11 @@ end
 --- @class DatabaseModule
 local M = {}
 
---- @param e EventData.on_research_finished
-local function on_research_finished(e)
-  if not storage.database then
-    return
-  end
-  local profiler = game.create_profiler()
-  storage.database:on_research_finished(e.research)
-  profiler.stop()
-  log({ "", "Unlock Tech ", profiler })
-  if storage.update_force_guis then
-    -- Update on the next tick in case multiple researches are done at once
-    storage.update_force_guis[e.research.force.index] = true
-  end
-end
-
---- @param e EventData.on_surface_created
-local function on_surface_created(e)
-  if not storage.database then
-    return
-  end
-  local surface = game.get_surface(e.surface_index)
-  if not surface then
-    return
-  end
-  storage.database:on_surface_created(surface)
-end
-
 local function init()
   storage.database = database.new()
 end
 
 M.on_init = init
 M.on_configuration_changed = init
-
-M.events = {
-  [defines.events.on_research_finished] = on_research_finished,
-  [defines.events.on_surface_created] = on_surface_created,
-}
 
 return M

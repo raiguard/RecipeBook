@@ -3,6 +3,7 @@ local flib_table = require("__flib__.table")
 local flib_technology = require("__flib__.technology")
 
 local entry_id = require("scripts.database.entry-id")
+local researched = require("scripts.database.researched")
 local util = require("scripts.util")
 
 --- @alias GenericPrototype LuaEquipmentPrototype|LuaEntityPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype|LuaTilePrototype
@@ -79,8 +80,7 @@ end
 --- @param force_index uint
 --- @return boolean
 function entry:is_researched(force_index)
-  local researched = self.researched
-  return researched and researched[force_index] or false
+  return researched.is(self.base, force_index)
 end
 
 --- @return LuaGroup
@@ -141,60 +141,6 @@ function entry:get_unlocks_results()
 end
 
 -- RESEARCH
-
---- @param force_index uint
-function entry:research(force_index)
-  if not self.researched then
-    self.researched = {}
-  end
-  if self.researched[force_index] then
-    return
-  end
-  self.researched[force_index] = true
-
-  if not self:get_unlocks_results() then
-    return
-  end
-
-  for _, recipe in pairs(self:get_unlocks_recipes() or {}) do
-    recipe:get_entry():research(force_index)
-  end
-  for _, product in pairs(self:get_products() or {}) do
-    product:get_entry():research(force_index)
-  end
-  for _, product in pairs(self:get_rocket_launch_products() or {}) do
-    product:get_entry():research(force_index)
-  end
-  for _, product in pairs(self:get_yields() or {}) do
-    product:get_entry():research(force_index)
-  end
-  for _, resource in pairs(self:get_can_mine() or {}) do
-    resource:get_entry():research(force_index)
-  end
-  local burnt_result = self:get_burnt_result()
-  if burnt_result then
-    burnt_result:get_entry():research(force_index)
-  end
-  for _, tile in pairs(self:get_can_extract_from() or {}) do
-    if tile:get_entry():is_researched(force_index) then
-      for _, fluid in pairs(tile:get_entry():get_source_of() or {}) do
-        fluid:get_entry():research(force_index)
-      end
-    end
-  end
-  for _, offshore_pump in pairs(self:get_extracted_by() or {}) do
-    if offshore_pump:get_entry():is_researched(force_index) then
-      for _, fluid in pairs(self:get_source_of() or {}) do
-        fluid:get_entry():research(force_index)
-      end
-      break
-    end
-  end
-  local generated_fluid = self:get_generated_fluid()
-  if generated_fluid then
-    generated_fluid:get_entry():research(force_index)
-  end
-end
 
 local next_key = {
   recipe = "item",
