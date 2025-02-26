@@ -1,10 +1,12 @@
 local flib_dictionary = require("__flib__.dictionary")
+local flib_format = require("__flib__.format")
 local flib_gui = require("__flib__.gui")
 
 --- @alias SearchFilters table<SpritePath, boolean>
 
 --- @class SearchPane
 --- @field textfield LuaGuiElement
+--- @field count_label LuaGuiElement
 --- @field groups_table LuaGuiElement
 --- @field results_pane LuaGuiElement
 --- @field result_buttons table<Entry, LuaGuiElement>
@@ -52,6 +54,9 @@ function search_pane.build(parent, context)
     ignored_by_interaction = true,
   }).style.font_color =
     { 0, 0, 0, 0.6 }
+  subheader.add({ type = "empty-widget", style = "flib_horizontal_pusher" })
+  local count_label = subheader.add({ type = "label" })
+  count_label.style.right_padding = 8
 
   local dictionary_warning = outer.add({
     type = "frame",
@@ -134,6 +139,7 @@ function search_pane.build(parent, context)
   --- @type SearchPane
   local self = {
     textfield = textfield,
+    count_label = count_label,
     groups_table = groups_table,
     results_pane = results_pane,
     result_buttons = result_buttons,
@@ -161,6 +167,7 @@ function search_pane:update()
 
   self.textfield.placeholder.visible = #query == 0
 
+  local overall_results_count = 0
   for group_name, group in pairs(storage.database.search_tree.groups) do
     local filtered_count = 0
     local searched_count = 0
@@ -211,6 +218,7 @@ function search_pane:update()
     if is_visible and has_search_matches then
       first_valid = first_valid or group_name
     end
+    overall_results_count = overall_results_count + searched_count
   end
 
   if first_valid then
@@ -226,6 +234,8 @@ function search_pane:update()
   else
     self.no_results_warning.visible = true
   end
+
+  self.count_label.caption = { "gui.rb-count-results", flib_format.number(overall_results_count) }
 
   profiler.stop()
   log({ "", "Update Filter Panel ", profiler })
