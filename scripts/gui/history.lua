@@ -1,4 +1,4 @@
-local grouping = require("scripts.database.grouping")
+local grouped = require("scripts.database.grouped")
 local util = require("scripts.util")
 
 --- @class History: {[integer]: GenericPrototype, index: integer}
@@ -15,7 +15,7 @@ end
 --- @return boolean
 function history:push(prototype, resolve_grouping)
   if resolve_grouping then
-    local base = grouping[util.get_path(prototype)]
+    local base = grouped.material[util.get_path(prototype)]
     if base then
       prototype = base
     end

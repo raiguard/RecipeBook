@@ -1,7 +1,18 @@
 local util = require("scripts.util")
 
---- @type table<SpritePath, GenericPrototype>
-local grouping = {}
+--- @class Grouped
+local grouped = {
+  --- @type table<SpritePath, GenericPrototype>
+  entity = {},
+  --- @type table<SpritePath, GenericPrototype>
+  equipment = {},
+  --- @type table<SpritePath, GenericPrototype>
+  material = {},
+  --- @type table<SpritePath, GenericPrototype>
+  recipe = {},
+  --- @type table<SpritePath, GenericPrototype>
+  tile = {},
+}
 
 --- @param recipe LuaRecipePrototype
 --- @return GenericPrototype?
@@ -38,24 +49,41 @@ local function get_simple_item_to_place_this(prototype)
   return prototypes.item[first_item.name]
 end
 
-for _, entity in pairs(prototypes.entity) do
+for entity_name, entity in pairs(prototypes.entity) do
   local item = get_simple_item_to_place_this(entity)
   if item and util.get_hidden(item) == util.get_hidden(entity) then
-    grouping[util.get_path(entity)] = item
+    grouped.material[util.get_path(entity)] = item
+    grouped.entity[util.get_path(item)] = entity
+    goto continue
   end
+  local mineable = entity.mineable_properties
+  if mineable then
+    local products = mineable.products
+    if products and #products == 1 then
+      local product = products[1]
+      if product.type == "item" and product.name == entity_name and product.amount then
+        grouped.material[util.get_path(entity)] = prototypes.item[product.name]
+        grouped.entity["item/" .. product.name] = entity
+      end
+    end
+  end
+  ::continue::
 end
 for _, recipe in pairs(prototypes.recipe) do
   local material = get_simple_product(recipe)
   if material and util.get_hidden(material) == util.get_hidden(recipe) then
-    grouping[util.get_path(recipe)] = material
+    grouped.material[util.get_path(recipe)] = material
+    grouped.recipe[util.get_path(material)] = recipe
   end
 end
 for _, tile in pairs(prototypes.tile) do
   local material = get_simple_item_to_place_this(tile)
   if material and util.get_hidden(material) == util.get_hidden(tile) then
-    grouping[util.get_path(tile)] = material
+    grouped.material[util.get_path(tile)] = material
+    grouped.tile[util.get_path(material)] = tile
   end
 end
+-- TODO: Equipment
 -- Space location
 -- Asteroid chunk
 -- Ammo
@@ -63,4 +91,4 @@ end
 -- Virtual signal
 -- Surface
 
-return grouping
+return grouped

@@ -1,4 +1,4 @@
-local grouping = require("scripts.database.grouping")
+local grouped = require("scripts.database.grouped")
 local util = require("scripts.util")
 
 local bigunpack = require("__big-data-string2__.unpack")
@@ -55,17 +55,17 @@ local function build_tree(use_grouping)
     add(fluid)
   end
   for _, entity in pairs(prototypes.entity) do
-    if not use_grouping or not grouping[util.get_path(entity)] then
+    if not use_grouping or not grouped.material[util.get_path(entity)] then
       add(entity)
     end
   end
   for _, recipe in pairs(prototypes.recipe) do
-    if not use_grouping or not grouping[util.get_path(recipe)] then
+    if not use_grouping or not grouped.material[util.get_path(recipe)] then
       add(recipe)
     end
   end
   for _, tile in pairs(prototypes.tile) do
-    if not use_grouping or not grouping[util.get_path(tile)] then
+    if not use_grouping or not grouped.material[util.get_path(tile)] then
       add(tile)
     end
   end

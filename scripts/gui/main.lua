@@ -29,6 +29,7 @@ end
 --- @field show_hidden boolean
 --- @field show_unresearched boolean
 --- @field player LuaPlayer
+--- @field use_groups boolean
 
 --- @class MainGui
 --- @field context MainGuiContext
@@ -53,6 +54,7 @@ function main_gui.build(player)
     show_hidden = false,
     show_unresearched = true,
     player = player,
+    use_groups = player.mod_settings["rb-use-groups"].value --[[@as boolean]],
   }
 
   local window = player.gui.screen.add({
@@ -300,7 +302,7 @@ function main_gui:on_result_clicked(e)
   end
   local prototype = prototypes[id.type][id.name]
   assert(prototype, "Prototype was nil")
-  self.history:push(prototype, self.context.player.mod_settings["rb-use-groups"].value --[[@as boolean]])
+  self.history:push(prototype, self.context.use_groups)
   self:update_info()
 end
 
@@ -358,10 +360,7 @@ local function on_open_selected(e)
     end
   end
   local prototype = prototypes[selected_prototype.base_type][selected_prototype.name]
-  if
-    -- TODO: Clean up this mess
-    player_gui.history:push(prototype, player_gui.context.player.mod_settings["rb-use-groups"].value --[[@as boolean]])
-  then
+  if player_gui.history:push(prototype, player_gui.context.use_groups) then
     player_gui:update_info()
     player_gui:show()
   end
@@ -474,7 +473,7 @@ search_pane.on_result_clicked = main_gui.on_result_clicked
 --     if not tested[base_path] and not string.find(base_path, "technology/") then
 --       tested[base_path] = true
 --       tested_count = tested_count + 1
---       gui.history:push(entry, gui.context.player.mod_settings["rb-use-groups"].value)
+--       gui.history:push(entry, gui.context.use_groups)
 --       gui:update_info()
 --     end
 --   end

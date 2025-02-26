@@ -5,6 +5,7 @@ local flib_technology = require("__flib__.technology")
 local gui_util = require("scripts.gui.util")
 local info_description = require("scripts.gui.info-description")
 local info_section = require("scripts.gui.info-section")
+local grouped = require("scripts.database.grouped")
 local researched = require("scripts.database.researched")
 local util = require("scripts.util")
 
@@ -88,18 +89,42 @@ function info_pane:show(prototype)
   end
   title_label.style = style
   title_label.style.horizontally_squashable = true
-  -- local type_label = self.type_label
-  -- --- @type LocalisedString
-  -- local type_caption = { "" }
-  -- for _, key in pairs({ "technology", "recipe", "item", "fluid", "equipment", "entity", "tile" }) do
-  --   local prototype = prototype[key]
-  --   if prototype then
-  --     type_caption[#type_caption + 1] = gui_util.type_locale[prototype.object_name]
-  --     type_caption[#type_caption + 1] = "/"
-  --   end
-  -- end
-  -- type_caption[#type_caption] = nil
-  -- type_label.caption = type_caption
+
+  -- Check for grouped recipe or placeable
+  local prototype_path = util.get_path(prototype)
+
+  --- @type LocalisedString
+  local type_caption = { "" }
+  --- @param sub_prototype GenericPrototype
+  local function add_type_locale(sub_prototype)
+    type_caption[#type_caption + 1] = gui_util.type_locale[sub_prototype.object_name] --- @diagnostic disable-line:assign-type-mismatch
+    type_caption[#type_caption + 1] = "/"
+  end
+
+  -- TODO: Conditional on user setting
+  if self.context.use_groups then
+    local grouped_recipe = grouped.recipe[prototype_path]
+    if grouped_recipe then
+      add_type_locale(grouped_recipe)
+    end
+  end
+  add_type_locale(prototype)
+  if self.context.use_groups then
+    local grouped_entity = grouped.entity[prototype_path]
+    if grouped_entity then
+      add_type_locale(grouped_entity)
+    end
+    local grouped_equipment = grouped.equipment[prototype_path]
+    if grouped_equipment then
+      add_type_locale(grouped_equipment)
+    end
+    local grouped_tile = grouped.tile[prototype_path]
+    if grouped_tile then
+      add_type_locale(grouped_tile)
+    end
+  end
+  type_caption[#type_caption] = nil
+  self.type_label.caption = type_caption
 
   -- -- Contents
 
