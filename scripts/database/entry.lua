@@ -538,12 +538,26 @@ end
 --- @return EntryID[]?
 function entry:get_gathered_from_fluid()
   local fluid = self.fluid
+  --- @cast fluid -?
 
   local output = util.unique_id_array()
 
   for tile_name, tile in pairs(prototypes.tile) do
     if tile.fluid == fluid then
       output[#output + 1] = entry_id.new({ type = "tile", name = tile_name }, self.database)
+    end
+  end
+
+  for entity_name, entity in pairs(util.get_natural_entities()) do
+    if not self.entity or self.entity.name ~= entity_name then
+      local mineable_properties = entity.mineable_properties
+      if mineable_properties.minable then
+        for _, product in pairs(mineable_properties.products or {}) do
+          if product.type == "fluid" and product.name == fluid.name then
+            output[#output + 1] = entry_id.new({ type = "entity", name = entity_name }, self.database)
+          end
+        end
+      end
     end
   end
 
@@ -554,6 +568,7 @@ end
 --- @return EntryID[]?
 function entry:get_gathered_from_item()
   local item = self.item
+  --- @cast item -?
 
   local output = util.unique_id_array()
 
