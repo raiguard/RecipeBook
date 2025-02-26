@@ -866,8 +866,10 @@ function entry:get_unlocked_by_internal(visited)
 
   if #output == 0 and recipe and not recipe.enabled then
     for _, crafter in pairs(self:get_made_in() or {}) do
-      for _, tech in pairs(crafter:get_entry():get_unlocked_by_internal(visited) or {}) do
-        output[#output + 1] = tech
+      local unlocked_by = crafter:get_entry():get_unlocked_by_internal(visited)
+      if unlocked_by and next(unlocked_by) then
+        output[#output + 1] = unlocked_by[1]
+        break
       end
     end
   end
