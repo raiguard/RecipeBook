@@ -381,7 +381,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.rb-can-mine" },
+      { "factoriopedia.can-mine" },
       collectors.can_mine(entity),
       { column_count = grid_column_count },
       grid_builder
@@ -399,7 +399,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.rb-yields" },
+      { "factoriopedia.yields" },
       collectors.yields(entity, item),
       {},
       make_list_box_item
