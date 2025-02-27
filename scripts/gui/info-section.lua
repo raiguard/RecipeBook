@@ -61,7 +61,7 @@ function info_section.build(parent, context, title, ids, settings, callback)
       goto continue
     end
 
-    local is_hidden = util.get_hidden(prototype)
+    local is_hidden = prototype.hidden_in_factoriopedia
     local is_unresearched = not researched.is(prototype, force_index)
     if not always_show then
       if is_hidden and not show_hidden then

@@ -25,7 +25,6 @@ local util = require("scripts.util")
 --- @class Collectors
 local collectors = {}
 
---- Collects recipe ingredients.
 --- @param prototype LuaRecipePrototype
 --- @return DatabaseID[]
 function collectors.ingredients(prototype)
@@ -44,7 +43,6 @@ function collectors.ingredients(prototype)
   return output
 end
 
---- Collects recipe products.
 --- @param prototype LuaRecipePrototype
 --- @return DatabaseID[]
 function collectors.products(prototype)
@@ -53,7 +51,7 @@ function collectors.products(prototype)
   for _, product in pairs(prototype.products) do
     if product.type ~= "research-progress" then
       output[#output + 1] = {
-        type = product.type,
+        type = product.type, --- @diagnostic disable-line:assign-type-mismatch
         name = product.name,
         amount = product.amount,
         amount_min = product.amount_min,
@@ -66,7 +64,6 @@ function collectors.products(prototype)
   return output
 end
 
---- Collects machines that a recipe can be made in.
 --- @param prototype LuaRecipePrototype
 --- @return DatabaseID[]
 function collectors.made_in(prototype)

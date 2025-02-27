@@ -85,7 +85,7 @@ function info_pane:show(prototype)
     title_label.sprite = util.get_path(prototype)
     local style = "rb_subheader_caption_button"
     -- TODO: Technology runtime enable/disable
-    if util.get_hidden(prototype) then
+    if prototype.hidden_in_factoriopedia then
       style = "rb_subheader_caption_button_hidden"
     elseif not researched.is(prototype, self.context.player.force_index) then
       style = "rb_subheader_caption_button_unresearched"
@@ -139,7 +139,7 @@ function info_pane:show(prototype)
   local function make_list_box_item(id, holder)
     local prototype = util.get_prototype(id)
     local style = "rb_list_box_item"
-    if util.get_hidden(prototype) then
+    if prototype.hidden_in_factoriopedia then
       style = "rb_list_box_item_hidden"
     elseif not researched.is(prototype, force_index) then
       style = "rb_list_box_item_unresearched"
@@ -161,7 +161,7 @@ function info_pane:show(prototype)
   local function make_slot_button(id, holder)
     local prototype = util.get_prototype(id)
     local style = "flib_slot_button_default"
-    if util.get_hidden(prototype) then
+    if prototype.hidden_in_factoriopedia then
       style = "flib_slot_button_grey"
     elseif not researched.is(prototype, force_index) then
       style = "flib_slot_button_red"

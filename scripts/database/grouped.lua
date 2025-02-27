@@ -51,7 +51,7 @@ end
 
 for entity_name, entity in pairs(prototypes.entity) do
   local item = get_simple_item_to_place_this(entity)
-  if item and util.get_hidden(item) == util.get_hidden(entity) then
+  if item and item.hidden_in_factoriopedia == entity.hidden_in_factoriopedia then
     grouped.material[util.get_path(entity)] = item
     grouped.entity[util.get_path(item)] = entity
     goto continue
@@ -71,7 +71,7 @@ for entity_name, entity in pairs(prototypes.entity) do
 end
 for _, recipe in pairs(prototypes.recipe) do
   local material = get_simple_product(recipe)
-  if material and util.get_hidden(material) == util.get_hidden(recipe) then
+  if material and material.hidden_in_factoriopedia == recipe.hidden_in_factoriopedia then
     grouped.material[util.get_path(recipe)] = material
     grouped.recipe[util.get_path(material)] = recipe
   end
@@ -81,7 +81,7 @@ for _, tile in pairs(prototypes.tile) do
   if items_to_place_this then
     for _, item in pairs(items_to_place_this) do
       local item_prototype = prototypes.item[item.name]
-      if util.get_hidden(tile) == util.get_hidden(item_prototype) then
+      if tile.hidden_in_factoriopedia == item_prototype.hidden_in_factoriopedia then
         grouped.material[util.get_path(tile)] = item_prototype
         grouped.tile[util.get_path(item_prototype)] = tile
         break
