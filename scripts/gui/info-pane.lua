@@ -298,24 +298,24 @@ function info_pane:show(prototype)
     )
   end
 
-  -- if prototype.object_name == "LuaFluidPrototype" or prototype.object_name == "LuaItemPrototype" then
-  --   info_section.build(
-  --     content_pane,
-  --     self.context,
-  --     { "description.rb-gathered-from" },
-  --     collectors.gathered_from(prototype),
-  --     { column_count = grid_column_count },
-  --     grid_builder
-  --   )
-  --   info_section.build(
-  --     content_pane,
-  --     self.context,
-  --     { "description.rb-generated-by" },
-  --     collectors.generated_by(prototype),
-  --     { column_count = grid_column_count },
-  --     grid_builder
-  --   )
-  -- end
+  if prototype.object_name == "LuaFluidPrototype" or prototype.object_name == "LuaItemPrototype" then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-gathered-from" },
+      collectors.gathered_from(prototype),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+    -- info_section.build(
+    --   content_pane,
+    --   self.context,
+    --   { "description.rb-generated-by" },
+    --   collectors.generated_by(prototype),
+    --   { column_count = grid_column_count },
+    --   grid_builder
+    -- )
+  end
 
   -- info_section.build(
   --   content_pane,

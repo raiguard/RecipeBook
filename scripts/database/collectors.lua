@@ -106,4 +106,35 @@ function collectors.made_in(prototype)
   return output
 end
 
+--- @param prototype GenericPrototype
+--- @return EntryID[]
+function collectors.gathered_from(prototype)
+  local output = util.unique_id_array()
+
+  local type = util.object_name_to_type[prototype.object_name]
+
+  if prototype.object_name == "LuaFluidPrototype" then
+    for tile_name, tile in pairs(prototypes.tile) do
+      if tile.fluid == prototype then
+        output[#output + 1] = { type = "tile", name = tile_name }
+      end
+    end
+  end
+
+  for entity_name, entity in pairs(util.get_natural_entities()) do
+    if prototype.name ~= entity_name then
+      local mineable_properties = entity.mineable_properties
+      if mineable_properties.minable then
+        for _, product in pairs(mineable_properties.products or {}) do
+          if product.type == type and product.name == prototype.name then
+            output[#output + 1] = { type = "entity", name = entity_name }
+          end
+        end
+      end
+    end
+  end
+
+  return output
+end
+
 return collectors
