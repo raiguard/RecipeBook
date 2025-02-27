@@ -388,4 +388,51 @@ function collectors.can_mine(prototype)
   return output
 end
 
+--- @param prototype LuaEntityPrototype
+--- @return EntryID[]
+function collectors.can_burn(prototype)
+  local output = util.unique_id_array()
+
+  local burner = prototype.burner_prototype
+  if burner then
+    for category in pairs(burner.fuel_categories) do
+      for item_name in
+        --- @diagnostic disable-next-line unused-fields
+        pairs(prototypes.get_item_filtered({ { filter = "fuel-category", ["fuel-category"] = category } }))
+      do
+        output[#output + 1] = { type = "item", name = item_name }
+      end
+    end
+  end
+  local fluid_energy_source_prototype = prototype.fluid_energy_source_prototype
+  if fluid_energy_source_prototype then
+    local filter = fluid_energy_source_prototype.fluid_box.filter
+    if filter then
+      output[#output + 1] = { type = "fluid", name = filter.name }
+    else
+      for fluid_name in
+        --- @diagnostic disable-next-line unused-fields
+        pairs(prototypes.get_fluid_filtered({ { filter = "fuel-value", comparison = ">", value = 0 } }))
+      do
+        output[#output + 1] = { type = "fluid", name = fluid_name }
+      end
+    end
+  end
+  if prototype.type == "generator" then
+    local fluid_box = prototype.fluidbox_prototypes[1]
+    if fluid_box.filter then
+      output[#output + 1] = { type = "fluid", name = fluid_box.filter.name }
+    else
+      for fluid_name in
+        --- @diagnostic disable-next-line unused-fields
+        pairs(prototypes.get_fluid_filtered({ { filter = "fuel-value", comparison = ">", value = 0 } }))
+      do
+        output[#output + 1] = { type = "fluid", name = fluid_name }
+      end
+    end
+  end
+
+  return output
+end
+
 return collectors

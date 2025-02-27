@@ -386,14 +386,14 @@ function info_pane:show(prototype)
       { column_count = grid_column_count },
       grid_builder
     )
-    -- info_section.build(
-    --   content_pane,
-    --   self.context,
-    --   { "description.rb-can-burn" },
-    --   collectors.can_burn(),
-    --   { column_count = grid_column_count },
-    --   grid_builder
-    -- )
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-can-burn" },
+      collectors.can_burn(entity),
+      { column_count = grid_column_count },
+      grid_builder
+    )
   end
 
   -- info_section.build(
