@@ -77,10 +77,16 @@ for _, recipe in pairs(prototypes.recipe) do
   end
 end
 for _, tile in pairs(prototypes.tile) do
-  local material = get_simple_item_to_place_this(tile)
-  if material and util.get_hidden(material) == util.get_hidden(tile) then
-    grouped.material[util.get_path(tile)] = material
-    grouped.tile[util.get_path(material)] = tile
+  local items_to_place_this = tile.items_to_place_this
+  if items_to_place_this then
+    for _, item in pairs(items_to_place_this) do
+      local item_prototype = prototypes.item[item.name]
+      if util.get_hidden(tile) == util.get_hidden(item_prototype) then
+        grouped.material[util.get_path(tile)] = item_prototype
+        grouped.tile[util.get_path(item_prototype)] = tile
+        break
+      end
+    end
   end
 end
 -- TODO: Equipment
