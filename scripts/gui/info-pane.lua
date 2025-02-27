@@ -275,7 +275,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.ingredients" },
+      { "factoriopedia.ingredients" },
       collectors.ingredients(recipe),
       { always_show = true, remark = gui_util.format_crafting_time(recipe.energy) },
       make_list_box_item
@@ -283,7 +283,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.products" },
+      { "factoriopedia.products" },
       collectors.products(recipe),
       { always_show = true },
       make_list_box_item
@@ -291,7 +291,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.made-in" },
+      { "factoriopedia.made-in" },
       collectors.made_in(recipe),
       { column_count = grid_column_count },
       grid_builder
@@ -302,7 +302,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.rb-gathered-from" },
+      { "factoriopedia.gathered-from" },
       collectors.gathered_from(prototype),
       { column_count = grid_column_count },
       grid_builder
@@ -313,7 +313,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.rb-generated-by" },
+      { "factoriopedia.generated-by" },
       collectors.generated_by(prototype),
       { column_count = grid_column_count },
       grid_builder
