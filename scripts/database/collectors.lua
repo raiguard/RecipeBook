@@ -51,7 +51,7 @@ function collectors.products(prototype)
   for _, product in pairs(prototype.products) do
     if product.type ~= "research-progress" then
       output[#output + 1] = {
-        type = product.type, --- @diagnostic disable-line:assign-type-mismatch
+        type = product.type,
         name = product.name,
         amount = product.amount,
         amount_min = product.amount_min,
@@ -103,12 +103,10 @@ function collectors.made_in(prototype)
   return output
 end
 
---- @param prototype GenericPrototype
+--- @param prototype LuaFluidPrototype|LuaItemPrototype
 --- @return DatabaseID[]
 function collectors.gathered_from(prototype)
   local output = util.unique_id_array()
-
-  local type = util.object_name_to_type[prototype.object_name]
 
   if prototype.object_name == "LuaFluidPrototype" then
     for tile_name, tile in pairs(prototypes.tile) do
@@ -117,6 +115,8 @@ function collectors.gathered_from(prototype)
       end
     end
   end
+
+  local type = util.object_name_to_type[prototype.object_name]
 
   for entity_name, entity in pairs(util.get_natural_entities()) do
     if prototype.name ~= entity_name then
