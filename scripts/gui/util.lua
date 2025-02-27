@@ -1,6 +1,7 @@
 local flib_format = require("__flib__.format")
 local flib_math = require("__flib__.math")
 local core_util = require("__core__.lualib.util")
+local util = require("scripts.util")
 
 --- @class GuiUtil
 local gui_util = {}
@@ -36,6 +37,90 @@ function gui_util.format_technology_count_and_time(count, time)
     " × ",
     flib_format.number(count, true),
   }
+end
+
+local temperature_edge = (2 - 2 ^ -23) * 2 ^ 127
+
+--- @param id DatabaseID
+--- @return LocalisedString
+function gui_util.format_caption(id)
+  --- @type LocalisedString
+  local caption = { "" }
+  if id.probability and id.probability < 1 then
+    caption[#caption + 1] = {
+      "",
+      "[font=default-semibold]",
+      { "format-percent", flib_math.round(id.probability * 100, 0.01) },
+      "[/font] ",
+    }
+  end
+  if id.amount then
+    caption[#caption + 1] = {
+      "",
+      "[font=default-semibold]",
+      core_util.format_number(id.amount, true),
+      " ×[/font]  ",
+    }
+  elseif id.amount_min and id.amount_max then
+    caption[#caption + 1] = {
+      "",
+      "[font=default-semibold]",
+      core_util.format_number(id.amount_min, true),
+      " - ",
+      core_util.format_number(id.amount_max, true),
+      " ×[/font]  ",
+    }
+  end
+
+  caption[#caption + 1] = util.get_prototype(id).localised_name
+
+  if id.temperature then
+    caption[#caption + 1] = { "", "  (", flib_math.round(id.temperature, 0.01), { "si-unit-degree-celsius" }, ")" }
+  elseif id.minimum_temperature and id.maximum_temperature then
+    local temperature_min = id.minimum_temperature --[[@as number]]
+    local temperature_max = id.maximum_temperature --[[@as number]]
+    local temperature_string
+    if temperature_min == -temperature_edge then
+      temperature_string = "≤ " .. flib_math.round(temperature_max, 0.01)
+    elseif temperature_max == temperature_edge then
+      temperature_string = "≥ " .. flib_math.round(temperature_min, 0.01)
+    else
+      temperature_string = ""
+        .. flib_math.round(temperature_min, 0.01)
+        .. " - "
+        .. flib_math.round(temperature_max, 0.01)
+    end
+    caption[#caption + 1] = { "", "  (", temperature_string, { "si-unit-degree-celsius" }, ")" }
+  end
+
+  return caption
+end
+
+--- @param id DatabaseID
+--- @return string? bottom
+--- @return string? top
+function gui_util.get_temperature_strings(id)
+  local temperature = id.temperature
+  local temperature_min = id.minimum_temperature
+  local temperature_max = id.maximum_temperature
+  local bottom
+  local top
+  if temperature then
+    bottom = core_util.format_number(temperature, true)
+    temperature_min = temperature
+    temperature_max = temperature
+  elseif temperature_min and temperature_max then
+    if temperature_min == -temperature_edge then
+      bottom = "≤" .. core_util.format_number(temperature_max, true)
+    elseif temperature_max == temperature_edge then
+      bottom = "≥" .. core_util.format_number(temperature_min, true)
+    else
+      bottom = core_util.format_number(temperature_min, true)
+      top = core_util.format_number(temperature_max, true)
+    end
+  end
+
+  return bottom, top
 end
 
 --- @alias FabState

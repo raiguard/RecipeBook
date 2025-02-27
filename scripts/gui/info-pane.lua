@@ -5,6 +5,8 @@ local flib_technology = require("__flib__.technology")
 local gui_util = require("scripts.gui.util")
 local info_description = require("scripts.gui.info-description")
 local info_section = require("scripts.gui.info-section")
+
+local collectors = require("scripts.database.collectors")
 local grouped = require("scripts.database.grouped")
 local researched = require("scripts.database.researched")
 local util = require("scripts.util")
@@ -77,129 +79,123 @@ function info_pane:show(prototype)
   local profiler = game.create_profiler()
 
   -- Subheader
-  local title_label = self.title_label
-  title_label.caption = { "", "      ", prototype.localised_name } --- @diagnostic disable-line:assign-type-mismatch
-  title_label.sprite = util.get_path(prototype)
-  local style = "rb_subheader_caption_button"
-  -- TODO: Technology runtime enable/disable
-  if util.get_hidden(prototype) then
-    style = "rb_subheader_caption_button_hidden"
-  elseif not researched.is(prototype, self.context.player.force_index) then
-    style = "rb_subheader_caption_button_unresearched"
+  do
+    local title_label = self.title_label
+    title_label.caption = { "", "      ", prototype.localised_name } --- @diagnostic disable-line:assign-type-mismatch
+    title_label.sprite = util.get_path(prototype)
+    local style = "rb_subheader_caption_button"
+    -- TODO: Technology runtime enable/disable
+    if util.get_hidden(prototype) then
+      style = "rb_subheader_caption_button_hidden"
+    elseif not researched.is(prototype, self.context.player.force_index) then
+      style = "rb_subheader_caption_button_unresearched"
+    end
+    title_label.style = style
+    title_label.style.horizontally_squashable = true
   end
-  title_label.style = style
-  title_label.style.horizontally_squashable = true
 
-  -- Check for grouped recipe or placeable
   local prototype_path = util.get_path(prototype)
 
-  --- @type LocalisedString
-  local type_caption = { "" }
-  --- @param sub_prototype GenericPrototype
-  local function add_type_locale(sub_prototype)
-    type_caption[#type_caption + 1] = gui_util.type_locale[sub_prototype.object_name] --- @diagnostic disable-line:assign-type-mismatch
-    type_caption[#type_caption + 1] = "/"
+  do
+    --- @type LocalisedString
+    local type_caption = { "" }
+    --- @param sub_prototype GenericPrototype
+    local function add_type_locale(sub_prototype)
+      type_caption[#type_caption + 1] = gui_util.type_locale[sub_prototype.object_name] --- @diagnostic disable-line:assign-type-mismatch
+      type_caption[#type_caption + 1] = "/"
+    end
+
+    if self.context.use_groups then
+      local grouped_recipe = grouped.recipe[prototype_path]
+      if grouped_recipe then
+        add_type_locale(grouped_recipe)
+      end
+    end
+    add_type_locale(prototype)
+    if self.context.use_groups then
+      local grouped_entity = grouped.entity[prototype_path]
+      if grouped_entity then
+        add_type_locale(grouped_entity)
+      end
+      local grouped_equipment = grouped.equipment[prototype_path]
+      if grouped_equipment then
+        add_type_locale(grouped_equipment)
+      end
+      local grouped_tile = grouped.tile[prototype_path]
+      if grouped_tile then
+        add_type_locale(grouped_tile)
+      end
+    end
+    type_caption[#type_caption] = nil
+    self.type_label.caption = type_caption
   end
 
-  -- TODO: Conditional on user setting
-  if self.context.use_groups then
-    local grouped_recipe = grouped.recipe[prototype_path]
-    if grouped_recipe then
-      add_type_locale(grouped_recipe)
+  -- Contents
+
+  local force_index = self.context.player.force_index
+
+  --- @param id DatabaseID
+  --- @param holder LuaGuiElement
+  local function make_list_box_item(id, holder)
+    local prototype = util.get_prototype(id)
+    local style = "rb_list_box_item"
+    if util.get_hidden(prototype) then
+      style = "rb_list_box_item_hidden"
+    elseif not researched.is(prototype, force_index) then
+      style = "rb_list_box_item_unresearched"
     end
+
+    return holder.add({
+      type = "sprite-button",
+      style = style,
+      sprite = id.type .. "/" .. id.name,
+      caption = { "", "      ", gui_util.format_caption(id) },
+      tooltip = { "gui.rb-control-hint" },
+      elem_tooltip = { type = id.type, name = id.name },
+      tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),
+    })
   end
-  add_type_locale(prototype)
-  if self.context.use_groups then
-    local grouped_entity = grouped.entity[prototype_path]
-    if grouped_entity then
-      add_type_locale(grouped_entity)
+
+  --- @param id DatabaseID
+  --- @param holder LuaGuiElement
+  local function make_slot_button(id, holder)
+    local prototype = util.get_prototype(id)
+    local style = "flib_slot_button_default"
+    if util.get_hidden(prototype) then
+      style = "flib_slot_button_grey"
+    elseif not researched.is(prototype, force_index) then
+      style = "flib_slot_button_red"
     end
-    local grouped_equipment = grouped.equipment[prototype_path]
-    if grouped_equipment then
-      add_type_locale(grouped_equipment)
+
+    local button = holder.add({
+      type = "sprite-button",
+      style = style,
+      sprite = id.type .. "/" .. id.name,
+      number = id.amount,
+      tooltip = { "gui.rb-control-hint" },
+      elem_tooltip = { type = id.type, name = id.name },
+      tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),
+    })
+
+    if not id.amount and (id.temperature or id.minimum_temperature) then
+      local bottom, top = gui_util.get_temperature_strings(id)
+      if bottom then
+        button.add({ type = "label", style = "rb_slot_label", caption = bottom, ignored_by_interaction = true })
+      end
+      if top then
+        button.add({ type = "label", style = "rb_slot_label_top", caption = top, ignored_by_interaction = true })
+      end
     end
-    local grouped_tile = grouped.tile[prototype_path]
-    if grouped_tile then
-      add_type_locale(grouped_tile)
-    end
+
+    return button
   end
-  type_caption[#type_caption] = nil
-  self.type_label.caption = type_caption
 
-  -- -- Contents
-
-  -- local force_index = self.context.player.force_index
-
-  -- --- @param id EntryID
-  -- --- @param holder LuaGuiElement
-  -- local function make_list_box_item(id, holder)
-  --   local entry = id:get_entry()
-  --   if not entry then
-  --     return
-  --   end
-
-  --   local style = "rb_list_box_item"
-  --   if entry:is_hidden(force_index) then
-  --     style = "rb_list_box_item_hidden"
-  --   elseif not entry:is_researched(force_index) then
-  --     style = "rb_list_box_item_unresearched"
-  --   end
-
-  --   return holder.add({
-  --     type = "sprite-button",
-  --     style = style,
-  --     sprite = id:get_path(),
-  --     caption = { "", "      ", id:get_caption() },
-  --     tooltip = { "gui.rb-control-hint" },
-  --     elem_tooltip = id:strip(),
-  --     tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),
-  --   })
-  -- end
-
-  -- --- @param id EntryID
-  -- --- @param holder LuaGuiElement
-  -- local function make_slot_button(id, holder)
-  --   local entry = id:get_entry()
-  --   if not entry then
-  --     return
-  --   end
-
-  --   local style = "flib_slot_button_default"
-  --   if entry:is_hidden(force_index) then
-  --     style = "flib_slot_button_grey"
-  --   elseif not entry:is_researched(force_index) then
-  --     style = "flib_slot_button_red"
-  --   end
-
-  --   local button = holder.add({
-  --     type = "sprite-button",
-  --     style = style,
-  --     sprite = id:get_path(),
-  --     number = id.amount,
-  --     tooltip = { "gui.rb-control-hint" },
-  --     elem_tooltip = id:strip(),
-  --     tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = info_pane.on_result_clicked }),
-  --   })
-
-  --   if not id.amount and (id.temperature or id.minimum_temperature) then
-  --     local bottom, top = id:get_temperature_strings()
-  --     if bottom then
-  --       button.add({ type = "label", style = "rb_slot_label", caption = bottom, ignored_by_interaction = true })
-  --     end
-  --     if top then
-  --       button.add({ type = "label", style = "rb_slot_label_top", caption = top, ignored_by_interaction = true })
-  --     end
-  --   end
-
-  --   return button
-  -- end
-
-  -- local content_pane = self.content_pane
-  -- content_pane.clear()
-  -- content_pane.scroll_to_top()
-  -- if content_pane.welcome_label then
-  --   content_pane.welcome_label.destroy()
-  -- end
+  local content_pane = self.content_pane
+  content_pane.clear()
+  content_pane.scroll_to_top()
+  if content_pane.welcome_label then
+    content_pane.welcome_label.destroy()
+  end
 
   -- local general_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
   -- general_desc:add_history_and_description(prototype)
@@ -269,50 +265,58 @@ function info_pane:show(prototype)
   --   vehicle_desc:finalize()
   -- end
 
-  -- local lists_everywhere = self.context.player.mod_settings["rb-lists-everywhere"].value --[[@as boolean]]
-  -- local grid_builder = lists_everywhere and make_list_box_item or make_slot_button
-  -- local grid_column_count = lists_everywhere and 1 or 10
+  local lists_everywhere = self.context.player.mod_settings["rb-lists-everywhere"].value --[[@as boolean]]
+  local grid_builder = lists_everywhere and make_list_box_item or make_slot_button
+  local grid_column_count = lists_everywhere and 1 or 10
 
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.ingredients" },
-  --   prototype:get_ingredients(),
-  --   { always_show = true, remark = gui_util.format_crafting_time(prototype:get_crafting_time()) },
-  --   make_list_box_item
-  -- )
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.products" },
-  --   prototype:get_products(),
-  --   { always_show = true },
-  --   make_list_box_item
-  -- )
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.made-in" },
-  --   prototype:get_made_in(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-gathered-from" },
-  --   prototype:get_gathered_from(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-generated-by" },
-  --   prototype:get_generated_by(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
+  local recipe = prototype.object_name == "LuaRecipePrototype" and prototype --[[@as LuaRecipePrototype]]
+    or grouped.recipe[prototype_path]
+  if recipe then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.ingredients" },
+      collectors.ingredients(recipe),
+      { always_show = true, remark = gui_util.format_crafting_time(recipe.energy) },
+      make_list_box_item
+    )
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.products" },
+      collectors.products(recipe),
+      { always_show = true },
+      make_list_box_item
+    )
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.made-in" },
+      collectors.made_in(recipe),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+  end
+
+  -- if prototype.object_name == "LuaFluidPrototype" or prototype.object_name == "LuaItemPrototype" then
+  --   info_section.build(
+  --     content_pane,
+  --     self.context,
+  --     { "description.rb-gathered-from" },
+  --     collectors.gathered_from(prototype),
+  --     { column_count = grid_column_count },
+  --     grid_builder
+  --   )
+  --   info_section.build(
+  --     content_pane,
+  --     self.context,
+  --     { "description.rb-generated-by" },
+  --     collectors.generated_by(prototype),
+  --     { column_count = grid_column_count },
+  --     grid_builder
+  --   )
+  -- end
+
   -- info_section.build(
   --   content_pane,
   --   self.context,

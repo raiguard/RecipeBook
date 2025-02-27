@@ -48,7 +48,7 @@ function util.get_path(prototype)
   return type .. "/" .. prototype.name, type
 end
 
---- @param obj Ingredient|Product
+--- @param obj DatabaseID
 --- @return GenericPrototype
 function util.get_prototype(obj)
   return prototypes[obj.type][obj.name]
@@ -67,20 +67,19 @@ util.object_name_to_type = {
   LuaTilePrototype = "tile",
 }
 
---- @return EntryID[]
+--- @return DatabaseID[]
 function util.unique_id_array()
   local hash = {}
 
   return setmetatable({}, {
-    --- @param self EntryID[]
+    --- @param self DatabaseID[]
     --- @param index integer
-    --- @param value EntryID
+    --- @param value DatabaseID
     __newindex = function(self, index, value)
       if not value then
         return
       end
-      -- Use the base path to work with alternatives, etc.
-      local key = value:get_entry():get_path()
+      local key = value.type .. "/" .. value.name
       if hash[key] then
         return
       end
