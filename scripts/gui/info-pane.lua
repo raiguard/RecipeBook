@@ -441,14 +441,16 @@ function info_pane:show(prototype)
     )
   end
 
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-can-craft" },
-  --   collectors.can_craft(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
+  if entity then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-can-craft" },
+      collectors.can_craft(entity),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+  end
 
   -- info_section.build(
   --   content_pane,
