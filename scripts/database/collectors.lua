@@ -358,4 +358,34 @@ function collectors.burned_in(prototype)
   return output
 end
 
+--- @param prototype LuaEntityPrototype
+--- @return EntryID[]
+function collectors.can_mine(prototype)
+  local output = util.unique_id_array()
+
+  -- TODO: This isn't working with uranium ore
+  --- @type string|boolean?
+  local filter
+  for _, fluidbox_prototype in pairs(prototype.fluidbox_prototypes) do
+    local production_type = fluidbox_prototype.production_type
+    if production_type == "input" or production_type == "input-output" then
+      filter = fluidbox_prototype.filter and fluidbox_prototype.filter.name or true
+      break
+    end
+  end
+  local resource_categories = prototype.resource_categories or {}
+  for _, resource in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "resource" } })) do
+    local mineable = resource.mineable_properties
+    local required_fluid = mineable.required_fluid
+    if
+      resource_categories[resource.resource_category]
+      and (not required_fluid or filter == true or filter == required_fluid)
+    then
+      output[#output + 1] = { type = "entity", name = resource.name }
+    end
+  end
+
+  return output
+end
+
 return collectors

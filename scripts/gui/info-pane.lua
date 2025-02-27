@@ -356,19 +356,6 @@ function info_pane:show(prototype)
     )
   end
 
-  local entity = prototype.object_name == "LuaEntityPrototype" and prototype --[[@as LuaEntityPrototype]]
-    or (self.context.use_groups and grouped.entity[prototype_path] or nil)
-  if entity then
-    info_section.build(
-      content_pane,
-      self.context,
-      { "description.mined-by" },
-      collectors.mined_by(entity),
-      { column_count = grid_column_count },
-      grid_builder
-    )
-  end
-
   if prototype.object_name == "LuaFluidPrototype" or prototype.object_name == "LuaItemPrototype" then
     info_section.build(
       content_pane,
@@ -380,22 +367,35 @@ function info_pane:show(prototype)
     )
   end
 
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-can-mine" },
-  --   collectors.can_mine(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-can-burn" },
-  --   collectors.can_burn(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
+  local entity = prototype.object_name == "LuaEntityPrototype" and prototype --[[@as LuaEntityPrototype]]
+    or (self.context.use_groups and grouped.entity[prototype_path] or nil)
+  if entity then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.mined-by" },
+      collectors.mined_by(entity),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-can-mine" },
+      collectors.can_mine(entity),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+    -- info_section.build(
+    --   content_pane,
+    --   self.context,
+    --   { "description.rb-can-burn" },
+    --   collectors.can_burn(),
+    --   { column_count = grid_column_count },
+    --   grid_builder
+    -- )
+  end
+
   -- info_section.build(
   --   content_pane,
   --   self.context,
