@@ -107,7 +107,7 @@ function collectors.made_in(prototype)
 end
 
 --- @param prototype GenericPrototype
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.gathered_from(prototype)
   local output = util.unique_id_array()
 
@@ -135,6 +135,39 @@ function collectors.gathered_from(prototype)
   end
 
   return output
+end
+
+--- @param prototype LuaFluidPrototype
+--- @return DatabaseID[]
+function collectors.generated_by(prototype)
+  local output = util.unique_id_array()
+
+  for _, boiler_prototype in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "boiler" } })) do
+    local generates = collectors.generated_fluid(boiler_prototype)
+    if generates and generates.name == prototype.name then
+      output[#output + 1] = {
+        type = "entity",
+        name = boiler_prototype.name,
+        temperature = boiler_prototype.target_temperature,
+      }
+    end
+  end
+
+  return output
+end
+
+--- @param prototype LuaEntityPrototype
+--- @return EntryID?
+function collectors.generated_fluid(prototype)
+  if prototype.type ~= "boiler" then
+    return
+  end
+
+  for _, fluidbox in pairs(prototype.fluidbox_prototypes) do
+    if fluidbox.production_type == "output" and fluidbox.filter then
+      return { type = "fluid", name = fluidbox.filter.name, temperature = prototype.target_temperature }
+    end
+  end
 end
 
 return collectors

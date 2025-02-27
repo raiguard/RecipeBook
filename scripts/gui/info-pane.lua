@@ -270,7 +270,7 @@ function info_pane:show(prototype)
   local grid_column_count = lists_everywhere and 1 or 10
 
   local recipe = prototype.object_name == "LuaRecipePrototype" and prototype --[[@as LuaRecipePrototype]]
-    or grouped.recipe[prototype_path]
+    or (self.context.use_groups and grouped.recipe[prototype_path] or nil)
   if recipe then
     info_section.build(
       content_pane,
@@ -307,14 +307,17 @@ function info_pane:show(prototype)
       { column_count = grid_column_count },
       grid_builder
     )
-    -- info_section.build(
-    --   content_pane,
-    --   self.context,
-    --   { "description.rb-generated-by" },
-    --   collectors.generated_by(prototype),
-    --   { column_count = grid_column_count },
-    --   grid_builder
-    -- )
+  end
+
+  if prototype.object_name == "LuaFluidPrototype" then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-generated-by" },
+      collectors.generated_by(prototype),
+      { column_count = grid_column_count },
+      grid_builder
+    )
   end
 
   -- info_section.build(
