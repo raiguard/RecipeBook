@@ -406,42 +406,40 @@ function info_pane:show(prototype)
     )
   end
 
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-unlocked-by" },
-  --   collectors.unlocked_by(),
-  --   { style = "rb_technology_slot_deep_frame", column_count = 5, always_show = true },
-  --   --- @param id EntryID
-  --   --- @param holder LuaGuiElement
-  --   function(id, holder)
-  --     local entry = id:get_entry()
-  --     if not entry then
-  --       return
-  --     end
+  if recipe then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-unlocked-by" },
+      collectors.unlocked_by(recipe),
+      { style = "rb_technology_slot_deep_frame", column_count = 5, always_show = true },
+      --- @param id DatabaseID
+      --- @param holder LuaGuiElement
+      function(id, holder)
+        local id_prototype = util.get_prototype(id)
+        if id_prototype.hidden_in_factoriopedia and not self.context.show_hidden then
+          return
+        end
+        local research_state
+        if not researched.is(id_prototype, force_index) then
+          research_state = flib_technology.research_state.not_available
+        else
+          research_state = flib_technology.research_state.researched
+        end
+        local technology = self.context.player.force.technologies[id.name]
+        local button = flib_gui_templates.technology_slot(
+          holder,
+          technology,
+          technology.level,
+          research_state,
+          info_pane.on_result_clicked
+        )
+        button.tooltip = { "", { "gui.rb-control-hint" }, "\n", { "gui.rb-technology-control-hint" } }
 
-  --     if entry:is_hidden(force_index) and not self.context.show_hidden then
-  --       return
-  --     end
-  --     local research_state
-  --     if not entry:is_researched(force_index) then
-  --       research_state = flib_technology.research_state.not_available
-  --     else
-  --       research_state = flib_technology.research_state.researched
-  --     end
-  --     local technology = self.context.player.force.technologies[id.name]
-  --     local button = flib_gui_templates.technology_slot(
-  --       holder,
-  --       technology,
-  --       technology.level,
-  --       research_state,
-  --       info_pane.on_result_clicked
-  --     )
-  --     button.tooltip = { "", { "gui.rb-control-hint" }, "\n", { "gui.rb-technology-control-hint" } }
-
-  --     return button
-  --   end
-  -- )
+        return button
+      end
+    )
+  end
 
   -- info_section.build(
   --   content_pane,

@@ -483,4 +483,23 @@ function collectors.yields(prototype, grouped_item)
   return output
 end
 
+--- @param prototype LuaRecipePrototype
+--- @return EntryID[]
+function collectors.unlocked_by(prototype)
+  local output = util.unique_id_array()
+
+  if not prototype.unlock_results or prototype.enabled then
+    return output
+  end
+
+  for technology_name in
+    --- @diagnostic disable-next-line unused-fields
+    pairs(prototypes.get_technology_filtered({ { filter = "unlocks-recipe", recipe = prototype.name } }))
+  do
+    output[#output + 1] = { type = "technology", name = technology_name }
+  end
+
+  return output
+end
+
 return collectors
