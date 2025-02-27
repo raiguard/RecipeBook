@@ -206,4 +206,20 @@ function collectors.generated_fluid(prototype)
   end
 end
 
+--- @param prototype LuaEntityPrototype
+--- @return EntryID?
+function collectors.mined_by(prototype)
+  local output = util.unique_id_array()
+
+  local required_fluid = prototype.mineable_properties.required_fluid
+  local resource_category = prototype.resource_category
+  for _, drill in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "mining-drill" } })) do
+    if drill.resource_categories[resource_category] and (not required_fluid or drill.fluidbox_prototypes[1]) then
+      output[#output + 1] = { type = "entity", name = drill.name }
+    end
+  end
+
+  return output
+end
+
 return collectors

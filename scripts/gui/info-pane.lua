@@ -339,16 +339,18 @@ function info_pane:show(prototype)
     )
   end
 
-  -- if prototype.object_name == "LuaEntityPrototype" then
-  --   info_section.build(
-  --     content_pane,
-  --     self.context,
-  --     { "description.rb-mined-by" },
-  --     collectors.mined_by(prototype),
-  --     { column_count = grid_column_count },
-  --     grid_builder
-  --   )
-  -- end
+  local entity = prototype.object_name == "LuaEntityPrototype" and prototype --[[@as LuaEntityPrototype]]
+    or (self.context.use_groups and grouped.entity[prototype_path] or nil)
+  if entity then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-mined-by" },
+      collectors.mined_by(entity),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+  end
 
   -- info_section.build(
   --   content_pane,
