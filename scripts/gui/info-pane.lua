@@ -307,6 +307,23 @@ function info_pane:show(prototype)
       { column_count = grid_column_count },
       grid_builder
     )
+    local grouped_recipe = grouped.recipe[prototype_path]
+    info_section.build(
+      content_pane,
+      self.context,
+      grouped_recipe and { "description.rb-alternative-recipes" } or { "description.rb-recipes" },
+      collectors.alternative_recipes(prototype, grouped_recipe),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+    -- info_section.build(
+    --   content_pane,
+    --   self.context,
+    --   { "description.rb-used-in" },
+    --   prototype:get_used_in(),
+    --   { column_count = grid_column_count },
+    --   grid_builder
+    -- )
   end
 
   if prototype.object_name == "LuaItemPrototype" then
@@ -352,22 +369,9 @@ function info_pane:show(prototype)
     )
   end
 
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   prototype.recipe and { "description.rb-alternative-recipes" } or { "description.rb-recipes" },
-  --   prototype:get_alternative_recipes(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-used-in" },
-  --   prototype:get_used_in(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
+  if recipe then
+  end
+
   -- info_section.build(
   --   content_pane,
   --   self.context,

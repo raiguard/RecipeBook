@@ -2,20 +2,20 @@ local util = require("scripts.util")
 
 --- @class Grouped
 local grouped = {
-  --- @type table<SpritePath, GenericPrototype>
+  --- @type table<SpritePath, LuaEntityPrototype>
   entity = {},
-  --- @type table<SpritePath, GenericPrototype>
+  --- @type table<SpritePath, LuaEquipmentPrototype>
   equipment = {},
-  --- @type table<SpritePath, GenericPrototype>
+  --- @type table<SpritePath, LuaFluidPrototype|LuaItemPrototype>
   material = {},
-  --- @type table<SpritePath, GenericPrototype>
+  --- @type table<SpritePath, LuaRecipePrototype>
   recipe = {},
-  --- @type table<SpritePath, GenericPrototype>
+  --- @type table<SpritePath, LuaTilePrototype>
   tile = {},
 }
 
 --- @param recipe LuaRecipePrototype
---- @return GenericPrototype?
+--- @return (LuaFluidPrototype|LuaItemPrototype)?
 local function get_simple_product(recipe)
   local main_product = recipe.main_product
   if main_product and main_product.name == recipe.name then

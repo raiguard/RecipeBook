@@ -222,4 +222,43 @@ function collectors.mined_by(prototype)
   return output
 end
 
+--- @param prototype LuaFluidPrototype|LuaItemPrototype
+--- @param grouped_recipe LuaRecipePrototype
+--- @return EntryID[]
+function collectors.alternative_recipes(prototype, grouped_recipe)
+  local output = util.unique_id_array()
+  if prototype.object_name == "LuaFluidPrototype" then
+    for _, recipe in
+      pairs(prototypes.get_recipe_filtered({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-product-fluid", elem_filters = { { filter = "name", name = prototype.name } } },
+      }))
+    do
+      if recipe ~= grouped_recipe then
+        local id = { type = "recipe", name = recipe.name }
+        for _, product in pairs(recipe.products) do
+          if product.name == prototype.name and product.temperature then
+            id.temperature = product.temperature
+            break
+          end
+        end
+        output[#output + 1] = id
+      end
+    end
+  else
+    for _, recipe in
+      pairs(prototypes.get_recipe_filtered({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-product-item", elem_filters = { { filter = "name", name = prototype.name } } },
+      }))
+    do
+      if recipe ~= grouped_recipe then
+        output[#output + 1] = { type = "recipe", name = recipe.name }
+      end
+    end
+  end
+
+  return output
+end
+
 return collectors
