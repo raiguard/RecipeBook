@@ -309,6 +309,25 @@ function info_pane:show(prototype)
     )
   end
 
+  if prototype.object_name == "LuaItemPrototype" then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rocket-launch-products" },
+      collectors.rocket_launch_products(prototype),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-rocket-launch-product-of" },
+      collectors.rocket_launch_product_of(prototype),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+  end
+
   if prototype.object_name == "LuaFluidPrototype" then
     info_section.build(
       content_pane,
@@ -320,22 +339,16 @@ function info_pane:show(prototype)
     )
   end
 
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-mined-by" },
-  --   prototype:get_mined_by(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-rocket-launch-product-of" },
-  --   prototype:get_rocket_launch_product_of(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
+  -- if prototype.object_name == "LuaEntityPrototype" then
+  --   info_section.build(
+  --     content_pane,
+  --     self.context,
+  --     { "description.rb-mined-by" },
+  --     collectors.mined_by(prototype),
+  --     { column_count = grid_column_count },
+  --     grid_builder
+  --   )
+  -- end
 
   -- info_section.build(
   --   content_pane,

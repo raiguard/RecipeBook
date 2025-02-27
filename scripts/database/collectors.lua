@@ -134,6 +134,45 @@ function collectors.gathered_from(prototype)
   return output
 end
 
+--- @param prototype LuaItemPrototype
+--- @return DatabaseID[]
+function collectors.rocket_launch_products(prototype)
+  local output = util.unique_id_array()
+
+  for _, product in pairs(prototype.rocket_launch_products) do
+    if product.type ~= "research-progress" then
+      output[#output + 1] = {
+        type = product.type,
+        name = product.name,
+        amount = product.amount,
+        amount_min = product.amount_min,
+        amount_max = product.amount_max,
+        temperature = product.temperature,
+      }
+    end
+  end
+
+  return output
+end
+
+--- @param prototype LuaItemPrototype
+--- @return DatabaseID[]
+function collectors.rocket_launch_product_of(prototype)
+  local output = util.unique_id_array()
+
+  --- @diagnostic disable-next-line unused-fields
+  for _, other_item in pairs(prototypes.get_item_filtered({ { filter = "has-rocket-launch-products" } })) do
+    for _, product in pairs(other_item.rocket_launch_products) do
+      if product.name == prototype.name then
+        output[#output + 1] = { type = "item", name = other_item.name }
+        break
+      end
+    end
+  end
+
+  return output
+end
+
 --- @param prototype LuaFluidPrototype
 --- @return DatabaseID[]
 function collectors.generated_by(prototype)
