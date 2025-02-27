@@ -303,4 +303,59 @@ function collectors.used_in(prototype, grouped_recipe)
   return output
 end
 
+--- @param prototype LuaFluidPrototype|LuaItemPrototype
+--- @return EntryID[]
+function collectors.burned_in(prototype)
+  local output = util.unique_id_array()
+
+  if prototype.object_name == "LuaFluidPrototype" then
+    --- @diagnostic disable-next-line unused-fields
+    for entity_name, entity in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "generator" } })) do
+      local fluid_box = entity.fluidbox_prototypes[1]
+      if
+        (fluid_box.filter and fluid_box.filter.name == prototype.name)
+        or (not fluid_box.filter and prototype.fuel_value > 0)
+      then
+        output[#output + 1] = { type = "entity", name = entity_name }
+      end
+    end
+    --- @diagnostic disable-next-line unused-fields
+    for entity_name, entity in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "boiler" } })) do
+      for _, fluidbox in pairs(entity.fluidbox_prototypes) do
+        if
+          (fluidbox.production_type == "input" or fluidbox.production_type == "input-output")
+          and fluidbox.filter
+          and fluidbox.filter.name == prototype.name
+        then
+          output[#output + 1] = { type = "entity", name = entity_name }
+        end
+      end
+    end
+    if prototype.fuel_value then
+      --- @diagnostic disable-next-line unused-fields
+      for entity_name, entity in pairs(prototypes.get_entity_filtered({ { filter = "building" } })) do
+        if entity.fluid_energy_source_prototype then
+          output[#output + 1] = { type = "entity", name = entity_name }
+        end
+      end
+    end
+  else
+    local fuel_category = prototype.fuel_category
+    for entity_name, entity_prototype in pairs(prototypes.entity) do
+      local burner = entity_prototype.burner_prototype
+      if burner and burner.fuel_categories[fuel_category] then
+        output[#output + 1] = { type = "entity", name = entity_name }
+      end
+    end
+    for equipment_name, equipment_prototype in pairs(prototypes.equipment) do
+      local burner = equipment_prototype.burner_prototype
+      if burner and burner.fuel_categories[fuel_category] then
+        output[#output + 1] = { type = "equipment", name = equipment_name }
+      end
+    end
+  end
+
+  return output
+end
+
 return collectors

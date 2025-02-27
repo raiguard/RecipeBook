@@ -208,14 +208,14 @@ function info_pane:show(prototype)
   -- local entity = prototype.entity
   -- if entity then
   --   local consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  --   local consumption_id = prototype:get_material_consumption()
+  --   local consumption_id = collectors.material_consumption()
   --   if consumption_id then
   --     consumption_desc:add_consumption(consumption_id)
   --   end
   --   consumption_desc:finalize()
 
   --   local power_consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  --   local power_consumption = prototype:get_power_consumption()
+  --   local power_consumption = collectors.power_consumption()
   --   if power_consumption then
   --     power_consumption_desc:add_category_header(
   --       "tooltip-category-electricity",
@@ -240,7 +240,7 @@ function info_pane:show(prototype)
   --   power_consumption_desc:finalize()
 
   --   local power_production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  --   local power_production = prototype:get_power_production()
+  --   local power_production = collectors.power_production()
   --   if power_production then
   --     power_production_desc:add_category_header(
   --       "tooltip-category-electricity",
@@ -254,7 +254,7 @@ function info_pane:show(prototype)
   --   power_production_desc:finalize()
 
   --   local production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  --   local production_id = prototype:get_material_production()
+  --   local production_id = collectors.material_production()
   --   if production_id then
   --     production_desc:add_production(production_id)
   --   end
@@ -362,8 +362,19 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.rb-mined-by" },
+      { "description.mined-by" },
       collectors.mined_by(entity),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+  end
+
+  if prototype.object_name == "LuaFluidPrototype" or prototype.object_name == "LuaItemPrototype" then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "factoriopedia.burned-in" },
+      collectors.burned_in(prototype),
       { column_count = grid_column_count },
       grid_builder
     )
@@ -372,16 +383,8 @@ function info_pane:show(prototype)
   -- info_section.build(
   --   content_pane,
   --   self.context,
-  --   { "description.rb-burned-in" },
-  --   prototype:get_burned_in(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
   --   { "description.rb-can-mine" },
-  --   prototype:get_can_mine(),
+  --   collectors.can_mine(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )
@@ -389,7 +392,7 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "description.rb-can-burn" },
-  --   prototype:get_can_burn(),
+  --   collectors.can_burn(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )
@@ -397,7 +400,7 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "description.rb-yields" },
-  --   prototype:get_yields(),
+  --   collectors.yields(),
   --   {},
   --   make_list_box_item
   -- )
@@ -406,7 +409,7 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "description.rb-unlocked-by" },
-  --   prototype:get_unlocked_by(),
+  --   collectors.unlocked_by(),
   --   { style = "rb_technology_slot_deep_frame", column_count = 5, always_show = true },
   --   --- @param id EntryID
   --   --- @param holder LuaGuiElement
@@ -443,7 +446,7 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "description.rb-can-craft" },
-  --   prototype:get_can_craft(),
+  --   collectors.can_craft(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )
@@ -452,7 +455,7 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "description.rb-accepted-modules" },
-  --   prototype:get_accepted_modules(),
+  --   collectors.accepted_modules(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )
@@ -461,7 +464,7 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "factoriopedia.can-extract-from" },
-  --   prototype:get_can_extract_from(),
+  --   collectors.can_extract_from(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )
@@ -470,11 +473,11 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "gui-technology-preview.unit-ingredients" },
-  --   prototype:get_technology_ingredients(),
+  --   collectors.technology_ingredients(),
   --   {
   --     remark = gui_util.format_technology_count_and_time(
-  --       prototype:get_technology_ingredient_count(),
-  --       prototype:get_technology_ingredient_time()
+  --       collectors.technology_ingredient_count(),
+  --       collectors.technology_ingredient_time()
   --     ),
   --     column_count = grid_column_count,
   --   },
@@ -485,7 +488,7 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "description.rb-unlocks-recipes" },
-  --   prototype:get_unlocks_recipes(),
+  --   collectors.unlocks_recipes(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )
@@ -494,7 +497,7 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "factoriopedia.source-of" },
-  --   prototype:get_source_of(),
+  --   collectors.source_of(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )
@@ -503,7 +506,7 @@ function info_pane:show(prototype)
   --   content_pane,
   --   self.context,
   --   { "description.rb-extracted-by" },
-  --   prototype:get_extracted_by(),
+  --   collectors.extracted_by(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )
