@@ -316,14 +316,14 @@ function info_pane:show(prototype)
       { column_count = grid_column_count },
       grid_builder
     )
-    -- info_section.build(
-    --   content_pane,
-    --   self.context,
-    --   { "description.rb-used-in" },
-    --   prototype:get_used_in(),
-    --   { column_count = grid_column_count },
-    --   grid_builder
-    -- )
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-used-in" },
+      collectors.used_in(prototype, grouped_recipe),
+      { column_count = grid_column_count },
+      grid_builder
+    )
   end
 
   if prototype.object_name == "LuaItemPrototype" then
@@ -369,9 +369,6 @@ function info_pane:show(prototype)
     )
   end
 
-  if recipe then
-  end
-
   -- info_section.build(
   --   content_pane,
   --   self.context,
@@ -379,14 +376,6 @@ function info_pane:show(prototype)
   --   prototype:get_burned_in(),
   --   { column_count = grid_column_count },
   --   grid_builder
-  -- )
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rocket-launch-products" },
-  --   prototype:get_rocket_launch_products(),
-  --   { column_count = grid_column_count },
-  --   make_list_box_item
   -- )
   -- info_section.build(
   --   content_pane,

@@ -261,4 +261,46 @@ function collectors.alternative_recipes(prototype, grouped_recipe)
   return output
 end
 
+--- @param prototype LuaFluidPrototype|LuaItemPrototype
+--- @param grouped_recipe LuaRecipePrototype?
+--- @return EntryID[]
+function collectors.used_in(prototype, grouped_recipe)
+  local output = util.unique_id_array()
+
+  if prototype.object_name == "LuaFluidPrototype" then
+    for _, recipe in
+      pairs(prototypes.get_recipe_filtered({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-ingredient-fluid", elem_filters = { { filter = "name", name = prototype.name } } },
+      }))
+    do
+      if recipe ~= grouped_recipe then
+        local id = { type = "recipe", name = recipe.name }
+        for _, ingredient in pairs(recipe.ingredients) do
+          -- minimum_temperature and maximum_temperature are mutually inclusive.
+          if ingredient.name == prototype.name and ingredient.minimum_temperature then
+            id.minimum_temperature = ingredient.minimum_temperature
+            id.maximum_temperature = ingredient.maximum_temperature
+            break
+          end
+        end
+        output[#output + 1] = id
+      end
+    end
+  else
+    for _, recipe in
+      pairs(prototypes.get_recipe_filtered({
+        --- @diagnostic disable-next-line unused-fields
+        { filter = "has-ingredient-item", elem_filters = { { filter = "name", name = prototype.name } } },
+      }))
+    do
+      if recipe ~= grouped_recipe then
+        output[#output + 1] = { type = "recipe", name = recipe.name }
+      end
+    end
+  end
+
+  return output
+end
+
 return collectors
