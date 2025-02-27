@@ -166,7 +166,9 @@ function search_pane:update()
   local groups_table = self.groups_table
   local result_buttons = self.result_buttons
   local first_valid
-  local search_strings = flib_dictionary.get(self.context.player.index, "search") or {}
+  -- TODO: Custom dictionary system?
+  -- local search_strings = flib_dictionary.get(self.context.player.index, "search") or {}
+  local search_strings = {}
 
   self.textfield.placeholder.visible = #query == 0
 
