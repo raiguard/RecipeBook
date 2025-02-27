@@ -435,4 +435,52 @@ function collectors.can_burn(prototype)
   return output
 end
 
+local yields = {
+  ["fish"] = true,
+  ["resource"] = true,
+  ["simple-entity"] = true,
+  ["tree"] = true,
+}
+
+--- @param prototype LuaEntityPrototype
+--- @param grouped_item LuaItemPrototype?
+--- @return DatabaseID[]
+function collectors.yields(prototype, grouped_item)
+  local output = util.unique_id_array()
+
+  if not yields[prototype.type] then
+    return output
+  end
+
+  local mineable_properties = prototype.mineable_properties
+  if not mineable_properties or not mineable_properties.minable then
+    return output
+  end
+
+  local products = mineable_properties.products
+  if not products then
+    return output
+  end
+
+  if not (#products == 1 and grouped_item and products[1].type == "item" and products[1].name == grouped_item.name) then
+    local products = mineable_properties.products
+    if products then
+      for _, product in pairs(products) do
+        if product.type ~= "research-progress" then
+          output[#output + 1] = {
+            type = product.type,
+            name = product.name,
+            amount = product.amount,
+            amount_min = product.amount_min,
+            amount_max = product.amount_max,
+            temperature = product.temperature,
+          }
+        end
+      end
+    end
+  end
+
+  return output
+end
+
 return collectors

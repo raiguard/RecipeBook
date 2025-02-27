@@ -394,16 +394,17 @@ function info_pane:show(prototype)
       { column_count = grid_column_count },
       grid_builder
     )
+    local item = prototype.object_name == "LuaItemPrototype" and prototype --[[@as LuaItemPrototype]]
+      or nil
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-yields" },
+      collectors.yields(entity, item),
+      {},
+      make_list_box_item
+    )
   end
-
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-yields" },
-  --   collectors.yields(),
-  --   {},
-  --   make_list_box_item
-  -- )
 
   -- info_section.build(
   --   content_pane,
