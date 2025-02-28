@@ -539,4 +539,17 @@ function collectors.can_craft(prototype)
   return output
 end
 
+--- @return EntryID[]
+function collectors.can_extract_from()
+  local output = util.unique_id_array()
+
+  for _, tile_prototype in pairs(prototypes.tile) do
+    if tile_prototype.fluid then
+      output[#output + 1] = { type = "tile", name = tile_prototype.name }
+    end
+  end
+
+  return output
+end
+
 return collectors

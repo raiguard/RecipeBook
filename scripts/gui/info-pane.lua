@@ -450,22 +450,22 @@ function info_pane:show(prototype)
       { column_count = grid_column_count },
       grid_builder
     )
+    info_section.build(
+      content_pane,
+      self.context,
+      { "factoriopedia.can-extract-from" },
+      collectors.can_extract_from(),
+      { column_count = grid_column_count },
+      grid_builder
+    )
   end
 
+  -- TODO: This has issues
   -- info_section.build(
   --   content_pane,
   --   self.context,
   --   { "description.rb-accepted-modules" },
   --   collectors.accepted_modules(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
-
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "factoriopedia.can-extract-from" },
-  --   collectors.can_extract_from(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )
