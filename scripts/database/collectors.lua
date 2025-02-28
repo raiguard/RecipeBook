@@ -524,15 +524,17 @@ function collectors.can_craft(prototype)
     filters[#filters + 1] = { filter = "category", category = category }
   end
   for _, recipe in pairs(prototypes.get_recipe_filtered(filters)) do
-    local item_ingredients = 0
-    for _, ingredient in pairs(recipe.ingredients) do
-      if ingredient.type == "item" then
-        item_ingredients = item_ingredients + 1
+    if not recipe.parameter then
+      local item_ingredients = 0
+      for _, ingredient in pairs(recipe.ingredients) do
+        if ingredient.type == "item" then
+          item_ingredients = item_ingredients + 1
+        end
       end
-    end
-    local ingredient_count = prototype.ingredient_count
-    if not ingredient_count or ingredient_count >= item_ingredients then
-      output[#output + 1] = { type = "recipe", name = recipe.name }
+      local ingredient_count = prototype.ingredient_count
+      if not ingredient_count or ingredient_count >= item_ingredients then
+        output[#output + 1] = { type = "recipe", name = recipe.name }
+      end
     end
   end
 
