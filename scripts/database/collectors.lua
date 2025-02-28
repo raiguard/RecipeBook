@@ -331,7 +331,7 @@ function collectors.burned_in(prototype)
         end
       end
     end
-    if prototype.fuel_value then
+    if prototype.fuel_value > 0 then
       --- @diagnostic disable-next-line unused-fields
       for entity_name, entity in pairs(prototypes.get_entity_filtered({ { filter = "building" } })) do
         if entity.fluid_energy_source_prototype then
@@ -340,6 +340,9 @@ function collectors.burned_in(prototype)
       end
     end
   else
+    if prototype.fuel_value == 0 then
+      return output
+    end
     local fuel_category = prototype.fuel_category
     for entity_name, entity_prototype in pairs(prototypes.entity) do
       local burner = entity_prototype.burner_prototype
