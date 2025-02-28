@@ -42,6 +42,18 @@ local function research(prototype, force_index)
     if burnt_result then
       research(burnt_result, force_index)
     end
+    local place_result = prototype.place_result
+    if place_result then
+      research(place_result, force_index)
+    end
+    local place_as_tile_result = prototype.place_as_tile_result
+    if place_as_tile_result then
+      research(place_as_tile_result.result, force_index)
+    end
+    local place_as_equipment_result = prototype.place_as_equipment_result
+    if place_as_equipment_result then
+      research(place_as_equipment_result, force_index)
+    end
   elseif prototype.object_name == "LuaEntityPrototype" then
     local mineable_properties = prototype.mineable_properties
     if mineable_properties then
