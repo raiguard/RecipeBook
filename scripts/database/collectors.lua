@@ -193,7 +193,7 @@ function collectors.generated_by(prototype)
 end
 
 --- @param prototype LuaEntityPrototype
---- @return EntryID?
+--- @return DatabaseID?
 function collectors.generated_fluid(prototype)
   if prototype.type ~= "boiler" then
     return
@@ -207,7 +207,7 @@ function collectors.generated_fluid(prototype)
 end
 
 --- @param prototype LuaEntityPrototype
---- @return EntryID?
+--- @return DatabaseID[]
 function collectors.mined_by(prototype)
   local output = util.unique_id_array()
 
@@ -224,7 +224,7 @@ end
 
 --- @param prototype LuaFluidPrototype|LuaItemPrototype
 --- @param grouped_recipe LuaRecipePrototype
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.alternative_recipes(prototype, grouped_recipe)
   local output = util.unique_id_array()
   if prototype.object_name == "LuaFluidPrototype" then
@@ -263,7 +263,7 @@ end
 
 --- @param prototype LuaFluidPrototype|LuaItemPrototype
 --- @param grouped_recipe LuaRecipePrototype?
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.used_in(prototype, grouped_recipe)
   local output = util.unique_id_array()
 
@@ -304,7 +304,7 @@ function collectors.used_in(prototype, grouped_recipe)
 end
 
 --- @param prototype LuaFluidPrototype|LuaItemPrototype
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.burned_in(prototype)
   local output = util.unique_id_array()
 
@@ -359,7 +359,7 @@ function collectors.burned_in(prototype)
 end
 
 --- @param prototype LuaEntityPrototype
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.can_mine(prototype)
   local output = util.unique_id_array()
 
@@ -389,7 +389,7 @@ function collectors.can_mine(prototype)
 end
 
 --- @param prototype LuaEntityPrototype
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.can_burn(prototype)
   local output = util.unique_id_array()
 
@@ -484,7 +484,7 @@ function collectors.yields(prototype, grouped_item)
 end
 
 --- @param prototype LuaRecipePrototype
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.unlocked_by(prototype)
   local output = util.unique_id_array()
 
@@ -510,7 +510,7 @@ local crafting_entities = {
 }
 
 --- @param prototype LuaEntityPrototype
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.can_craft(prototype)
   local output = util.unique_id_array()
 
@@ -539,7 +539,7 @@ function collectors.can_craft(prototype)
   return output
 end
 
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.can_extract_from()
   local output = util.unique_id_array()
 
@@ -553,7 +553,7 @@ function collectors.can_extract_from()
 end
 
 --- @param prototype LuaTilePrototype
---- @return EntryID[]
+--- @return DatabaseID[]
 function collectors.source_of(prototype)
   local output = util.unique_id_array()
   local fluid = prototype.fluid
