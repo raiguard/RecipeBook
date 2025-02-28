@@ -192,6 +192,21 @@ function collectors.generated_by(prototype)
   return output
 end
 
+--- @param prototype LuaFluidPrototype
+--- @return DatabaseID[]
+function collectors.mining_fluid_for(prototype)
+  local output = util.unique_id_array()
+
+  for resource_name, resource in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "resource" } })) do
+    local mineable = resource.mineable_properties
+    if mineable.minable and mineable.required_fluid == prototype.name then
+      output[#output + 1] = { type = "entity", name = resource_name }
+    end
+  end
+
+  return output
+end
+
 --- @param prototype LuaEntityPrototype
 --- @return DatabaseID?
 function collectors.generated_fluid(prototype)

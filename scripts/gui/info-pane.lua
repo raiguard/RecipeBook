@@ -354,6 +354,14 @@ function info_pane:show(prototype)
       { column_count = grid_column_count },
       grid_builder
     )
+    info_section.build(
+      content_pane,
+      self.context,
+      { "description.rb-mining-fluid-for" },
+      collectors.mining_fluid_for(prototype),
+      { column_count = grid_column_count },
+      grid_builder
+    )
   end
 
   if prototype.object_name == "LuaFluidPrototype" or prototype.object_name == "LuaItemPrototype" then
