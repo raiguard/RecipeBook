@@ -460,24 +460,25 @@ function info_pane:show(prototype)
     )
   end
 
+  local tile = prototype.object_name == "LuaTilePrototype" and prototype --[[@as LuaTilePrototype]]
+    or (self.context.use_groups and grouped.tile[prototype_path] or nil)
   if prototype.object_name == "LuaTilePrototype" then
     info_section.build(
       content_pane,
       self.context,
       { "factoriopedia.source-of" },
-      collectors.source_of(prototype),
+      collectors.source_of(tile),
       { column_count = grid_column_count },
       grid_builder
     )
-
-    -- info_section.build(
-    --   content_pane,
-    --   self.context,
-    --   { "description.rb-extracted-by" },
-    --   collectors.extracted_by(),
-    --   { column_count = grid_column_count },
-    --   grid_builder
-    -- )
+    info_section.build(
+      content_pane,
+      self.context,
+      { "factoriopedia.extracted-by" },
+      collectors.extracted_by(tile),
+      { column_count = grid_column_count },
+      grid_builder
+    )
   end
 
   -- TODO: This has issues

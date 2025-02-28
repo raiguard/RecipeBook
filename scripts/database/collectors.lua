@@ -563,4 +563,20 @@ function collectors.source_of(prototype)
   return output
 end
 
+--- @param prototype LuaTilePrototype
+--- @return DatabaseID[]
+function collectors.extracted_by(prototype)
+  local output = util.unique_id_array()
+
+  if not prototype.fluid then
+    return output
+  end
+
+  for _, offshore_pump in pairs(prototypes.get_entity_filtered({ { filter = "type", type = "offshore-pump" } })) do
+    output[#output + 1] = { type = "entity", name = offshore_pump.name }
+  end
+
+  return output
+end
+
 return collectors
