@@ -539,9 +539,14 @@ function collectors.can_craft(prototype)
   return output
 end
 
+--- @param prototype LuaEntityPrototype
 --- @return DatabaseID[]
-function collectors.can_extract_from()
+function collectors.can_extract_from(prototype)
   local output = util.unique_id_array()
+
+  if prototype.type ~= "offshore-pump" then
+    return output
+  end
 
   for _, tile_prototype in pairs(prototypes.tile) do
     if tile_prototype.fluid then

@@ -454,7 +454,7 @@ function info_pane:show(prototype)
       content_pane,
       self.context,
       { "factoriopedia.can-extract-from" },
-      collectors.can_extract_from(),
+      collectors.can_extract_from(entity),
       { column_count = grid_column_count },
       grid_builder
     )
