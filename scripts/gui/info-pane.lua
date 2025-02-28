@@ -460,6 +460,26 @@ function info_pane:show(prototype)
     )
   end
 
+  if prototype.object_name == "LuaTilePrototype" then
+    info_section.build(
+      content_pane,
+      self.context,
+      { "factoriopedia.source-of" },
+      collectors.source_of(prototype),
+      { column_count = grid_column_count },
+      grid_builder
+    )
+
+    -- info_section.build(
+    --   content_pane,
+    --   self.context,
+    --   { "description.rb-extracted-by" },
+    --   collectors.extracted_by(),
+    --   { column_count = grid_column_count },
+    --   grid_builder
+    -- )
+  end
+
   -- TODO: This has issues
   -- info_section.build(
   --   content_pane,
@@ -490,24 +510,6 @@ function info_pane:show(prototype)
   --   self.context,
   --   { "description.rb-unlocks-recipes" },
   --   collectors.unlocks_recipes(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
-
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "factoriopedia.source-of" },
-  --   collectors.source_of(),
-  --   { column_count = grid_column_count },
-  --   grid_builder
-  -- )
-
-  -- info_section.build(
-  --   content_pane,
-  --   self.context,
-  --   { "description.rb-extracted-by" },
-  --   collectors.extracted_by(),
   --   { column_count = grid_column_count },
   --   grid_builder
   -- )

@@ -552,4 +552,15 @@ function collectors.can_extract_from()
   return output
 end
 
+--- @param prototype LuaTilePrototype
+--- @return EntryID[]
+function collectors.source_of(prototype)
+  local output = util.unique_id_array()
+  local fluid = prototype.fluid
+  if fluid then
+    output[#output + 1] = { type = "fluid", name = fluid.name }
+  end
+  return output
+end
+
 return collectors
