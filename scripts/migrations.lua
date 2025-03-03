@@ -1,7 +1,8 @@
 local flib_dictionary = require("__flib__.dictionary")
 local flib_migration = require("__flib__.migration")
 
-local database = require("scripts.database.database")
+local dictionaries = require("scripts.database.dictionaries")
+local researched = require("scripts.database.researched")
 local gui = require("scripts.gui.main")
 
 local by_version = {
@@ -10,7 +11,8 @@ local by_version = {
     global = {}
     -- Re-init
     flib_dictionary.on_init()
-    database.on_init()
+    dictionaries.on_init()
+    researched.on_init()
     gui.on_init()
   end,
 }

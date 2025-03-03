@@ -17,4 +17,10 @@ data:extend({
     setting_type = "runtime-per-user",
     default_value = false,
   },
+  {
+    type = "bool-setting",
+    name = "rb-use-groups",
+    setting_type = "runtime-per-user",
+    default_value = true,
+  },
 })

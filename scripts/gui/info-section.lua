@@ -1,5 +1,8 @@
 local flib_gui = require("__flib__.gui")
 
+local researched = require("scripts.database.researched")
+local util = require("scripts.util")
+
 --- @class InfoSectionSettings
 --- @field always_show boolean?
 --- @field column_count integer?
@@ -12,9 +15,9 @@ local info_section = {}
 --- @param parent LuaGuiElement
 --- @param context MainGuiContext
 --- @param title LocalisedString
---- @param ids EntryID[]?
+--- @param ids DatabaseID[]?
 --- @param settings InfoSectionSettings
---- @param callback function(id: EntryID, holder: LuaGuiElement): LuaGuiElement?
+--- @param callback function(id: DatabaseID, holder: LuaGuiElement): LuaGuiElement?
 function info_section.build(parent, context, title, ids, settings, callback)
   if not ids or #ids == 0 then
     return
@@ -53,13 +56,13 @@ function info_section.build(parent, context, title, ids, settings, callback)
   local result_count = 0
   for id_index = 1, #ids do
     local id = ids[id_index]
-    local entry = id:get_entry()
-    if not entry then
+    local prototype = util.get_prototype(id)
+    if not prototype then
       goto continue
     end
 
-    local is_hidden = entry:is_hidden(force_index)
-    local is_unresearched = not entry:is_researched(force_index)
+    local is_hidden = prototype.hidden_in_factoriopedia
+    local is_unresearched = not researched.is(prototype, force_index)
     if not always_show then
       if is_hidden and not show_hidden then
         goto continue
@@ -73,7 +76,7 @@ function info_section.build(parent, context, title, ids, settings, callback)
     end
 
     local tags = button.tags
-    tags.path = id:get_path()
+    tags.id = { type = id.type, name = id.name }
     button.tags = tags
 
     result_count = result_count + 1

@@ -1,3 +1,4 @@
+local bigunpack = require("__big-data-string2__.unpack")
 local flib_format = require("__flib__.format")
 local flib_math = require("__flib__.math")
 
@@ -48,7 +49,7 @@ function util.get_path(prototype)
   return type .. "/" .. prototype.name, type
 end
 
---- @param obj Ingredient|Product
+--- @param obj DatabaseID
 --- @return GenericPrototype
 function util.get_prototype(obj)
   return prototypes[obj.type][obj.name]
@@ -67,20 +68,19 @@ util.object_name_to_type = {
   LuaTilePrototype = "tile",
 }
 
---- @return EntryID[]
+--- @return DatabaseID[]
 function util.unique_id_array()
   local hash = {}
 
   return setmetatable({}, {
-    --- @param self EntryID[]
+    --- @param self DatabaseID[]
     --- @param index integer
-    --- @param value EntryID
+    --- @param value DatabaseID
     __newindex = function(self, index, value)
       if not value then
         return
       end
-      -- Use the base path to work with alternatives, etc.
-      local key = value:get_entry():get_path()
+      local key = value.type .. "/" .. value.name
       if hash[key] then
         return
       end
@@ -88,6 +88,33 @@ function util.unique_id_array()
       rawset(self, index, value)
     end,
   })
+end
+
+--- @param prototype GenericPrototype
+--- @return LuaGroup
+function util.get_group(prototype)
+  if prototype.object_name == "LuaEquipmentPrototype" then
+    return prototypes.item_group["combat"]
+  end
+  return prototype.group
+end
+
+--- @param prototype GenericPrototype
+--- @return LuaGroup
+function util.get_subgroup(prototype)
+  if prototype.object_name == "LuaEquipmentPrototype" then
+    return prototypes.item_subgroup["rb-uncategorized-equipment"]
+  end
+  return prototype.subgroup
+end
+
+--- @generic T
+--- @param key string
+--- @return T
+function util.unpack(key)
+  local success, value = serpent.load(bigunpack(key))
+  assert(success, "Deserialising overrides failed for " .. key)
+  return value
 end
 
 return util

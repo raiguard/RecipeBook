@@ -1,6 +1,5 @@
 local flib_gui = require("__flib__.gui")
 
-local context_menu = require("scripts.gui.context-menu")
 local gui_util = require("scripts.gui.util")
 local history = require("scripts.gui.history")
 local info_pane = require("scripts.gui.info-pane")
@@ -27,10 +26,10 @@ local function frame_action_button(name, sprite, tooltip, handler, auto_toggle)
 end
 
 --- @class MainGuiContext
---- @field database Database
 --- @field show_hidden boolean
 --- @field show_unresearched boolean
 --- @field player LuaPlayer
+--- @field use_groups boolean
 
 --- @class MainGui
 --- @field context MainGuiContext
@@ -46,17 +45,16 @@ local mt = { __index = main_gui }
 script.register_metatable("main_gui", mt)
 
 --- @param player LuaPlayer
---- @param database Database
 --- @return MainGui
-function main_gui.build(player, database)
+function main_gui.build(player)
   main_gui.destroy(player.index)
 
   --- @type MainGuiContext
   local context = {
-    database = database,
     show_hidden = false,
     show_unresearched = true,
     player = player,
+    use_groups = player.mod_settings["rb-use-groups"].value --[[@as boolean]],
   }
 
   local window = player.gui.screen.add({
@@ -144,7 +142,6 @@ function main_gui.build(player, database)
     header = header,
     search_pane = search_pane,
     info_pane = info_pane,
-    current_page = nil,
     history = history.new(),
     pinned = false,
     opening_technology_gui = false,
@@ -220,12 +217,12 @@ function main_gui:update_info()
     self.history:at_back() and "disabled" or "default"
   )
 
-  local entry = self.history:current()
-  if not entry then
+  local prototype = self.history:current()
+  if not prototype then
     return
   end
-  self.search_pane:select_result(entry)
-  self.info_pane:show(entry)
+  self.search_pane:select_result(prototype)
+  self.info_pane:show(prototype)
 end
 
 function main_gui:update()
@@ -246,7 +243,7 @@ function main_gui.get(player_index)
     if self then
       player.print({ "message.rb-recreated-gui" })
     end
-    self = main_gui.build(player, storage.database)
+    self = main_gui.build(player)
   end
   return self
 end
@@ -291,27 +288,21 @@ end
 
 --- @param e EventData.on_gui_click
 function main_gui:on_result_clicked(e)
-  local path = e.element.tags.path --[[@as string?]]
-  if not path then
+  local id = e.element.tags.id --[[@as GenericID?]]
+  if not id then
     return
   end
-  local entry = storage.database:get_entry(path)
-  if not entry then
-    return
-  end
-  if e.button == defines.mouse_button_type.right then
-    context_menu.new(self.context.player, { "Test 1", "Test 2" }, e.cursor_display_location)
-    return
-  end
-  if entry:get_type() == "technology" and e.shift then
+  if id.type == "technology" and e.shift then
     if not self.pinned then
       self.opening_technology_gui = true
       self:hide()
     end
-    self.context.player.open_technology_gui(entry:get_name())
+    self.context.player.open_technology_gui(id.name)
     return
   end
-  self.history:push(entry)
+  local prototype = prototypes[id.type][id.name]
+  assert(prototype, "Prototype was nil")
+  self.history:push(prototype, self.context.use_groups)
   self:update_info()
 end
 
@@ -368,16 +359,11 @@ local function on_open_selected(e)
       selected_prototype.name = selected.ghost_name
     end
   end
-  local entry = storage.database:get_entry({ type = selected_prototype.base_type, name = selected_prototype.name })
-  if not entry then
-    util.flying_text(player_gui.context.player, { "message.rb-no-info" })
-    return
+  local prototype = prototypes[selected_prototype.base_type][selected_prototype.name]
+  if player_gui.history:push(prototype, player_gui.context.use_groups) then
+    player_gui:update_info()
+    player_gui:show()
   end
-  if player_gui.history:current() ~= entry:get_path() then
-    player_gui.history:push(entry)
-  end
-  player_gui:update_info()
-  player_gui:show()
 end
 
 --- @param e EventData.CustomInputEvent
@@ -447,7 +433,7 @@ function main_gui.on_configuration_changed()
     return
   end
   for _, player in pairs(game.players) do
-    main_gui.build(player, storage.database)
+    main_gui.build(player)
   end
 end
 
@@ -473,30 +459,30 @@ end, "main")
 info_pane.on_result_clicked = main_gui.on_result_clicked
 search_pane.on_result_clicked = main_gui.on_result_clicked
 
-commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book info page", function(e)
-  local gui = main_gui.get(e.player_index)
-  if not gui then
-    return
-  end
-  log("<< TESTING ALL INFO PAGES >>")
-  local tested = {}
-  local tested_count = 0
-  local profiler = game.create_profiler()
-  for _, entry in pairs(storage.database.entries) do
-    local base_path = entry:get_path()
-    if not tested[base_path] and not string.find(base_path, "technology/") then
-      tested[base_path] = true
-      tested_count = tested_count + 1
-      gui.history:push(entry)
-      gui:update_info()
-    end
-  end
-  profiler.stop()
-  log({ "", "Overall test ", profiler })
-  log("Number of pages: " .. tested_count)
-  profiler.divide(tested_count)
-  log({ "", "Average test ", profiler })
-  log("<< TEST COMPLETE >>")
-end)
+-- commands.add_command("rb-test-info", "- Tests showing every possible Recipe Book info page", function(e)
+--   local gui = main_gui.get(e.player_index)
+--   if not gui then
+--     return
+--   end
+--   log("<< TESTING ALL INFO PAGES >>")
+--   local tested = {}
+--   local tested_count = 0
+--   local profiler = game.create_profiler()
+--   for _, entry in pairs(storage.database.entries) do
+--     local base_path = entry:get_path()
+--     if not tested[base_path] and not string.find(base_path, "technology/") then
+--       tested[base_path] = true
+--       tested_count = tested_count + 1
+--       gui.history:push(entry, gui.context.use_groups)
+--       gui:update_info()
+--     end
+--   end
+--   profiler.stop()
+--   log({ "", "Overall test ", profiler })
+--   log("Number of pages: " .. tested_count)
+--   profiler.divide(tested_count)
+--   log({ "", "Average test ", profiler })
+--   log("<< TEST COMPLETE >>")
+-- end)
 
 return main_gui

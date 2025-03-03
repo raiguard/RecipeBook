@@ -4,7 +4,6 @@ local flib_gui = require("__flib__.gui")
 local flib_math = require("__flib__.math")
 local util = require("scripts.util")
 
-local entry_id = require("scripts.database.entry-id")
 local gui_util = require("scripts.gui.util")
 
 --- @class InfoDescription
@@ -75,7 +74,7 @@ end
 
 --- @param icon SpritePath
 --- @param caption LocalisedString
---- @param id EntryID?
+--- @param id DatabaseID?
 function info_description:add_category_header(icon, caption, id)
   if id then
     local flow = self:add_internal({ type = "flow" })
@@ -88,9 +87,12 @@ function info_description:add_category_header(icon, caption, id)
     flow.add({
       type = "button",
       style = "rb_description_heading_id_button",
-      caption = { "", "[img=" .. id:get_path() .. "]  ", id:get_entry():get_localised_name() },
-      elem_tooltip = id:strip(),
-      tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = self.callback }, { path = id:get_path() }),
+      caption = { "", "[img=" .. id.type .. "/" .. id.name .. "]  ", util.get_prototype(id).localised_name }, --- @diagnostic disable-line:assign-type-mismatch
+      elem_tooltip = { type = id.type, name = id.name },
+      tags = flib_gui.format_handlers(
+        { [defines.events.on_gui_click] = self.callback },
+        { path = id.type .. "/" .. id.name }
+      ),
     })
     flow.style.top_margin = -4
     flow.style.bottom_margin = -4
@@ -109,40 +111,34 @@ end
 local mod_name_separator = " › "
 
 --- Adds prototype history and localised description of the prototype.
---- @param entry Entry
-function info_description:add_history_and_description(entry)
-  for prototype in entry:iterate() do
-    local history = prototypes.get_history(get_prototype_type(prototype), prototype.name)
-    if history.created ~= "base" or #history.changed > 0 then
-      --- @type LocalisedString
-      local output = { "", mod_name_string(history.created) }
-      local x = 2
-      for _, changed in pairs(history.changed) do
-        local mod_name = mod_name_string(changed)
-        x = x + 2
-        if x > 20 then
-          x = 4
-          output = { "", output, mod_name_separator, mod_name }
-        else
-          output[#output + 1] = mod_name_separator
-          output[#output + 1] = mod_name
-        end
+--- @param prototype GenericPrototype
+function info_description:add_history_and_description(prototype)
+  local history = prototypes.get_history(get_prototype_type(prototype), prototype.name)
+  if history.created ~= "base" or #history.changed > 0 then
+    --- @type LocalisedString
+    local output = { "", mod_name_string(history.created) }
+    local x = 2
+    for _, changed in pairs(history.changed) do
+      local mod_name = mod_name_string(changed)
+      x = x + 2
+      if x > 20 then
+        x = 4
+        output = { "", output, mod_name_separator, mod_name }
+      else
+        output[#output + 1] = mod_name_separator
+        output[#output + 1] = mod_name
       end
-      self:add_internal({ type = "label", style = "info_label", caption = output })
-      self:add_separator()
-      break
     end
+    self:add_internal({ type = "label", style = "info_label", caption = output })
+    self:add_separator()
   end
   local descriptions = flib_dictionary.get(self.context.player.index, "description") or {}
-  for prototype in entry:iterate() do
-    local path = util.get_path(prototype)
-    local description = descriptions[path]
-    if description then
-      local label = self:add_internal({ type = "label", caption = description })
-      label.style.single_line = false
-      self:add_separator()
-      break
-    end
+  local path = util.get_path(prototype)
+  local description = descriptions[path]
+  if description then
+    local label = self:add_internal({ type = "label", caption = description })
+    label.style.single_line = false
+    self:add_separator()
   end
 end
 
@@ -157,7 +153,7 @@ function info_description:add_generic_row(label, value)
 end
 
 --- @param label LocalisedString
---- @param id EntryID
+--- @param id DatabaseID
 --- @return LuaGuiElement
 function info_description:add_id_row(label, id)
   local flow = self:add_internal({ type = "flow" })
@@ -166,33 +162,26 @@ function info_description:add_id_row(label, id)
   flow.add({
     type = "button",
     style = "rb_description_id_button",
-    caption = { "", "[img=" .. id:get_path() .. "]  ", id:get_caption() },
-    elem_tooltip = id:strip(),
-    tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = self.callback }, { path = id:get_path() }),
+    caption = { "", "[img=" .. id.type .. "/" .. id.name .. "]  ", gui_util.format_caption(id) },
+    elem_tooltip = { type = id.type, name = id.name },
+    tags = flib_gui.format_handlers(
+      { [defines.events.on_gui_click] = self.callback },
+      { path = { type = id.type, name = id.name } }
+    ),
   })
   return flow
 end
 
---- @param entry Entry
-function info_description:add_recipe_properties(entry)
-  local recipe = entry.recipe
-  if not recipe then
-    return
-  end
-
+--- @param recipe LuaRecipePrototype
+function info_description:add_recipe_properties(recipe)
   local pollution = recipe.emissions_multiplier
   if pollution ~= 1 then
     self:add_generic_row({ "description.recipe-pollution" }, flib_format.number(pollution * 100, false, 0) .. "%")
   end
 end
 
---- @param entry Entry
-function info_description:add_item_properties(entry)
-  local item = entry.item
-  if not item then
-    return
-  end
-
+--- @param item LuaItemPrototype
+function info_description:add_item_properties(item)
   local stack_size = item.stack_size
   if stack_size > 0 then
     self:add_generic_row({ "description.rb-stack-size" }, flib_format.number(stack_size, true))
@@ -203,7 +192,7 @@ function info_description:add_item_properties(entry)
     self:add_internal({
       type = "label",
       style = "caption_label",
-      caption = prototypes.fuel_category[fuel_category].localised_name,
+      caption = prototypes.fuel_category[fuel_category].localised_name, --- @diagnostic disable-line:assign-type-mismatch
     })
   end
 
@@ -252,13 +241,8 @@ function info_description:add_item_properties(entry)
   end
 end
 
---- @param entry Entry
-function info_description:add_fluid_properties(entry)
-  local fluid = entry.fluid
-  if not fluid then
-    return
-  end
-
+--- @param fluid LuaFluidPrototype
+function info_description:add_fluid_properties(fluid)
   local fuel_value = fluid.fuel_value
   if fuel_value > 0 then
     self:add_generic_row(
@@ -275,13 +259,8 @@ local container_types = {
   ["cargo-wagon"] = true,
 }
 
---- @param entry Entry
-function info_description:add_entity_properties(entry)
-  local entity = entry.entity
-  if not entity then
-    return
-  end
-
+--- @param entity LuaEntityPrototype
+function info_description:add_entity_properties(entity)
   local max_underground_distance = entity.max_underground_distance
   if max_underground_distance then
     self:add_generic_row(
@@ -359,7 +338,7 @@ function info_description:add_entity_properties(entry)
     local mineable_properties = entity.mineable_properties
     local fluid_name = mineable_properties.required_fluid
     if fluid_name then
-      local fluid_id = entry_id.new({ type = "fluid", name = fluid_name }, self.context.database)
+      local fluid_id = { type = "fluid", name = fluid_name }
       if fluid_id then
         self:add_id_row({ "description.rb-mining-fluid" }, fluid_id)
       end
@@ -370,11 +349,14 @@ function info_description:add_entity_properties(entry)
   if burner then
     for pollutant_name, pollution in pairs(burner.emissions_per_joule) do
       if pollution ~= 0 then
-        self:add_generic_row(prototypes.airborne_pollutant[pollutant_name].localised_name, {
-          "",
-          flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
-          { "per-minute-suffix" },
-        })
+        self:add_generic_row(
+          prototypes.airborne_pollutant[pollutant_name].localised_name, --- @diagnostic disable-line:param-type-mismatch
+          {
+            "",
+            flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
+            { "per-minute-suffix" },
+          }
+        )
       end
     end
   end
@@ -383,19 +365,22 @@ function info_description:add_entity_properties(entry)
   if electric_energy_source_prototype then
     for pollutant_name, pollution in pairs(electric_energy_source_prototype.emissions_per_joule) do
       if pollution ~= 0 then
-        self:add_generic_row(prototypes.airborne_pollutant[pollutant_name].localised_name, {
-          "",
-          flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
-          { "per-minute-suffix" },
-        })
+        self:add_generic_row(
+          prototypes.airborne_pollutant[pollutant_name].localised_name, --- @diagnostic disable-line:param-type-mismatch
+          {
+            "",
+            flib_format.number(pollution * entity.get_max_energy_usage() * 60 * 60, false), -- TODO: Quality
+            { "per-minute-suffix" },
+          }
+        )
       end
     end
   end
 end
 
---- @param id EntryID
+--- @param id DatabaseID
 function info_description:add_consumption(id)
-  self:add_category_header(id:get_tooltip_category_sprite("consumes"), { "tooltip-category.consumes" }, id)
+  self:add_category_header(gui_util.get_tooltip_category_sprite(id, "consumes"), { "tooltip-category.consumes" }, id)
   assert(id.amount)
   self:add_generic_row(
     { "description.energy-consumption" },
@@ -415,9 +400,9 @@ function info_description:add_consumption(id)
   end
 end
 
---- @param id EntryID
+--- @param id DatabaseID
 function info_description:add_production(id)
-  self:add_category_header(id:get_tooltip_category_sprite("produces"), { "tooltip-category.generates" }, id)
+  self:add_category_header(gui_util.get_tooltip_category_sprite(id, "produces"), { "tooltip-category.generates" }, id)
   assert(id.amount)
   self:add_generic_row({ "description.fluid-output" }, { "", flib_format.number(id.amount), { "per-second-suffix" } })
   if id.temperature then
@@ -440,10 +425,9 @@ function info_description:add_production(id)
   end
 end
 
---- @param entry Entry
-function info_description:add_vehicle_properties(entry)
-  local entity = entry.entity
-  if not entity or not gui_util.vehicles[entity.type] then
+--- @param entity LuaEntityPrototype
+function info_description:add_vehicle_properties(entity)
+  if not gui_util.vehicles[entity.type] then
     return
   end
 
