@@ -28,7 +28,7 @@ local collectors = {}
 --- @param prototype LuaRecipePrototype
 --- @return DatabaseID[]
 function collectors.ingredients(prototype)
-  local output = util.unique_id_array()
+  local output = {}
 
   for _, ingredient in pairs(prototype.ingredients) do
     output[#output + 1] = {
@@ -46,7 +46,7 @@ end
 --- @param prototype LuaRecipePrototype
 --- @return DatabaseID[]
 function collectors.products(prototype)
-  local output = util.unique_id_array()
+  local output = {}
 
   for _, product in pairs(prototype.products) do
     if product.type ~= "research-progress" then
