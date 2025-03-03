@@ -96,6 +96,11 @@ function info_pane:show(prototype)
 
   local prototype_path = util.get_path(prototype)
 
+  local recipe = prototype.object_name == "LuaRecipePrototype" and prototype --[[@as LuaRecipePrototype]]
+    or (self.context.use_groups and grouped.recipe[prototype_path] or nil)
+  local entity = prototype.object_name == "LuaEntityPrototype" and prototype --[[@as LuaEntityPrototype]]
+    or (self.context.use_groups and grouped.entity[prototype_path] or nil)
+
   do
     --- @type LocalisedString
     local type_caption = { "" }
@@ -197,15 +202,22 @@ function info_pane:show(prototype)
     content_pane.welcome_label.destroy()
   end
 
-  -- local general_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  -- general_desc:add_history_and_description(prototype)
-  -- general_desc:add_recipe_properties(prototype)
-  -- general_desc:add_item_properties(prototype)
-  -- general_desc:add_fluid_properties(prototype)
-  -- general_desc:add_entity_properties(prototype)
-  -- general_desc:finalize()
+  local general_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+  general_desc:add_history_and_description(prototype)
+  if recipe then
+    general_desc:add_recipe_properties(recipe)
+  end
+  if prototype.object_name == "LuaItemPrototype" then
+    general_desc:add_item_properties(prototype)
+  end
+  if prototype.object_name == "LuaFluidPrototype" then
+    general_desc:add_fluid_properties(prototype)
+  end
+  if entity then
+    general_desc:add_entity_properties(entity)
+  end
+  general_desc:finalize()
 
-  -- local entity = prototype.entity
   -- if entity then
   --   local consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
   --   local consumption_id = collectors.material_consumption()
@@ -269,8 +281,6 @@ function info_pane:show(prototype)
   local grid_builder = lists_everywhere and make_list_box_item or make_slot_button
   local grid_column_count = lists_everywhere and 1 or 10
 
-  local recipe = prototype.object_name == "LuaRecipePrototype" and prototype --[[@as LuaRecipePrototype]]
-    or (self.context.use_groups and grouped.recipe[prototype_path] or nil)
   if recipe then
     info_section.build(
       content_pane,
@@ -375,8 +385,6 @@ function info_pane:show(prototype)
     )
   end
 
-  local entity = prototype.object_name == "LuaEntityPrototype" and prototype --[[@as LuaEntityPrototype]]
-    or (self.context.use_groups and grouped.entity[prototype_path] or nil)
   if entity then
     info_section.build(
       content_pane,

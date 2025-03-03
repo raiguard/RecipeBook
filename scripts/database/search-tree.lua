@@ -14,7 +14,7 @@ end
 --- Each top-level prototype sorted into groups and subgroups for the search panel.
 --- @class SearchTree
 --- @field groups table<string, table<string, GenericPrototype[]>> Group name -> subgroup name -> members
---- @field order table<GenericPrototype, integer>
+--- @field order table<SpritePath, integer>
 --
 local alternatives = unpack("rb_alternatives")
 
@@ -95,7 +95,7 @@ local function build_tree(use_grouping)
 
       for i = 1, #subgroup do
         order = order + 1
-        self.order[subgroup[i]] = order
+        self.order[util.get_path(subgroup[i])] = order
       end
 
       ::continue::
