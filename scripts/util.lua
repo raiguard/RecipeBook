@@ -1,3 +1,4 @@
+local bigunpack = require("__big-data-string2__.unpack")
 local flib_format = require("__flib__.format")
 local flib_math = require("__flib__.math")
 
@@ -105,6 +106,15 @@ function util.get_subgroup(prototype)
     return prototypes.item_subgroup["rb-uncategorized-equipment"]
   end
   return prototype.subgroup
+end
+
+--- @generic T
+--- @param key string
+--- @return T
+function util.unpack(key)
+  local success, value = serpent.load(bigunpack(key))
+  assert(success, "Deserialising overrides failed for " .. key)
+  return value
 end
 
 return util

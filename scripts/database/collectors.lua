@@ -1,3 +1,4 @@
+local flib_math = require("__flib__.math")
 local flib_table = require("__flib__.table")
 
 local util = require("scripts.util")
@@ -602,6 +603,84 @@ function collectors.extracted_by(prototype)
   end
 
   return output
+end
+
+--- @param prototype LuaEntityPrototype
+--- @return DatabaseID?
+function collectors.material_consumption(prototype)
+  if prototype.type == "boiler" then
+    local input_fluid_box = prototype.fluidbox_prototypes[1]
+    local input_filter = input_fluid_box.filter
+    if input_filter then
+      local minimum_temperature = input_fluid_box.minimum_temperature or input_filter.default_temperature
+      local flow_per_tick = (prototype.target_temperature - minimum_temperature) * input_filter.heat_capacity
+      return { type = "fluid", name = input_filter.name, amount = prototype.get_max_energy_usage() / flow_per_tick * 60 } -- TODO: Quality
+    end
+  elseif prototype.type == "generator" then
+    local fluid_box = prototype.fluidbox_prototypes[1]
+    local filter = fluid_box.filter
+    if filter then
+      return {
+        type = "fluid",
+        name = filter.name,
+        amount = prototype.fluid_usage_per_tick * 60,
+        maximum_temperature = prototype.maximum_temperature,
+      }
+    end
+  end
+end
+
+--- @param prototype LuaEntityPrototype
+--- @return DatabaseID?
+function collectors.material_production(prototype)
+  if prototype.type == "boiler" then
+    local input_fluid_box = prototype.fluidbox_prototypes[1]
+    local input_filter = input_fluid_box.filter
+    if input_filter then
+      local output_fluid_box = prototype.fluidbox_prototypes[2]
+      local output_filter = output_fluid_box.filter
+      if output_filter then
+        local minimum_temperature = input_fluid_box.minimum_temperature or input_filter.default_temperature
+        local flow_per_tick = (prototype.target_temperature - minimum_temperature) * input_filter.heat_capacity
+        return {
+          type = "fluid",
+          name = output_filter.name,
+          amount = prototype.get_max_energy_usage() / flow_per_tick * 60, -- TODO: Quality
+          temperature = prototype.target_temperature,
+        }
+      end
+    end
+  end
+end
+
+--- @param prototype LuaEntityPrototype
+--- @return {min: double, max: double}?
+function collectors.power_consumption(prototype)
+  local electric_energy_source_prototype = prototype.electric_energy_source_prototype --[[@as LuaElectricEnergySourcePrototype]]
+  if not electric_energy_source_prototype then
+    return
+  end
+
+  -- local added_emissions = 0
+  local max_energy_usage = prototype.get_max_energy_usage() or 0 -- TODO: Quality
+  if max_energy_usage > 0 and max_energy_usage < flib_math.max_int53 then
+    local drain = electric_energy_source_prototype.drain
+    if max_energy_usage ~= drain then
+      max_energy_usage = max_energy_usage + drain
+    end
+    return { min = drain * 60, max = max_energy_usage * 60 }
+  end
+end
+
+--- @param prototype LuaEntityPrototype
+--- @return double?
+function collectors.power_production(prototype)
+  local output = prototype.get_max_power_output() -- TODO: Quality
+  if not output then
+    return
+  end
+
+  return output * 60
 end
 
 return collectors

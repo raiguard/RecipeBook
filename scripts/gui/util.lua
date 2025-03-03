@@ -72,7 +72,7 @@ function gui_util.format_caption(id)
     }
   end
 
-  caption[#caption + 1] = util.get_prototype(id).localised_name
+  caption[#caption + 1] = util.get_prototype(id).localised_name --- @diagnostic disable-line:assign-type-mismatch
 
   if id.temperature then
     caption[#caption + 1] = { "", "  (", flib_math.round(id.temperature, 0.01), { "si-unit-degree-celsius" }, ")" }
@@ -171,6 +171,18 @@ function gui_util.format_power(input)
     return { "", formatted, " ", { "si-unit-symbol-watt" } }
   end
   return { "", formatted, { "si-unit-symbol-watt" } }
+end
+
+local tooltip_category_sprites = util.unpack("rb_tooltip_category_sprites")
+
+--- @param id DatabaseID
+--- @param fallback string
+function gui_util.get_tooltip_category_sprite(id, fallback)
+  local by_name = "tooltip-category-" .. id.name
+  if tooltip_category_sprites[by_name] then
+    return by_name
+  end
+  return "tooltip-category-" .. fallback
 end
 
 return gui_util

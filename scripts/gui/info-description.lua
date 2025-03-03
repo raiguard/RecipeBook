@@ -74,7 +74,7 @@ end
 
 --- @param icon SpritePath
 --- @param caption LocalisedString
---- @param id EntryID?
+--- @param id DatabaseID?
 function info_description:add_category_header(icon, caption, id)
   if id then
     local flow = self:add_internal({ type = "flow" })
@@ -87,9 +87,12 @@ function info_description:add_category_header(icon, caption, id)
     flow.add({
       type = "button",
       style = "rb_description_heading_id_button",
-      caption = { "", "[img=" .. id:get_path() .. "]  ", id:get_entry():get_localised_name() },
-      elem_tooltip = id:strip(),
-      tags = flib_gui.format_handlers({ [defines.events.on_gui_click] = self.callback }, { path = id:get_path() }),
+      caption = { "", "[img=" .. id.type .. "/" .. id.name .. "]  ", util.get_prototype(id).localised_name }, --- @diagnostic disable-line:assign-type-mismatch
+      elem_tooltip = { type = id.type, name = id.name },
+      tags = flib_gui.format_handlers(
+        { [defines.events.on_gui_click] = self.callback },
+        { path = id.type .. "/" .. id.name }
+      ),
     })
     flow.style.top_margin = -4
     flow.style.bottom_margin = -4
@@ -375,9 +378,9 @@ function info_description:add_entity_properties(entity)
   end
 end
 
---- @param id EntryID
+--- @param id DatabaseID
 function info_description:add_consumption(id)
-  self:add_category_header(id:get_tooltip_category_sprite("consumes"), { "tooltip-category.consumes" }, id)
+  self:add_category_header(gui_util.get_tooltip_category_sprite(id, "consumes"), { "tooltip-category.consumes" }, id)
   assert(id.amount)
   self:add_generic_row(
     { "description.energy-consumption" },
@@ -397,9 +400,9 @@ function info_description:add_consumption(id)
   end
 end
 
---- @param id EntryID
+--- @param id DatabaseID
 function info_description:add_production(id)
-  self:add_category_header(id:get_tooltip_category_sprite("produces"), { "tooltip-category.generates" }, id)
+  self:add_category_header(gui_util.get_tooltip_category_sprite(id, "produces"), { "tooltip-category.generates" }, id)
   assert(id.amount)
   self:add_generic_row({ "description.fluid-output" }, { "", flib_format.number(id.amount), { "per-second-suffix" } })
   if id.temperature then
@@ -422,10 +425,9 @@ function info_description:add_production(id)
   end
 end
 
---- @param entry Entry
-function info_description:add_vehicle_properties(entry)
-  local entity = entry.entity
-  if not entity or not gui_util.vehicles[entity.type] then
+--- @param entity LuaEntityPrototype
+function info_description:add_vehicle_properties(entity)
+  if not gui_util.vehicles[entity.type] then
     return
   end
 

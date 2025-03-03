@@ -218,64 +218,64 @@ function info_pane:show(prototype)
   end
   general_desc:finalize()
 
-  -- if entity then
-  --   local consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  --   local consumption_id = collectors.material_consumption()
-  --   if consumption_id then
-  --     consumption_desc:add_consumption(consumption_id)
-  --   end
-  --   consumption_desc:finalize()
+  if entity then
+    local consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    local consumption_id = collectors.material_consumption(entity)
+    if consumption_id then
+      consumption_desc:add_consumption(consumption_id)
+    end
+    consumption_desc:finalize()
 
-  --   local power_consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  --   local power_consumption = collectors.power_consumption()
-  --   if power_consumption then
-  --     power_consumption_desc:add_category_header(
-  --       "tooltip-category-electricity",
-  --       { "", { "tooltip-category.consumes" }, " ", { "tooltip-category.electricity" } }
-  --     )
-  --     if power_consumption.min == power_consumption.max then
-  --       power_consumption_desc:add_generic_row(
-  --         { "description.energy-consumption" },
-  --         gui_util.format_power(power_consumption.max)
-  --       )
-  --     else
-  --       power_consumption_desc:add_generic_row(
-  --         { "description.max-energy-consumption" },
-  --         gui_util.format_power(power_consumption.max)
-  --       )
-  --       power_consumption_desc:add_generic_row(
-  --         { "description.min-energy-consumption" },
-  --         gui_util.format_power(power_consumption.min)
-  --       )
-  --     end
-  --   end
-  --   power_consumption_desc:finalize()
+    local power_consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    local power_consumption = collectors.power_consumption(entity)
+    if power_consumption then
+      power_consumption_desc:add_category_header(
+        "tooltip-category-electricity",
+        { "", { "tooltip-category.consumes" }, " ", { "tooltip-category.electricity" } }
+      )
+      if power_consumption.min == power_consumption.max then
+        power_consumption_desc:add_generic_row(
+          { "description.energy-consumption" },
+          gui_util.format_power(power_consumption.max)
+        )
+      else
+        power_consumption_desc:add_generic_row(
+          { "description.max-energy-consumption" },
+          gui_util.format_power(power_consumption.max)
+        )
+        power_consumption_desc:add_generic_row(
+          { "description.min-energy-consumption" },
+          gui_util.format_power(power_consumption.min)
+        )
+      end
+    end
+    power_consumption_desc:finalize()
 
-  --   local power_production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  --   local power_production = collectors.power_production()
-  --   if power_production then
-  --     power_production_desc:add_category_header(
-  --       "tooltip-category-electricity",
-  --       { "", { "tooltip-category.generates" }, " ", { "tooltip-category.electricity" } }
-  --     )
-  --     power_production_desc:add_generic_row(
-  --       { "description.maximum-power-output" },
-  --       gui_util.format_power(power_production)
-  --     )
-  --   end
-  --   power_production_desc:finalize()
+    local power_production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    local power_production = collectors.power_production(entity)
+    if power_production then
+      power_production_desc:add_category_header(
+        "tooltip-category-electricity",
+        { "", { "tooltip-category.generates" }, " ", { "tooltip-category.electricity" } }
+      )
+      power_production_desc:add_generic_row(
+        { "description.maximum-power-output" },
+        gui_util.format_power(power_production)
+      )
+    end
+    power_production_desc:finalize()
 
-  --   local production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  --   local production_id = collectors.material_production()
-  --   if production_id then
-  --     production_desc:add_production(production_id)
-  --   end
-  --   production_desc:finalize()
+    local production_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    local production_id = collectors.material_production(entity)
+    if production_id then
+      production_desc:add_production(production_id)
+    end
+    production_desc:finalize()
 
-  --   local vehicle_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  --   vehicle_desc:add_vehicle_properties(prototype)
-  --   vehicle_desc:finalize()
-  -- end
+    local vehicle_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+    vehicle_desc:add_vehicle_properties(entity)
+    vehicle_desc:finalize()
+  end
 
   local lists_everywhere = self.context.player.mod_settings["rb-lists-everywhere"].value --[[@as boolean]]
   local grid_builder = lists_everywhere and make_list_box_item or make_slot_button

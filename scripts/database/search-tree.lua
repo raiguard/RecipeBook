@@ -1,22 +1,12 @@
 local grouped = require("scripts.database.grouped")
 local util = require("scripts.util")
 
-local bigunpack = require("__big-data-string2__.unpack")
---- @generic T
---- @param key string
---- @return T
-local function unpack(key)
-  local success, value = serpent.load(bigunpack(key))
-  assert(success, "Deserialising overrides failed for " .. key)
-  return value
-end
-
 --- Each top-level prototype sorted into groups and subgroups for the search panel.
 --- @class SearchTree
 --- @field groups table<string, table<string, GenericPrototype[]>> Group name -> subgroup name -> members
 --- @field order table<SpritePath, integer>
 --
-local alternatives = unpack("rb_alternatives")
+local alternatives = util.unpack("rb_alternatives")
 
 --- @param use_grouping boolean
 --- @return SearchTree
