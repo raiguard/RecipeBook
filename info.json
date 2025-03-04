@@ -8,7 +8,7 @@
   "homepage": "https://github.com/raiguard/RecipeBook",
   "factorio_version": "2.0",
   "dependencies": [
-    "base >= 2.0.14",
+    "base >= 2.0.38",
     "flib >= 0.15.0",
     "big-data-string2 >= 2.0.1"
   ]

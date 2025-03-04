@@ -5,8 +5,8 @@ local util = require("scripts.util")
 --- @class SearchTree
 --- @field groups table<string, table<string, GenericPrototype[]>> Group name -> subgroup name -> members
 --- @field order table<SpritePath, integer>
---
-local alternatives = util.unpack("rb_alternatives")
+
+--- @alias GenericPrototype LuaEntityPrototype|LuaEquipmentPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype|LuaTilePrototype
 
 --- @param use_grouping boolean
 --- @return SearchTree
@@ -24,7 +24,7 @@ local function build_tree(use_grouping)
     if prototype.parameter and prototype.object_name ~= "LuaEntityPrototype" then
       return
     end
-    if alternatives[util.get_path(prototype)] then
+    if prototype.factoriopedia_alternative then
       return
     end
     subgroup[#subgroup + 1] = prototype

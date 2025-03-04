@@ -1,4 +1,3 @@
-require("prototypes.pack-overrides")
 require("prototypes.pack-sprites")
 
 for recipe_name, recipe in pairs(data.raw.recipe) do
