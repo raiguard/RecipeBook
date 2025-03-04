@@ -236,7 +236,7 @@ styles.rb_description_id_button = {
   left_padding = 4,
   right_padding = 8,
   height = 28,
-  default_font_color = default_font_color,
+  default_font_color = gui_color.white,
 }
 
 styles.rb_description_heading_id_button = {

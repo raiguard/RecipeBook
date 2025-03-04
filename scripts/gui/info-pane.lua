@@ -1,3 +1,4 @@
+local flib_format = require("__flib__.format")
 local flib_gui = require("__flib__.gui")
 local flib_gui_templates = require("__flib__.gui-templates")
 local flib_technology = require("__flib__.technology")
@@ -217,6 +218,18 @@ function info_pane:show(prototype)
     general_desc:add_entity_properties(entity)
   end
   general_desc:finalize()
+
+  if prototype.object_name == "LuaItemPrototype" then
+    local spoil_result = prototype.spoil_result
+    if spoil_result then
+      local spoil_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
+      spoil_desc:add_category_header("tooltip-category-spoilable", { "tooltip-category.spoilable" })
+
+      -- TODO: Alternative time formatter for XmYs
+      spoil_desc:add_generic_row({ "description.spoil-time" }, flib_format.time(prototype.get_spoil_ticks()))
+      spoil_desc:add_id_row({ "description.spoil-result" }, { type = "item", name = spoil_result.name })
+    end
+  end
 
   if entity then
     local consumption_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)

@@ -288,7 +288,7 @@ end
 
 --- @param e EventData.on_gui_click
 function main_gui:on_result_clicked(e)
-  local id = e.element.tags.id --[[@as GenericID?]]
+  local id = e.element.tags.id --[[@as DatabaseID?]]
   if not id then
     return
   end
