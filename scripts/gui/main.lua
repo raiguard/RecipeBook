@@ -362,8 +362,8 @@ local function on_open_selected(e)
   local prototype = prototypes[selected_prototype.base_type][selected_prototype.name]
   if player_gui.history:push(prototype, player_gui.context.use_groups) then
     player_gui:update_info()
-    player_gui:show()
   end
+  player_gui:show()
 end
 
 --- @param e EventData.CustomInputEvent
