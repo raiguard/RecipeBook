@@ -96,6 +96,7 @@ function info_section.on_header_clicked(e)
   local frame = e.element.parent.parent.frame
   if frame then
     frame.style.height = e.element.state and 1 or 0
+    frame.ignored_by_interaction = e.element.state
   end
 end
 
