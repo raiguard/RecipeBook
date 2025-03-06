@@ -338,6 +338,11 @@ local function on_tick()
   storage.update_force_guis = {}
 end
 
+--- @param e EventData.on_research_finished|EventData.on_research_reversed
+local function on_research_updated(e)
+  storage.update_force_guis[e.research.force.index] = true
+end
+
 --- @param e EventData.CustomInputEvent
 local function on_open_selected(e)
   local selected_prototype = e.selected_prototype
@@ -440,6 +445,8 @@ end
 main_gui.events = {
   [defines.events.on_gui_closed] = on_gui_closed,
   [defines.events.on_lua_shortcut] = on_lua_shortcut,
+  [defines.events.on_research_finished] = on_research_updated,
+  [defines.events.on_research_reversed] = on_research_updated,
   [defines.events.on_tick] = on_tick,
   ["rb-linked-focus-search"] = on_focus_search,
   ["rb-next"] = on_next,
