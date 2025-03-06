@@ -437,7 +437,7 @@ function info_description:add_vehicle_properties(entity)
     if max_speed then
       self:add_generic_row(
         { "description.max-speed" },
-        { "", flib_format.number(max_speed * 60 * 60 * 60 / 1000, false, 0), { "si-unit-kilometer-per-hour" } }
+        { "si-unit-kilometer-per-hour", flib_format.number(max_speed * 60 * 60 * 60 / 1000, false, 0) }
       )
     end
     -- TODO: Add read for vehicle max acceleration power
