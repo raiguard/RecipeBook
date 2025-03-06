@@ -91,7 +91,7 @@ function info_description:add_category_header(icon, caption, id)
       elem_tooltip = { type = id.type, name = id.name },
       tags = flib_gui.format_handlers(
         { [defines.events.on_gui_click] = self.callback },
-        { id = id.type .. "/" .. id.name }
+        { id = { type = id.type, name = id.name } }
       ),
     })
     flow.style.top_margin = -4
