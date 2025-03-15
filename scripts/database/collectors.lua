@@ -58,6 +58,7 @@ function collectors.products(prototype)
         amount_min = product.amount_min,
         amount_max = product.amount_max,
         temperature = product.temperature,
+        probability = product.probability,
       }
     end
   end
@@ -149,6 +150,7 @@ function collectors.rocket_launch_products(prototype)
         amount_min = product.amount_min,
         amount_max = product.amount_max,
         temperature = product.temperature,
+        probability = product.probability,
       }
     end
   end
@@ -493,6 +495,7 @@ function collectors.yields(prototype, grouped_item)
             amount_min = product.amount_min,
             amount_max = product.amount_max,
             temperature = product.temperature,
+            probability = product.probability,
           }
         end
       end
