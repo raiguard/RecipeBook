@@ -1,4 +1,4 @@
-local bigpack = require("__big-data-string2__.pack")
+local bigpack = require("lib.pack")
 
 --- @type table<SpritePath, true>
 local sprites = {}

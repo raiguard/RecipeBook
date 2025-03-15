@@ -1,4 +1,4 @@
-local bigunpack = require("__big-data-string2__.unpack")
+local bigunpack = require("lib.unpack")
 local flib_format = require("__flib__.format")
 local flib_math = require("__flib__.math")
 
