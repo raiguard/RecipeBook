@@ -226,6 +226,14 @@ function main_gui:update()
   self:update_info()
 end
 
+--- @param prototype GenericPrototype
+function main_gui:show_page(prototype)
+  if self.history:push(prototype, self.context.grouping_mode) then
+    self:update_info()
+  end
+  self:show()
+end
+
 --- Get the player's GUI or create it if it does not exist
 --- @param player_index uint
 --- @return MainGui?
@@ -377,6 +385,7 @@ local function on_open_selected(e)
     end
   end
   local prototype = prototypes[selected_prototype.base_type][selected_prototype.name]
+  player_gui:open_page(prototype)
   if player_gui.history:push(prototype, player_gui.context.grouping_mode) then
     player_gui:update_info()
   end
