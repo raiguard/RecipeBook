@@ -4,7 +4,6 @@ local gui_util = require("scripts.gui.util")
 local history = require("scripts.gui.history")
 local info_pane = require("scripts.gui.info-pane")
 local search_pane = require("scripts.gui.search-pane")
-local util = require("scripts.util")
 
 --- @param name string
 --- @param sprite string
@@ -126,22 +125,19 @@ function main_gui.build(player)
   )
   header.add(frame_action_button("close_button", "utility/close", { "gui.close-instruction" }, main_gui.hide, false))
 
-  local main_flow = window.add({ type = "flow", style = "inset_frame_container_horizontal_flow" })
-  local search_pane = search_pane.build(main_flow, context)
-  local info_pane = info_pane.build(main_flow, context)
-
-  -- Set initial button states
   gui_util.update_frame_action_button(header.nav_backward_button, "disabled")
   gui_util.update_frame_action_button(header.nav_forward_button, "disabled")
   gui_util.update_frame_action_button(header.show_unresearched_button, "selected")
+
+  local main_flow = window.add({ type = "flow", style = "inset_frame_container_horizontal_flow" })
 
   --- @type MainGui
   local self = {
     context = context,
     window = window,
     header = header,
-    search_pane = search_pane,
-    info_pane = info_pane,
+    search_pane = search_pane.build(main_flow, context),
+    info_pane = info_pane.build(main_flow, context),
     history = history.new(),
     pinned = false,
     opening_technology_gui = false,
