@@ -59,16 +59,16 @@ function gui_util.format_caption(id)
       "",
       "[font=default-semibold]",
       core_util.format_number(flib_math.round(id.amount, 0.01), true),
-      " ×[/font]  ",
+      " ×[/font] ",
     }
   elseif id.amount_min and id.amount_max then
     caption[#caption + 1] = {
       "",
       "[font=default-semibold]",
       core_util.format_number(flib_math.round(id.amount_min, 0.01), true),
-      " - ",
+      "-",
       core_util.format_number(flib_math.round(id.amount_max, 0.01), true),
-      " ×[/font]  ",
+      " ×[/font] ",
     }
   end
 
