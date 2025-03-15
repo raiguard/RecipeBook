@@ -338,9 +338,25 @@ local function on_tick()
   storage.update_force_guis = {}
 end
 
+--- @param e EventData.on_runtime_mod_setting_changed
+local function on_runtime_mod_setting_changed(e)
+  if not storage.guis or e.setting ~= "rb-use-groups" then
+    return
+  end
+
+  if storage.guis[e.player_index] then
+    main_gui.destroy(e.player_index)
+    local player = game.get_player(e.player_index)
+    --- @cast player -?
+    main_gui.build(player)
+  end
+end
+
 --- @param e EventData.on_research_finished|EventData.on_research_reversed
 local function on_research_updated(e)
-  storage.update_force_guis[e.research.force.index] = true
+  if storage.update_force_guis then
+    storage.update_force_guis[e.research.force.index] = true
+  end
 end
 
 --- @param e EventData.CustomInputEvent
@@ -447,6 +463,7 @@ main_gui.events = {
   [defines.events.on_lua_shortcut] = on_lua_shortcut,
   [defines.events.on_research_finished] = on_research_updated,
   [defines.events.on_research_reversed] = on_research_updated,
+  [defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed,
   [defines.events.on_tick] = on_tick,
   ["rb-linked-focus-search"] = on_focus_search,
   ["rb-next"] = on_next,
