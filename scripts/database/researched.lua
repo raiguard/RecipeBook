@@ -134,8 +134,10 @@ local function research_surface(surface)
   if tile_settings then
     for tile_name in pairs(tile_settings.settings) do
       local tile = prototypes.tile[tile_name]
-      for _, force in pairs(storage.forces) do
-        research(tile, force.index)
+      if tile then
+        for _, force in pairs(storage.forces) do
+          research(tile, force.index)
+        end
       end
     end
   end
