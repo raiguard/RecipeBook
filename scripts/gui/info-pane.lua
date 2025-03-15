@@ -204,7 +204,10 @@ function info_pane:show(prototype)
   end
 
   local general_desc = info_description.new(content_pane, self.context, info_pane.on_result_clicked)
-  general_desc:add_history_and_description(prototype)
+  if self.context.player.mod_settings["rb-show-mod-owners"].value then
+    general_desc:add_prototype_history(prototype)
+  end
+  general_desc:add_description(prototype)
   if recipe then
     general_desc:add_recipe_properties(recipe)
   end

@@ -24,4 +24,10 @@ data:extend({
     default_value = "all",
     allowed_values = { "all", "exclude-recipes", "none" },
   },
+  {
+    type = "bool-setting",
+    name = "rb-show-mod-owners",
+    setting_type = "runtime-per-user",
+    default_value = true,
+  },
 })

@@ -110,9 +110,8 @@ end
 
 local mod_name_separator = " › "
 
---- Adds prototype history and localised description of the prototype.
 --- @param prototype GenericPrototype
-function info_description:add_history_and_description(prototype)
+function info_description:add_prototype_history(prototype)
   local history = prototypes.get_history(get_prototype_type(prototype), prototype.name)
   if history.created ~= "base" or #history.changed > 0 then
     --- @type LocalisedString
@@ -132,6 +131,10 @@ function info_description:add_history_and_description(prototype)
     self:add_internal({ type = "label", style = "info_label", caption = output })
     self:add_separator()
   end
+end
+
+--- @param prototype GenericPrototype
+function info_description:add_description(prototype)
   local descriptions = flib_dictionary.get(self.context.player.index, "description") or {}
   local path = util.get_path(prototype)
   local description = descriptions[path]
