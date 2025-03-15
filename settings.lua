@@ -18,9 +18,10 @@ data:extend({
     default_value = false,
   },
   {
-    type = "bool-setting",
-    name = "rb-use-groups",
+    type = "string-setting",
+    name = "rb-grouping-mode",
     setting_type = "runtime-per-user",
-    default_value = true,
+    default_value = "all",
+    allowed_values = { "all", "exclude-recipes", "none" },
   },
 })

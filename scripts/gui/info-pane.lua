@@ -98,9 +98,9 @@ function info_pane:show(prototype)
   local prototype_path = util.get_path(prototype)
 
   local recipe = prototype.object_name == "LuaRecipePrototype" and prototype --[[@as LuaRecipePrototype]]
-    or (self.context.use_groups and grouped.recipe[prototype_path] or nil)
+    or (self.context.grouping_mode == "all" and grouped.recipe[prototype_path] or nil)
   local entity = prototype.object_name == "LuaEntityPrototype" and prototype --[[@as LuaEntityPrototype]]
-    or (self.context.use_groups and grouped.entity[prototype_path] or nil)
+    or (self.context.grouping_mode ~= "none" and grouped.entity[prototype_path] or nil)
 
   do
     --- @type LocalisedString
@@ -111,14 +111,14 @@ function info_pane:show(prototype)
       type_caption[#type_caption + 1] = "/"
     end
 
-    if self.context.use_groups then
+    if self.context.grouping_mode == "all" then
       local grouped_recipe = grouped.recipe[prototype_path]
       if grouped_recipe then
         add_type_locale(grouped_recipe)
       end
     end
     add_type_locale(prototype)
-    if self.context.use_groups then
+    if self.context.grouping_mode ~= "none" then
       local grouped_entity = grouped.entity[prototype_path]
       if grouped_entity then
         add_type_locale(grouped_entity)
@@ -490,7 +490,7 @@ function info_pane:show(prototype)
   end
 
   local tile = prototype.object_name == "LuaTilePrototype" and prototype --[[@as LuaTilePrototype]]
-    or (self.context.use_groups and grouped.tile[prototype_path] or nil)
+    or (self.context.grouping_mode ~= "none" and grouped.tile[prototype_path] or nil)
   if prototype.object_name == "LuaTilePrototype" then
     info_section.build(
       content_pane,

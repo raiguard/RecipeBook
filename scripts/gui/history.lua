@@ -11,13 +11,18 @@ function history.new()
 end
 
 --- @param prototype GenericPrototype
---- @param resolve_grouping boolean
+--- @param grouping_mode GroupingMode
 --- @return boolean
-function history:push(prototype, resolve_grouping)
-  if resolve_grouping then
-    local base = grouped.material[util.get_path(prototype)]
-    if base then
-      prototype = base
+function history:push(prototype, grouping_mode)
+  if grouping_mode ~= "none" then
+    if
+      (prototype.object_name == "LuaRecipePrototype" and grouping_mode == "all")
+      or (prototype.object_name ~= "LuaRecipePrototype" and grouping_mode ~= "none")
+    then
+      local base = grouped.material[util.get_path(prototype)]
+      if base then
+        prototype = base
+      end
     end
   end
   if self:current() == prototype then

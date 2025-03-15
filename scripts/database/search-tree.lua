@@ -8,9 +8,9 @@ local util = require("scripts.util")
 
 --- @alias GenericPrototype LuaEntityPrototype|LuaEquipmentPrototype|LuaFluidPrototype|LuaItemPrototype|LuaRecipePrototype|LuaTechnologyPrototype|LuaTilePrototype
 
---- @param use_grouping boolean
+--- @param grouping GroupingMode
 --- @return SearchTree
-local function build_tree(use_grouping)
+local function build_tree(grouping)
   --- @type SearchTree
   local self = {
     groups = {},
@@ -45,17 +45,17 @@ local function build_tree(use_grouping)
     add(fluid)
   end
   for _, entity in pairs(prototypes.entity) do
-    if not use_grouping or not grouped.material[util.get_path(entity)] then
+    if grouping == "none" or not grouped.material[util.get_path(entity)] then
       add(entity)
     end
   end
   for _, recipe in pairs(prototypes.recipe) do
-    if not use_grouping or not grouped.material[util.get_path(recipe)] then
+    if grouping ~= "all" or not grouped.material[util.get_path(recipe)] then
       add(recipe)
     end
   end
   for _, tile in pairs(prototypes.tile) do
-    if not use_grouping or not grouped.material[util.get_path(tile)] then
+    if grouping == "none" or not grouped.material[util.get_path(tile)] then
       add(tile)
     end
   end
@@ -101,7 +101,8 @@ end
 --- @class SearchTreeMod
 local search_tree = {}
 
-search_tree.grouped = build_tree(true)
-search_tree.plain = build_tree(false)
+search_tree.all = build_tree("all")
+search_tree.separate_recipes = build_tree("exclude-recipes")
+search_tree.plain = build_tree("none")
 
 return search_tree

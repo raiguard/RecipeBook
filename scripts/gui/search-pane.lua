@@ -96,7 +96,14 @@ function search_pane.build(parent, context)
   }).style.left_margin =
     8
 
-  local tree = context.player.mod_settings["rb-use-groups"].value and search_tree.grouped or search_tree.plain
+  local tree
+  if context.grouping_mode == "all" then
+    tree = search_tree.all
+  elseif context.grouping_mode == "exclude-recipes" then
+    tree = search_tree.separate_recipes
+  else -- "none"
+    tree = search_tree.plain
+  end
 
   --- @type table<SpritePath, LuaGuiElement>
   local result_buttons = {}
@@ -170,7 +177,14 @@ function search_pane:update()
 
   self.textfield.placeholder.visible = #query == 0
 
-  local tree = self.context.player.mod_settings["rb-use-groups"].value and search_tree.grouped or search_tree.plain
+  local tree
+  if self.context.grouping_mode == "all" then
+    tree = search_tree.all
+  elseif self.context.grouping_mode == "exclude-recipes" then
+    tree = search_tree.separate_recipes
+  else -- "none"
+    tree = search_tree.plain
+  end
 
   local overall_results_count = 0
   for group_name, group in pairs(tree.groups) do

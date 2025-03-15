@@ -25,10 +25,10 @@ local function frame_action_button(name, sprite, tooltip, handler, auto_toggle)
 end
 
 --- @class MainGuiContext
+--- @field grouping_mode GroupingMode
 --- @field show_hidden boolean
 --- @field show_unresearched boolean
 --- @field player LuaPlayer
---- @field use_groups boolean
 
 --- @class MainGui
 --- @field context MainGuiContext
@@ -50,10 +50,10 @@ function main_gui.build(player)
 
   --- @type MainGuiContext
   local context = {
+    grouping_mode = player.mod_settings["rb-grouping-mode"].value --[[@as string]],
     show_hidden = false,
     show_unresearched = true,
     player = player,
-    use_groups = player.mod_settings["rb-use-groups"].value --[[@as boolean]],
   }
 
   local window = player.gui.screen.add({
@@ -298,7 +298,7 @@ function main_gui:on_result_clicked(e)
   end
   local prototype = prototypes[id.type][id.name]
   assert(prototype, "Prototype was nil")
-  self.history:push(prototype, self.context.use_groups)
+  self.history:push(prototype, self.context.grouping_mode)
   self:update_info()
 end
 
@@ -336,7 +336,7 @@ end
 
 --- @param e EventData.on_runtime_mod_setting_changed
 local function on_runtime_mod_setting_changed(e)
-  if not storage.guis or e.setting ~= "rb-use-groups" then
+  if not storage.guis or e.setting ~= "rb-grouping-mode" then
     return
   end
 
@@ -377,7 +377,7 @@ local function on_open_selected(e)
     end
   end
   local prototype = prototypes[selected_prototype.base_type][selected_prototype.name]
-  if player_gui.history:push(prototype, player_gui.context.use_groups) then
+  if player_gui.history:push(prototype, player_gui.context.grouping_mode) then
     player_gui:update_info()
   end
   player_gui:show()

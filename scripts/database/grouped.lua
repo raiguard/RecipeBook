@@ -1,5 +1,7 @@
 local util = require("scripts.util")
 
+--- @alias GroupingMode "all"|"exclude-recipes"|"none"
+
 --- @class Grouped
 local grouped = {
   --- @type table<SpritePath, LuaEntityPrototype>
