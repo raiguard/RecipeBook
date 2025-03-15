@@ -402,7 +402,7 @@ end
 
 --- @param id DatabaseID
 function info_description:add_production(id)
-  self:add_category_header(gui_util.get_tooltip_category_sprite(id, "produces"), { "tooltip-category.generates" }, id)
+  self:add_category_header(gui_util.get_tooltip_category_sprite(id, "generates"), { "tooltip-category.generates" }, id)
   assert(id.amount)
   self:add_generic_row({ "description.fluid-output" }, { "", flib_format.number(id.amount), { "per-second-suffix" } })
   if id.temperature then
