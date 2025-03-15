@@ -115,13 +115,7 @@ function main_gui.build(player)
     )
   )
   header.add(
-    frame_action_button(
-      "pin_button",
-      "flib_pin_white",
-      { "gui.rb-pin-instruction" },
-      main_gui.on_pin_button_clicked,
-      true
-    )
+    frame_action_button("pin_button", "flib_pin_white", { "gui.flib-keep-open" }, main_gui.on_pin_button_clicked, true)
   )
   header.add(frame_action_button("close_button", "utility/close", { "gui.close-instruction" }, main_gui.hide, false))
 

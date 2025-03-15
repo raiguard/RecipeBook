@@ -187,7 +187,7 @@ end
 function info_description:add_item_properties(item)
   local stack_size = item.stack_size
   if stack_size > 0 then
-    self:add_generic_row({ "description.rb-stack-size" }, flib_format.number(stack_size, true))
+    self:add_generic_row({ "description.stack-size" }, flib_format.number(stack_size, true))
   end
 
   local fuel_category = item.fuel_category

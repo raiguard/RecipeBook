@@ -145,10 +145,10 @@ end
 
 --- @type table<string, LocalisedString>
 gui_util.type_locale = {
-  LuaEntityPrototype = { "description.rb-entity" },
+  LuaEntityPrototype = { "factoriopedia.entity" },
   LuaEquipmentPrototype = { "gui-map-editor.character-equipment" },
-  LuaFluidPrototype = { "gui-train.fluid" },
-  LuaItemPrototype = { "description.rb-item" },
+  LuaFluidPrototype = { "factoriopedia.fluid" },
+  LuaItemPrototype = { "factoriopedia.item" },
   LuaRecipePrototype = { "description.recipe" },
   LuaTechnologyPrototype = { "gui-map-generator.technology-difficulty-group-tile" },
   LuaTilePrototype = { "factoriopedia.tile" },

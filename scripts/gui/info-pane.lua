@@ -337,7 +337,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      grouped_recipe and { "description.rb-alternative-recipes" } or { "description.rb-recipes" },
+      grouped_recipe and { "factoriopedia.alternative-recipes" } or { "description.rb-recipes" },
       collectors.alternative_recipes(prototype, grouped_recipe),
       { column_count = grid_column_count },
       grid_builder
@@ -345,7 +345,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.rb-used-in" },
+      { "factoriopedia.used-in" },
       collectors.used_in(prototype, grouped_recipe),
       { column_count = grid_column_count },
       grid_builder
@@ -442,7 +442,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.rb-unlocked-by" },
+      { "factoriopedia.unlocked-by" },
       collectors.unlocked_by(recipe),
       { style = "rb_technology_slot_deep_frame", column_count = 5, always_show = true },
       --- @param id DatabaseID
@@ -477,7 +477,7 @@ function info_pane:show(prototype)
     info_section.build(
       content_pane,
       self.context,
-      { "description.rb-can-craft" },
+      { "factoriopedia.can-craft" },
       collectors.can_craft(entity),
       { column_count = grid_column_count },
       grid_builder

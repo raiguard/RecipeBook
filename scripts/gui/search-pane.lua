@@ -153,6 +153,7 @@ function search_pane.build(parent, context)
     groups_table = groups_table,
     results_pane = results_pane,
     result_buttons = result_buttons,
+    -- TODO: This isn't used
     dictionary_warning = dictionary_warning,
     no_results_warning = no_results_warning,
     context = context,
